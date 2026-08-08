@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Helpers;
 
 namespace DLSS_Swapper.Data;
@@ -98,9 +99,93 @@ internal static class DllUpdateRunner
     }
 
     /// <summary>
+    /// Restores every dll in a game that still has a backup.
+    /// </summary>
+    /// <remarks>
+    /// A dll without a backup is left alone rather than reported as a failure. The game either
+    /// never had that one swapped, or the backup went when a game update replaced the dll.
+    /// </remarks>
+    internal static async Task<DllUpdateResult> RevertGameAsync(Game game, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    {
+        var result = new DllUpdateResult();
+
+        foreach (var assetType in GetRevertableAssetTypes(game))
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            var assetTypeName = DLLManager.Instance.GetAssetTypeName(assetType);
+            progress?.Report($"{game.Title} - {assetTypeName}");
+
+            var didReset = await game.ResetDllAsync(assetType).ConfigureAwait(false);
+            if (didReset.Success == false)
+            {
+                result.Failures.Add($"{game.Title} - {assetTypeName}: {didReset.Message}");
+                continue;
+            }
+
+            // A reset can succeed having restored only some locations, and says so in its message.
+            if (string.IsNullOrEmpty(didReset.Message) == false)
+            {
+                result.Failures.Add($"{game.Title} - {assetTypeName}: {didReset.Message}");
+            }
+
+            ++result.Swapped;
+        }
+
+        if (result.Swapped > 0)
+        {
+            result.GamesUpdated = 1;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// The dll types in a game that have a backup to go back to.
+    /// </summary>
+    internal static List<GameAssetType> GetRevertableAssetTypes(Game game)
+    {
+        var revertableAssetTypes = new List<GameAssetType>();
+
+        foreach (var dllTypeDefinition in DllTypes.All)
+        {
+            foreach (var gameAsset in game.GameAssets)
+            {
+                if (gameAsset.AssetType == dllTypeDefinition.BackupAssetType)
+                {
+                    revertableAssetTypes.Add(dllTypeDefinition.AssetType);
+                    break;
+                }
+            }
+        }
+
+        return revertableAssetTypes;
+    }
+
+    /// <summary>
     /// Updates every out of date dll across the given games.
     /// </summary>
-    internal static async Task<DllUpdateResult> UpdateGamesAsync(IReadOnlyList<Game> games, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    internal static Task<DllUpdateResult> UpdateGamesAsync(IReadOnlyList<Game> games, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    {
+        return RunAcrossGamesAsync(games, UpdateGameAsync, progress, cancellationToken);
+    }
+
+    /// <summary>
+    /// Restores every dll with a backup across the given games.
+    /// </summary>
+    internal static Task<DllUpdateResult> RevertGamesAsync(IReadOnlyList<Game> games, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    {
+        return RunAcrossGamesAsync(games, RevertGameAsync, progress, cancellationToken);
+    }
+
+    static async Task<DllUpdateResult> RunAcrossGamesAsync(
+        IReadOnlyList<Game> games,
+        Func<Game, IProgress<string>?, CancellationToken, Task<DllUpdateResult>> operation,
+        IProgress<string>? progress,
+        CancellationToken cancellationToken)
     {
         var result = new DllUpdateResult();
 
@@ -113,7 +198,7 @@ internal static class DllUpdateRunner
 
             // Sequential on purpose. Running these in parallel would mean several games writing
             // dlls at once with no way to tell the user which one failed and why.
-            result.Add(await UpdateGameAsync(game, progress, cancellationToken).ConfigureAwait(false));
+            result.Add(await operation(game, progress, cancellationToken).ConfigureAwait(false));
         }
 
         return result;

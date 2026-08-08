@@ -351,8 +351,12 @@ public partial class GameGridPageModel : ObservableObject
         await DllUpdatePrompt.RunAsync(
             gameGridPage.XamlRoot,
             gamesToUpdate,
+            ResourceHelper.GetString("DllUpdate_Title"),
+            outdatedDllCount,
             ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmAllGamesTemplate", outdatedDllCount, gamesToUpdate.Count),
-            ResourceHelper.GetString("DllUpdate_AllGamesUpToDate"));
+            ResourceHelper.GetString("DllUpdate_AllGamesUpToDate"),
+            (games, progress) => DllUpdateRunner.UpdateGamesAsync(games, progress),
+            "DllUpdate_SwappedTemplate");
     }
 
     [RelayCommand]

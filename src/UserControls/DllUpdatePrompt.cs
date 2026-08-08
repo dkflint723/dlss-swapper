@@ -20,22 +20,27 @@ namespace DLSS_Swapper.UserControls;
 internal static class DllUpdatePrompt
 {
     /// <summary>
-    /// Confirms, runs, and reports. Does nothing if there is nothing to update.
+    /// Confirms, runs, and reports. Does nothing if there is nothing to do.
     /// </summary>
+    /// <param name="title">Dialog title, so updating and reverting read differently.</param>
+    /// <param name="affectedDllCount">How many dlls the operation will touch. Zero shows the nothing-to-do message.</param>
     /// <param name="confirmationMessage">Says what is about to happen, including the counts.</param>
-    internal static async Task RunAsync(XamlRoot xamlRoot, IReadOnlyList<Game> games, string confirmationMessage, string nothingToDoMessage)
+    /// <param name="operation">Either the update or the revert run.</param>
+    internal static async Task RunAsync(
+        XamlRoot xamlRoot,
+        IReadOnlyList<Game> games,
+        string title,
+        int affectedDllCount,
+        string confirmationMessage,
+        string nothingToDoMessage,
+        Func<IReadOnlyList<Game>, IProgress<string>, Task<DllUpdateResult>> operation,
+        string summaryTemplateResourceKey)
     {
-        var outdatedDllCount = 0;
-        foreach (var game in games)
-        {
-            outdatedDllCount += game.OutdatedAssetTypes.Count;
-        }
-
-        if (outdatedDllCount == 0)
+        if (affectedDllCount == 0)
         {
             var nothingToDoDialog = new EasyContentDialog(xamlRoot)
             {
-                Title = ResourceHelper.GetString("DllUpdate_Title"),
+                Title = title,
                 CloseButtonText = ResourceHelper.GetString("General_Okay"),
                 DefaultButton = ContentDialogButton.Close,
                 Content = nothingToDoMessage,
@@ -47,7 +52,7 @@ internal static class DllUpdatePrompt
         // Bulk writing into game folders is worth asking about first.
         var confirmDialog = new EasyContentDialog(xamlRoot)
         {
-            Title = ResourceHelper.GetString("DllUpdate_Title"),
+            Title = title,
             PrimaryButtonText = ResourceHelper.GetString("General_Update"),
             CloseButtonText = ResourceHelper.GetString("General_Cancel"),
             DefaultButton = ContentDialogButton.Primary,
@@ -84,23 +89,23 @@ internal static class DllUpdatePrompt
         DllUpdateResult result;
         try
         {
-            result = await DllUpdateRunner.UpdateGamesAsync(games, progress);
+            result = await operation(games, progress);
         }
         finally
         {
             progressDialog.Hide();
         }
 
-        await ShowSummaryAsync(xamlRoot, result);
+        await ShowSummaryAsync(xamlRoot, title, summaryTemplateResourceKey, result);
     }
 
-    static async Task ShowSummaryAsync(XamlRoot xamlRoot, DllUpdateResult result)
+    static async Task ShowSummaryAsync(XamlRoot xamlRoot, string title, string summaryTemplateResourceKey, DllUpdateResult result)
     {
         var summary = new StackPanel() { Spacing = 8 };
 
         summary.Children.Add(new TextBlock()
         {
-            Text = ResourceHelper.GetFormattedResourceTemplate("DllUpdate_SwappedTemplate", result.Swapped, result.GamesUpdated),
+            Text = ResourceHelper.GetFormattedResourceTemplate(summaryTemplateResourceKey, result.Swapped, result.GamesUpdated),
             TextWrapping = TextWrapping.Wrap,
         });
 
@@ -125,7 +130,7 @@ internal static class DllUpdatePrompt
 
         var summaryDialog = new EasyContentDialog(xamlRoot)
         {
-            Title = ResourceHelper.GetString("DllUpdate_Title"),
+            Title = title,
             CloseButtonText = ResourceHelper.GetString("General_Okay"),
             DefaultButton = ContentDialogButton.Close,
             Content = new ScrollViewer() { Content = summary, MaxHeight = 400 },

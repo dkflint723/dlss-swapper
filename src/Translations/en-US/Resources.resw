@@ -198,6 +198,15 @@
   <data name="Game_CustomCoverRemove" xml:space="preserve">
     <value>Remove custom cover?</value>
   </data>
+  <data name="DllRevert_ConfirmOneGameTemplate" xml:space="preserve">
+    <value>Restore {0} dlls in {1} to the versions the game shipped with? Their backups will be used up.</value>
+  </data>
+  <data name="DllRevert_NothingToRevert" xml:space="preserve">
+    <value>There are no backups to restore for this game.</value>
+  </data>
+  <data name="DllRevert_RevertedTemplate" xml:space="preserve">
+    <value>Restored {0} dlls across {1} games.</value>
+  </data>
   <data name="DllUpdate_AllGamesUpToDate" xml:space="preserve">
     <value>Every game is already using the newest dlls.</value>
   </data>

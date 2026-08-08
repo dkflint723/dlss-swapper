@@ -460,8 +460,33 @@ public partial class GameControlModel : ObservableObject
         await DllUpdatePrompt.RunAsync(
             gameControl.XamlRoot,
             [Game],
+            ResourceHelper.GetString("DllUpdate_Title"),
+            Game.OutdatedAssetTypes.Count,
             ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmOneGameTemplate", Game.OutdatedAssetTypes.Count, Game.Title),
-            ResourceHelper.GetString("DllUpdate_GameUpToDate"));
+            ResourceHelper.GetString("DllUpdate_GameUpToDate"),
+            (games, progress) => DllUpdateRunner.UpdateGamesAsync(games, progress),
+            "DllUpdate_SwappedTemplate");
+    }
+
+    [RelayCommand]
+    async Task ResetAllAsync()
+    {
+        if (gameControlWeakReference.TryGetTarget(out var gameControl) == false)
+        {
+            return;
+        }
+
+        var revertableAssetTypes = DllUpdateRunner.GetRevertableAssetTypes(Game);
+
+        await DllUpdatePrompt.RunAsync(
+            gameControl.XamlRoot,
+            [Game],
+            ResourceHelper.GetString("GamePage_ResetAll"),
+            revertableAssetTypes.Count,
+            ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", revertableAssetTypes.Count, Game.Title),
+            ResourceHelper.GetString("DllRevert_NothingToRevert"),
+            (games, progress) => DllUpdateRunner.RevertGamesAsync(games, progress),
+            "DllRevert_RevertedTemplate");
     }
 
     [RelayCommand]

@@ -628,6 +628,9 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             await Database.Instance.Connection.InsertAllAsync(GameAssets, false).ConfigureAwait(false);
         }
 
+        // Restoring an older dll can put the game behind again, so the badge has to be recomputed.
+        RefreshUpdateAvailable();
+
         if (unrestorableRecords.Count > 0)
         {
             foreach (var unrestorableRecord in unrestorableRecords)
@@ -835,6 +838,10 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             await Database.Instance.Connection.ExecuteAsync("DELETE FROM game_asset WHERE id = ?", ID).ConfigureAwait(false);
             await Database.Instance.Connection.InsertAllAsync(GameAssets, false).ConfigureAwait(false);
         }
+
+        // The game is no longer behind on this dll, so the badge has to be recomputed. Without this
+        // it only refreshed when the manifest reloaded or the game was rescanned.
+        RefreshUpdateAvailable();
 
         return (true, string.Empty, false);
     }
