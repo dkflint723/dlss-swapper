@@ -20,4 +20,10 @@
     <ProjectReference Include="..\..\core\DLSS.Swapper.Core\DLSS.Swapper.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- The manifest the app ships with, used to check the registry's keys against the real thing
+         rather than against our own idea of what they should be. -->
+    <None Include="..\..\src\Assets\static_manifest.json" Link="static_manifest.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

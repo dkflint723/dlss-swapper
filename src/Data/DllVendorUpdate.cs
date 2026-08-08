@@ -1,21 +1,6 @@
 ﻿namespace DLSS_Swapper.Data;
 
 /// <summary>
-/// Who makes the upscaler an asset type belongs to.
-/// </summary>
-/// <remarks>
-/// Used to colour the update badge, so at a glance you can tell whether it is an NVIDIA, AMD or
-/// Intel dll that has a newer version waiting.
-/// </remarks>
-public enum DllVendor
-{
-    Unknown = 0,
-    Nvidia,
-    Amd,
-    Intel,
-}
-
-/// <summary>
 /// One vendor's worth of out of date dlls in a game.
 /// </summary>
 /// <remarks>
