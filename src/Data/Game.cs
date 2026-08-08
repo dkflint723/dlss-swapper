@@ -1271,8 +1271,8 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     /// </remarks>
     public void RefreshUpdateAvailable()
     {
-        var outdatedAssetTypes = new List<GameAssetType>();
-
+        // Ranked here, decided in the core library where the rules are tested.
+        var latestRankByAssetType = new Dictionary<GameAssetType, ulong>();
         foreach (var assetType in EnumerateSwappableAssetTypes())
         {
             var latestRecord = DLLManager.Instance.GetLatestRecord(assetType);
@@ -1281,22 +1281,23 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 continue;
             }
 
-            // Every location counts, not just the one shown on the card. A game can keep the same dll
-            // in several places at different versions, and a swap updates all of them.
-            foreach (var gameAsset in GameAssets.Where(x => x.AssetType == assetType))
+            if (DllVersionRanking.TryGetRank(assetType, latestRecord.InternalName, latestRecord.Version, out var latestRank))
             {
-                if (TryGetInstalledVersionNumber(gameAsset, assetType, out var installedVersionNumber) == false)
-                {
-                    continue;
-                }
-
-                if (latestRecord.VersionNumber > installedVersionNumber)
-                {
-                    outdatedAssetTypes.Add(assetType);
-                    break;
-                }
+                latestRankByAssetType[assetType] = latestRank;
             }
         }
+
+        var installedDlls = new List<InstalledDll>();
+        foreach (var gameAsset in GameAssets)
+        {
+            // A dll whose version we cannot read is left out rather than guessed at.
+            if (TryGetInstalledVersionNumber(gameAsset, gameAsset.AssetType, out var installedRank))
+            {
+                installedDlls.Add(new InstalledDll(gameAsset.AssetType, installedRank));
+            }
+        }
+
+        var outdatedAssetTypes = UpdateAvailability.FindOutdatedTypes(installedDlls, latestRankByAssetType);
 
         // One badge per vendor rather than per dll, otherwise a game trailing on four Intel dlls
         // would show four identical dots. The tooltip names the specific dlls instead.
