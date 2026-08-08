@@ -34,7 +34,9 @@ internal class EAAppLibrary : IGameLibrary
         // The best way to get covers from EA apps is a static list from the EAAppGameListBuilder tool.
         try
         {
-            var eaAppTitlesJsonPath = @"Assets\ea_app_titles.json";
+            // Resolved against the app directory, not the working directory, so the title list still
+            // loads when the app is started from a shortcut or launcher that sets a different one.
+            var eaAppTitlesJsonPath = Path.Combine(AppContext.BaseDirectory, "Assets", "ea_app_titles.json");
             if (File.Exists(eaAppTitlesJsonPath) == true)
             {
                 using (var fileStream = File.OpenRead(eaAppTitlesJsonPath))

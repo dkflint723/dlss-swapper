@@ -107,7 +107,9 @@ internal partial class NVAPIHelper : ObservableObject
         // Load DLSS presets
         try
         {
-            var dlssPresetsJsonPath = @"Assets\dlss_presets.json";
+            // Resolved against the app directory, not the working directory, so presets still load
+            // when the app is started from a shortcut or launcher that sets a different one.
+            var dlssPresetsJsonPath = Path.Combine(AppContext.BaseDirectory, "Assets", "dlss_presets.json");
             if (File.Exists(dlssPresetsJsonPath) == true)
             {
                 var dlssPresetOptions = JsonSerializer.Deserialize(File.ReadAllText(dlssPresetsJsonPath), SourceGenerationContext.Default.ListPresetOption)?.Where(x => x.Used == true)?.ToList();
@@ -154,7 +156,7 @@ internal partial class NVAPIHelper : ObservableObject
         // Load DLSS D presets
         try
         {
-            var dlssDPresetsJsonPath = @"Assets\dlss_d_presets.json";
+            var dlssDPresetsJsonPath = Path.Combine(AppContext.BaseDirectory, "Assets", "dlss_d_presets.json");
             if (File.Exists(dlssDPresetsJsonPath) == true)
             {
                 var dlssDPresetOptions = JsonSerializer.Deserialize(File.ReadAllText(dlssDPresetsJsonPath), SourceGenerationContext.Default.ListPresetOption)?.Where(x => x.Used == true)?.ToList();
@@ -203,7 +205,7 @@ internal partial class NVAPIHelper : ObservableObject
         // Load DLSS G presets
         try
         {
-            var dlssgPresetsJsonPath = @"Assets\dlss_g_presets.json";
+            var dlssgPresetsJsonPath = Path.Combine(AppContext.BaseDirectory, "Assets", "dlss_g_presets.json");
             if (File.Exists(dlssgPresetsJsonPath) == true)
             {
                 var dlssGPresetOptions = JsonSerializer.Deserialize(File.ReadAllText(dlssgPresetsJsonPath), SourceGenerationContext.Default.ListPresetOption)?.Where(x => x.Used == true)?.ToList();
