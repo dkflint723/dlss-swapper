@@ -41,7 +41,7 @@ internal class DLLManager
     public ObservableCollection<DLLRecord> XeSSFGRecords => _records[GameAssetType.XeSS_FG];
     public ObservableCollection<DLLRecord> XeSSDX11Records => _records[GameAssetType.XeSS_DX11];
 
-    public KnownDLLs KnownDLLs { get; private set; } = new KnownDLLs();
+    public DllKeyedRecords<HashedKnownDLL> KnownDLLs { get; private set; } = new DllKeyedRecords<HashedKnownDLL>();
 
     readonly ReaderWriterLockSlim _knownDLLsReadWriterLock = new ReaderWriterLockSlim();
 
@@ -839,7 +839,7 @@ internal class DLLManager
         _knownDLLsReadWriterLock.EnterReadLock();
         try
         {
-            hashedKnownDLL = KnownDLLs.GetHashes(dllTypeDefinition.AssetType)?
+            hashedKnownDLL = KnownDLLs.GetRecords(dllTypeDefinition.AssetType)?
                 .FirstOrDefault(x => gameAsset.Hash.Equals(x.Hash, StringComparison.InvariantCultureIgnoreCase));
         }
         finally
