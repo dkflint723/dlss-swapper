@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Helpers.FSR31;
@@ -363,20 +364,7 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
 
     internal string GetRecordSimpleType()
     {
-        // NOTE: DLL type
-        return AssetType switch
-        {
-            GameAssetType.DLSS => "dlss",
-            GameAssetType.DLSS_G => "dlss_g",
-            GameAssetType.DLSS_D => "dlss_d",
-            GameAssetType.FSR_31_DX12 => "fsr_31_dx12",
-            GameAssetType.FSR_31_VK => "fsr_31_vk",
-            GameAssetType.XeSS => "xess",
-            GameAssetType.XeLL => "xell",
-            GameAssetType.XeSS_DX11 => "xess_dx11",
-            GameAssetType.XeSS_FG => "xess_fg",
-            _ => string.Empty,
-        };
+        return DllTypes.ForAssetType(AssetType)?.ManifestKey ?? string.Empty;
     }
 
     internal void CopyFrom(DLLRecord newDllRecord)

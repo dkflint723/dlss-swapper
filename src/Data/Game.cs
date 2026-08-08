@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
@@ -436,109 +437,22 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
                 foreach (var dllPath in dllPaths)
                 {
-                    var dllName = Path.GetFileName(dllPath);
+                    // Matched case insensitively the way Windows treats file names. The chain this
+                    // replaced compared exactly, so a game shipping NVNGX_DLSS.DLL went unnoticed.
+                    var dllTypeDefinition = DllTypes.ForFileName(Path.GetFileName(dllPath));
+                    if (dllTypeDefinition is null)
+                    {
+                        continue;
+                    }
 
-                    // NOTE: DLL type
-                    // The case of these files should never change, right?
-                    if (dllName == "nvngx_dlss.dll")
+                    var gameAsset = new GameAsset()
                     {
-                        var gameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = GameAssetType.DLSS,
-                            Path = dllPath,
-                        };
-                        ProcessGame_ProcessGameAsset(gameAsset);
-                        GameAssets.Add(gameAsset);
-                    }
-                    else if (dllName == "nvngx_dlssg.dll")
-                    {
-                        var gameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = GameAssetType.DLSS_G,
-                            Path = dllPath,
-                        };
-                        ProcessGame_ProcessGameAsset(gameAsset);
-                        GameAssets.Add(gameAsset);
-                    }
-                    else if (dllName == "nvngx_dlssd.dll")
-                    {
-                        var gameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = GameAssetType.DLSS_D,
-                            Path = dllPath,
-                        };
-                        ProcessGame_ProcessGameAsset(gameAsset);
-                        GameAssets.Add(gameAsset);
-                    }
-                    else if (dllName == "amd_fidelityfx_dx12.dll")
-                    {
-                        var gameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = GameAssetType.FSR_31_DX12,
-                            Path = dllPath,
-                        };
-                        ProcessGame_ProcessGameAsset(gameAsset);
-                        GameAssets.Add(gameAsset);
-                    }
-                    else if (dllName == "amd_fidelityfx_vk.dll")
-                    {
-                        var gameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = GameAssetType.FSR_31_VK,
-                            Path = dllPath,
-                        };
-                        ProcessGame_ProcessGameAsset(gameAsset);
-                        GameAssets.Add(gameAsset);
-                    }
-                    else if (dllName == "libxess.dll")
-                    {
-                        var gameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = GameAssetType.XeSS,
-                            Path = dllPath,
-                        };
-                        ProcessGame_ProcessGameAsset(gameAsset);
-                        GameAssets.Add(gameAsset);
-                    }
-                    else if (dllName == "libxess_dx11.dll")
-                    {
-                        var gameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = GameAssetType.XeSS_DX11,
-                            Path = dllPath,
-                        };
-                        ProcessGame_ProcessGameAsset(gameAsset);
-                        GameAssets.Add(gameAsset);
-                    }
-                    else if (dllName == "libxell.dll")
-                    {
-                        var gameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = GameAssetType.XeLL,
-                            Path = dllPath,
-                        };
-                        ProcessGame_ProcessGameAsset(gameAsset);
-                        GameAssets.Add(gameAsset);
-                    }
-                    else if (dllName == "libxess_fg.dll")
-                    {
-                        var gameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = GameAssetType.XeSS_FG,
-                            Path = dllPath,
-                        };
-                        ProcessGame_ProcessGameAsset(gameAsset);
-                        GameAssets.Add(gameAsset);
-                    }
+                        Id = ID,
+                        AssetType = dllTypeDefinition.AssetType,
+                        Path = dllPath,
+                    };
+                    ProcessGame_ProcessGameAsset(gameAsset);
+                    GameAssets.Add(gameAsset);
                 }
 
                 App.CurrentApp.RunOnUIThread(() =>
@@ -1533,16 +1447,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     /// </summary>
     static IEnumerable<GameAssetType> EnumerateSwappableAssetTypes()
     {
-        // NOTE: DLL type
-        yield return GameAssetType.DLSS;
-        yield return GameAssetType.DLSS_G;
-        yield return GameAssetType.DLSS_D;
-        yield return GameAssetType.FSR_31_DX12;
-        yield return GameAssetType.FSR_31_VK;
-        yield return GameAssetType.XeSS;
-        yield return GameAssetType.XeSS_FG;
-        yield return GameAssetType.XeSS_DX11;
-        yield return GameAssetType.XeLL;
+        return DllTypes.All.Select(x => x.AssetType);
     }
 
     /// <summary>

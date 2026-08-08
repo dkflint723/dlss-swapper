@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
 
@@ -774,39 +775,15 @@ internal class DLLManager
 
     public string GetAssetTypeName(GameAssetType assetType)
     {
-        // NOTE: DLL type
-        return assetType switch
-        {
-            GameAssetType.DLSS => ResourceHelper.GetString("General_Name_DLSS"),
-            GameAssetType.DLSS_G => ResourceHelper.GetString("General_Name_DLSS_G"),
-            GameAssetType.DLSS_D => ResourceHelper.GetString("General_Name_DLSS_D"),
-            GameAssetType.FSR_31_DX12 => ResourceHelper.GetString("General_Name_FSR_31_DX12"),
-            GameAssetType.FSR_31_VK => ResourceHelper.GetString("General_Name_FSR_31_VK"),
-            GameAssetType.XeSS => ResourceHelper.GetString("General_Name_XeSS"),
-            GameAssetType.XeSS_FG => ResourceHelper.GetString("General_Name_XeSS_FG"),
-            GameAssetType.XeSS_DX11 => ResourceHelper.GetString("General_Name_XeSS_DX11"),
-            GameAssetType.XeLL => ResourceHelper.GetString("General_Name_XeLL"),
-            _ => throw new Exception($"Unknown AssetType: {assetType}"),
-        };
+        var definition = DllTypes.ForAssetType(assetType) ?? throw new Exception($"Unknown AssetType: {assetType}");
+        return ResourceHelper.GetString(definition.DisplayNameResourceKey);
     }
 
 
     public GameAssetType GetAssetBackupType(GameAssetType assetType)
     {
-        // NOTE: DLL type
-        return assetType switch
-        {
-            GameAssetType.DLSS => GameAssetType.DLSS_BACKUP,
-            GameAssetType.DLSS_G => GameAssetType.DLSS_G_BACKUP,
-            GameAssetType.DLSS_D => GameAssetType.DLSS_D_BACKUP,
-            GameAssetType.FSR_31_DX12 => GameAssetType.FSR_31_DX12_BACKUP,
-            GameAssetType.FSR_31_VK => GameAssetType.FSR_31_VK_BACKUP,
-            GameAssetType.XeSS => GameAssetType.XeSS_BACKUP,
-            GameAssetType.XeSS_FG => GameAssetType.XeSS_FG_BACKUP,
-            GameAssetType.XeSS_DX11 => GameAssetType.XeSS_DX11_BACKUP,
-            GameAssetType.XeLL => GameAssetType.XeLL_BACKUP,
-            _ => throw new Exception($"Unknown AssetType: {assetType}"),
-        };
+        var definition = DllTypes.ForAssetType(assetType) ?? throw new Exception($"Unknown AssetType: {assetType}");
+        return definition.BackupAssetType;
     }
 
     /// <summary>
@@ -814,14 +791,7 @@ internal class DLLManager
     /// </summary>
     public DllVendor GetAssetVendor(GameAssetType assetType)
     {
-        // NOTE: DLL type
-        return assetType switch
-        {
-            GameAssetType.DLSS or GameAssetType.DLSS_G or GameAssetType.DLSS_D => DllVendor.Nvidia,
-            GameAssetType.FSR_31_DX12 or GameAssetType.FSR_31_VK => DllVendor.Amd,
-            GameAssetType.XeSS or GameAssetType.XeSS_FG or GameAssetType.XeSS_DX11 or GameAssetType.XeLL => DllVendor.Intel,
-            _ => DllVendor.Unknown,
-        };
+        return DllTypes.ForAssetType(assetType)?.Vendor ?? DllVendor.Unknown;
     }
 
     /// <summary>

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers.FSR31;
 using SQLite;
@@ -153,25 +154,13 @@ public class GameAsset : IEquatable<GameAsset>
 
     public GameAsset? GetBackup()
     {
-        // NOTE: DLL type
-        var backypType = AssetType switch
-        {
-            GameAssetType.DLSS => GameAssetType.DLSS_BACKUP,
-            GameAssetType.DLSS_G => GameAssetType.DLSS_G_BACKUP,
-            GameAssetType.DLSS_D => GameAssetType.DLSS_D_BACKUP,
-            GameAssetType.FSR_31_DX12 => GameAssetType.FSR_31_DX12_BACKUP,
-            GameAssetType.FSR_31_VK => GameAssetType.FSR_31_VK_BACKUP,
-            GameAssetType.XeSS => GameAssetType.XeSS_BACKUP,
-            GameAssetType.XeLL => GameAssetType.XeLL_BACKUP,
-            GameAssetType.XeSS_FG => GameAssetType.XeSS_FG_BACKUP,
-            GameAssetType.XeSS_DX11 => GameAssetType.XeSS_DX11_BACKUP,
-            _ => GameAssetType.Unknown
-        };
-
-        if (backypType == GameAssetType.Unknown)
+        var definition = DllTypes.ForAssetType(AssetType);
+        if (definition is null)
         {
             return null;
         }
+
+        var backypType = definition.BackupAssetType;
 
         var backupPath = Path + ".dlsss";
         if (File.Exists(backupPath) == false)
