@@ -24,6 +24,19 @@
         <ct_converters:StringVisibilityConverter x:Key="InverseStringVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         <converters:BitmapImageUriConverter x:Key="BitmapImageUriConverter" />
         <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" TrueValue="0.25" FalseValue="1.0" NullValue="1.0" />
+        <converters:DllVendorToBrushConverter x:Key="DllVendorToBrushConverter" />
+
+        <!-- One badge per vendor with an out of date dll. The label is what identifies it, the colour
+             only reinforces, so it stays readable with any colour vision. -->
+        <DataTemplate x:Key="UpdateBadgeTemplate" x:DataType="data:DllVendorUpdate">
+            <Border Background="{x:Bind Vendor, Converter={StaticResource DllVendorToBrushConverter}}" CornerRadius="4" Padding="5,1,5,1" VerticalAlignment="Center" ToolTipService.ToolTip="{x:Bind ToolTip}">
+                <TextBlock Text="{x:Bind Label}" FontSize="11" Foreground="White" />
+            </Border>
+        </DataTemplate>
+
+        <ItemsPanelTemplate x:Key="UpdateBadgePanelTemplate">
+            <StackPanel Orientation="Horizontal" Spacing="4" />
+        </ItemsPanelTemplate>
         
 
 
@@ -63,6 +76,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
                             <Border Grid.Row="0" BorderThickness="0" CornerRadius="4" Width="40" Height="60" FlowDirection="LeftToRight">
@@ -84,6 +98,7 @@
                                 <Run Text="DLSS: " />
                                 <Run Text="{x:Bind CurrentDLSS.DisplayName, FallbackValue='N/A', Mode=OneWay}" />
                             </TextBlock>
+                            <ItemsControl Grid.Column="4" VerticalAlignment="Center" IsTabStop="False" ItemsSource="{x:Bind AvailableUpdates, Mode=OneWay}" ItemTemplate="{StaticResource UpdateBadgeTemplate}" ItemsPanel="{StaticResource UpdateBadgePanelTemplate}" />
 
                         </Grid>
 
@@ -148,9 +163,10 @@
                                 </Border.Background>
                             </Border>
 
-                            <Grid VerticalAlignment="Bottom"  Background="#88000000" Padding="8" ColumnSpacing="8">
+                            <Grid VerticalAlignment="Bottom"  Background="#CC000000" Padding="8" ColumnSpacing="8">
 
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
@@ -160,8 +176,9 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" FontWeight="Bold" Text="DLSS" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" />
-                                <TextBlock Grid.Column="1" Text="{x:Bind CurrentDLSS.DisplayName, FallbackValue='N/A', Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="White" Visibility="{x:Bind Processing, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}" />
-                                <ProgressRing Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="White" Width="16" Height="16" Visibility="{x:Bind Processing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                                <ItemsControl Grid.Column="1" VerticalAlignment="Center" IsTabStop="False" ItemsSource="{x:Bind AvailableUpdates, Mode=OneWay}" ItemTemplate="{StaticResource UpdateBadgeTemplate}" ItemsPanel="{StaticResource UpdateBadgePanelTemplate}" />
+                                <TextBlock Grid.Column="2" Text="{x:Bind CurrentDLSS.DisplayName, FallbackValue='N/A', Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="White" Visibility="{x:Bind Processing, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}" />
+                                <ProgressRing Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="White" Width="16" Height="16" Visibility="{x:Bind Processing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             </Grid>
                         </Grid>
                     </DataTemplate>

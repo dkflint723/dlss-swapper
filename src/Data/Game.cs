@@ -4,6 +4,7 @@ using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
 using DLSS_Swapper.Swapping;
 using DLSS_Swapper.UserControls;
+using DLSS_Swapper.Versioning;
 using Microsoft.UI.Xaml.Controls;
 using NvAPIWrapper.DRS;
 using SixLabors.ImageSharp;
@@ -202,7 +203,17 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     [ObservableProperty]
     [Ignore]
     public partial bool MultipleXeSSDX11Found { get; set; } = false;
-    
+
+    /// <summary>True when any dll installed in this game has a newer version available to swap to.</summary>
+    [ObservableProperty]
+    [Ignore]
+    public partial bool UpdateAvailable { get; set; } = false;
+
+    /// <summary>One entry per vendor that has an out of date dll in this game. Empty when nothing is.</summary>
+    [ObservableProperty]
+    [Ignore]
+    public partial List<DllVendorUpdate> AvailableUpdates { get; set; } = new List<DllVendorUpdate>();
+
 
     [Ignore]
     public abstract bool IsReadyToPlay { get; }
@@ -1513,6 +1524,104 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 CurrentXeLL = gameAsset;
             }
         }
+
+        RefreshUpdateAvailable();
+    }
+
+    /// <summary>
+    /// The asset types a game can have swapped.
+    /// </summary>
+    static IEnumerable<GameAssetType> EnumerateSwappableAssetTypes()
+    {
+        // NOTE: DLL type
+        yield return GameAssetType.DLSS;
+        yield return GameAssetType.DLSS_G;
+        yield return GameAssetType.DLSS_D;
+        yield return GameAssetType.FSR_31_DX12;
+        yield return GameAssetType.FSR_31_VK;
+        yield return GameAssetType.XeSS;
+        yield return GameAssetType.XeSS_FG;
+        yield return GameAssetType.XeSS_DX11;
+        yield return GameAssetType.XeLL;
+    }
+
+    /// <summary>
+    /// Works out whether any installed dll has a newer version available to swap to.
+    /// </summary>
+    /// <remarks>
+    /// Called whenever the installed dlls change, and again once the manifest loads, because on a
+    /// cold start the games are read from cache before we know what versions exist.
+    /// </remarks>
+    public void RefreshUpdateAvailable()
+    {
+        var outdatedAssetTypes = new List<GameAssetType>();
+
+        foreach (var assetType in EnumerateSwappableAssetTypes())
+        {
+            var latestRecord = DLLManager.Instance.GetLatestRecord(assetType);
+            if (latestRecord is null)
+            {
+                continue;
+            }
+
+            // Every location counts, not just the one shown on the card. A game can keep the same dll
+            // in several places at different versions, and a swap updates all of them.
+            foreach (var gameAsset in GameAssets.Where(x => x.AssetType == assetType))
+            {
+                if (TryGetInstalledVersionNumber(gameAsset, assetType, out var installedVersionNumber) == false)
+                {
+                    continue;
+                }
+
+                if (latestRecord.VersionNumber > installedVersionNumber)
+                {
+                    outdatedAssetTypes.Add(assetType);
+                    break;
+                }
+            }
+        }
+
+        // One badge per vendor rather than per dll, otherwise a game trailing on four Intel dlls
+        // would show four identical dots. The tooltip names the specific dlls instead.
+        var availableUpdates = outdatedAssetTypes
+            .GroupBy(x => DLLManager.Instance.GetAssetVendor(x))
+            .Where(x => x.Key != DllVendor.Unknown)
+            .OrderBy(x => x.Key)
+            .Select(x => new DllVendorUpdate()
+            {
+                Vendor = x.Key,
+                Label = DLLManager.Instance.GetVendorShortName(x.Key),
+                ToolTip = ResourceHelper.GetFormattedResourceTemplate("GameGrid_UpdateAvailableTemplate", string.Join(", ", x.Select(y => DLLManager.Instance.GetAssetTypeName(y)))),
+            })
+            .ToList();
+
+        App.CurrentApp.RunOnUIThread(() =>
+        {
+            AvailableUpdates = availableUpdates;
+            UpdateAvailable = availableUpdates.Count > 0;
+        });
+    }
+
+    /// <summary>
+    /// Resolves the installed dll to the manifest's packed version number.
+    /// </summary>
+    /// <remarks>
+    /// Matching on hash is exact, but a dll the game shipped with is often not in the manifest at
+    /// all, so we fall back to the version recorded off the file itself.
+    /// </remarks>
+    static bool TryGetInstalledVersionNumber(GameAsset gameAsset, GameAssetType assetType, out ulong versionNumber)
+    {
+        if (string.IsNullOrWhiteSpace(gameAsset.Hash) == false)
+        {
+            var knownRecord = DLLManager.Instance.GetRecords(assetType)?.FirstOrDefault(x => x.MD5Hash == gameAsset.Hash);
+            if (knownRecord is not null)
+            {
+                versionNumber = knownRecord.VersionNumber;
+                return true;
+            }
+        }
+
+        return DllVersion.TryParse(gameAsset.Version, out versionNumber);
     }
 
     public async Task RemoveGameAssetsFromCacheAsync()

@@ -342,6 +342,9 @@ internal class DLLManager
             MergeManifestsIntoMasterList(XeSSFGRecords, Manifest.XeSS_FG, ImportedManifest?.XeSS_FG);
             MergeManifestsIntoMasterList(XeSSDX11Records, Manifest.XeSS_DX11, ImportedManifest?.XeSS_DX11);
             MergeManifestsIntoMasterList(XeLLRecords, Manifest.XeLL, ImportedManifest?.XeLL);
+
+            // Now that we know what versions exist, work out which games are behind.
+            GameManager.Instance.RefreshUpdateAvailable();
         });
     }
 
@@ -804,6 +807,70 @@ internal class DLLManager
             GameAssetType.XeLL => GameAssetType.XeLL_BACKUP,
             _ => throw new Exception($"Unknown AssetType: {assetType}"),
         };
+    }
+
+    /// <summary>
+    /// Which vendor an asset type belongs to.
+    /// </summary>
+    public DllVendor GetAssetVendor(GameAssetType assetType)
+    {
+        // NOTE: DLL type
+        return assetType switch
+        {
+            GameAssetType.DLSS or GameAssetType.DLSS_G or GameAssetType.DLSS_D => DllVendor.Nvidia,
+            GameAssetType.FSR_31_DX12 or GameAssetType.FSR_31_VK => DllVendor.Amd,
+            GameAssetType.XeSS or GameAssetType.XeSS_FG or GameAssetType.XeSS_DX11 or GameAssetType.XeLL => DllVendor.Intel,
+            _ => DllVendor.Unknown,
+        };
+    }
+
+    /// <summary>
+    /// Short technology name for a vendor, used on the update badge.
+    /// </summary>
+    /// <remarks>Product names, so they are not translated.</remarks>
+    public string GetVendorShortName(DllVendor vendor)
+    {
+        return vendor switch
+        {
+            DllVendor.Nvidia => "DLSS",
+            DllVendor.Amd => "FSR",
+            DllVendor.Intel => "XeSS",
+            _ => string.Empty,
+        };
+    }
+
+    /// <summary>
+    /// Every record we know of for an asset type, ordered newest first.
+    /// </summary>
+    /// <returns>Null for asset types we don't offer swaps for, such as the backup types.</returns>
+    public ObservableCollection<DLLRecord>? GetRecords(GameAssetType assetType)
+    {
+        // NOTE: DLL type
+        return assetType switch
+        {
+            GameAssetType.DLSS => DLSSRecords,
+            GameAssetType.DLSS_G => DLSSGRecords,
+            GameAssetType.DLSS_D => DLSSDRecords,
+            GameAssetType.FSR_31_DX12 => FSR31DX12Records,
+            GameAssetType.FSR_31_VK => FSR31VKRecords,
+            GameAssetType.XeSS => XeSSRecords,
+            GameAssetType.XeSS_FG => XeSSFGRecords,
+            GameAssetType.XeSS_DX11 => XeSSDX11Records,
+            GameAssetType.XeLL => XeLLRecords,
+            _ => null,
+        };
+    }
+
+    /// <summary>
+    /// The newest record we would recommend for an asset type.
+    /// </summary>
+    /// <remarks>
+    /// Records are already sorted newest first. Dev builds are skipped because they are debug
+    /// versions, so telling someone an update is available and pointing them at one would be wrong.
+    /// </remarks>
+    public DLLRecord? GetLatestRecord(GameAssetType assetType)
+    {
+        return GetRecords(assetType)?.FirstOrDefault(x => x.IsDevFile == false);
     }
 
     /// <summary>

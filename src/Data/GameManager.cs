@@ -275,6 +275,21 @@ internal partial class GameManager : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Recomputes which games have a newer dll available.
+    /// </summary>
+    /// <remarks>
+    /// Games are restored from cache before the manifest finishes loading, so on a cold start the
+    /// first pass has nothing to compare against. This gets called again once records are in.
+    /// </remarks>
+    public void RefreshUpdateAvailable()
+    {
+        foreach (var game in GetSynchronisedGamesListCopy())
+        {
+            game.RefreshUpdateAvailable();
+        }
+    }
+
     public List<Game> GetSynchronisedGamesListCopy()
     {
         lock (gameLock)
