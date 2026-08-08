@@ -22,6 +22,7 @@ using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.UserControls;
+using DLSS_Swapper.Versioning;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -1578,35 +1579,28 @@ public partial class LibraryPageModel : ObservableObject
             return null;
         }
 
+        // Ranked by the shared rule so this cannot drift from what the update badge considers
+        // newest. It used to compare FSR by its display version as a string, which ranks 3.1.10
+        // below 3.1.4.
         DLLRecord? latestRecord = null;
+        var latestRank = 0UL;
+
         foreach (var record in records)
         {
-            if (record.IsDevFile == devDllsOnly)
+            if (record.IsDevFile != devDllsOnly)
             {
-                if (latestRecord is null)
-                {
-                    latestRecord = record;
-                }
-                else
-                {
-                    if (record.AssetType == GameAssetType.FSR_31_DX12 ||
-                        record.AssetType == GameAssetType.FSR_31_VK ||
-                        record.AssetType == GameAssetType.FSR_31_DX12_BACKUP ||
-                        record.AssetType == GameAssetType.FSR_31_VK_BACKUP)
-                    {
-                        if (record.DisplayVersionVersion > latestRecord.DisplayVersionVersion)
-                        {
-                            latestRecord = record;
-                        }
-                    }
-                    else
-                    {
-                        if (record.VersionNumber > latestRecord.VersionNumber)
-                        {
-                            latestRecord = record;
-                        }
-                    }
-                }
+                continue;
+            }
+
+            if (DllVersionRanking.TryGetRank(record.AssetType, record.InternalName, record.Version, out var rank) == false)
+            {
+                continue;
+            }
+
+            if (latestRecord is null || rank > latestRank)
+            {
+                latestRecord = record;
+                latestRank = rank;
             }
         }
 

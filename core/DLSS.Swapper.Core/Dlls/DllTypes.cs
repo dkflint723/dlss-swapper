@@ -56,6 +56,7 @@ public static class DllTypes
             FileName = "amd_fidelityfx_dx12.dll",
             ManifestKey = "fsr_31_dx12",
             Vendor = DllVendor.Amd,
+            VersionFromInternalName = true,
             DisplayNameResourceKey = "General_Name_FSR_31_DX12",
         },
         new DllTypeDefinition()
@@ -65,6 +66,7 @@ public static class DllTypes
             FileName = "amd_fidelityfx_vk.dll",
             ManifestKey = "fsr_31_vk",
             Vendor = DllVendor.Amd,
+            VersionFromInternalName = true,
             DisplayNameResourceKey = "General_Name_FSR_31_VK",
         },
         new DllTypeDefinition()

@@ -1333,12 +1333,13 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             var knownRecord = DLLManager.Instance.GetRecords(assetType)?.FirstOrDefault(x => x.MD5Hash == gameAsset.Hash);
             if (knownRecord is not null)
             {
-                versionNumber = knownRecord.VersionNumber;
-                return true;
+                return DllVersionRanking.TryGetRank(assetType, knownRecord.InternalName, knownRecord.Version, out versionNumber);
             }
         }
 
-        return DllVersion.TryParse(gameAsset.Version, out versionNumber);
+        // Not in the manifest, so the game shipped it. DisplayVersion resolves the sdk version for
+        // the types that are ranked by it, and is ignored for the rest.
+        return DllVersionRanking.TryGetRank(assetType, gameAsset.DisplayVersion, gameAsset.Version, out versionNumber);
     }
 
     public async Task RemoveGameAssetsFromCacheAsync()

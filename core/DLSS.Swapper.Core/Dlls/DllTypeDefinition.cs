@@ -38,6 +38,17 @@ public sealed class DllTypeDefinition
 
     public required DllVendor Vendor { get; init; }
 
+    /// <summary>
+    /// True when this type's meaningful version is the internal SDK version rather than the dll's
+    /// own file version.
+    /// </summary>
+    /// <remarks>
+    /// FSR reports both and they do not move together. FSR 3.1.4 ships as file version 1.0.1.41314
+    /// while a later 3.1.2 build ships as 1.0.2.38022, so ranking by file version puts the older SDK
+    /// on top. Everything else has a single version and this is false.
+    /// </remarks>
+    public bool VersionFromInternalName { get; init; } = false;
+
     /// <summary>Resource key for the translated display name.</summary>
     public required string DisplayNameResourceKey { get; init; }
 }

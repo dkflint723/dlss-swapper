@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
+using DLSS_Swapper.Versioning;
 
 namespace DLSS_Swapper.Data;
 
@@ -807,7 +808,37 @@ internal class DLLManager
     /// </remarks>
     public DLLRecord? GetLatestRecord(GameAssetType assetType)
     {
-        return GetRecords(assetType)?.FirstOrDefault(x => x.IsDevFile == false);
+        var records = GetRecords(assetType);
+        if (records is null)
+        {
+            return null;
+        }
+
+        // Ranked explicitly rather than taken from the collection's order. The order sorts FSR by
+        // its internal name as a string, which puts 3.1.4 above 3.1.10.
+        DLLRecord? latestRecord = null;
+        var latestRank = 0UL;
+
+        foreach (var record in records)
+        {
+            if (record.IsDevFile)
+            {
+                continue;
+            }
+
+            if (DllVersionRanking.TryGetRank(assetType, record.InternalName, record.Version, out var rank) == false)
+            {
+                continue;
+            }
+
+            if (latestRecord is null || rank > latestRank)
+            {
+                latestRecord = record;
+                latestRank = rank;
+            }
+        }
+
+        return latestRecord;
     }
 
     /// <summary>
