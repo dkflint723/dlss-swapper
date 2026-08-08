@@ -215,6 +215,57 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     [Ignore]
     public partial List<DllVendorUpdate> AvailableUpdates { get; set; } = new List<DllVendorUpdate>();
 
+    /// <summary>
+    /// What this game has installed for each swappable dll type.
+    /// </summary>
+    /// <remarks>
+    /// One slot per type, created once and never replaced, so anything bound to a slot stays bound
+    /// for the life of the game.
+    /// </remarks>
+    readonly List<GameAssetSlot> _assetSlots = DllTypes.All
+        .Select(x => new GameAssetSlot() { AssetType = x.AssetType })
+        .ToList();
+
+    [Ignore]
+    public IReadOnlyList<GameAssetSlot> AssetSlots => _assetSlots;
+
+    /// <summary>The slot for an asset type, or null if it is not a swappable one.</summary>
+    public GameAssetSlot? GetAssetSlot(GameAssetType assetType)
+    {
+        return _assetSlots.FirstOrDefault(x => x.AssetType == assetType);
+    }
+
+    /// <summary>
+    /// Copies the slots onto the per type properties the view still binds to.
+    /// </summary>
+    /// <remarks>
+    /// Temporary. These properties go away once GameControl binds to the slots directly, and this
+    /// method goes with them. Until then the slots are the source of truth and these follow.
+    /// </remarks>
+    void SyncLegacyAssetProperties()
+    {
+        // NOTE: DLL type
+        CurrentDLSS = GetAssetSlot(GameAssetType.DLSS)?.CurrentAsset;
+        CurrentDLSS_G = GetAssetSlot(GameAssetType.DLSS_G)?.CurrentAsset;
+        CurrentDLSS_D = GetAssetSlot(GameAssetType.DLSS_D)?.CurrentAsset;
+        CurrentFSR_31_DX12 = GetAssetSlot(GameAssetType.FSR_31_DX12)?.CurrentAsset;
+        CurrentFSR_31_VK = GetAssetSlot(GameAssetType.FSR_31_VK)?.CurrentAsset;
+        CurrentXeSS = GetAssetSlot(GameAssetType.XeSS)?.CurrentAsset;
+        CurrentXeSS_FG = GetAssetSlot(GameAssetType.XeSS_FG)?.CurrentAsset;
+        CurrentXeSS_DX11 = GetAssetSlot(GameAssetType.XeSS_DX11)?.CurrentAsset;
+        CurrentXeLL = GetAssetSlot(GameAssetType.XeLL)?.CurrentAsset;
+
+        MultipleDLSSFound = GetAssetSlot(GameAssetType.DLSS)?.MultipleFound == true;
+        MultipleDLSSGFound = GetAssetSlot(GameAssetType.DLSS_G)?.MultipleFound == true;
+        MultipleDLSSDFound = GetAssetSlot(GameAssetType.DLSS_D)?.MultipleFound == true;
+        MultipleFSR31DX12Found = GetAssetSlot(GameAssetType.FSR_31_DX12)?.MultipleFound == true;
+        MultipleFSR31VKFound = GetAssetSlot(GameAssetType.FSR_31_VK)?.MultipleFound == true;
+        MultipleXeSSFound = GetAssetSlot(GameAssetType.XeSS)?.MultipleFound == true;
+        MultipleXeSSFGFound = GetAssetSlot(GameAssetType.XeSS_FG)?.MultipleFound == true;
+        MultipleXeSSDX11Found = GetAssetSlot(GameAssetType.XeSS_DX11)?.MultipleFound == true;
+        MultipleXeLLFound = GetAssetSlot(GameAssetType.XeLL)?.MultipleFound == true;
+    }
+
 
     [Ignore]
     public abstract bool IsReadyToPlay { get; }
@@ -881,56 +932,19 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     {
         App.CurrentApp.RunOnUIThread(() =>
         {
-            // NOTE: DLL type
-            if (gameAssetType == GameAssetType.DLSS)
-            {
-                CurrentDLSS = null;
-                CurrentDLSS = newGameAsset;
-            }
-            else if (gameAssetType == GameAssetType.DLSS_G)
-            {
-                CurrentDLSS_G = null;
-                CurrentDLSS_G = newGameAsset;
-            }
-            else if (gameAssetType == GameAssetType.DLSS_D)
-            {
-                CurrentDLSS_D = null;
-                CurrentDLSS_D = newGameAsset;
-            }
-            else if (gameAssetType == GameAssetType.FSR_31_DX12)
-            {
-                CurrentFSR_31_DX12 = null;
-                CurrentFSR_31_DX12 = newGameAsset;
-            }
-            else if (gameAssetType == GameAssetType.FSR_31_VK)
-            {
-                CurrentFSR_31_VK = null;
-                CurrentFSR_31_VK = newGameAsset;
-            }
-            else if (gameAssetType == GameAssetType.XeSS)
-            {
-                CurrentXeSS = null;
-                CurrentXeSS = newGameAsset;
-            }
-            else if (gameAssetType == GameAssetType.XeSS_FG)
-            {
-                CurrentXeSS_FG = null;
-                CurrentXeSS_FG = newGameAsset;
-            }
-            else if (gameAssetType == GameAssetType.XeSS_DX11)
-            {
-                CurrentXeSS_DX11 = null;
-                CurrentXeSS_DX11 = newGameAsset;
-            }
-            else if (gameAssetType == GameAssetType.XeLL)
-            {
-                CurrentXeLL = null;
-                CurrentXeLL = newGameAsset;
-            }
-            else
+            var assetSlot = GetAssetSlot(gameAssetType);
+            if (assetSlot is null)
             {
                 Logger.Error($"Unknown AssetType: {gameAssetType}");
+                return;
             }
+
+            // Cleared first so the change is raised even when the same instance comes back, which
+            // is what the assignments this replaced were doing.
+            assetSlot.CurrentAsset = null;
+            assetSlot.CurrentAsset = newGameAsset;
+
+            SyncLegacyAssetProperties();
         });
     }
 
@@ -1131,17 +1145,8 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             }
             foreach (var cachedGameAsset in gameAssets)
             {
-                // NOTE: DLL type
                 // If its a file we made we should attempt to delete it.
-                if (cachedGameAsset.AssetType == GameAssetType.DLSS_BACKUP ||
-                    cachedGameAsset.AssetType == GameAssetType.DLSS_G_BACKUP ||
-                    cachedGameAsset.AssetType == GameAssetType.DLSS_D_BACKUP ||
-                    cachedGameAsset.AssetType == GameAssetType.FSR_31_DX12_BACKUP ||
-                    cachedGameAsset.AssetType == GameAssetType.FSR_31_VK_BACKUP ||
-                    cachedGameAsset.AssetType == GameAssetType.XeSS_BACKUP ||
-                    cachedGameAsset.AssetType == GameAssetType.XeSS_FG_BACKUP ||
-                    cachedGameAsset.AssetType == GameAssetType.XeSS_DX11_BACKUP ||
-                    cachedGameAsset.AssetType == GameAssetType.XeLL_BACKUP)
+                if (DllTypes.IsBackupAssetType(cachedGameAsset.AssetType))
                 {
                     if (File.Exists(cachedGameAsset.Path))
                     {
@@ -1299,11 +1304,21 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             didChange = true;
         }
 
-        // NOTE: DLL type
-        if (CurrentDLSS != game.CurrentDLSS)
+        // Compare each installed dll through its slot instead of a chain of named properties.
+        // Reference comparison, matching what the properties this replaced did.
+        foreach (var assetSlot in _assetSlots)
         {
-            CurrentDLSS = game.CurrentDLSS;
-            didChange = true;
+            var otherAssetSlot = game.GetAssetSlot(assetSlot.AssetType);
+            if (assetSlot.CurrentAsset != otherAssetSlot?.CurrentAsset)
+            {
+                assetSlot.CurrentAsset = otherAssetSlot?.CurrentAsset;
+                didChange = true;
+            }
+        }
+
+        if (didChange)
+        {
+            SyncLegacyAssetProperties();
         }
 
         if (DlssPreset != game.DlssPreset)
@@ -1318,54 +1333,6 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             didChange = true;
         }
 
-        if (CurrentDLSS_G != game.CurrentDLSS_G)
-        {
-            CurrentDLSS_G = game.CurrentDLSS_G;
-            didChange = true;
-        }
-
-        if (CurrentDLSS_D != game.CurrentDLSS_D)
-        {
-            CurrentDLSS_D = game.CurrentDLSS_D;
-            didChange = true;
-        }
-
-        if (CurrentFSR_31_DX12 != game.CurrentFSR_31_DX12)
-        {
-            CurrentFSR_31_DX12 = game.CurrentFSR_31_DX12;
-            didChange = true;
-        }
-
-        if (CurrentFSR_31_VK != game.CurrentFSR_31_VK)
-        {
-            CurrentFSR_31_VK = game.CurrentFSR_31_VK;
-            didChange = true;
-        }
-
-        if (CurrentXeSS != game.CurrentXeSS)
-        {
-            CurrentXeSS = game.CurrentXeSS;
-            didChange = true;
-        }
-
-        if (CurrentXeSS_FG != game.CurrentXeSS_FG)
-        {
-            CurrentXeSS_FG = game.CurrentXeSS_FG;
-            didChange = true;
-        }
-
-        if (CurrentXeSS_DX11 != game.CurrentXeSS_DX11)
-        {
-            CurrentXeSS_DX11 = game.CurrentXeSS_DX11;
-            didChange = true;
-        }
-
-        if (CurrentXeLL != game.CurrentXeLL)
-        {
-            CurrentXeLL = game.CurrentXeLL;
-            didChange = true;
-        }
-
         // We don't copy across the following properties as it is assume this object has the latest revisions:
         // - Notes
         // - IsFavourite
@@ -1377,68 +1344,17 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
     void UpdateCurrentDLLsFromGameAssets()
     {
-        CurrentDLSS = null;
-        CurrentDLSS_G = null;
-        CurrentDLSS_D = null;
-        CurrentFSR_31_DX12 = null;
-        CurrentFSR_31_VK = null;
-        CurrentXeSS = null;
-        CurrentXeSS_FG = null;
-        CurrentXeSS_DX11 = null;
-        CurrentXeLL = null;
-
-        // NOTE: DLL type
-        MultipleDLSSFound = GameAssets.Count(x => x.AssetType == GameAssetType.DLSS) > 1;
-        MultipleDLSSGFound = GameAssets.Count(x => x.AssetType == GameAssetType.DLSS_G) > 1;
-        MultipleDLSSDFound = GameAssets.Count(x => x.AssetType == GameAssetType.DLSS_D) > 1;
-        MultipleFSR31DX12Found = GameAssets.Count(x => x.AssetType == GameAssetType.FSR_31_DX12) > 1;
-        MultipleFSR31VKFound = GameAssets.Count(x => x.AssetType == GameAssetType.FSR_31_VK) > 1;
-        MultipleXeSSFound = GameAssets.Count(x => x.AssetType == GameAssetType.XeSS) > 1;
-        MultipleXeSSFGFound = GameAssets.Count(x => x.AssetType == GameAssetType.XeSS_FG) > 1;
-        MultipleXeSSDX11Found = GameAssets.Count(x => x.AssetType == GameAssetType.XeSS_DX11) > 1;
-        MultipleXeLLFound = GameAssets.Count(x => x.AssetType == GameAssetType.XeLL) > 1;
-
-        // NOTE: DLL type
-        foreach (var gameAsset in GameAssets)
+        foreach (var assetSlot in _assetSlots)
         {
-            if (gameAsset.AssetType == GameAssetType.DLSS)
-            {
-                CurrentDLSS = gameAsset;
-            }
-            else if (gameAsset.AssetType == GameAssetType.DLSS_G)
-            {
-                CurrentDLSS_G = gameAsset;
-            }
-            else if (gameAsset.AssetType == GameAssetType.DLSS_D)
-            {
-                CurrentDLSS_D = gameAsset;
-            }
-            else if (gameAsset.AssetType == GameAssetType.FSR_31_DX12)
-            {
-                CurrentFSR_31_DX12 = gameAsset;
-            }
-            else if (gameAsset.AssetType == GameAssetType.FSR_31_VK)
-            {
-                CurrentFSR_31_VK = gameAsset;
-            }
-            else if (gameAsset.AssetType == GameAssetType.XeSS)
-            {
-                CurrentXeSS = gameAsset;
-            }
-            else if (gameAsset.AssetType == GameAssetType.XeSS_FG)
-            {
-                CurrentXeSS_FG = gameAsset;
-            }
-            else if (gameAsset.AssetType == GameAssetType.XeSS_DX11)
-            {
-                CurrentXeSS_DX11 = gameAsset;
-            }
-            else if (gameAsset.AssetType == GameAssetType.XeLL)
-            {
-                CurrentXeLL = gameAsset;
-            }
+            var assetsForType = GameAssets.Where(x => x.AssetType == assetSlot.AssetType).ToList();
+
+            assetSlot.MultipleFound = assetsForType.Count > 1;
+
+            // Last one wins, matching the chain of assignments this replaced.
+            assetSlot.CurrentAsset = assetsForType.LastOrDefault();
         }
 
+        SyncLegacyAssetProperties();
         RefreshUpdateAvailable();
     }
 

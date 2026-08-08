@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Data.NVIDIA;
+using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.UserControls;
@@ -47,17 +48,15 @@ public partial class LibraryPageModel : ObservableObject
         var upscalerSelectorBar = _libraryPage.FindChild("UpscalerSelectorBar") as SelectorBar;
         if (upscalerSelectorBar is not null)
         {
-            // NOTE: DLL type
             // TODO: Change order based on prefered upscaler.
-            upscalerSelectorBar.Items.Add(new SelectorBarItem() { Text = DLLManager.Instance.GetAssetTypeName(GameAssetType.DLSS), Tag = GameAssetType.DLSS });
-            upscalerSelectorBar.Items.Add(new SelectorBarItem() { Text = DLLManager.Instance.GetAssetTypeName(GameAssetType.DLSS_G), Tag = GameAssetType.DLSS_G });
-            upscalerSelectorBar.Items.Add(new SelectorBarItem() { Text = DLLManager.Instance.GetAssetTypeName(GameAssetType.DLSS_D), Tag = GameAssetType.DLSS_D });
-            upscalerSelectorBar.Items.Add(new SelectorBarItem() { Text = DLLManager.Instance.GetAssetTypeName(GameAssetType.FSR_31_DX12), Tag = GameAssetType.FSR_31_DX12 });
-            upscalerSelectorBar.Items.Add(new SelectorBarItem() { Text = DLLManager.Instance.GetAssetTypeName(GameAssetType.FSR_31_VK), Tag = GameAssetType.FSR_31_VK });
-            upscalerSelectorBar.Items.Add(new SelectorBarItem() { Text = DLLManager.Instance.GetAssetTypeName(GameAssetType.XeSS), Tag = GameAssetType.XeSS });
-            upscalerSelectorBar.Items.Add(new SelectorBarItem() { Text = DLLManager.Instance.GetAssetTypeName(GameAssetType.XeSS_DX11), Tag = GameAssetType.XeSS_DX11 });
-            upscalerSelectorBar.Items.Add(new SelectorBarItem() { Text = DLLManager.Instance.GetAssetTypeName(GameAssetType.XeSS_FG), Tag = GameAssetType.XeSS_FG });
-            upscalerSelectorBar.Items.Add(new SelectorBarItem() { Text = DLLManager.Instance.GetAssetTypeName(GameAssetType.XeLL), Tag = GameAssetType.XeLL });
+            foreach (var dllTypeDefinition in DllTypes.All)
+            {
+                upscalerSelectorBar.Items.Add(new SelectorBarItem()
+                {
+                    Text = DLLManager.Instance.GetAssetTypeName(dllTypeDefinition.AssetType),
+                    Tag = dllTypeDefinition.AssetType,
+                });
+            }
 
             SelectedSelectorBarItem = upscalerSelectorBar.Items[0];
         }
@@ -128,18 +127,18 @@ public partial class LibraryPageModel : ObservableObject
     [RelayCommand]
     async Task ExportAllAsync()
     {
-        // NOTE: DLL type
         // Check that there are records to export first.
         var allDllRecords = new List<DLLRecord>();
-        allDllRecords.AddRange(DLLManager.Instance.DLSSRecords.Where(x => x.LocalRecord?.IsDownloaded == true));
-        allDllRecords.AddRange(DLLManager.Instance.DLSSGRecords.Where(x => x.LocalRecord?.IsDownloaded == true));
-        allDllRecords.AddRange(DLLManager.Instance.DLSSDRecords.Where(x => x.LocalRecord?.IsDownloaded == true));
-        allDllRecords.AddRange(DLLManager.Instance.FSR31DX12Records.Where(x => x.LocalRecord?.IsDownloaded == true));
-        allDllRecords.AddRange(DLLManager.Instance.FSR31VKRecords.Where(x => x.LocalRecord?.IsDownloaded == true));
-        allDllRecords.AddRange(DLLManager.Instance.XeSSRecords.Where(x => x.LocalRecord?.IsDownloaded == true));
-        allDllRecords.AddRange(DLLManager.Instance.XeSSFGRecords.Where(x => x.LocalRecord?.IsDownloaded == true));
-        allDllRecords.AddRange(DLLManager.Instance.XeSSDX11Records.Where(x => x.LocalRecord?.IsDownloaded == true));
-        allDllRecords.AddRange(DLLManager.Instance.XeLLRecords.Where(x => x.LocalRecord?.IsDownloaded == true));
+        foreach (var dllTypeDefinition in DllTypes.All)
+        {
+            var records = DLLManager.Instance.GetRecords(dllTypeDefinition.AssetType);
+            if (records is null)
+            {
+                continue;
+            }
+
+            allDllRecords.AddRange(records.Where(x => x.LocalRecord?.IsDownloaded == true));
+        }
 
         if (allDllRecords.Count == 0)
         {
@@ -564,131 +563,36 @@ public partial class LibraryPageModel : ObservableObject
 
                         if (string.IsNullOrWhiteSpace(newZipHash) == false)
                         {
-                            // NOTE: DLL type
-                            var dlssRecord = DLLManager.Instance.DLSSRecords.FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
-                            if (dlssRecord is not null)
+                            // Match the zip against every known dll type instead of repeating the
+                            // same lookup once per type.
+                            var handledKnownZip = false;
+                            foreach (var dllTypeDefinition in DllTypes.All)
                             {
-                                if (HandleLocalDLLRecordZip(importFile, dlssRecord, importResults))
+                                var zipRecord = DLLManager.Instance.GetRecords(dllTypeDefinition.AssetType)?
+                                    .FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
+
+                                if (zipRecord is null)
+                                {
+                                    continue;
+                                }
+
+                                if (HandleLocalDLLRecordZip(importFile, zipRecord, importResults))
                                 {
                                     ++totalDllsProcessed;
                                     App.CurrentApp.RunOnUIThread(() =>
                                     {
                                         progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
                                     });
-                                    continue;
+                                    handledKnownZip = true;
+                                    break;
                                 }
                             }
 
-                            var dlssDRecord = DLLManager.Instance.DLSSDRecords.FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
-                            if (dlssDRecord is not null)
+                            // Each of the nine blocks this replaced ended in a continue that skipped
+                            // to the next import file, not to the next dll type.
+                            if (handledKnownZip)
                             {
-                                if (HandleLocalDLLRecordZip(importFile, dlssDRecord, importResults))
-                                {
-                                    ++totalDllsProcessed;
-                                    App.CurrentApp.RunOnUIThread(() =>
-                                    {
-                                        progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
-                                    });
-                                    continue;
-                                }
-                            }
-
-                            var dlssGRecord = DLLManager.Instance.DLSSGRecords.FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
-                            if (dlssGRecord is not null)
-                            {
-                                if (HandleLocalDLLRecordZip(importFile, dlssGRecord, importResults))
-                                {
-                                    ++totalDllsProcessed;
-                                    App.CurrentApp.RunOnUIThread(() =>
-                                    {
-                                        progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
-                                    });
-                                    continue;
-                                }
-                            }
-
-                            var fsr31dx12Record = DLLManager.Instance.FSR31DX12Records.FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
-                            if (fsr31dx12Record is not null)
-                            {
-                                if (HandleLocalDLLRecordZip(importFile, fsr31dx12Record, importResults))
-                                {
-                                    ++totalDllsProcessed;
-                                    App.CurrentApp.RunOnUIThread(() =>
-                                    {
-                                        progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
-                                    });
-                                    continue;
-                                }
-                            }
-
-                            var fsr32vkRecord = DLLManager.Instance.FSR31VKRecords.FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
-                            if (fsr32vkRecord is not null)
-                            {
-                                if (HandleLocalDLLRecordZip(importFile, fsr32vkRecord, importResults))
-                                {
-                                    ++totalDllsProcessed;
-                                    App.CurrentApp.RunOnUIThread(() =>
-                                    {
-                                        progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
-                                    });
-                                    continue;
-                                }
-                            }
-
-                            var xessRecord = DLLManager.Instance.XeSSRecords.FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
-                            if (xessRecord is not null)
-                            {
-                                if (HandleLocalDLLRecordZip(importFile, xessRecord, importResults))
-                                {
-                                    ++totalDllsProcessed;
-                                    App.CurrentApp.RunOnUIThread(() =>
-                                    {
-                                        progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
-                                    });
-                                    continue;
-                                }
-                            }
-
-                            var xellRecord = DLLManager.Instance.XeLLRecords.FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
-                            if (xellRecord is not null)
-                            {
-                                if (HandleLocalDLLRecordZip(importFile, xellRecord, importResults))
-                                {
-                                    ++totalDllsProcessed;
-                                    App.CurrentApp.RunOnUIThread(() =>
-                                    {
-                                        progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
-                                    });
-                                    continue;
-                                }
-                            }
-
-                            var xessDX11Record = DLLManager.Instance.XeSSDX11Records.FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
-                            if (xessDX11Record is not null)
-                            {
-                                if (HandleLocalDLLRecordZip(importFile, xessDX11Record, importResults))
-                                {
-                                    ++totalDllsProcessed;
-                                    App.CurrentApp.RunOnUIThread(() =>
-                                    {
-                                        progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
-                                    });
-                                    continue;
-                                }
-                            }
-
-                            var xessFGRecord = DLLManager.Instance.XeSSFGRecords.FirstOrDefault(x => string.Equals(x.ZipMD5Hash, newZipHash, StringComparison.InvariantCultureIgnoreCase));
-                            if (xessFGRecord is not null)
-                            {
-                                if (HandleLocalDLLRecordZip(importFile, xessFGRecord, importResults))
-                                {
-                                    ++totalDllsProcessed;
-                                    App.CurrentApp.RunOnUIThread(() =>
-                                    {
-                                        progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
-                                    });
-                                    continue;
-                                }
+                                continue;
                             }
                         }
 
@@ -1566,20 +1470,7 @@ public partial class LibraryPageModel : ObservableObject
 
     internal void SelectLibrary(GameAssetType gameAssetType)
     {
-        // NOTE: DLL type
-        var newList = gameAssetType switch
-        {
-            GameAssetType.DLSS => DLLManager.Instance.DLSSRecords,
-            GameAssetType.DLSS_G => DLLManager.Instance.DLSSGRecords,
-            GameAssetType.DLSS_D => DLLManager.Instance.DLSSDRecords,
-            GameAssetType.FSR_31_DX12 => DLLManager.Instance.FSR31DX12Records,
-            GameAssetType.FSR_31_VK => DLLManager.Instance.FSR31VKRecords,
-            GameAssetType.XeSS => DLLManager.Instance.XeSSRecords,
-            GameAssetType.XeLL => DLLManager.Instance.XeLLRecords,
-            GameAssetType.XeSS_DX11 => DLLManager.Instance.XeSSDX11Records,
-            GameAssetType.XeSS_FG => DLLManager.Instance.XeSSFGRecords,
-            _ => null,
-        };
+        var newList = DLLManager.Instance.GetRecords(gameAssetType);
         SelectedLibraryList = null;
         SelectedLibraryList = newList;
         OnPropertyChanged(nameof(SelectedLibraryList));
@@ -1588,17 +1479,17 @@ public partial class LibraryPageModel : ObservableObject
     [RelayCommand]
     async Task DownloadLatestAsync()
     {
-        // NOTE: DLL type
         var startedDownloads = 0;
-        startedDownloads += DownloadLatestRecord(DLLManager.Instance.DLSSRecords);
-        startedDownloads += DownloadLatestRecord(DLLManager.Instance.DLSSDRecords);
-        startedDownloads += DownloadLatestRecord(DLLManager.Instance.DLSSGRecords);
-        startedDownloads += DownloadLatestRecord(DLLManager.Instance.FSR31DX12Records);
-        startedDownloads += DownloadLatestRecord(DLLManager.Instance.FSR31VKRecords);
-        startedDownloads += DownloadLatestRecord(DLLManager.Instance.XeSSRecords);
-        startedDownloads += DownloadLatestRecord(DLLManager.Instance.XeSSFGRecords);
-        startedDownloads += DownloadLatestRecord(DLLManager.Instance.XeSSDX11Records);
-        startedDownloads += DownloadLatestRecord(DLLManager.Instance.XeLLRecords);
+        foreach (var dllTypeDefinition in DllTypes.All)
+        {
+            var records = DLLManager.Instance.GetRecords(dllTypeDefinition.AssetType);
+            if (records is null)
+            {
+                continue;
+            }
+
+            startedDownloads += DownloadLatestRecord(records);
+        }
 
         if (startedDownloads == 0)
         {

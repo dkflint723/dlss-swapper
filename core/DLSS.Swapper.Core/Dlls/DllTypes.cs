@@ -141,6 +141,9 @@ public static class DllTypes
         return _byBackupAssetType.TryGetValue(assetType, out var backupDefinition) ? backupDefinition : null;
     }
 
+    /// <summary>True when this is the backup counterpart of a swappable type.</summary>
+    public static bool IsBackupAssetType(GameAssetType assetType) => _byBackupAssetType.ContainsKey(assetType);
+
     /// <summary>The definition for a dll file name, or null if it is not one we swap.</summary>
     public static DllTypeDefinition? ForFileName(string? fileName)
     {

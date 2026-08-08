@@ -170,6 +170,28 @@ public class DllTypesTests
         Assert.Null(DllTypes.ForAssetTypeIncludingBackup(assetType));
     }
 
+    /// <summary>
+    /// Used when clearing a game's cache to decide which files the app created and may delete. A
+    /// swappable type answering true here would mean deleting a game's real dll.
+    /// </summary>
+    [Fact]
+    public void IsBackupAssetType_SeparatesBackupsFromTheRealThing()
+    {
+        Assert.All(DllTypes.All, x =>
+        {
+            Assert.True(DllTypes.IsBackupAssetType(x.BackupAssetType));
+            Assert.False(DllTypes.IsBackupAssetType(x.AssetType));
+        });
+    }
+
+    [Theory]
+    [InlineData(GameAssetType.Unknown)]
+    [InlineData(GameAssetType.DirectStorage_BACKUP)]
+    public void IsBackupAssetType_IsFalseForBackupsWeDoNotManage(GameAssetType assetType)
+    {
+        Assert.False(DllTypes.IsBackupAssetType(assetType));
+    }
+
     [Theory]
     [InlineData(GameAssetType.DLSS, DllVendor.Nvidia)]
     [InlineData(GameAssetType.DLSS_G, DllVendor.Nvidia)]
