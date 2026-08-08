@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
+using DLSS_Swapper.Swapping;
 using DLSS_Swapper.UserControls;
 using Microsoft.UI.Xaml.Controls;
 using NvAPIWrapper.DRS;
@@ -645,81 +646,167 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             Logger.Info("No backup records found.");
             return (false, "Unable to reset to default. Please repair your game manually.", false);
         }
-        else
+
+        // Pair every backup with the dll it restores before touching anything, so a game missing one
+        // of its backups doesn't end up half restored.
+        var restorePairs = new List<(GameAsset Backup, GameAsset Current)>();
+        foreach (var existingBackupRecord in existingBackupRecords)
         {
-            var dllHistory = new List<GameHistory>();
-            foreach (var existingBackupRecord in existingBackupRecords)
+            var primaryRecordName = TrimBackupSuffix(existingBackupRecord.Path);
+            var existingRecords = this.GameAssets.Where(x => x.AssetType == gameAssetType && x.Path.Equals(primaryRecordName, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (existingRecords.Count != 1)
             {
-                var primaryRecordName = existingBackupRecord.Path.Replace(".dlsss", string.Empty);
-                var existingRecords = this.GameAssets.Where(x => x.AssetType == gameAssetType && x.Path.Equals(primaryRecordName)).ToList();
-
-                if (existingRecords.Count != 1)
-                {
-                    Logger.Info("Backup record was found, existing records were not.");
-                    return (false, "Unable to reset to default. Please repair your game manually.", false);
-                }
-
-                var existingRecord = existingRecords[0];
-
-                try
-                {
-                    File.Move(existingBackupRecord.Path, existingRecord.Path, true);
-                }
-                catch (UnauthorizedAccessException err)
-                {
-                    Logger.Error(err);
-                    if (App.CurrentApp.IsAdminUser() is false)
-                    {
-                        return (false, "Unable to reset to default. Running DLSS Swapper as administrator may fix this.", true);
-                    }
-                    else
-                    {
-                        return (false, "Unable to reset to default. Please repair your game manually.", false);
-                    }
-                }
-                catch (Exception err)
-                {
-                    Logger.Error(err);
-                    return (false, "Unable to reset to default. Please repair your game manually.", false);
-                }
-
-                var newGameAsset = new GameAsset()
-                {
-                    Id = ID,
-                    AssetType = gameAssetType,
-                    Path = existingRecord.Path,
-                    Version = existingBackupRecord.Version,
-                    Hash = existingBackupRecord.Hash,
-                };
-
-
-                dllHistory.Add(new GameHistory()
-                {
-                    GameId = ID,
-                    EventType = GameHistoryEventType.DLLReset,
-                    EventTime = DateTime.Now,
-                    AssetType = gameAssetType,
-                    AssetPath = existingRecord.Path,
-                    AssetVersion = existingBackupRecord.DisplayName,
-                });
-
-                UpdateCurrentAsset(newGameAsset, gameAssetType);
-
-                GameAssets.Remove(existingRecord);
-                GameAssets.Remove(existingBackupRecord);
-                GameAssets.Add(newGameAsset);
+                Logger.Info("Backup record was found, existing records were not.");
+                return (false, "Unable to reset to default. Please repair your game manually.", false);
             }
 
-            using (await Database.Instance.Mutex.LockAsync())
-            {
-                await Database.Instance.Connection.InsertAllAsync(dllHistory, false);
+            restorePairs.Add((existingBackupRecord, existingRecords[0]));
+        }
 
-                // Update game assets list by deleting and re-adding.
-                await Database.Instance.Connection.ExecuteAsync("DELETE FROM game_asset WHERE id = ?", ID).ConfigureAwait(false);
-                await Database.Instance.Connection.InsertAllAsync(GameAssets, false).ConfigureAwait(false);
+        // Locations of this asset type with no backup at all. There is nothing to restore them from,
+        // and reporting a plain success while leaving them swapped is how a game ends up running
+        // mismatched dlls without the user ever being told.
+        var restorableTargets = new HashSet<string>(restorePairs.Select(x => x.Current.Path), StringComparer.OrdinalIgnoreCase);
+        var unrestorableRecords = this.GameAssets
+            .Where(x => x.AssetType == gameAssetType && restorableTargets.Contains(x.Path) == false)
+            .ToList();
+
+        var resetResult = new DllSwapExecutor().Reset(restorePairs.Select(x => x.Current.Path).ToList());
+
+        foreach (var warning in resetResult.Warnings)
+        {
+            Logger.Warning(warning);
+        }
+
+        if (resetResult.Success == false)
+        {
+            if (resetResult.Error is not null)
+            {
+                Logger.Error(resetResult.Error);
             }
 
-            return (true, string.Empty, false);
+            if (resetResult.RollbackIncomplete)
+            {
+                // We couldn't get the game back to how we found it, so our cached view of it can't be trusted.
+                NeedsProcessing = true;
+            }
+
+            return DescribeResetFailure(resetResult);
+        }
+
+        // Only now that the disk is committed do we update our own bookkeeping.
+        var dllHistory = new List<GameHistory>();
+        var newGameAssets = new List<GameAsset>();
+
+        foreach (var (backupRecord, currentRecord) in restorePairs)
+        {
+            var newGameAsset = new GameAsset()
+            {
+                Id = ID,
+                AssetType = gameAssetType,
+                Path = currentRecord.Path,
+                Version = backupRecord.Version,
+                Hash = backupRecord.Hash,
+            };
+            newGameAssets.Add(newGameAsset);
+
+            dllHistory.Add(new GameHistory()
+            {
+                GameId = ID,
+                EventType = GameHistoryEventType.DLLReset,
+                EventTime = DateTime.Now,
+                AssetType = gameAssetType,
+                AssetPath = currentRecord.Path,
+                AssetVersion = backupRecord.DisplayName,
+            });
+
+            GameAssets.Remove(currentRecord);
+            GameAssets.Remove(backupRecord);
+        }
+
+        GameAssets.AddRange(newGameAssets);
+
+        foreach (var newGameAsset in newGameAssets)
+        {
+            UpdateCurrentAsset(newGameAsset, gameAssetType);
+        }
+
+        using (await Database.Instance.Mutex.LockAsync())
+        {
+            await Database.Instance.Connection.InsertAllAsync(dllHistory, false);
+
+            // Update game assets list by deleting and re-adding.
+            await Database.Instance.Connection.ExecuteAsync("DELETE FROM game_asset WHERE id = ?", ID).ConfigureAwait(false);
+            await Database.Instance.Connection.InsertAllAsync(GameAssets, false).ConfigureAwait(false);
+        }
+
+        if (unrestorableRecords.Count > 0)
+        {
+            foreach (var unrestorableRecord in unrestorableRecords)
+            {
+                Logger.Warning($"No backup to restore for {unrestorableRecord.Path}, it has been left unchanged.");
+            }
+
+            var totalCount = restorePairs.Count + unrestorableRecords.Count;
+            return (true, $"Restored {restorePairs.Count} of {totalCount} locations. {unrestorableRecords.Count} had no backup and were left unchanged. Verify your game files to return those to default.", false);
+        }
+
+        return (true, string.Empty, false);
+    }
+
+    static string TrimBackupSuffix(string backupPath)
+    {
+        // Not Replace, that would also mangle a path containing the suffix somewhere in the middle.
+        if (backupPath.EndsWith(DllSwapExecutor.BackupSuffix, StringComparison.OrdinalIgnoreCase))
+        {
+            return backupPath.Substring(0, backupPath.Length - DllSwapExecutor.BackupSuffix.Length);
+        }
+
+        return backupPath;
+    }
+
+    (bool Success, string Message, bool PromptToRelaunchAsAdmin) DescribeSwapFailure(SwapResult result)
+    {
+        switch (result.Failure)
+        {
+            case SwapFailure.SourceMissing:
+                return (false, "Downloaded dll not found.", false);
+
+            case SwapFailure.NoTargets:
+                return (false, "Unable to swap dll as there were no dll records to update.", false);
+
+            case SwapFailure.AccessDenied:
+                if (App.CurrentApp.IsAdminUser() is false)
+                {
+                    return (false, "Unable to swap dll as we are unable to write to the target directory. Running DLSS Swapper as administrator may fix this.", true);
+                }
+                return (false, "Unable to swap dll as we are unable to write to the target directory.", false);
+
+            case SwapFailure.FileInUse:
+                return (false, "Unable to swap dll. It appears to be in use by another program. Is your game currently running?", false);
+
+            default:
+                return (false, "Unable to swap dll. Please check your error log for more information.", false);
+        }
+    }
+
+    (bool Success, string Message, bool PromptToRelaunchAsAdmin) DescribeResetFailure(SwapResult result)
+    {
+        switch (result.Failure)
+        {
+            case SwapFailure.AccessDenied:
+                if (App.CurrentApp.IsAdminUser() is false)
+                {
+                    return (false, "Unable to reset to default. Running DLSS Swapper as administrator may fix this.", true);
+                }
+                return (false, "Unable to reset to default. Please repair your game manually.", false);
+
+            case SwapFailure.FileInUse:
+                return (false, "Unable to reset to default. It appears to be in use by another program. Is your game currently running?", false);
+
+            default:
+                return (false, "Unable to reset to default. Please repair your game manually.", false);
         }
     }
 
@@ -752,7 +839,6 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         }
 
         var backupRecordType = DLLManager.Instance.GetAssetBackupType(dllRecord.AssetType);
-        var existingBackupRecords = this.GameAssets.Where(x => x.AssetType == backupRecordType).ToList();
 
         var versionInfo = FileVersionInfo.GetVersionInfo(dllRecord.LocalRecord.ExpectedPath);
         var dllVersion = versionInfo.GetFormattedFileVersion();
@@ -773,112 +859,72 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             }
         }
 
+        // Every location this game keeps the dll in is swapped as one operation. The executor backs up
+        // each one that needs it, stages the writes, and puts everything back if any step fails, so a
+        // failure here means nothing on disk changed.
+        var swapResult = new DllSwapExecutor().Swap(dllRecord.LocalRecord.ExpectedPath, existingRecords.Select(x => x.Path).ToList());
+
+        foreach (var warning in swapResult.Warnings)
+        {
+            Logger.Warning(warning);
+        }
+
+        if (swapResult.Success == false)
+        {
+            if (swapResult.Error is not null)
+            {
+                Logger.Error(swapResult.Error);
+            }
+
+            if (swapResult.RollbackIncomplete)
+            {
+                // We couldn't get the game back to how we found it, so our cached view of it can't be trusted.
+                NeedsProcessing = true;
+            }
+
+            return DescribeSwapFailure(swapResult);
+        }
+
+        // Only now that the disk is committed do we update our own bookkeeping.
         var newGameAssets = new List<GameAsset>();
 
-        if (existingBackupRecords.Count == 0)
+        foreach (var createdBackup in swapResult.CreatedBackups)
         {
-            // Backup old dlls if no backup exists.
-            foreach (var existingRecord in existingRecords)
+            var backedUpRecord = existingRecords.First(x => x.Path.Equals(createdBackup.TargetPath, StringComparison.OrdinalIgnoreCase));
+
+            newGameAssets.Add(new GameAsset()
             {
-                var dllPath = Path.GetDirectoryName(existingRecord.Path);
-                if (string.IsNullOrEmpty(dllPath))
-                {
-                    Logger.Error("dllPath was null or empty.");
-                    return (false, "Unable to swap dll. Please check your error log for more information.", false);
-                }
-
-                // Ensure we don't do anything if the target exists.
-                var backupDllPath = $"{existingRecord.Path}.dlsss";
-                if (File.Exists(backupDllPath) == false)
-                {
-                    try
-                    {
-                        File.Copy(existingRecord.Path, backupDllPath);
-
-                        var backupGameAsset = new GameAsset()
-                        {
-                            Id = ID,
-                            AssetType = backupRecordType,
-                            Path = backupDllPath,
-                            Version = existingRecord.Version,
-                            Hash = existingRecord.Hash,
-                        };
-                        newGameAssets.Add(backupGameAsset);
-                    }
-                    catch (UnauthorizedAccessException err)
-                    {
-                        Logger.Error(err);
-                        if (App.CurrentApp.IsAdminUser() is false)
-                        {
-                            return (false, "Unable to swap dll as we are unable to write to the target directory. Running DLSS Swapper as administrator may fix this.", true);
-
-                        }
-                        else
-                        {
-                            return (false, "Unable to swap dll as we are unable to write to the target directory.", false);
-                        }
-                    }
-                    catch (Exception err)
-                    {
-                        Logger.Error(err);
-                        return (false, "Unable to swap dll. Please check your error log for more information.", false);
-                    }
-                }
-            }
+                Id = ID,
+                AssetType = backupRecordType,
+                Path = createdBackup.BackupPath,
+                Version = backedUpRecord.Version,
+                Hash = backedUpRecord.Hash,
+            });
         }
 
         var dllHistory = new List<GameHistory>();
 
         foreach (var existingRecord in existingRecords)
         {
-            try
+            // No need to call LoadVersionAndHash, the data is already here.
+            newGameAssets.Add(new GameAsset()
             {
-                // Copy the DLL
-                File.Copy(dllRecord.LocalRecord.ExpectedPath, existingRecord.Path, true);
+                Id = ID,
+                AssetType = dllRecord.AssetType,
+                Path = existingRecord.Path,
+                Version = dllVersion,
+                Hash = dllRecord.MD5Hash,
+            });
 
-                var newGameAsset = new GameAsset()
-                {
-                    Id = ID,
-                    AssetType = dllRecord.AssetType,
-                    Path = existingRecord.Path,
-                    Version = dllVersion,
-                    Hash = dllRecord.MD5Hash,
-                };
-                // No need to call LoadVersionAndHash, the data is already here.
-                newGameAssets.Add(newGameAsset);
-
-                dllHistory.Add(new GameHistory()
-                {
-                    GameId = ID,
-                    EventType = GameHistoryEventType.DLLSwapped,
-                    EventTime = DateTime.Now,
-                    AssetType = dllRecord.AssetType,
-                    AssetPath = existingRecord.Path,
-                    AssetVersion = dllRecord.DisplayName,
-                });
-            }
-            catch (UnauthorizedAccessException err)
+            dllHistory.Add(new GameHistory()
             {
-                Logger.Error(err);
-                if (App.CurrentApp.IsAdminUser() is false)
-                {
-                    return (false, "Unable to swap dll as we are unable to write to the target directory. Running DLSS Swapper as administrator may fix this.", true);
-                }
-                else
-                {
-                    return (false, "Unable to DLSS dll as we are unable to write to the target directory.", false);
-                }
-            }
-            catch (IOException err) when (err.HResult == -2147024864)
-            {
-                Logger.Error(err);
-                return (false, "Unable to swap dll. It appears to be in use by another program. Is your game currently running?", false);
-            }
-            catch (Exception err)
-            {
-                Logger.Error(err);
-                return (false, "Unable to swap dll. Please check your error log for more information.", false);
-            }
+                GameId = ID,
+                EventType = GameHistoryEventType.DLLSwapped,
+                EventTime = DateTime.Now,
+                AssetType = dllRecord.AssetType,
+                AssetPath = existingRecord.Path,
+                AssetVersion = dllRecord.DisplayName,
+            });
         }
 
         foreach (var existingRecrod in existingRecords)

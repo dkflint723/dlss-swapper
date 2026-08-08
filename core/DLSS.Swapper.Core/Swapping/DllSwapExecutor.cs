@@ -1,0 +1,342 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace DLSS_Swapper.Swapping;
+
+/// <summary>
+/// Replaces a set of dlls inside a game install as a single all-or-nothing operation.
+/// </summary>
+/// <remarks>
+/// <para>
+/// A game can ship the same dll in more than one place, so a swap is rarely a single file copy.
+/// Doing it as a plain loop of copies means a failure part way through leaves some locations
+/// swapped and some not, with no record of which. This executor instead runs three phases across
+/// every target before anything user visible changes:
+/// </para>
+/// <list type="number">
+/// <item><description>Back up any target that does not already have a backup, checked per file.</description></item>
+/// <item><description>Stage the incoming dll next to each target, so a partial write never lands on a real path.</description></item>
+/// <item><description>Commit each target with an atomic replace, keeping the previous contents aside.</description></item>
+/// </list>
+/// <para>
+/// If any phase throws, everything already done is undone and the caller gets a failure with the
+/// targets back at their original contents. Callers must not update their own bookkeeping until
+/// this reports success.
+/// </para>
+/// </remarks>
+public sealed class DllSwapExecutor
+{
+    /// <summary>Suffix of the backup holding a game's original dll. Long standing, do not change.</summary>
+    public const string BackupSuffix = ".dlsss";
+
+    /// <summary>Incoming dll, written here first so a partial copy never touches the real path.</summary>
+    internal const string StagedSuffix = ".dlss-swapper-staged";
+
+    /// <summary>Previous contents of a target, kept until the whole operation succeeds.</summary>
+    internal const string PreviousSuffix = ".dlss-swapper-previous";
+
+    readonly IFileSystem _fileSystem;
+
+    public DllSwapExecutor(IFileSystem fileSystem)
+    {
+        _fileSystem = fileSystem;
+    }
+
+    public DllSwapExecutor() : this(PhysicalFileSystem.Instance)
+    {
+    }
+
+    /// <summary>
+    /// Points every target at the dll in <paramref name="sourcePath"/>, backing up any target that
+    /// does not already have a backup.
+    /// </summary>
+    public SwapResult Swap(string sourcePath, IReadOnlyList<string> targetPaths)
+    {
+        if (targetPaths.Count == 0)
+        {
+            return SwapResult.Fail(SwapFailure.NoTargets);
+        }
+
+        if (_fileSystem.FileExists(sourcePath) == false)
+        {
+            return SwapResult.Fail(SwapFailure.SourceMissing, sourcePath);
+        }
+
+        var transaction = new Transaction(_fileSystem);
+
+        try
+        {
+            // Each target is considered on its own. A backup existing for one location says nothing
+            // about whether the others have one.
+            foreach (var targetPath in targetPaths)
+            {
+                transaction.EnsureBackup(targetPath);
+            }
+
+            foreach (var targetPath in targetPaths)
+            {
+                transaction.Stage(targetPath, sourcePath);
+            }
+
+            foreach (var targetPath in targetPaths)
+            {
+                transaction.Commit(targetPath);
+            }
+        }
+        catch (Exception err)
+        {
+            return transaction.RollbackAndFail(err);
+        }
+
+        return transaction.Complete();
+    }
+
+    /// <summary>
+    /// Restores every target from its backup, consuming the backups on success.
+    /// </summary>
+    public SwapResult Reset(IReadOnlyList<string> targetPaths)
+    {
+        if (targetPaths.Count == 0)
+        {
+            return SwapResult.Fail(SwapFailure.NoTargets);
+        }
+
+        // Check every backup before touching anything, so a game with one missing backup does not
+        // end up half restored.
+        foreach (var targetPath in targetPaths)
+        {
+            var backupPath = GetBackupPath(targetPath);
+            if (_fileSystem.FileExists(backupPath) == false)
+            {
+                return SwapResult.Fail(SwapFailure.BackupMissing, backupPath);
+            }
+        }
+
+        var transaction = new Transaction(_fileSystem);
+
+        try
+        {
+            foreach (var targetPath in targetPaths)
+            {
+                transaction.Stage(targetPath, GetBackupPath(targetPath));
+            }
+
+            foreach (var targetPath in targetPaths)
+            {
+                transaction.Commit(targetPath);
+            }
+        }
+        catch (Exception err)
+        {
+            return transaction.RollbackAndFail(err);
+        }
+
+        // A backup only exists to get back to the original dll. Once we are there it has done its job.
+        foreach (var targetPath in targetPaths)
+        {
+            transaction.Discard(GetBackupPath(targetPath));
+        }
+
+        return transaction.Complete();
+    }
+
+    public static string GetBackupPath(string targetPath) => targetPath + BackupSuffix;
+
+    internal static SwapFailure Classify(Exception err)
+    {
+        return err switch
+        {
+            UnauthorizedAccessException => SwapFailure.AccessDenied,
+            IOException ioErr when IsSharingViolation(ioErr) => SwapFailure.FileInUse,
+            _ => SwapFailure.Unknown,
+        };
+    }
+
+    static bool IsSharingViolation(IOException err)
+    {
+        const int ERROR_SHARING_VIOLATION = unchecked((int)0x80070020);
+        const int ERROR_LOCK_VIOLATION = unchecked((int)0x80070021);
+
+        return err.HResult == ERROR_SHARING_VIOLATION || err.HResult == ERROR_LOCK_VIOLATION;
+    }
+
+    /// <summary>
+    /// Tracks what has been done so far so it can all be undone.
+    /// </summary>
+    sealed class Transaction
+    {
+        readonly IFileSystem _fileSystem;
+        readonly List<CreatedBackup> _createdBackups = new List<CreatedBackup>();
+        readonly List<string> _stagedPaths = new List<string>();
+        readonly List<(string TargetPath, string PreviousPath)> _previousContents = new List<(string, string)>();
+        readonly List<string> _replacedPaths = new List<string>();
+        readonly List<string> _warnings = new List<string>();
+
+        string? _currentPath;
+
+        public Transaction(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+
+        public void EnsureBackup(string targetPath)
+        {
+            _currentPath = targetPath;
+
+            var backupPath = GetBackupPath(targetPath);
+            if (_fileSystem.FileExists(backupPath))
+            {
+                return;
+            }
+
+            _fileSystem.Copy(targetPath, backupPath, false);
+            _createdBackups.Add(new CreatedBackup()
+            {
+                TargetPath = targetPath,
+                BackupPath = backupPath,
+            });
+        }
+
+        public void Stage(string targetPath, string sourcePath)
+        {
+            _currentPath = targetPath;
+
+            // Staging beside the target keeps the commit on one volume, which is what lets it be a rename.
+            var stagedPath = targetPath + StagedSuffix;
+            if (_fileSystem.FileExists(stagedPath))
+            {
+                _fileSystem.Delete(stagedPath);
+            }
+
+            _fileSystem.Copy(sourcePath, stagedPath, true);
+            _stagedPaths.Add(stagedPath);
+        }
+
+        public void Commit(string targetPath)
+        {
+            _currentPath = targetPath;
+
+            var stagedPath = targetPath + StagedSuffix;
+            var previousPath = targetPath + PreviousSuffix;
+
+            if (_fileSystem.FileExists(previousPath))
+            {
+                _fileSystem.Delete(previousPath);
+            }
+
+            if (_fileSystem.FileExists(targetPath))
+            {
+                _fileSystem.Replace(stagedPath, targetPath, previousPath);
+                _previousContents.Add((targetPath, previousPath));
+            }
+            else
+            {
+                // Nothing to preserve, so there is nothing to roll back to either.
+                _fileSystem.Move(stagedPath, targetPath, false);
+            }
+
+            _stagedPaths.Remove(stagedPath);
+            _replacedPaths.Add(targetPath);
+        }
+
+        public void Discard(string path)
+        {
+            TryDelete(path);
+        }
+
+        public SwapResult RollbackAndFail(Exception err)
+        {
+            var failure = Classify(err);
+            var failedPath = _currentPath;
+            var rollbackIncomplete = false;
+            var restoredPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            // Undo commits newest first.
+            for (var i = _previousContents.Count - 1; i >= 0; i--)
+            {
+                var (targetPath, previousPath) = _previousContents[i];
+
+                try
+                {
+                    if (_fileSystem.FileExists(previousPath) == false)
+                    {
+                        rollbackIncomplete = true;
+                        _warnings.Add($"Could not restore '{targetPath}', its previous contents at '{previousPath}' are gone.");
+                        continue;
+                    }
+
+                    if (_fileSystem.FileExists(targetPath))
+                    {
+                        _fileSystem.Replace(previousPath, targetPath, null);
+                    }
+                    else
+                    {
+                        _fileSystem.Move(previousPath, targetPath, false);
+                    }
+
+                    restoredPaths.Add(targetPath);
+                }
+                catch (Exception rollbackErr)
+                {
+                    rollbackIncomplete = true;
+                    _warnings.Add($"Could not restore '{targetPath}' from '{previousPath}': {rollbackErr.Message}");
+                }
+            }
+
+            foreach (var stagedPath in _stagedPaths)
+            {
+                TryDelete(stagedPath);
+            }
+
+            foreach (var createdBackup in _createdBackups)
+            {
+                var wasCommitted = _replacedPaths.Any(x => string.Equals(x, createdBackup.TargetPath, StringComparison.OrdinalIgnoreCase));
+
+                // If we replaced this target and could not put it back, the backup we made is now the
+                // only copy of the original dll. Keeping a stray backup is much cheaper than losing it.
+                if (wasCommitted && restoredPaths.Contains(createdBackup.TargetPath) == false)
+                {
+                    _warnings.Add($"Keeping backup '{createdBackup.BackupPath}', '{createdBackup.TargetPath}' could not be restored.");
+                    continue;
+                }
+
+                TryDelete(createdBackup.BackupPath);
+            }
+
+            return SwapResult.Fail(failure, failedPath, err, rollbackIncomplete, _warnings);
+        }
+
+        public SwapResult Complete()
+        {
+            foreach (var (_, previousPath) in _previousContents)
+            {
+                TryDelete(previousPath);
+            }
+
+            foreach (var stagedPath in _stagedPaths)
+            {
+                TryDelete(stagedPath);
+            }
+
+            return SwapResult.Ok(_createdBackups, _replacedPaths, _warnings);
+        }
+
+        void TryDelete(string path)
+        {
+            try
+            {
+                if (_fileSystem.FileExists(path))
+                {
+                    _fileSystem.Delete(path);
+                }
+            }
+            catch (Exception err)
+            {
+                // Leftover temp files are untidy but harmless, they do not match the *.dll scan.
+                _warnings.Add($"Could not remove '{path}': {err.Message}");
+            }
+        }
+    }
+}

@@ -378,6 +378,10 @@
     </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\core\DLSS.Swapper.Core\DLSS.Swapper.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AsyncAwaitBestPractices" Version="10.0.0" />
     <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="10.0.0" />
     <PackageReference Include="ByteSize" Version="2.1.2" />

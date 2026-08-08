@@ -1,0 +1,28 @@
+﻿namespace DLSS_Swapper.Swapping;
+
+/// <summary>
+/// Why a swap or reset did not happen. The caller maps these onto localized messages; the executor
+/// deliberately produces no user facing text of its own.
+/// </summary>
+public enum SwapFailure
+{
+    None = 0,
+
+    /// <summary>The dll we were asked to swap in is not on disk.</summary>
+    SourceMissing,
+
+    /// <summary>There was nothing to act on.</summary>
+    NoTargets,
+
+    /// <summary>A reset was requested but a target had no backup to restore from.</summary>
+    BackupMissing,
+
+    /// <summary>We could not write to the game directory. Usually fixed by running elevated.</summary>
+    AccessDenied,
+
+    /// <summary>A target dll is held open by another process. Usually the game is running.</summary>
+    FileInUse,
+
+    /// <summary>Anything else. The originating exception is on the result.</summary>
+    Unknown,
+}

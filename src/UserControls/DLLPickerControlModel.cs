@@ -334,16 +334,24 @@ public partial class DLLPickerControlModel : ObservableObject
     {
         var didReset = await Game.ResetDllAsync(GameAssetType);
 
-        if (didReset.Success == true)
-        {
-            if (_parentDialogWeakReference.TryGetTarget(out var parentDialog) == true)
-            {
-                parentDialog.Hide();
-            }
-        }
-        else
+        if (didReset.Success == false)
         {
             ShowTempInfoBar(ResourceHelper.GetString("General_Error"), didReset.Message, severity: InfoBarSeverity.Error, gridIndex: 0);
+            return;
+        }
+
+        // A reset can restore some locations and not others. Keep the dialog open when that happens so
+        // the warning is actually read, rather than closing the dialog over the top of it.
+        if (string.IsNullOrEmpty(didReset.Message) == false)
+        {
+            ResetSelection();
+            ShowTempInfoBar(ResourceHelper.GetString("General_Warning"), didReset.Message, severity: InfoBarSeverity.Warning, gridIndex: 0);
+            return;
+        }
+
+        if (_parentDialogWeakReference.TryGetTarget(out var parentDialog) == true)
+        {
+            parentDialog.Hide();
         }
     }
 
