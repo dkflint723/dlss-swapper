@@ -115,10 +115,30 @@ public static class DllTypes
     static readonly Dictionary<string, DllTypeDefinition> _byManifestKey =
         All.ToDictionary(x => x.ManifestKey, System.StringComparer.OrdinalIgnoreCase);
 
+    static readonly Dictionary<GameAssetType, DllTypeDefinition> _byBackupAssetType =
+        All.ToDictionary(x => x.BackupAssetType);
+
     /// <summary>The definition for an asset type, or null if it is not a swappable one.</summary>
     public static DllTypeDefinition? ForAssetType(GameAssetType assetType)
     {
         return _byAssetType.TryGetValue(assetType, out var definition) ? definition : null;
+    }
+
+    /// <summary>
+    /// The definition for an asset type or for its backup counterpart.
+    /// </summary>
+    /// <remarks>
+    /// Code that treats a dll and its ".dlsss" backup as the same thing, such as deciding whether a
+    /// file is one the app recognises, needs both to land on the same definition.
+    /// </remarks>
+    public static DllTypeDefinition? ForAssetTypeIncludingBackup(GameAssetType assetType)
+    {
+        if (_byAssetType.TryGetValue(assetType, out var definition))
+        {
+            return definition;
+        }
+
+        return _byBackupAssetType.TryGetValue(assetType, out var backupDefinition) ? backupDefinition : null;
     }
 
     /// <summary>The definition for a dll file name, or null if it is not one we swap.</summary>

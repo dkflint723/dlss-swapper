@@ -151,6 +151,25 @@ public class DllTypesTests
         Assert.All(DllTypes.All, x => Assert.Same(x, DllTypes.ForManifestKey(x.ManifestKey)));
     }
 
+    [Fact]
+    public void ForAssetTypeIncludingBackup_ResolvesBothSidesToTheSameDefinition()
+    {
+        Assert.All(DllTypes.All, x =>
+        {
+            Assert.Same(x, DllTypes.ForAssetTypeIncludingBackup(x.AssetType));
+            Assert.Same(x, DllTypes.ForAssetTypeIncludingBackup(x.BackupAssetType));
+        });
+    }
+
+    [Theory]
+    [InlineData(GameAssetType.Unknown)]
+    [InlineData(GameAssetType.Streamline_DLSS)]
+    [InlineData(GameAssetType.DirectStorage_BACKUP)]
+    public void ForAssetTypeIncludingBackup_StillReturnsNullForTypesWeDoNotSwap(GameAssetType assetType)
+    {
+        Assert.Null(DllTypes.ForAssetTypeIncludingBackup(assetType));
+    }
+
     [Theory]
     [InlineData(GameAssetType.DLSS, DllVendor.Nvidia)]
     [InlineData(GameAssetType.DLSS_G, DllVendor.Nvidia)]
