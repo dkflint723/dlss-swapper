@@ -142,6 +142,58 @@ internal class DLLManager
     }
 
     /// <summary>
+    /// How often the manifest is re-checked while the app is left open.
+    /// </summary>
+    /// <remarks>
+    /// The manifest is only fetched at startup, so an app left running for days never noticed a new
+    /// dll release. A check that finds nothing new costs one request and stops there, because
+    /// UpdateManifestAsync compares hashes before doing any work.
+    /// </remarks>
+    static readonly TimeSpan _periodicManifestCheckInterval = TimeSpan.FromHours(1);
+
+    CancellationTokenSource? _periodicManifestCheckCancellation;
+
+    /// <summary>
+    /// Begins re-checking the manifest on an interval. Does nothing if already started.
+    /// </summary>
+    internal void StartPeriodicManifestCheck()
+    {
+        if (_periodicManifestCheckCancellation is not null)
+        {
+            return;
+        }
+
+        _periodicManifestCheckCancellation = new CancellationTokenSource();
+        _ = RunPeriodicManifestCheckAsync(_periodicManifestCheckCancellation.Token);
+    }
+
+    async Task RunPeriodicManifestCheckAsync(CancellationToken cancellationToken)
+    {
+        using var timer = new PeriodicTimer(_periodicManifestCheckInterval);
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
+            {
+                try
+                {
+                    // Updates the dll records when something changed, which refreshes which games
+                    // are behind. A failure here is not worth telling the user about, it just means
+                    // they keep the records they already had until the next check.
+                    await UpdateManifestAsync().ConfigureAwait(false);
+                }
+                catch (Exception err)
+                {
+                    Logger.Error(err, "Periodic manifest check failed.");
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    /// <summary>
     /// Loads a new manifest from the internet and saves it.
     /// </summary>
     /// <returns>Boolean of if we were able to fetch the manifest from the remote source.</returns>

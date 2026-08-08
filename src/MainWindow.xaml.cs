@@ -355,6 +355,10 @@ public sealed partial class MainWindow : Window
         // Yeet this into the void and let it load in the background.
         _ = DLLManager.Instance.UpdateManifestAsync();
 
+        // Keep checking while the app is open, otherwise the games list only reflects what was
+        // available when it started.
+        DLLManager.Instance.StartPeriodicManifestCheck();
+
         // We are now ready to show the games list.
         LoadingStackPanel.Visibility = Visibility.Collapsed;
 
