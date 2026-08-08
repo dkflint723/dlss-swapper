@@ -13,7 +13,9 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Collections;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Data.NVIDIA;
 using DLSS_Swapper.Dlls;
@@ -31,7 +33,14 @@ public partial class LibraryPageModel : ObservableObject
 {
     readonly LibraryPage _libraryPage;
 
-    internal ObservableCollection<DLLRecord>? SelectedLibraryList { get; private set; }
+    /// <summary>
+    /// The records shown on the library page.
+    /// </summary>
+    /// <remarks>
+    /// A view over the master collection rather than a copy of it, so records added by an import or
+    /// a manifest refresh still show up without the page being rebuilt.
+    /// </remarks>
+    internal AdvancedCollectionView? SelectedLibraryList { get; private set; }
 
     [ObservableProperty]
     public partial bool IsRefreshing { get; set; }
@@ -62,6 +71,16 @@ public partial class LibraryPageModel : ObservableObject
         }
 
         LanguageManager.Instance.OnLanguageChanged += OnLanguageChanged;
+
+        // The list is a filtered view built when you change tab, so without this the debug dll
+        // toggle appeared to do nothing until you navigated away and back.
+        WeakReferenceMessenger.Default.Register<Messages.DebugDllsVisibilityChangedMessage>(this, (sender, message) =>
+        {
+            if (SelectedSelectorBarItem?.Tag is GameAssetType gameAssetType)
+            {
+                App.CurrentApp.RunOnUIThread(() => SelectLibrary(gameAssetType));
+            }
+        });
     }
 
     void OnLanguageChanged()
@@ -1470,7 +1489,21 @@ public partial class LibraryPageModel : ObservableObject
 
     internal void SelectLibrary(GameAssetType gameAssetType)
     {
-        var newList = DLLManager.Instance.GetRecords(gameAssetType);
+        var records = DLLManager.Instance.GetRecords(gameAssetType);
+
+        AdvancedCollectionView? newList = null;
+        if (records is not null)
+        {
+            newList = new AdvancedCollectionView(records, true);
+
+            // Debug dlls are opt in. The dll picker has always respected this setting, the library
+            // page never did, so they showed up here regardless.
+            if (Settings.Instance.AllowDebugDlls == false)
+            {
+                newList.Filter = x => x is DLLRecord dllRecord && dllRecord.IsDevFile == false;
+            }
+        }
+
         SelectedLibraryList = null;
         SelectedLibraryList = newList;
         OnPropertyChanged(nameof(SelectedLibraryList));

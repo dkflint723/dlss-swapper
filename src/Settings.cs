@@ -118,6 +118,7 @@ public class Settings
                 if (_autoSave)
                 {
                     SaveJson();
+                    WeakReferenceMessenger.Default.Send(new Messages.DebugDllsVisibilityChangedMessage(_allowDebugDlls));
                 }
             }
         }
