@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -328,6 +329,30 @@ public partial class GameGridPageModel : ObservableObject
         //MainGridView.ItemsSource = null;
         CurrentCollectionView = null;
         CurrentCollectionView = GameManager.Instance.GetGameCollection();
+    }
+
+    [RelayCommand]
+    async Task UpdateAllGamesButtonAsync()
+    {
+        var gamesToUpdate = new List<Game>();
+        var outdatedDllCount = 0;
+
+        foreach (var game in GameManager.Instance.GetSynchronisedGamesListCopy())
+        {
+            if (game.OutdatedAssetTypes.Count == 0)
+            {
+                continue;
+            }
+
+            gamesToUpdate.Add(game);
+            outdatedDllCount += game.OutdatedAssetTypes.Count;
+        }
+
+        await DllUpdatePrompt.RunAsync(
+            gameGridPage.XamlRoot,
+            gamesToUpdate,
+            ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmAllGamesTemplate", outdatedDllCount, gamesToUpdate.Count),
+            ResourceHelper.GetString("DllUpdate_AllGamesUpToDate"));
     }
 
     [RelayCommand]

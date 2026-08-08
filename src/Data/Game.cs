@@ -149,6 +149,14 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     public partial List<DllVendorUpdate> AvailableUpdates { get; set; } = new List<DllVendorUpdate>();
 
     /// <summary>
+    /// The dll types with a newer version available, which is what "update all" acts on.
+    /// </summary>
+    /// <remarks>Kept alongside the badges so both come from the same pass.</remarks>
+    [ObservableProperty]
+    [Ignore]
+    public partial IReadOnlyList<GameAssetType> OutdatedAssetTypes { get; set; } = [];
+
+    /// <summary>
     /// What this game has installed for each swappable dll type.
     /// </summary>
     /// <remarks>
@@ -1315,6 +1323,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
         App.CurrentApp.RunOnUIThread(() =>
         {
+            OutdatedAssetTypes = outdatedAssetTypes;
             AvailableUpdates = availableUpdates;
             UpdateAvailable = availableUpdates.Count > 0;
         });

@@ -450,6 +450,21 @@ public partial class GameControlModel : ObservableObject
     }
 
     [RelayCommand]
+    async Task UpdateAllDllsAsync()
+    {
+        if (gameControlWeakReference.TryGetTarget(out var gameControl) == false)
+        {
+            return;
+        }
+
+        await DllUpdatePrompt.RunAsync(
+            gameControl.XamlRoot,
+            [Game],
+            ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmOneGameTemplate", Game.OutdatedAssetTypes.Count, Game.Title),
+            ResourceHelper.GetString("DllUpdate_GameUpToDate"));
+    }
+
+    [RelayCommand]
     async Task MultipleDLLsFoundAsync(GameAssetType gameAssetType)
     {
         if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))

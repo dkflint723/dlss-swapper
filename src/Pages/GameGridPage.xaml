@@ -248,6 +248,11 @@
                         <FontIcon Glyph="&#xE946;" />
                     </AppBarButton.Content>
                 </AppBarButton>
+                <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.UpdateAllGamesText, Mode=OneWay}" Command="{x:Bind ViewModel.UpdateAllGamesButtonCommand}" IsEnabled="{x:Bind ViewModel.IsGameListLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
+                    <AppBarButton.Content>
+                        <FontIcon Glyph="&#xE896;" />
+                    </AppBarButton.Content>
+                </AppBarButton>
                 <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.AddGameText, Mode=OneWay}" Command="{x:Bind ViewModel.AddManualGameButtonCommand}" IsEnabled="{x:Bind ViewModel.IsGameListLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
                     <AppBarButton.Content>
                         <FontIcon Glyph="&#xE710;" />

@@ -198,6 +198,36 @@
   <data name="Game_CustomCoverRemove" xml:space="preserve">
     <value>Remove custom cover?</value>
   </data>
+  <data name="DllUpdate_AllGamesUpToDate" xml:space="preserve">
+    <value>Every game is already using the newest dlls.</value>
+  </data>
+  <data name="DllUpdate_ConfirmAllGamesTemplate" xml:space="preserve">
+    <value>Update {0} dlls across {1} games to the newest available version?</value>
+  </data>
+  <data name="DllUpdate_ConfirmOneGameTemplate" xml:space="preserve">
+    <value>Update {0} dlls in {1} to the newest available version?</value>
+  </data>
+  <data name="DllUpdate_FailuresHeader" xml:space="preserve">
+    <value>These could not be updated:</value>
+  </data>
+  <data name="DllUpdate_GameUpToDate" xml:space="preserve">
+    <value>This game is already using the newest dlls.</value>
+  </data>
+  <data name="DllUpdate_Title" xml:space="preserve">
+    <value>Update dlls</value>
+  </data>
+  <data name="DllUpdate_UpdateAllGames" xml:space="preserve">
+    <value>Update all games</value>
+  </data>
+  <data name="DllUpdate_UpdateThisGame" xml:space="preserve">
+    <value>Update all dlls</value>
+  </data>
+  <data name="DllUpdate_Updating" xml:space="preserve">
+    <value>Updating dlls</value>
+  </data>
+  <data name="DllUpdate_SwappedTemplate" xml:space="preserve">
+    <value>Updated {0} dlls across {1} games.</value>
+  </data>
   <data name="Game_Reset_AccessDeniedAdmin" xml:space="preserve">
     <value>Unable to reset to default. Running DLSS Swapper as administrator may fix this.</value>
   </data>

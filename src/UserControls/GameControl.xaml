@@ -72,6 +72,12 @@
                     </Button.Content>
                 </Button>
 
+                <Button Command="{Binding UpdateAllDllsCommand}" ToolTipService.ToolTip="{Binding TranslationProperties.UpdateAllDllsText, Mode=OneWay}" Visibility="{Binding Game.UpdateAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Button.Content>
+                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE896;"/>
+                    </Button.Content>
+                </Button>
+
                 <Button Command="{Binding ReloadGameCommand}" ToolTipService.ToolTip="{Binding TranslationProperties.ReloadText, Mode=OneWay}">
                     <Button.Content>
                         <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE72C;"/>
