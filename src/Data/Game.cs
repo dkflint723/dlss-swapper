@@ -132,78 +132,11 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
     bool _isLoadingCoverImage;
 
-    // NOTE: DLL type
-    [ObservableProperty]
+    /// <summary>
+    /// Convenience accessor for the game grid, which deliberately shows only DLSS.
+    /// </summary>
     [Ignore]
-    public partial GameAsset? CurrentDLSS { get; set; } = null;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial bool MultipleDLSSFound { get; set; } = false;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial GameAsset? CurrentDLSS_G { get; set; } = null;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial bool MultipleDLSSGFound { get; set; } = false;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial GameAsset? CurrentDLSS_D { get; set; } = null;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial bool MultipleDLSSDFound { get; set; } = false;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial GameAsset? CurrentFSR_31_DX12 { get; set; } = null;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial bool MultipleFSR31DX12Found { get; set; } = false;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial GameAsset? CurrentFSR_31_VK { get; set; } = null;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial bool MultipleFSR31VKFound { get; set; } = false;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial GameAsset? CurrentXeSS { get; set; } = null;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial bool MultipleXeSSFound { get; set; } = false;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial GameAsset? CurrentXeLL { get; set; } = null;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial bool MultipleXeLLFound { get; set; } = false;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial GameAsset? CurrentXeSS_FG { get; set; } = null;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial bool MultipleXeSSFGFound { get; set; } = false;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial GameAsset? CurrentXeSS_DX11 { get; set; } = null;
-
-    [ObservableProperty]
-    [Ignore]
-    public partial bool MultipleXeSSDX11Found { get; set; } = false;
+    public GameAssetSlot? DlssSlot => GetAssetSlot(GameAssetType.DLSS);
 
     /// <summary>True when any dll installed in this game has a newer version available to swap to.</summary>
     [ObservableProperty]
@@ -235,36 +168,6 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         return _assetSlots.FirstOrDefault(x => x.AssetType == assetType);
     }
 
-    /// <summary>
-    /// Copies the slots onto the per type properties the view still binds to.
-    /// </summary>
-    /// <remarks>
-    /// Temporary. These properties go away once GameControl binds to the slots directly, and this
-    /// method goes with them. Until then the slots are the source of truth and these follow.
-    /// </remarks>
-    void SyncLegacyAssetProperties()
-    {
-        // NOTE: DLL type
-        CurrentDLSS = GetAssetSlot(GameAssetType.DLSS)?.CurrentAsset;
-        CurrentDLSS_G = GetAssetSlot(GameAssetType.DLSS_G)?.CurrentAsset;
-        CurrentDLSS_D = GetAssetSlot(GameAssetType.DLSS_D)?.CurrentAsset;
-        CurrentFSR_31_DX12 = GetAssetSlot(GameAssetType.FSR_31_DX12)?.CurrentAsset;
-        CurrentFSR_31_VK = GetAssetSlot(GameAssetType.FSR_31_VK)?.CurrentAsset;
-        CurrentXeSS = GetAssetSlot(GameAssetType.XeSS)?.CurrentAsset;
-        CurrentXeSS_FG = GetAssetSlot(GameAssetType.XeSS_FG)?.CurrentAsset;
-        CurrentXeSS_DX11 = GetAssetSlot(GameAssetType.XeSS_DX11)?.CurrentAsset;
-        CurrentXeLL = GetAssetSlot(GameAssetType.XeLL)?.CurrentAsset;
-
-        MultipleDLSSFound = GetAssetSlot(GameAssetType.DLSS)?.MultipleFound == true;
-        MultipleDLSSGFound = GetAssetSlot(GameAssetType.DLSS_G)?.MultipleFound == true;
-        MultipleDLSSDFound = GetAssetSlot(GameAssetType.DLSS_D)?.MultipleFound == true;
-        MultipleFSR31DX12Found = GetAssetSlot(GameAssetType.FSR_31_DX12)?.MultipleFound == true;
-        MultipleFSR31VKFound = GetAssetSlot(GameAssetType.FSR_31_VK)?.MultipleFound == true;
-        MultipleXeSSFound = GetAssetSlot(GameAssetType.XeSS)?.MultipleFound == true;
-        MultipleXeSSFGFound = GetAssetSlot(GameAssetType.XeSS_FG)?.MultipleFound == true;
-        MultipleXeSSDX11Found = GetAssetSlot(GameAssetType.XeSS_DX11)?.MultipleFound == true;
-        MultipleXeLLFound = GetAssetSlot(GameAssetType.XeLL)?.MultipleFound == true;
-    }
 
 
     [Ignore]
@@ -943,8 +846,6 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             // is what the assignments this replaced were doing.
             assetSlot.CurrentAsset = null;
             assetSlot.CurrentAsset = newGameAsset;
-
-            SyncLegacyAssetProperties();
         });
     }
 
@@ -1316,10 +1217,6 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             }
         }
 
-        if (didChange)
-        {
-            SyncLegacyAssetProperties();
-        }
 
         if (DlssPreset != game.DlssPreset)
         {
@@ -1354,7 +1251,6 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             assetSlot.CurrentAsset = assetsForType.LastOrDefault();
         }
 
-        SyncLegacyAssetProperties();
         RefreshUpdateAvailable();
     }
 

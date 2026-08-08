@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DLSS_Swapper.UserControls.GameAssetPicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ct_converters="using:CommunityToolkit.WinUI.Converters"
+    mc:Ignorable="d"
+    HorizontalAlignment="Stretch">
+
+    <UserControl.Resources>
+        <ct_converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
+        <ct_converters:EmptyObjectToObjectConverter x:Key="NullObjectToBoolConverter" NotEmptyValue="True" EmptyValue="False" />
+        <ct_converters:EmptyObjectToObjectConverter x:Key="NullToVisibilityConverter" NotEmptyValue="Visible" EmptyValue="Collapsed" />
+        <ct_converters:EmptyObjectToObjectConverter x:Key="NullToInverseVisibilityConverter" NotEmptyValue="Collapsed" EmptyValue="Visible" />
+
+        <Style x:Key="PickerInformationalFontIcon" TargetType="FontIcon">
+            <Setter Property="Glyph" Value="&#xE946;" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{ThemeResource InformationalIconColor}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid RowSpacing="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="0" Spacing="6">
+            <TextBlock Text="{x:Bind TypeName, Mode=OneWay}" FontWeight="Bold" VerticalAlignment="Center" Margin="0" Padding="0" />
+            <Button Style="{StaticResource TextBlockButtonStyle}"
+                    Visibility="{x:Bind AssetSlot.MultipleFound, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.MultipleDLLsFoundCommand, Mode=OneWay}"
+                    CommandParameter="{x:Bind AssetType, Mode=OneWay}"
+                    Padding="0"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.MultipleDllsFoundText, Mode=OneWay}">
+                <Button.Content>
+                    <FontIcon Style="{StaticResource PickerInformationalFontIcon}" />
+                </Button.Content>
+            </Button>
+        </StackPanel>
+
+        <DropDownButton Grid.Row="1"
+                        IsEnabled="{x:Bind AssetSlot.CurrentAsset, Converter={StaticResource NullObjectToBoolConverter}, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.ChangeRecordCommand, Mode=OneWay}"
+                        CommandParameter="{x:Bind AssetType, Mode=OneWay}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left">
+            <DropDownButton.Content>
+                <StackPanel>
+                    <TextBlock Text="{x:Bind AssetSlot.CurrentAsset.DisplayName, FallbackValue='', Mode=OneWay}"
+                               Visibility="{x:Bind AssetSlot.CurrentAsset, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}" />
+                    <TextBlock Text="{x:Bind ViewModel.TranslationProperties.NotFoundText, Mode=OneWay}"
+                               Visibility="{x:Bind AssetSlot.CurrentAsset, Converter={StaticResource NullToInverseVisibilityConverter}, Mode=OneWay}" />
+                </StackPanel>
+            </DropDownButton.Content>
+        </DropDownButton>
+    </Grid>
+</UserControl>

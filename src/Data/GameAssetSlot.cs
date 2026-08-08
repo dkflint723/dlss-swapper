@@ -12,7 +12,11 @@ namespace DLSS_Swapper.Data;
 /// </remarks>
 public partial class GameAssetSlot : ObservableObject
 {
-    public required GameAssetType AssetType { get; init; }
+    /// <summary>
+    /// Not marked required because the XAML type generator has to be able to construct this to use
+    /// it as a dependency property type. Slots are only ever created from the type registry.
+    /// </summary>
+    public GameAssetType AssetType { get; init; } = GameAssetType.Unknown;
 
     /// <summary>The dll installed for this type, or null when the game does not have one.</summary>
     [ObservableProperty]

@@ -81,7 +81,7 @@ public partial class GameControlModel : ObservableObject
 
 
         // Make sure NVAPIHelper is supported and the game has DLSS.
-        if (NVAPIHelper.Instance.IsSupported && game.CurrentDLSS is not null)
+        if (NVAPIHelper.Instance.IsSupported && game.GetAssetSlot(GameAssetType.DLSS)?.CurrentAsset is not null)
         {
             // Try load the DriverSettingProfile for the given game. If it is not found the game is not supported.
 
@@ -105,7 +105,7 @@ public partial class GameControlModel : ObservableObject
                     }
 
 
-                    if (Game.CurrentDLSS_D is not null)
+                    if (Game.GetAssetSlot(GameAssetType.DLSS_D)?.CurrentAsset is not null)
                     {
                         var gameDLSSDPresetResult = NVAPIHelper.Instance.GetGameDLSSDPreset(game);
                         if (gameDLSSDPresetResult.Success)
@@ -127,7 +127,7 @@ public partial class GameControlModel : ObservableObject
                     }
 
 
-                    if (Game.CurrentDLSS_G is not null)
+                    if (Game.GetAssetSlot(GameAssetType.DLSS_G)?.CurrentAsset is not null)
                     {
                         var gameDLSSGPresetResult = NVAPIHelper.Instance.GetGameDLSSGPreset(game);
                         if (gameDLSSGPresetResult.Success)
