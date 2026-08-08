@@ -198,6 +198,49 @@
   <data name="Game_CustomCoverRemove" xml:space="preserve">
     <value>Remove custom cover?</value>
   </data>
+  <data name="Game_Reset_AccessDeniedAdmin" xml:space="preserve">
+    <value>Unable to reset to default. Running DLSS Swapper as administrator may fix this.</value>
+  </data>
+  <data name="Game_Reset_FileInUse" xml:space="preserve">
+    <value>Unable to reset to default. It appears to be in use by another program. Is your game currently running?</value>
+  </data>
+  <data name="Game_Reset_PartialTemplate" xml:space="preserve">
+    <value>Restored {0} of {1} locations. {2} had no backup and were left unchanged. Verify your game files to return those to default.</value>
+  </data>
+  <data name="Game_Reset_RepairManually" xml:space="preserve">
+    <value>Unable to reset to default. Please repair your game manually.</value>
+  </data>
+  <data name="Game_Swap_AccessDenied" xml:space="preserve">
+    <value>Unable to swap dll as we are unable to write to the target directory.</value>
+  </data>
+  <data name="Game_Swap_AccessDeniedAdmin" xml:space="preserve">
+    <value>Unable to swap dll as we are unable to write to the target directory. Running DLSS Swapper as administrator may fix this.</value>
+  </data>
+  <data name="Game_Swap_DllRecordNotFound" xml:space="preserve">
+    <value>Unable to swap dll as your dll record was not found.</value>
+  </data>
+  <data name="Game_Swap_DownloadedDllNotFound" xml:space="preserve">
+    <value>Downloaded dll not found.</value>
+  </data>
+  <data name="Game_Swap_FileInUse" xml:space="preserve">
+    <value>Unable to swap dll. It appears to be in use by another program. Is your game currently running?</value>
+  </data>
+  <data name="Game_Swap_InvalidHash" xml:space="preserve">
+    <value>Unable to swap dll because dll hash was invalid.</value>
+  </data>
+  <data name="Game_Swap_LocalDllRecordNotFound" xml:space="preserve">
+    <value>Unable to swap dll as your local dll record was not found.</value>
+  </data>
+  <data name="Game_Swap_NoDllRecordsToUpdate" xml:space="preserve">
+    <value>Unable to swap dll as there were no dll records to update.</value>
+  </data>
+  <data name="Game_Swap_UnknownError" xml:space="preserve">
+    <value>Unable to swap dll. Please check your error log for more information.</value>
+  </data>
+  <data name="Game_Swap_UntrustedSignature" xml:space="preserve">
+    <value>Unable to swap dll as we are unable to verify the signature of the version you are trying to use.
+If you wish to override this decision please enable 'Allow Untrusted' in settings.</value>
+  </data>
   <data name="GameGrid_UpdateAvailableTemplate" xml:space="preserve">
     <value>Update available for {0}</value>
   </data>

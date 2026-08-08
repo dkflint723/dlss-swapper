@@ -655,7 +655,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         if (existingBackupRecords.Count == 0)
         {
             Logger.Info("No backup records found.");
-            return (false, "Unable to reset to default. Please repair your game manually.", false);
+            return (false, ResourceHelper.GetString("Game_Reset_RepairManually"), false);
         }
 
         // Pair every backup with the dll it restores before touching anything, so a game missing one
@@ -669,7 +669,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             if (existingRecords.Count != 1)
             {
                 Logger.Info("Backup record was found, existing records were not.");
-                return (false, "Unable to reset to default. Please repair your game manually.", false);
+                return (false, ResourceHelper.GetString("Game_Reset_RepairManually"), false);
             }
 
             restorePairs.Add((existingBackupRecord, existingRecords[0]));
@@ -760,7 +760,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             }
 
             var totalCount = restorePairs.Count + unrestorableRecords.Count;
-            return (true, $"Restored {restorePairs.Count} of {totalCount} locations. {unrestorableRecords.Count} had no backup and were left unchanged. Verify your game files to return those to default.", false);
+            return (true, ResourceHelper.GetFormattedResourceTemplate("Game_Reset_PartialTemplate", restorePairs.Count, totalCount, unrestorableRecords.Count), false);
         }
 
         return (true, string.Empty, false);
@@ -782,23 +782,23 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         switch (result.Failure)
         {
             case SwapFailure.SourceMissing:
-                return (false, "Downloaded dll not found.", false);
+                return (false, ResourceHelper.GetString("Game_Swap_DownloadedDllNotFound"), false);
 
             case SwapFailure.NoTargets:
-                return (false, "Unable to swap dll as there were no dll records to update.", false);
+                return (false, ResourceHelper.GetString("Game_Swap_NoDllRecordsToUpdate"), false);
 
             case SwapFailure.AccessDenied:
                 if (App.CurrentApp.IsAdminUser() is false)
                 {
-                    return (false, "Unable to swap dll as we are unable to write to the target directory. Running DLSS Swapper as administrator may fix this.", true);
+                    return (false, ResourceHelper.GetString("Game_Swap_AccessDeniedAdmin"), true);
                 }
-                return (false, "Unable to swap dll as we are unable to write to the target directory.", false);
+                return (false, ResourceHelper.GetString("Game_Swap_AccessDenied"), false);
 
             case SwapFailure.FileInUse:
-                return (false, "Unable to swap dll. It appears to be in use by another program. Is your game currently running?", false);
+                return (false, ResourceHelper.GetString("Game_Swap_FileInUse"), false);
 
             default:
-                return (false, "Unable to swap dll. Please check your error log for more information.", false);
+                return (false, ResourceHelper.GetString("Game_Swap_UnknownError"), false);
         }
     }
 
@@ -809,15 +809,15 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             case SwapFailure.AccessDenied:
                 if (App.CurrentApp.IsAdminUser() is false)
                 {
-                    return (false, "Unable to reset to default. Running DLSS Swapper as administrator may fix this.", true);
+                    return (false, ResourceHelper.GetString("Game_Reset_AccessDeniedAdmin"), true);
                 }
-                return (false, "Unable to reset to default. Please repair your game manually.", false);
+                return (false, ResourceHelper.GetString("Game_Reset_RepairManually"), false);
 
             case SwapFailure.FileInUse:
-                return (false, "Unable to reset to default. It appears to be in use by another program. Is your game currently running?", false);
+                return (false, ResourceHelper.GetString("Game_Reset_FileInUse"), false);
 
             default:
-                return (false, "Unable to reset to default. Please repair your game manually.", false);
+                return (false, ResourceHelper.GetString("Game_Reset_RepairManually"), false);
         }
     }
 
@@ -830,23 +830,23 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     {
         if (dllRecord is null)
         {
-            return (false, "Unable to swap dll as your dll record was not found.", false);
+            return (false, ResourceHelper.GetString("Game_Swap_DllRecordNotFound"), false);
         }
 
         if (dllRecord.LocalRecord is null)
         {
-            return (false, "Unable to swap dll as your local dll record was not found.", false);
+            return (false, ResourceHelper.GetString("Game_Swap_LocalDllRecordNotFound"), false);
         }
 
         if (File.Exists(dllRecord.LocalRecord.ExpectedPath) == false)
         {
-            return (false, "Downloaded dll not found.", false);
+            return (false, ResourceHelper.GetString("Game_Swap_DownloadedDllNotFound"), false);
         }
 
         var existingRecords = this.GameAssets.Where(x => x.AssetType == dllRecord.AssetType).ToList();
         if (existingRecords.Count == 0)
         {
-            return (false, "Unable to swap dll as there were no dll records to update.", false);
+            return (false, ResourceHelper.GetString("Game_Swap_NoDllRecordsToUpdate"), false);
         }
 
         var backupRecordType = DLLManager.Instance.GetAssetBackupType(dllRecord.AssetType);
@@ -856,7 +856,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         var md5Hash = versionInfo.GetMD5Hash();
         if (dllRecord.MD5Hash != md5Hash)
         {
-            return (false, "Unable to swap dll because dll hash was invalid.", false);
+            return (false, ResourceHelper.GetString("Game_Swap_InvalidHash"), false);
         }
 
 
@@ -866,7 +866,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             var isTrusted = WinTrust.VerifyEmbeddedSignature(dllRecord.LocalRecord.ExpectedPath);
             if (isTrusted == false)
             {
-                return (false, "Unable to swap dll as we are unable to verify the signature of the version you are trying to use.\nIf you wish to override this decision please enable 'Allow Untrusted' in settings.", false);
+                return (false, ResourceHelper.GetString("Game_Swap_UntrustedSignature"), false);
             }
         }
 
