@@ -325,9 +325,20 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
                 void ProcessGame_ProcessGameAsset(GameAsset gameAsset)
                 {
-                    gameAsset.LoadVersionAndHash();
+                    // Version and size first, both metadata. The hash is only worth paying for when
+                    // the file actually looks different to what we already had.
+                    gameAsset.LoadVersionAndSize();
 
                     var oldGameAsset = oldGameAssets.FirstOrDefault(x => x.Path.Equals(gameAsset.Path, StringComparison.OrdinalIgnoreCase));
+
+                    if (oldGameAsset is not null && gameAsset.MatchesCachedFile(oldGameAsset))
+                    {
+                        gameAsset.Hash = oldGameAsset.Hash;
+                    }
+                    else
+                    {
+                        gameAsset.LoadHash();
+                    }
 
                     if (oldGameAsset is not null) // DLL existed previously
                     {
@@ -393,7 +404,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                         unknownGameAssets.Add(gameAsset);
                     }
 
-                    LoadBackupForGameAsset(gameAsset);
+                    LoadBackupForGameAsset(gameAsset, oldGameAssets);
 
                 }
 
@@ -468,7 +479,15 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         });
     }
 
-    void LoadBackupForGameAsset(GameAsset gameAsset)
+    /// <summary>
+    /// Adds the ".dlsss" backup beside a dll, if there is one.
+    /// </summary>
+    /// <param name="cachedGameAssets">
+    /// What we had for this game before the scan, so an unchanged backup does not need re-hashing.
+    /// Backups are the same size as the dlls they shadow, so this is worth as much as it is for
+    /// the dlls themselves.
+    /// </param>
+    void LoadBackupForGameAsset(GameAsset gameAsset, List<GameAsset> cachedGameAssets)
     {
         var backupPath = $"{gameAsset.Path}.dlsss";
         if (File.Exists(backupPath))
@@ -479,7 +498,19 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 AssetType = DLLManager.Instance.GetAssetBackupType(gameAsset.AssetType),
                 Path = backupPath,
             };
-            gameAssetBackup.LoadVersionAndHash();
+
+            gameAssetBackup.LoadVersionAndSize();
+
+            var cachedBackup = cachedGameAssets.FirstOrDefault(x => x.Path.Equals(backupPath, StringComparison.OrdinalIgnoreCase));
+            if (cachedBackup is not null && gameAssetBackup.MatchesCachedFile(cachedBackup))
+            {
+                gameAssetBackup.Hash = cachedBackup.Hash;
+            }
+            else
+            {
+                gameAssetBackup.LoadHash();
+            }
+
             GameAssets.Add(gameAssetBackup);
         }
     }

@@ -139,16 +139,65 @@ public class GameAsset : IEquatable<GameAsset>
     [property: Column("hash")]
     public string Hash { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Size on disk, stored so a rescan can tell an unchanged file from a changed one without
+    /// reading it.
+    /// </summary>
+    [property: Column("size")]
+    public long Size { get; set; } = 0;
+
     public void LoadVersionAndHash()
+    {
+        LoadVersionAndSize();
+        LoadHash();
+    }
+
+    /// <summary>
+    /// Reads the version and size. Both are metadata, so this does not read the file's contents.
+    /// </summary>
+    public void LoadVersionAndSize()
     {
         if (File.Exists(Path) == false)
         {
             return;
         }
 
-        var fileVersionInfo = FileVersionInfo.GetVersionInfo(Path);
-        Version = fileVersionInfo.GetFormattedFileVersion();
-        Hash = fileVersionInfo.GetMD5Hash();
+        Version = FileVersionInfo.GetVersionInfo(Path).GetFormattedFileVersion();
+        Size = new FileInfo(Path).Length;
+    }
+
+    /// <summary>
+    /// Reads the whole file to hash it.
+    /// </summary>
+    /// <remarks>
+    /// These dlls run to tens of megabytes each, so this is by far the expensive part of scanning a
+    /// game and is worth avoiding when the file is known not to have changed.
+    /// </remarks>
+    public void LoadHash()
+    {
+        if (File.Exists(Path) == false)
+        {
+            return;
+        }
+
+        Hash = FileVersionInfo.GetVersionInfo(Path).GetMD5Hash();
+    }
+
+    /// <summary>
+    /// True when this looks like the same file as one we already have a hash for.
+    /// </summary>
+    /// <remarks>
+    /// Version and size both matching is a strong enough signal to skip re-reading tens of
+    /// megabytes. The scan already treats a matching version as "unchanged" when deciding whether a
+    /// dll was replaced externally, so this does not introduce a new assumption, only a cheaper way
+    /// of acting on the existing one.
+    /// </remarks>
+    public bool MatchesCachedFile(GameAsset cachedGameAsset)
+    {
+        return string.IsNullOrEmpty(cachedGameAsset.Hash) == false
+            && cachedGameAsset.Size > 0
+            && Size == cachedGameAsset.Size
+            && Version == cachedGameAsset.Version;
     }
 
 
