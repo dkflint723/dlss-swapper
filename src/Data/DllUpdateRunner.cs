@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,30 +8,54 @@ using DLSS_Swapper.Helpers;
 
 namespace DLSS_Swapper.Data;
 
+/// <summary>One dll in one game: the unit every batch is made of.</summary>
+internal readonly record struct DllWorkItem(Game Game, GameAssetType AssetType);
+
+/// <summary>
+/// How far through a run is, and what it is working on.
+/// </summary>
+/// <remarks>
+/// A count as well as a name, because "Updating 3 of 7" is the part that tells someone whether to
+/// wait. The old progress report was a single formatted string, which could only ever say what file
+/// was being written and never how much was left.
+/// </remarks>
+internal sealed class DllUpdateProgress
+{
+    /// <summary>Which file is being worked on, counting from one, so it reads as "3 of 7".</summary>
+    public required int CurrentIndex { get; init; }
+
+    public required int TotalCount { get; init; }
+
+    public required string GameTitle { get; init; }
+
+    public required string EngineName { get; init; }
+
+    /// <summary>Reads as "Cyberpunk 2077 — FSR 3.1 DirectX 12".</summary>
+    public string Description => $"{GameTitle} — {EngineName}";
+}
+
 /// <summary>
 /// What an update run did.
 /// </summary>
 internal sealed class DllUpdateResult
 {
-    /// <summary>Dlls swapped to a newer version.</summary>
-    public int Swapped { get; set; }
+    /// <summary>
+    /// Exactly which dlls were written.
+    /// </summary>
+    /// <remarks>
+    /// Kept rather than counted, because undoing a batch means putting these back and nothing else.
+    /// A count cannot be reversed.
+    /// </remarks>
+    public List<DllWorkItem> Succeeded { get; } = new List<DllWorkItem>();
 
     /// <summary>Dlls that could not be updated, one line each, ready to show.</summary>
     public List<string> Failures { get; } = new List<string>();
 
+    /// <summary>Dlls swapped to a newer version.</summary>
+    public int Swapped => Succeeded.Count;
+
     /// <summary>Games that had at least one dll swapped.</summary>
-    public int GamesUpdated { get; set; }
-
-    public void Add(DllUpdateResult other)
-    {
-        Swapped += other.Swapped;
-        Failures.AddRange(other.Failures);
-
-        if (other.Swapped > 0)
-        {
-            ++GamesUpdated;
-        }
-    }
+    public int GamesUpdated => Succeeded.Select(x => x.Game).Distinct().Count();
 }
 
 /// <summary>
@@ -47,119 +71,55 @@ internal static class DllUpdateRunner
     /// <summary>
     /// Updates one game's out of date dlls.
     /// </summary>
-    /// <param name="progress">Reports the dll about to be worked on, for a progress display.</param>
-    internal static Task<DllUpdateResult> UpdateGameAsync(Game game, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    internal static Task<DllUpdateResult> UpdateGameAsync(Game game, IProgress<DllUpdateProgress>? progress = null, CancellationToken cancellationToken = default)
     {
-        // Copied because a swap refreshes the list underneath us.
-        return UpdateGameAsync(game, new List<GameAssetType>(game.OutdatedAssetTypes), progress, cancellationToken);
+        return UpdateGamesAsync(new List<Game>() { game }, progress, cancellationToken);
     }
 
     /// <summary>
-    /// Updates the named dlls in one game.
+    /// Updates every out of date dll across the given games.
     /// </summary>
-    /// <remarks>
-    /// The list is a parameter so the preview sheet can hand back the subset the user left checked.
-    /// The swap loop stays written once: "everything out of date" is just the list the other
-    /// overload passes.
-    /// </remarks>
-    internal static async Task<DllUpdateResult> UpdateGameAsync(Game game, IReadOnlyList<GameAssetType> assetTypes, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    internal static Task<DllUpdateResult> UpdateGamesAsync(IReadOnlyList<Game> games, IProgress<DllUpdateProgress>? progress = null, CancellationToken cancellationToken = default)
     {
-        var result = new DllUpdateResult();
+        // Copied because a swap refreshes each game's list underneath us.
+        var items = games
+            .SelectMany(game => game.OutdatedAssetTypes.Select(assetType => new DllWorkItem(game, assetType)))
+            .ToList();
 
-        foreach (var assetType in assetTypes)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-
-            var assetTypeName = DLLManager.Instance.GetAssetTypeName(assetType);
-            progress?.Report($"{game.Title} - {assetTypeName}");
-
-            var latestRecord = DLLManager.Instance.GetLatestRecord(assetType);
-            if (latestRecord is null)
-            {
-                continue;
-            }
-
-            if (latestRecord.LocalRecord?.IsDownloaded == false)
-            {
-                // Cancellable, so pressing cancel during a large download stops it rather than
-                // waiting for it to finish.
-                var didDownload = await latestRecord.DownloadAsync(cancellationToken).ConfigureAwait(false);
-                if (didDownload.Success == false)
-                {
-                    // A cancelled download is the user's doing, not a failure worth reporting.
-                    if (didDownload.Cancelled == false)
-                    {
-                        result.Failures.Add($"{game.Title} - {assetTypeName}: {didDownload.Message}");
-                    }
-
-                    continue;
-                }
-            }
-
-            var didUpdate = await game.UpdateDllAsync(latestRecord).ConfigureAwait(false);
-            if (didUpdate.Success == false)
-            {
-                result.Failures.Add($"{game.Title} - {assetTypeName}: {didUpdate.Message}");
-                continue;
-            }
-
-            ++result.Swapped;
-        }
-
-        if (result.Swapped > 0)
-        {
-            result.GamesUpdated = 1;
-        }
-
-        return result;
+        return RunAsync(items, SwapOneAsync, progress, cancellationToken);
     }
 
     /// <summary>
-    /// Restores every dll in a game that still has a backup.
+    /// Updates exactly the files the preview sheet was left holding.
+    /// </summary>
+    internal static Task<DllUpdateResult> UpdateSelectedAsync(IReadOnlyList<PendingDllUpdate> updates, IProgress<DllUpdateProgress>? progress = null, CancellationToken cancellationToken = default)
+    {
+        var items = updates.Select(x => new DllWorkItem(x.Game, x.AssetType)).ToList();
+        return RunAsync(items, SwapOneAsync, progress, cancellationToken);
+    }
+
+    /// <summary>
+    /// Restores every dll with a backup across the given games.
+    /// </summary>
+    internal static Task<DllUpdateResult> RevertGamesAsync(IReadOnlyList<Game> games, IProgress<DllUpdateProgress>? progress = null, CancellationToken cancellationToken = default)
+    {
+        var items = games
+            .SelectMany(game => GetRevertableAssetTypes(game).Select(assetType => new DllWorkItem(game, assetType)))
+            .ToList();
+
+        return RunAsync(items, ResetOneAsync, progress, cancellationToken);
+    }
+
+    /// <summary>
+    /// Puts back exactly what a batch wrote, newest write first.
     /// </summary>
     /// <remarks>
-    /// A dll without a backup is left alone rather than reported as a failure. The game either
-    /// never had that one swapped, or the backup went when a game update replaced the dll.
+    /// Reversed so a game that had several dlls replaced unwinds in the order it was written, and
+    /// scoped to the batch so undoing an update cannot quietly revert a swap made last week.
     /// </remarks>
-    internal static async Task<DllUpdateResult> RevertGameAsync(Game game, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    internal static Task<DllUpdateResult> UndoAsync(IReadOnlyList<DllWorkItem> items, IProgress<DllUpdateProgress>? progress = null, CancellationToken cancellationToken = default)
     {
-        var result = new DllUpdateResult();
-
-        foreach (var assetType in GetRevertableAssetTypes(game))
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-
-            var assetTypeName = DLLManager.Instance.GetAssetTypeName(assetType);
-            progress?.Report($"{game.Title} - {assetTypeName}");
-
-            var didReset = await game.ResetDllAsync(assetType).ConfigureAwait(false);
-            if (didReset.Success == false)
-            {
-                result.Failures.Add($"{game.Title} - {assetTypeName}: {didReset.Message}");
-                continue;
-            }
-
-            // A reset can succeed having restored only some locations, and says so in its message.
-            if (string.IsNullOrEmpty(didReset.Message) == false)
-            {
-                result.Failures.Add($"{game.Title} - {assetTypeName}: {didReset.Message}");
-            }
-
-            ++result.Swapped;
-        }
-
-        if (result.Swapped > 0)
-        {
-            result.GamesUpdated = 1;
-        }
-
-        return result;
+        return RunAsync(items.Reverse().ToList(), ResetOneAsync, progress, cancellationToken);
     }
 
     /// <summary>
@@ -185,81 +145,117 @@ internal static class DllUpdateRunner
     }
 
     /// <summary>
-    /// Updates every out of date dll across the given games.
-    /// </summary>
-    internal static Task<DllUpdateResult> UpdateGamesAsync(IReadOnlyList<Game> games, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
-    {
-        return RunAcrossGamesAsync(games, UpdateGameAsync, progress, cancellationToken);
-    }
-
-    /// <summary>
-    /// Restores every dll with a backup across the given games.
-    /// </summary>
-    internal static Task<DllUpdateResult> RevertGamesAsync(IReadOnlyList<Game> games, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
-    {
-        return RunAcrossGamesAsync(games, RevertGameAsync, progress, cancellationToken);
-    }
-
-    /// <summary>
-    /// Updates exactly the files the preview sheet was left holding.
+    /// Works through a flat list of dlls, one at a time, reporting where it has got to.
     /// </summary>
     /// <remarks>
-    /// Grouped back into games because a swap is a per game operation, and run in the order the
-    /// sheet listed them so the progress text reads down the sheet the user just approved.
+    /// Flat rather than nested per game so the progress count is the count the user was shown. It
+    /// is also the one place every batch passes through, so the locked-game rule cannot be
+    /// forgotten by a caller that builds its own list.
+    ///
+    /// Sequential on purpose. Running these in parallel would mean several games writing dlls at
+    /// once with no way to tell the user which one failed and why.
     /// </remarks>
-    internal static async Task<DllUpdateResult> UpdateSelectedAsync(IReadOnlyList<PendingDllUpdate> updates, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
-    {
-        var result = new DllUpdateResult();
-
-        foreach (var updatesForGame in updates.GroupBy(x => x.Game))
-        {
-            // Checked here as well, for the same reason the batch runner checks it: this is a way
-            // into the swap that does not pass through the other one.
-            if (updatesForGame.Key.SkipUpdates)
-            {
-                continue;
-            }
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-
-            var assetTypes = updatesForGame.Select(x => x.AssetType).ToList();
-            result.Add(await UpdateGameAsync(updatesForGame.Key, assetTypes, progress, cancellationToken).ConfigureAwait(false));
-        }
-
-        return result;
-    }
-
-    static async Task<DllUpdateResult> RunAcrossGamesAsync(
-        IReadOnlyList<Game> games,
-        Func<Game, IProgress<string>?, CancellationToken, Task<DllUpdateResult>> operation,
-        IProgress<string>? progress,
+    static async Task<DllUpdateResult> RunAsync(
+        IReadOnlyList<DllWorkItem> items,
+        Func<DllWorkItem, CancellationToken, Task<DllWorkOutcome>> operation,
+        IProgress<DllUpdateProgress>? progress,
         CancellationToken cancellationToken)
     {
         var result = new DllUpdateResult();
+        var currentIndex = 0;
 
-        foreach (var game in games)
+        foreach (var item in items)
         {
-            // Enforced here as well as in the callers that build the list. This is the one place
-            // every batch passes through, so a caller that forgets cannot write to a game the user
-            // marked as leave alone.
-            if (game.SkipUpdates)
-            {
-                continue;
-            }
-
             if (cancellationToken.IsCancellationRequested)
             {
                 break;
             }
 
-            // Sequential on purpose. Running these in parallel would mean several games writing
-            // dlls at once with no way to tell the user which one failed and why.
-            result.Add(await operation(game, progress, cancellationToken).ConfigureAwait(false));
+            if (item.Game.SkipUpdates)
+            {
+                continue;
+            }
+
+            ++currentIndex;
+
+            progress?.Report(new DllUpdateProgress()
+            {
+                CurrentIndex = currentIndex,
+                TotalCount = items.Count,
+                GameTitle = item.Game.Title,
+                EngineName = DLLManager.Instance.GetAssetTypeName(item.AssetType),
+            });
+
+            var outcome = await operation(item, cancellationToken).ConfigureAwait(false);
+
+            if (outcome.Done)
+            {
+                result.Succeeded.Add(item);
+            }
+
+            // Reported alongside rather than instead of being done: a reset can restore some
+            // locations and not others, and both facts matter.
+            if (string.IsNullOrEmpty(outcome.Failure) == false)
+            {
+                result.Failures.Add(outcome.Failure);
+            }
         }
 
         return result;
+    }
+
+    /// <summary>What one dll's operation did, and what to say about it if anything.</summary>
+    readonly record struct DllWorkOutcome(bool Done, string? Failure);
+
+    /// <summary>
+    /// Swaps one dll to the newest version there is, downloading it first if it is not on disk.
+    /// </summary>
+    static async Task<DllWorkOutcome> SwapOneAsync(DllWorkItem item, CancellationToken cancellationToken)
+    {
+        var assetTypeName = DLLManager.Instance.GetAssetTypeName(item.AssetType);
+
+        var latestRecord = DLLManager.Instance.GetLatestRecord(item.AssetType);
+        if (latestRecord is null)
+        {
+            return new DllWorkOutcome(false, null);
+        }
+
+        if (latestRecord.LocalRecord?.IsDownloaded == false)
+        {
+            // Cancellable, so pressing cancel during a large download stops it rather than waiting
+            // for it to finish.
+            var didDownload = await latestRecord.DownloadAsync(cancellationToken).ConfigureAwait(false);
+            if (didDownload.Success == false)
+            {
+                // A cancelled download is the user's doing, not a failure worth reporting.
+                return new DllWorkOutcome(false, didDownload.Cancelled
+                    ? null
+                    : $"{item.Game.Title} - {assetTypeName}: {didDownload.Message}");
+            }
+        }
+
+        var didUpdate = await item.Game.UpdateDllAsync(latestRecord).ConfigureAwait(false);
+        return didUpdate.Success
+            ? new DllWorkOutcome(true, null)
+            : new DllWorkOutcome(false, $"{item.Game.Title} - {assetTypeName}: {didUpdate.Message}");
+    }
+
+    /// <summary>
+    /// Puts one dll back to the copy saved before it was swapped.
+    /// </summary>
+    static async Task<DllWorkOutcome> ResetOneAsync(DllWorkItem item, CancellationToken cancellationToken)
+    {
+        var assetTypeName = DLLManager.Instance.GetAssetTypeName(item.AssetType);
+
+        var didReset = await item.Game.ResetDllAsync(item.AssetType).ConfigureAwait(false);
+        if (didReset.Success == false)
+        {
+            return new DllWorkOutcome(false, $"{item.Game.Title} - {assetTypeName}: {didReset.Message}");
+        }
+
+        // A reset can succeed having restored only some locations, and says so in its message.
+        return new DllWorkOutcome(true, string.IsNullOrEmpty(didReset.Message)
+            ? null
+            : $"{item.Game.Title} - {assetTypeName}: {didReset.Message}");
     }
 }

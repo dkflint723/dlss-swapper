@@ -221,6 +221,42 @@
   <data name="Preview_ConfirmOneFile" xml:space="preserve">
     <value>Update one file</value>
   </data>
+  <data name="Update_StopAfterThisOne" xml:space="preserve">
+    <value>Stop after this one</value>
+  </data>
+  <data name="Update_Stopping" xml:space="preserve">
+    <value>Finishing this one…</value>
+  </data>
+  <data name="Update_ProgressTemplate" xml:space="preserve">
+    <value>Updating {0} of {1}</value>
+  </data>
+  <data name="Update_DoneTemplate" xml:space="preserve">
+    <value>{0} files updated across {1} games</value>
+  </data>
+  <data name="Update_DoneOneFileTemplate" xml:space="preserve">
+    <value>One file updated in {0}</value>
+  </data>
+  <data name="Update_DoneNothing" xml:space="preserve">
+    <value>Nothing was changed</value>
+  </data>
+  <data name="Update_DonePartialTemplate" xml:space="preserve">
+    <value>{0} of {1} files updated · {2} could not be replaced</value>
+  </data>
+  <data name="Update_DoneReassurance" xml:space="preserve">
+    <value>Originals saved. Launch a game to check it still runs.</value>
+  </data>
+  <data name="Update_UndoAll" xml:space="preserve">
+    <value>Undo all</value>
+  </data>
+  <data name="Update_SeeWhatFailed" xml:space="preserve">
+    <value>See what failed</value>
+  </data>
+  <data name="Update_Undoing" xml:space="preserve">
+    <value>Putting the originals back…</value>
+  </data>
+  <data name="Update_UndoneTemplate" xml:space="preserve">
+    <value>{0} files put back</value>
+  </data>
   <data name="Preview_Body" xml:space="preserve">
     <value>Every file below is replaced with a newer version. A copy of each original is saved first, so you can put any of them back from this list or from the game's page.</value>
   </data>

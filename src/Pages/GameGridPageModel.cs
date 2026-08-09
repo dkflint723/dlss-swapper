@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -485,11 +486,12 @@ public partial class GameGridPageModel : ObservableObject
     }
 
     /// <summary>
-    /// Updates every out of date dll in one game, from its card.
+    /// Updates every out of date dll in one game, from its row.
     /// </summary>
     /// <remarks>
-    /// Runs through the same prompt and the same runner as updating every game, so there is one
-    /// swap path rather than a second shorter one that skips the confirmation or the backup.
+    /// No sheet for a single row: the row already named the game and the button already named the
+    /// action, so a sheet would only ask the question the click just answered. It still runs
+    /// through the same batch and ends on the same strip, so it is as undoable as any other.
     /// </remarks>
     [RelayCommand]
     async Task UpdateGameAsync(Game? game)
@@ -499,20 +501,7 @@ public partial class GameGridPageModel : ObservableObject
             return;
         }
 
-        var outdatedDllCount = game.OutdatedAssetTypes.Count;
-
-        await DllUpdatePrompt.RunAsync(
-            gameGridPage.XamlRoot,
-            new List<Game>() { game },
-            ResourceHelper.GetString("DllUpdate_Title"),
-            outdatedDllCount,
-            ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmOneGameTemplate", outdatedDllCount, game.Title),
-            ResourceHelper.GetString("DllUpdate_AllGamesUpToDate"),
-            (games, progress, cancellationToken) => DllUpdateRunner.UpdateGamesAsync(games, progress, cancellationToken),
-            "DllUpdate_SwappedTemplate");
-
-        // Swapping saves an original first, so the backup coverage moves with it.
-        App.CurrentApp.MainWindow?.RefreshSidebar();
+        await RunUpdateBatchAsync(PendingDllUpdate.ForGames(new List<Game>() { game }));
     }
 
     /// <summary>The preview sheet's contents, or null when it is closed.</summary>
@@ -555,25 +544,159 @@ public partial class GameGridPageModel : ObservableObject
         var selectedUpdates = UpdatePreview?.SelectedUpdates;
         UpdatePreview = null;
 
-        if (selectedUpdates is null || selectedUpdates.Count == 0)
+        if (selectedUpdates is not null)
+        {
+            // The sheet's own rows, so what runs is what was approved rather than everything that
+            // happened to be out of date when the run started.
+            await RunUpdateBatchAsync(selectedUpdates);
+        }
+    }
+
+    /// <summary>The strip along the bottom, or null when there is nothing to report.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UpdateBatchVisibility))]
+    public partial UpdateBatchModel? UpdateBatch { get; set; }
+
+    public Visibility UpdateBatchVisibility => UpdateBatch is null ? Visibility.Collapsed : Visibility.Visible;
+
+    CancellationTokenSource? batchCancellation;
+
+    /// <summary>
+    /// Writes a batch, with the progress and the outcome shown in the page rather than in a dialog.
+    /// </summary>
+    /// <remarks>
+    /// A modal progress dialog blocked the library while the app wrote to it, so the one thing the
+    /// user might want to look at during a long run - which games are done - was the one thing
+    /// covered up. The strip leaves the rows visible and updating.
+    /// </remarks>
+    async Task RunUpdateBatchAsync(IReadOnlyList<PendingDllUpdate> updates)
+    {
+        if (updates.Count == 0)
         {
             return;
         }
 
-        var games = selectedUpdates.Select(x => x.Game).Distinct().ToList();
+        var batch = new UpdateBatchModel();
+        UpdateBatch = batch;
 
-        await DllUpdatePrompt.RunConfirmedAsync(
-            gameGridPage.XamlRoot,
-            games,
-            ResourceHelper.GetString("DllUpdate_Title"),
+        using var cancellation = new CancellationTokenSource();
+        batchCancellation = cancellation;
 
-            // The sheet's own rows, so what runs is what was approved rather than everything that
-            // happened to be out of date when the run started.
-            (_, progress, cancellationToken) => DllUpdateRunner.UpdateSelectedAsync(selectedUpdates, progress, cancellationToken),
-            "DllUpdate_SwappedTemplate");
+        DllUpdateResult result;
+        try
+        {
+            result = await DllUpdateRunner.UpdateSelectedAsync(updates, new Progress<DllUpdateProgress>(batch.Report), cancellation.Token);
+        }
+        finally
+        {
+            batchCancellation = null;
+        }
+
+        batch.Complete(result);
 
         // Swapping saves an original first, so the backup coverage moves with it.
         App.CurrentApp.MainWindow?.RefreshSidebar();
+    }
+
+    /// <summary>
+    /// Stops after the file being written, rather than part way through one.
+    /// </summary>
+    /// <remarks>
+    /// The label said so before it was pressed, so the button has to keep that promise: the token
+    /// is checked between files, never during.
+    /// </remarks>
+    [RelayCommand]
+    void StopUpdateBatch()
+    {
+        if (UpdateBatch is null)
+        {
+            return;
+        }
+
+        UpdateBatch.CanStop = false;
+        UpdateBatch.StopLabel = ResourceHelper.GetString("Update_Stopping");
+        batchCancellation?.Cancel();
+    }
+
+    [RelayCommand]
+    void DismissUpdateBatch()
+    {
+        UpdateBatch = null;
+    }
+
+    /// <summary>
+    /// Puts back everything the last batch wrote.
+    /// </summary>
+    /// <remarks>
+    /// The reason the whole flow can be offered without a warning dialog: the batch is reversible,
+    /// and the strip that says so is on screen at the moment it matters.
+    /// </remarks>
+    [RelayCommand]
+    async Task UndoUpdateBatchAsync()
+    {
+        var batch = UpdateBatch;
+        if (batch is null || batch.CanUndo == false)
+        {
+            return;
+        }
+
+        var writtenItems = batch.WrittenItems;
+
+        batch.CanUndo = false;
+        batch.IsDone = false;
+        batch.CanStop = false;
+        batch.ProgressText = ResourceHelper.GetString("Update_Undoing");
+        batch.CurrentItemText = string.Empty;
+
+        using var cancellation = new CancellationTokenSource();
+        batchCancellation = cancellation;
+
+        DllUpdateResult result;
+        try
+        {
+            result = await DllUpdateRunner.UndoAsync(writtenItems, new Progress<DllUpdateProgress>(batch.Report), cancellation.Token);
+        }
+        finally
+        {
+            batchCancellation = null;
+        }
+
+        batch.CompleteUndo(result);
+        App.CurrentApp.MainWindow?.RefreshSidebar();
+    }
+
+    /// <summary>
+    /// Names the files that could not be replaced.
+    /// </summary>
+    /// <remarks>
+    /// Listed rather than counted, because "2 could not be replaced" does not tell you which game
+    /// to close or which needs running as administrator.
+    /// </remarks>
+    [RelayCommand]
+    async Task ShowBatchFailuresAsync()
+    {
+        var batch = UpdateBatch;
+        if (batch is null || batch.HasFailures == false)
+        {
+            return;
+        }
+
+        var dialog = new EasyContentDialog(gameGridPage.XamlRoot)
+        {
+            Title = ResourceHelper.GetString("DllUpdate_FailuresHeader"),
+            CloseButtonText = ResourceHelper.GetString("General_Okay"),
+            Content = new ScrollViewer()
+            {
+                MaxHeight = 400,
+                Content = new TextBlock()
+                {
+                    Text = string.Join(Environment.NewLine, batch.Failures),
+                    TextWrapping = TextWrapping.Wrap,
+                },
+            },
+        };
+
+        await dialog.ShowAsync();
     }
 
     [RelayCommand]

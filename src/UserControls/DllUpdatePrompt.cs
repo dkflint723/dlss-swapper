@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
@@ -34,7 +34,7 @@ internal static class DllUpdatePrompt
         int affectedDllCount,
         string confirmationMessage,
         string nothingToDoMessage,
-        Func<IReadOnlyList<Game>, IProgress<string>, CancellationToken, Task<DllUpdateResult>> operation,
+        Func<IReadOnlyList<Game>, IProgress<DllUpdateProgress>, CancellationToken, Task<DllUpdateResult>> operation,
         string summaryTemplateResourceKey)
     {
         if (affectedDllCount == 0)
@@ -79,7 +79,7 @@ internal static class DllUpdatePrompt
         XamlRoot xamlRoot,
         IReadOnlyList<Game> games,
         string title,
-        Func<IReadOnlyList<Game>, IProgress<string>, CancellationToken, Task<DllUpdateResult>> operation,
+        Func<IReadOnlyList<Game>, IProgress<DllUpdateProgress>, CancellationToken, Task<DllUpdateResult>> operation,
         string summaryTemplateResourceKey)
     {
         var progressRun = new Run() { Text = string.Empty };
@@ -115,7 +115,7 @@ internal static class DllUpdatePrompt
             args.Cancel = true;
         };
 
-        var progress = new Progress<string>(x => progressRun.Text = x);
+        var progress = new Progress<DllUpdateProgress>(x => progressRun.Text = x.Description);
 
         _ = progressDialog.ShowAsync();
 

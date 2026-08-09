@@ -511,6 +511,145 @@
         <ContentControl x:Name="MainContentControl" Grid.Row="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Content="{x:Bind ViewModel, Mode=OneWay}" ContentTemplateSelector="{StaticResource TemplateSelector}" />
 
         <!--
+            The batch strip: what a run is doing, then what it did. Docked to the bottom of the
+            content rather than shown as a dialog, so the library stays visible and scrollable while
+            the app writes to it.
+        -->
+        <Border
+            Grid.Row="1"
+            VerticalAlignment="Bottom"
+            Height="52"
+            Padding="26,0"
+            Background="{ThemeResource DsSurfBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{ThemeResource DsLine2Brush}"
+            Visibility="{x:Bind ViewModel.UpdateBatchVisibility, Mode=OneWay}">
+
+            <Grid>
+                <!-- Running -->
+                <Grid ColumnSpacing="14" Visibility="{x:Bind ViewModel.UpdateBatch.RunningVisibility, Mode=OneWay}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <ProgressBar
+                        Grid.Column="0"
+                        Width="130"
+                        Height="2"
+                        VerticalAlignment="Center"
+                        Value="{x:Bind ViewModel.UpdateBatch.ProgressValue, Mode=OneWay}" />
+
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{x:Bind ViewModel.UpdateBatch.ProgressText, Mode=OneWay}"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        VerticalAlignment="Center"
+                        TextWrapping="NoWrap"
+                        Foreground="{ThemeResource DsTextPrimaryBrush}" />
+
+                    <TextBlock
+                        Grid.Column="2"
+                        Text="{x:Bind ViewModel.UpdateBatch.CurrentItemText, Mode=OneWay}"
+                        FontSize="12"
+                        VerticalAlignment="Center"
+                        TextWrapping="NoWrap"
+                        TextTrimming="CharacterEllipsis"
+                        Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+                    <Button
+                        Grid.Column="3"
+                        Height="32"
+                        Padding="16,0"
+                        VerticalAlignment="Center"
+                        CornerRadius="{StaticResource DsCornerRadius}"
+                        Content="{x:Bind ViewModel.UpdateBatch.StopLabel, Mode=OneWay}"
+                        IsEnabled="{x:Bind ViewModel.UpdateBatch.CanStop, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.StopUpdateBatchCommand}" />
+                </Grid>
+
+                <!-- Done -->
+                <Grid ColumnSpacing="12" Visibility="{x:Bind ViewModel.UpdateBatch.DoneVisibility, Mode=OneWay}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon
+                        Grid.Column="0"
+                        FontSize="13"
+                        VerticalAlignment="Center"
+                        Glyph="{x:Bind ViewModel.UpdateBatch.DoneGlyph, Mode=OneWay}"
+                        Foreground="{ThemeResource DsTextPrimaryBrush}" />
+
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{x:Bind ViewModel.UpdateBatch.DoneText, Mode=OneWay}"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        VerticalAlignment="Center"
+                        TextWrapping="NoWrap"
+                        Foreground="{ThemeResource DsTextPrimaryBrush}" />
+
+                    <!--
+                        The reassurance sits next to the outcome rather than in a dialog that has to
+                        be dismissed, because it is the answer to "what did I just do to my games".
+                    -->
+                    <TextBlock
+                        Grid.Column="2"
+                        Text="{x:Bind ViewModel.UpdateBatch.DoneDetailText, Mode=OneWay}"
+                        FontSize="12"
+                        VerticalAlignment="Center"
+                        TextWrapping="NoWrap"
+                        TextTrimming="CharacterEllipsis"
+                        Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+                    <Button
+                        Grid.Column="3"
+                        Height="32"
+                        Padding="12,0"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        CornerRadius="{StaticResource DsCornerRadius}"
+                        Visibility="{x:Bind ViewModel.UpdateBatch.FailuresVisibility, Mode=OneWay}"
+                        Content="{x:Bind ViewModel.UpdateBatch.SeeWhatFailedLabel, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.ShowBatchFailuresCommand}" />
+
+                    <Button
+                        Grid.Column="4"
+                        Height="32"
+                        Padding="16,0"
+                        VerticalAlignment="Center"
+                        CornerRadius="{StaticResource DsCornerRadius}"
+                        Visibility="{x:Bind ViewModel.UpdateBatch.UndoVisibility, Mode=OneWay}"
+                        Content="{x:Bind ViewModel.UpdateBatch.UndoLabel, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.UndoUpdateBatchCommand}" />
+
+                    <Button
+                        Grid.Column="5"
+                        Width="32"
+                        Height="32"
+                        Padding="0"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        CornerRadius="{StaticResource DsCornerRadius}"
+                        Command="{x:Bind ViewModel.DismissUpdateBatchCommand}">
+                        <FontIcon Glyph="&#xE711;" FontSize="12" Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!--
             The preview sheet. In the content row rather than over the whole page, so the command
             bar it was opened from stays visible and the sheet reads as belonging to the list it is
             about to change.
