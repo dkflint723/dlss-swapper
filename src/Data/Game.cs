@@ -728,6 +728,13 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
     internal async Task<(bool Success, string Message, bool PromptToRelaunchAsAdmin)> ResetDllAsync(GameAssetType gameAssetType)
     {
+        // Restoring the original is the safe direction, but it is still a change to a game the user
+        // asked to be left alone. Blocking both means the setting has one meaning rather than two.
+        if (SkipUpdates)
+        {
+            return (false, ResourceHelper.GetString("Game_Swap_UpdatesTurnedOff"), false);
+        }
+
         var backupRecordType = DLLManager.Instance.GetAssetBackupType(gameAssetType);
         var existingBackupRecords = this.GameAssets.Where(x => x.AssetType == backupRecordType).ToList();
 
@@ -910,6 +917,14 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     /// <returns>Tuple containing a boolean of Success, if this is false there will be an error message in the Message response.</returns>
     internal async Task<(bool Success, string Message, bool PromptToRelaunchAsAdmin)> UpdateDllAsync(DLLRecord dllRecord)
     {
+        // Locked means locked, not merely left out of bulk updates. A game excluded because a
+        // modified dll gets it flagged by anti cheat is no safer if the swap can still be done by
+        // hand, and a promise that only covers one route is worse than no promise.
+        if (SkipUpdates)
+        {
+            return (false, ResourceHelper.GetString("Game_Swap_UpdatesTurnedOff"), false);
+        }
+
         if (dllRecord is null)
         {
             return (false, ResourceHelper.GetString("Game_Swap_DllRecordNotFound"), false);

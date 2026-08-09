@@ -184,6 +184,9 @@
   <data name="GamePage_BackToGames" xml:space="preserve">
     <value>Games</value>
   </data>
+  <data name="Game_Swap_UpdatesTurnedOff" xml:space="preserve">
+    <value>Updates are turned off for this game, so its DLLs are locked. Turn updates back on from the game's right-click menu to change them.</value>
+  </data>
   <data name="GamesPage_Status_UpdatesSkipped" xml:space="preserve">
     <value>Updates turned off</value>
     <comment>Shown on a game row. Kept short because the grid card is narrow and truncates.</comment>

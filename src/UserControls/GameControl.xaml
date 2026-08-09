@@ -58,7 +58,7 @@
                     </Button.Content>
                 </Button>
 
-                <Button ToolTipService.ToolTip="{Binding TranslationProperties.ResetAllText, Mode=OneWay}" Command="{Binding ResetAllCommand}">
+                <Button ToolTipService.ToolTip="{Binding TranslationProperties.ResetAllText, Mode=OneWay}" Command="{Binding ResetAllCommand}" Visibility="{Binding CanChangeDllsVisibility}">
                     <Button.Content>
                         <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xED62;"/>
                     </Button.Content>
@@ -70,7 +70,7 @@
                     </Button.Content>
                 </Button>
 
-                <Button Command="{Binding UpdateAllDllsCommand}" ToolTipService.ToolTip="{Binding TranslationProperties.UpdateAllDllsText, Mode=OneWay}" Visibility="{Binding Game.UpdateAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Button Command="{Binding UpdateAllDllsCommand}" ToolTipService.ToolTip="{Binding TranslationProperties.UpdateAllDllsText, Mode=OneWay}" Visibility="{Binding CanChangeDllsVisibility}">
                     <Button.Content>
                         <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE896;"/>
                     </Button.Content>

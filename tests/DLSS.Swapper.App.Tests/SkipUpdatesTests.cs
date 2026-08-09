@@ -115,6 +115,38 @@ public class SkipUpdatesTests
     }
 
     [Fact]
+    public void ALockedGameCanStillBeOfferedASavedCopy()
+    {
+        // Saving a copy is not a change to the game, and locking one makes its original more
+        // valuable rather than less. When the lock outranked this, a locked game missing its
+        // original showed no button and had no route to fixing it from its row.
+        using var manifest = new ManifestScope();
+        manifest.Add(GameAssetType.DLSS, "310.7.0.0");
+
+        var game = new TestGame("skip_10");
+        game.GameAssets.Add(Asset(game.ID, GameAssetType.DLSS, "310.7.0.0"));
+        game.SkipUpdates = true;
+        game.RefreshUpdateAvailable();
+
+        var status = GameRowStatus.For(game);
+
+        Assert.Equal(GameRowState.NoBackup, status.State);
+        Assert.False(string.IsNullOrEmpty(status.ActionLabel));
+    }
+
+    [Fact]
+    public void ALockedGameWithItsCopySavedSaysItIsLocked()
+    {
+        using var manifest = new ManifestScope();
+        manifest.Add(GameAssetType.DLSS, "310.7.0.0");
+
+        var game = GameWith("skip_11", (GameAssetType.DLSS, "310.1.0.0"));
+        game.SkipUpdates = true;
+
+        Assert.Equal(GameRowState.UpdatesSkipped, GameRowStatus.For(game).State);
+    }
+
+    [Fact]
     public void SkippingDoesNotHideAMissingBackup()
     {
         // Not updating a game is a reason to care more about having a copy of its original, not

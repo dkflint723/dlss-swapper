@@ -41,6 +41,18 @@
                     <FontIcon Style="{StaticResource PickerInformationalFontIcon}" />
                 </Button.Content>
             </Button>
+
+            <!--
+                Shown beside the type when the game is locked, so the reason the dropdown is greyed
+                out is on the row itself. A disabled control with no explanation reads as broken
+                rather than as a setting the user chose, possibly a while ago.
+            -->
+            <FontIcon
+                x:Name="LockedGlyph"
+                Glyph="&#xE72E;"
+                FontSize="12"
+                VerticalAlignment="Center"
+                Visibility="Collapsed" />
         </StackPanel>
 
         <DropDownButton Grid.Row="1"

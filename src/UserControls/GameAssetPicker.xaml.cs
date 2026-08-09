@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using DLSS_Swapper.Data;
+using DLSS_Swapper.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -109,5 +110,16 @@ public sealed partial class GameAssetPicker : UserControl
             && game.GameAssets.Any(x => x.AssetType == AssetType);
 
         Visibility = hasThisDll ? Visibility.Visible : Visibility.Collapsed;
+
+        // Locked games refuse the swap anyway. Disabling the control says so before the click
+        // rather than after it, which is the difference between a rule and an error message.
+        var isLocked = game is not null && game.SkipUpdates;
+
+        IsEnabled = isLocked == false;
+        LockedGlyph.Visibility = isLocked ? Visibility.Visible : Visibility.Collapsed;
+
+        ToolTipService.SetToolTip(this, isLocked
+            ? ResourceHelper.GetString("Game_Swap_UpdatesTurnedOff")
+            : null);
     }
 }

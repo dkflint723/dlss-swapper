@@ -96,6 +96,16 @@ public partial class GameControlModel : ObservableObject
         return engines.Present.Contains(assetType) ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    /// <summary>
+    /// Hides the buttons that change dlls when the game is locked.
+    /// </summary>
+    /// <remarks>
+    /// The swap path refuses anyway, but a button whose only outcome is a refusal is worse than no
+    /// button: it invites the click and then explains why it was wrong.
+    /// </remarks>
+    [ObservableProperty]
+    public partial Visibility CanChangeDllsVisibility { get; set; } = Visibility.Visible;
+
     /// <summary>Names the upscalers this game does not have, in place of eight empty pickers.</summary>
     [ObservableProperty]
     public partial string NotPresentSummary { get; set; } = string.Empty;
@@ -108,6 +118,8 @@ public partial class GameControlModel : ObservableObject
         gameControlWeakReference = new WeakReference<GameControl>(gameControl);
         Game = game;
         GameTitle = game.Title;
+
+        CanChangeDllsVisibility = game.SkipUpdates ? Visibility.Collapsed : Visibility.Visible;
 
         var engines = GameEngines.Split(game);
 

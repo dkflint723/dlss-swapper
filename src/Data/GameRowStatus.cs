@@ -61,25 +61,11 @@ public class GameRowStatus
             };
         }
 
-        // Set deliberately by the user, so it outranks anything the app would otherwise suggest.
-        // Saying "has a newer version" next to no button would read as the app being broken.
-        if (game.SkipUpdates)
-        {
-            return new GameRowStatus()
-            {
-                State = GameRowState.UpdatesSkipped,
-                Sentence = ResourceHelper.GetString("GamesPage_Status_UpdatesSkipped"),
-                Glyph = "\uE72E",
-                UsesAccent = false,
-                ActionLabel = null,
-                Engines = engines,
-            };
-        }
-
         // An update outranks a missing backup, even though the missing backup is the bigger risk.
         // Swapping saves a copy of the original before it writes, so taking the update fixes both,
-        // and offering "Save a copy" here would be the slower route to the same place.
-        if (game.AvailableUpdates.Count > 0)
+        // and offering "Save a copy" here would be the slower route to the same place. Only when
+        // the game is not locked, because then the swap is refused and that route does not exist.
+        if (game.SkipUpdates == false && game.AvailableUpdates.Count > 0)
         {
             var names = game.AvailableUpdates.Select(x => x.Label).ToList();
 
@@ -105,6 +91,22 @@ public class GameRowStatus
                 Glyph = "\uE7BA",
                 UsesAccent = false,
                 ActionLabel = ResourceHelper.GetString("GamesPage_Action_SaveACopy"),
+                Engines = engines,
+            };
+        }
+
+        // After the missing backup check, because saving a copy is not a change to the game and
+        // locking one makes its original more valuable rather than less. When this came first, a
+        // locked game missing its original showed no button and had no route to fixing it.
+        if (game.SkipUpdates)
+        {
+            return new GameRowStatus()
+            {
+                State = GameRowState.UpdatesSkipped,
+                Sentence = ResourceHelper.GetString("GamesPage_Status_UpdatesSkipped"),
+                Glyph = "\uE72E",
+                UsesAccent = false,
+                ActionLabel = null,
                 Engines = engines,
             };
         }
