@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DLSS_Swapper.UserControls.GameStatusView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DLSS_Swapper.UserControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Name="RootGameStatusView">
+
+    <!--
+        Gaps live on the children rather than as ColumnSpacing on the grid. Most rows carry no
+        glyph, and a spaced grid still charges for the empty column, which pushed the sentence a
+        step right of the title it sits under, by a different amount depending on whether the row
+        had a glyph. A collapsed child measures as nothing, margin included.
+    -->
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="VariantStates">
+                <!--
+                    Only the paint changes between the two, never what is shown or when. The card
+                    draws over cover art, so its ink is white and a shade smaller; the row draws on
+                    the page background and takes the theme's own text tokens.
+                -->
+                <VisualState x:Name="RowVariant" />
+                <VisualState x:Name="CardVariant">
+                    <VisualState.Setters>
+                        <Setter Target="StatusGlyph.Foreground" Value="White" />
+                        <Setter Target="StatusSentence.Foreground" Value="White" />
+                        <Setter Target="StatusSentence.FontSize" Value="11" />
+                        <Setter Target="StatusEngines.Foreground" Value="White" />
+                        <Setter Target="StatusEngines.FontSize" Value="10" />
+                        <Setter Target="StatusEngines.Opacity" Value="0.7" />
+                        <Setter Target="BusyRing.Foreground" Value="White" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <FontIcon
+            x:Name="StatusGlyph"
+            Grid.Column="0"
+            FontSize="11"
+            Margin="0,0,6,0"
+            VerticalAlignment="Center"
+            Foreground="{ThemeResource DsTextPrimaryBrush}" />
+
+        <TextBlock
+            x:Name="StatusSentence"
+            Grid.Column="1"
+            FontSize="12"
+            VerticalAlignment="Center"
+            TextWrapping="NoWrap"
+            TextTrimming="CharacterEllipsis"
+            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+        <!--
+            Secondary ink rather than the tertiary the handoff specifies. Which upscalers a game
+            ships is the substance of the row, not metadata, and at 10px tertiary measured about
+            2.5:1 against the background.
+        -->
+        <TextBlock
+            x:Name="StatusEngines"
+            Grid.Column="2"
+            FontSize="11"
+            Margin="12,0,0,0"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Right"
+            TextWrapping="NoWrap"
+            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+        <!-- Shares the trailing cell with the engine list, which it replaces while a swap runs. -->
+        <ProgressRing
+            x:Name="BusyRing"
+            Grid.Column="2"
+            Width="16"
+            Height="16"
+            Margin="12,0,0,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Visibility="Collapsed" />
+    </Grid>
+</UserControl>

@@ -25,6 +25,18 @@ public enum GameRowState
 /// </remarks>
 public class GameRowStatus
 {
+    /// <summary>
+    /// Private so only <see cref="For"/> can build one.
+    /// </summary>
+    /// <remarks>
+    /// Also keeps the XAML type generator's hands off it. Now that a control takes this as a
+    /// dependency property, the generator emits an activator for every type it can see a public
+    /// constructor on, and `new GameRowStatus()` cannot compile while the members are required.
+    /// </remarks>
+    GameRowStatus()
+    {
+    }
+
     public required GameRowState State { get; init; }
 
     /// <summary>The full sentence, already localised.</summary>

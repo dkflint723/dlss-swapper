@@ -19,7 +19,6 @@
     <Page.Resources>
         <ct_converters:BoolNegationConverter x:Key="BoolNegationConverter" />
         <ct_converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
-        <ct_converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
         <ct_converters:StringVisibilityConverter x:Key="StringVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
         <ct_converters:StringVisibilityConverter x:Key="InverseStringVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         <converters:BitmapImageUriConverter x:Key="BitmapImageUriConverter" />
@@ -30,8 +29,16 @@
             secondary text.
         -->
         <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" TrueValue="0.55" FalseValue="1.0" NullValue="1.0" />
-        
 
+        <!--
+            One header for both views. It was two identical copies, and a launcher group is the same
+            thing whichever way the games under it are drawn.
+        -->
+        <DataTemplate x:Key="GroupHeaderTemplate" x:DataType="data:GameGroup">
+            <Grid Margin="0" Visibility="{x:Bind Name, Converter={StaticResource StringVisibilityConverter}}">
+                <TextBlock Text="{x:Bind Name}" Margin="0" Style="{StaticResource TitleTextBlockStyle}"/>
+            </Grid>
+        </DataTemplate>
 
 
         <DataTemplate x:Key="ListViewTemplate" x:DataType="pages:GameGridPageModel">
@@ -47,15 +54,7 @@
                 -->
 
                 <ListView.GroupStyle>
-                    <GroupStyle HidesIfEmpty="True">
-                        <GroupStyle.HeaderTemplate>
-                            <DataTemplate x:DataType="data:GameGroup">
-                                <Grid Margin="0" Visibility="{x:Bind Name, Converter={StaticResource StringVisibilityConverter}}">
-                                    <TextBlock Text="{x:Bind Name}"  Margin="0" Style="{StaticResource TitleTextBlockStyle}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </GroupStyle.HeaderTemplate>
-                    </GroupStyle>
+                    <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
                 </ListView.GroupStyle>
 
                 <ListView.ItemTemplate>
@@ -90,7 +89,6 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="44" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="130" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
@@ -126,49 +124,24 @@
                                     TextTrimming="CharacterEllipsis"
                                     Foreground="{ThemeResource DsTextPrimaryBrush}" />
 
-                                <StackPanel Orientation="Horizontal" Spacing="5">
-                                    <FontIcon
-                                        FontSize="11"
-                                        VerticalAlignment="Center"
-                                        Glyph="{x:Bind RowStatus.Glyph, Mode=OneWay}"
-                                        Visibility="{x:Bind RowStatus.Glyph, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
-                                        Foreground="{ThemeResource DsTextPrimaryBrush}" />
-                                    <TextBlock
-                                        Text="{x:Bind RowStatus.Sentence, Mode=OneWay}"
-                                        FontSize="12"
-                                        TextWrapping="NoWrap"
-                                        TextTrimming="CharacterEllipsis"
-                                        VerticalAlignment="Center"
-                                        Foreground="{ThemeResource DsTextSecondaryBrush}" />
-                                </StackPanel>
+                                <!--
+                                    The engine list rides on the status line rather than in a fixed
+                                    130px column of its own. It used to be a column, which had to be
+                                    kept in step with the card's copy of the same three fields by
+                                    hand, and was not.
+                                -->
+                                <usercontrols:GameStatusView
+                                    Variant="Row"
+                                    Status="{x:Bind RowStatus, Mode=OneWay}" />
                             </StackPanel>
 
-                            <!--
-                                Secondary ink rather than the tertiary the handoff specifies. Which
-                                upscalers a game ships is the substance of the row, not metadata, and
-                                at 10px tertiary measured about 2.5:1 against the background. Also
-                                nudged up a point, since 10px is small for text carrying meaning.
-                            -->
-                            <TextBlock
+                            <usercontrols:GameActionButton
                                 Grid.Column="2"
-                                Text="{x:Bind RowStatus.Engines, Mode=OneWay}"
-                                FontSize="11"
-                                HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
-                                TextWrapping="NoWrap"
-                                Foreground="{ThemeResource DsTextSecondaryBrush}" />
-
-                            <!-- Only rendered when the row has something to do. -->
-                            <Button
-                                Grid.Column="3"
-                                Height="32"
-                                Padding="16,0"
-                                VerticalAlignment="Center"
-                                CornerRadius="{StaticResource DsCornerRadius}"
-                                Content="{x:Bind RowStatus.ActionLabel, Mode=OneWay}"
-                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.RowActionCommand}"
-                                CommandParameter="{x:Bind}"
-                                Visibility="{x:Bind RowStatus.ActionLabel, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}" />
+                                Variant="Row"
+                                Status="{x:Bind RowStatus, Mode=OneWay}"
+                                Game="{x:Bind}"
+                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.RowActionCommand}" />
                         </Grid>
 
                     </DataTemplate>
@@ -182,15 +155,7 @@
             <GridView PointerWheelChanged="MainGridView_PointerWheelChanged" ManipulationMode="None" x:Name="MainGridView" ItemsSource="{x:Bind CurrentCollectionView, Mode=OneWay}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="GridAndListView_ItemClick" Padding="20"  >
 
                 <GridView.GroupStyle>
-                    <GroupStyle HidesIfEmpty="True">
-                        <GroupStyle.HeaderTemplate>
-                            <DataTemplate x:DataType="data:GameGroup">
-                                <Grid Margin="0" Visibility="{x:Bind Name, Converter={StaticResource StringVisibilityConverter}}">
-                                    <TextBlock Text="{x:Bind Name}" Margin="0" Style="{StaticResource TitleTextBlockStyle}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </GroupStyle.HeaderTemplate>
-                    </GroupStyle>
+                    <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
                 </GridView.GroupStyle>
 
                 <GridView.ItemContainerStyle>
@@ -245,7 +210,7 @@
                                 nearly opaque because white text has to stay readable over a bright
                                 cover, not just a dark one.
                             -->
-                            <Grid VerticalAlignment="Bottom" Padding="10,20,10,10" ColumnSpacing="8">
+                            <Grid VerticalAlignment="Bottom" Padding="10,20,10,10">
                                 <Grid.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                         <GradientStop Color="#00000000" Offset="0.0" />
@@ -254,70 +219,30 @@
                                     </LinearGradientBrush>
                                 </Grid.Background>
 
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-
                                 <!--
-                                    The same status glyph and sentence the list rows carry, rather
-                                    than a hardcoded "DLSS" label, a version number and vendor
-                                    coloured badges. The card had been claiming every game was about
-                                    DLSS regardless of what it actually ships.
+                                    The same status the list rows carry, from the same control,
+                                    rather than a hardcoded "DLSS" label, a version number and
+                                    vendor coloured badges. The card had been claiming every game
+                                    was about DLSS regardless of what it actually ships.
                                 -->
-                                <FontIcon
-                                    Grid.Column="0"
-                                    FontSize="11"
-                                    VerticalAlignment="Center"
-                                    Foreground="White"
-                                    Glyph="{x:Bind RowStatus.Glyph, Mode=OneWay}"
-                                    Visibility="{x:Bind RowStatus.Glyph, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}" />
-                                <TextBlock
-                                    Grid.Column="1"
-                                    Text="{x:Bind RowStatus.Sentence, Mode=OneWay}"
-                                    FontSize="11"
-                                    VerticalAlignment="Center"
-                                    TextWrapping="NoWrap"
-                                    TextTrimming="CharacterEllipsis"
-                                    Foreground="White" />
-                                <TextBlock
-                                    Grid.Column="2"
-                                    Text="{x:Bind RowStatus.Engines, Mode=OneWay}"
-                                    FontSize="10"
-                                    VerticalAlignment="Center"
-                                    HorizontalAlignment="Right"
-                                    TextWrapping="NoWrap"
-                                    Opacity="0.7"
-                                    Foreground="White"
-                                    Visibility="{x:Bind Processing, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}" />
-                                <ProgressRing Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="White" Width="16" Height="16" Visibility="{x:Bind Processing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                                <usercontrols:GameStatusView
+                                    Variant="Card"
+                                    Status="{x:Bind RowStatus, Mode=OneWay}" />
                             </Grid>
 
                             <!--
-                                Out of date marker. A glyph rather than a colour, so it is still
-                                readable to anyone who cannot separate the vendor colours, and it
-                                sits over the cover where it is visible while scanning the grid.
-                                The button updates every out of date dll in this game.
+                                The row's action, over the cover where it is visible while scanning
+                                the grid. A glyph rather than a colour, so it is still readable to
+                                anyone who cannot separate the vendor colours.
                             -->
-                            <Button
+                            <usercontrols:GameActionButton
                                 VerticalAlignment="Top"
                                 HorizontalAlignment="Right"
                                 Margin="8"
-                                Padding="6"
-                                CornerRadius="{StaticResource DsCornerRadius}"
-                                Background="#CC000000"
-                                BorderThickness="0"
-                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.RowActionCommand}"
-                                CommandParameter="{x:Bind}"
-                                ToolTipService.ToolTip="{Binding ElementName=RootGameGridPage, Path=ViewModel.TranslationProperties.UpdateThisGameText, Mode=OneWay}"
-                                Visibility="{x:Bind RowStatus.ActionLabel, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
-                                <FontIcon Glyph="&#xE896;" FontSize="14" Foreground="White" />
-                            </Button>
+                                Variant="Card"
+                                Status="{x:Bind RowStatus, Mode=OneWay}"
+                                Game="{x:Bind}"
+                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.RowActionCommand}" />
                         </Grid>
                     </DataTemplate>
 
