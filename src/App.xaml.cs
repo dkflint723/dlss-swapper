@@ -20,7 +20,24 @@ namespace DLSS_Swapper;
 /// </summary>
 public sealed partial class App : Application
 {
-    public ElementTheme GlobalElementTheme { get; set; }
+    ElementTheme _globalElementTheme;
+
+    /// <summary>
+    /// The theme every page roots itself to.
+    /// </summary>
+    /// <remarks>
+    /// Setting it repaints the accent, because each preset has a different value per theme and the
+    /// ink that stays readable on it changes with them.
+    /// </remarks>
+    public ElementTheme GlobalElementTheme
+    {
+        get { return _globalElementTheme; }
+        set
+        {
+            _globalElementTheme = value;
+            AccentManager.Apply();
+        }
+    }
 
     MainWindow? _mainWindow;
 #pragma warning disable CS8603 // Possible null reference return.
@@ -76,6 +93,10 @@ public sealed partial class App : Application
         GlobalElementTheme = Settings.Instance.AppTheme;
 
         this.InitializeComponent();
+
+        // After InitializeComponent, because the brushes it paints live in the application
+        // resources this call creates.
+        AccentManager.Start();
     }
 
     internal void RegenerateHttpClient()

@@ -23,6 +23,22 @@
                             <Color x:Key="BackgroundLevel1">#272727</Color>
                             <Color x:Key="BackgroundLevel2">#323232</Color>
 
+                            <!--
+                                Redesign tokens. Alpha values come from the design's rgba() values
+                                converted to #AARRGGBB, eg .075 x 255 = 19 = 0x13.
+                            -->
+                            <SolidColorBrush x:Key="DsBgBrush" Color="#0C0D0F" />
+                            <SolidColorBrush x:Key="DsSurfBrush" Color="#141619" />
+                            <SolidColorBrush x:Key="DsSurf2Brush" Color="#1B1E22" />
+                            <SolidColorBrush x:Key="DsLineBrush" Color="#13FFFFFF" />
+                            <SolidColorBrush x:Key="DsLine2Brush" Color="#24FFFFFF" />
+                            <SolidColorBrush x:Key="DsTextPrimaryBrush" Color="#F2F3F5" />
+                            <SolidColorBrush x:Key="DsTextSecondaryBrush" Color="#8CF2F3F5" />
+                            <SolidColorBrush x:Key="DsTextTertiaryBrush" Color="#4DF2F3F5" />
+                            <SolidColorBrush x:Key="DsHoverBrush" Color="#0DFFFFFF" />
+                            <SolidColorBrush x:Key="DsSelectedBrush" Color="#0FFFFFFF" />
+                            <SolidColorBrush x:Key="DsCoverPlaceholderBrush" Color="#1B1E22" />
+
                             <Color x:Key="ButtonBackgroundColor">#202020</Color>
                             <Color x:Key="ButtonForegroundColor">#FFFFFF</Color>
                             <Color x:Key="ButtonHoverBackgroundColor">#2D2D2D</Color>
@@ -43,6 +59,19 @@
                             <Color x:Key="BackgroundLevel0">#F3F3F3</Color>
                             <Color x:Key="BackgroundLevel1">#F9F9F9</Color>
                             <Color x:Key="BackgroundLevel2">#FDFDFD</Color>
+
+                            <!-- Redesign tokens. See the dark dictionary for how alpha is derived. -->
+                            <SolidColorBrush x:Key="DsBgBrush" Color="#FBFBFC" />
+                            <SolidColorBrush x:Key="DsSurfBrush" Color="#F2F3F5" />
+                            <SolidColorBrush x:Key="DsSurf2Brush" Color="#E9EBEE" />
+                            <SolidColorBrush x:Key="DsLineBrush" Color="#1A101215" />
+                            <SolidColorBrush x:Key="DsLine2Brush" Color="#2E101215" />
+                            <SolidColorBrush x:Key="DsTextPrimaryBrush" Color="#16181B" />
+                            <SolidColorBrush x:Key="DsTextSecondaryBrush" Color="#9E16181B" />
+                            <SolidColorBrush x:Key="DsTextTertiaryBrush" Color="#6116181B" />
+                            <SolidColorBrush x:Key="DsHoverBrush" Color="#0A101215" />
+                            <SolidColorBrush x:Key="DsSelectedBrush" Color="#0D101215" />
+                            <SolidColorBrush x:Key="DsCoverPlaceholderBrush" Color="#E9EBEE" />
 
                             <Color x:Key="ButtonBackgroundColor">#F3F3F3</Color>
                             <Color x:Key="ButtonForegroundColor">#000000</Color>
@@ -70,6 +99,14 @@
                 
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
+
+            <!--
+                The accent is chosen at runtime, so it cannot live in a theme dictionary. These are
+                declared once with the default brand green and have their colour replaced by
+                AccentManager, which repaints everything referencing them.
+            -->
+            <SolidColorBrush x:Key="DsAccentBrush" Color="#2EE07A" />
+            <SolidColorBrush x:Key="DsAccentInkBrush" Color="#06210F" />
 
             <Style TargetType="FontIcon">
                 <Setter Property="FontFamily" Value ="Assets/Fonts/Segoe-Fluent-Icons.ttf#Segoe Fluent Icons"/>

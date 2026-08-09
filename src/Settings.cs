@@ -106,6 +106,44 @@ public class Settings
         }
     }
 
+    int _accentPreset = AccentPalette.DefaultIndex;
+    /// <summary>Index into AccentPalette.All. Out of range values fall back to the default.</summary>
+    public int AccentPreset
+    {
+        get { return _accentPreset; }
+        set
+        {
+            if (_accentPreset != value)
+            {
+                _accentPreset = value;
+                if (_autoSave)
+                {
+                    SaveJson();
+                }
+                AccentManager.Apply();
+            }
+        }
+    }
+
+    bool _matchDesktopAccent;
+    /// <summary>When on, the Windows personalisation colour overrides the chosen preset. Off by default.</summary>
+    public bool MatchDesktopAccent
+    {
+        get { return _matchDesktopAccent; }
+        set
+        {
+            if (_matchDesktopAccent != value)
+            {
+                _matchDesktopAccent = value;
+                if (_autoSave)
+                {
+                    SaveJson();
+                }
+                AccentManager.Apply();
+            }
+        }
+    }
+
     bool _backupNewGamesAutomatically = true;
     public bool BackupNewGamesAutomatically
     {
