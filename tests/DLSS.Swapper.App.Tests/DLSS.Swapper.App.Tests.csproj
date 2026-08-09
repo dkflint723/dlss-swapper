@@ -14,6 +14,17 @@
     <UseWinUI>true</UseWinUI>
     <WindowsPackageType>None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+
+    <!--
+      CS0436: the Windows App SDK compiles its auto initializers into every project that uses
+      WinUI, so this project builds its own AutoInitialize and NativeMethods while also referencing
+      an app assembly that already contains them. The compiler resolves to the local copy, which is
+      correct. The initializers are included unconditionally by the SDK's targets rather than gated
+      by a property, and dropping them would take the undocked reg free WinRT bootstrap with them,
+      which is what lets the test host activate WinRT types such as the resource manager. So the
+      duplication is expected here and only the warning is worth removing.
+    -->
+    <NoWarn>$(NoWarn);CS0436</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

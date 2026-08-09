@@ -15,10 +15,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Setup .NET 10.0
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '10.0.202'
 
@@ -34,3 +34,4 @@ jobs:
     # suite by some minutes, which is why it runs second.
     - name: Run app tests
       run: dotnet test "tests/DLSS.Swapper.App.Tests/DLSS.Swapper.App.Tests.csproj" -c Debug --logger "console;verbosity=normal"
+
