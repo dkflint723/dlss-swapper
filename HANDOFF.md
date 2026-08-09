@@ -51,8 +51,9 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-1. Remaining design steps: preview sheet, undo strip, Upscalers page, Settings page, first-run
-   state.
+1. Remaining design steps: the updating strip and the undo strip (README §4 and §5), then Upscalers,
+   Settings, first-run. The preview sheet is in; the strips are the other half of that flow, and
+   `DllUpdateRunner` still reports progress as a single string rather than per item, which §4 needs.
 2. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. Not yet reasoned about either
    way.
@@ -64,6 +65,9 @@ read than the `.dc.html` mockup.
   the button over the cover and the row keeps it in line, so they cannot share a parent.
 - **Launcher sections fold**, persisted per library in `GameLibrarySettings.IsCollapsed`. A search,
   or any tab but "All games", suspends folding so it can look inside folded sections.
+- **The update preview sheet** (README §3). `PendingDllUpdate.ForGames` builds the rows and
+  `DllUpdateRunner.UpdateSelectedAsync` runs exactly those, so the list and the run cannot diverge.
+  `UpdatePreviewModel` holds no controls, so its counts and copy are covered by tests.
 
 ## Gotchas that cost real time
 

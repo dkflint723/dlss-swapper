@@ -209,6 +209,27 @@
   <data name="GamesPage_ReviewUpdatesTemplate" xml:space="preserve">
     <value>Review {0} updates</value>
   </data>
+  <data name="Preview_TitleTemplate" xml:space="preserve">
+    <value>Update {0} files across {1} games?</value>
+  </data>
+  <data name="Preview_TitleOneGameTemplate" xml:space="preserve">
+    <value>Update {0} files in one game?</value>
+  </data>
+  <data name="Preview_TitleOneFile" xml:space="preserve">
+    <value>Update one file?</value>
+  </data>
+  <data name="Preview_ConfirmOneFile" xml:space="preserve">
+    <value>Update one file</value>
+  </data>
+  <data name="Preview_Body" xml:space="preserve">
+    <value>Every file below is replaced with a newer version. A copy of each original is saved first, so you can put any of them back from this list or from the game's page.</value>
+  </data>
+  <data name="Preview_CloseGamesFirst" xml:space="preserve">
+    <value>Close your games first — a file in use cannot be replaced.</value>
+  </data>
+  <data name="Preview_ConfirmTemplate" xml:space="preserve">
+    <value>Update {0} files</value>
+  </data>
   <data name="GamesPage_Filter_All" xml:space="preserve">
     <value>All games</value>
   </data>

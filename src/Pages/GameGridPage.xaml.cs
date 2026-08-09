@@ -193,6 +193,31 @@ public sealed partial class GameGridPage : Page
         SearchBox.Text = string.Empty;
     }
 
+    /// <summary>
+    /// Clicking the dimmed area behind the preview sheet cancels it.
+    /// </summary>
+    /// <remarks>
+    /// One of three ways out, all of them the same command, because a sheet that writes to game
+    /// folders must never be harder to escape than to accept.
+    /// </remarks>
+    void UpdatePreviewBackdrop_Tapped(object sender, TappedRoutedEventArgs e)
+    {
+        ViewModel.CancelUpdatePreviewCommand.Execute(null);
+    }
+
+    void EscapeAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (ViewModel.UpdatePreview is null)
+        {
+            return;
+        }
+
+        ViewModel.CancelUpdatePreviewCommand.Execute(null);
+
+        // Only swallowed when it did something, so Esc stays free for everything else on the page.
+        args.Handled = true;
+    }
+
     void GroupHeader_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement { Tag: GameGroup group })

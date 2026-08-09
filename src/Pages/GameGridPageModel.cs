@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -514,31 +515,61 @@ public partial class GameGridPageModel : ObservableObject
         App.CurrentApp.MainWindow?.RefreshSidebar();
     }
 
+    /// <summary>The preview sheet's contents, or null when it is closed.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UpdatePreviewVisibility))]
+    public partial UpdatePreviewModel? UpdatePreview { get; set; }
+
+    public Visibility UpdatePreviewVisibility => UpdatePreview is null ? Visibility.Collapsed : Visibility.Visible;
+
+    /// <summary>
+    /// Opens the preview sheet rather than starting to write.
+    /// </summary>
+    /// <remarks>
+    /// The button says "Review", and this is what makes that true. Replacing files inside a game
+    /// install is the one thing this app does that looks irreversible, and it used to happen behind
+    /// a confirmation that only gave a count.
+    /// </remarks>
     [RelayCommand]
-    async Task UpdateAllGamesButtonAsync()
+    void UpdateAllGamesButton()
     {
-        var gamesToUpdate = new List<Game>();
-        var outdatedDllCount = 0;
-
-        foreach (var game in GameManager.Instance.GetSynchronisedGamesListCopy())
+        var pendingUpdates = PendingDllUpdate.ForGames(GameManager.Instance.GetSynchronisedGamesListCopy());
+        if (pendingUpdates.Count == 0)
         {
-            if (game.OutdatedAssetTypes.Count == 0)
-            {
-                continue;
-            }
-
-            gamesToUpdate.Add(game);
-            outdatedDllCount += game.OutdatedAssetTypes.Count;
+            return;
         }
 
-        await DllUpdatePrompt.RunAsync(
+        UpdatePreview = new UpdatePreviewModel(pendingUpdates);
+    }
+
+    /// <summary>Dismisses the sheet without writing anything.</summary>
+    [RelayCommand]
+    void CancelUpdatePreview()
+    {
+        UpdatePreview = null;
+    }
+
+    [RelayCommand]
+    async Task ConfirmUpdatePreviewAsync()
+    {
+        var selectedUpdates = UpdatePreview?.SelectedUpdates;
+        UpdatePreview = null;
+
+        if (selectedUpdates is null || selectedUpdates.Count == 0)
+        {
+            return;
+        }
+
+        var games = selectedUpdates.Select(x => x.Game).Distinct().ToList();
+
+        await DllUpdatePrompt.RunConfirmedAsync(
             gameGridPage.XamlRoot,
-            gamesToUpdate,
+            games,
             ResourceHelper.GetString("DllUpdate_Title"),
-            outdatedDllCount,
-            ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmAllGamesTemplate", outdatedDllCount, gamesToUpdate.Count),
-            ResourceHelper.GetString("DllUpdate_AllGamesUpToDate"),
-            (games, progress, cancellationToken) => DllUpdateRunner.UpdateGamesAsync(games, progress, cancellationToken),
+
+            // The sheet's own rows, so what runs is what was approved rather than everything that
+            // happened to be out of date when the run started.
+            (_, progress, cancellationToken) => DllUpdateRunner.UpdateSelectedAsync(selectedUpdates, progress, cancellationToken),
             "DllUpdate_SwappedTemplate");
 
         // Swapping saves an original first, so the backup coverage moves with it.

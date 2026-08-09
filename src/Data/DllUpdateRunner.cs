@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DLSS_Swapper.Dlls;
@@ -47,14 +48,25 @@ internal static class DllUpdateRunner
     /// Updates one game's out of date dlls.
     /// </summary>
     /// <param name="progress">Reports the dll about to be worked on, for a progress display.</param>
-    internal static async Task<DllUpdateResult> UpdateGameAsync(Game game, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    internal static Task<DllUpdateResult> UpdateGameAsync(Game game, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    {
+        // Copied because a swap refreshes the list underneath us.
+        return UpdateGameAsync(game, new List<GameAssetType>(game.OutdatedAssetTypes), progress, cancellationToken);
+    }
+
+    /// <summary>
+    /// Updates the named dlls in one game.
+    /// </summary>
+    /// <remarks>
+    /// The list is a parameter so the preview sheet can hand back the subset the user left checked.
+    /// The swap loop stays written once: "everything out of date" is just the list the other
+    /// overload passes.
+    /// </remarks>
+    internal static async Task<DllUpdateResult> UpdateGameAsync(Game game, IReadOnlyList<GameAssetType> assetTypes, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
     {
         var result = new DllUpdateResult();
 
-        // Copied because a swap refreshes the list underneath us.
-        var outdatedAssetTypes = new List<GameAssetType>(game.OutdatedAssetTypes);
-
-        foreach (var assetType in outdatedAssetTypes)
+        foreach (var assetType in assetTypes)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -186,6 +198,38 @@ internal static class DllUpdateRunner
     internal static Task<DllUpdateResult> RevertGamesAsync(IReadOnlyList<Game> games, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
     {
         return RunAcrossGamesAsync(games, RevertGameAsync, progress, cancellationToken);
+    }
+
+    /// <summary>
+    /// Updates exactly the files the preview sheet was left holding.
+    /// </summary>
+    /// <remarks>
+    /// Grouped back into games because a swap is a per game operation, and run in the order the
+    /// sheet listed them so the progress text reads down the sheet the user just approved.
+    /// </remarks>
+    internal static async Task<DllUpdateResult> UpdateSelectedAsync(IReadOnlyList<PendingDllUpdate> updates, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    {
+        var result = new DllUpdateResult();
+
+        foreach (var updatesForGame in updates.GroupBy(x => x.Game))
+        {
+            // Checked here as well, for the same reason the batch runner checks it: this is a way
+            // into the swap that does not pass through the other one.
+            if (updatesForGame.Key.SkipUpdates)
+            {
+                continue;
+            }
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            var assetTypes = updatesForGame.Select(x => x.AssetType).ToList();
+            result.Add(await UpdateGameAsync(updatesForGame.Key, assetTypes, progress, cancellationToken).ConfigureAwait(false));
+        }
+
+        return result;
     }
 
     static async Task<DllUpdateResult> RunAcrossGamesAsync(

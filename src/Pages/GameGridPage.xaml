@@ -16,6 +16,9 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     NavigationCacheMode="Required"
     x:Name="RootGameGridPage">
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Escape" Invoked="EscapeAccelerator_Invoked" />
+    </Page.KeyboardAccelerators>
     <Page.Resources>
         <ct_converters:BoolNegationConverter x:Key="BoolNegationConverter" />
         <ct_converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
@@ -506,7 +509,173 @@
         </Grid>
 
         <ContentControl x:Name="MainContentControl" Grid.Row="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Content="{x:Bind ViewModel, Mode=OneWay}" ContentTemplateSelector="{StaticResource TemplateSelector}" />
-        
+
+        <!--
+            The preview sheet. In the content row rather than over the whole page, so the command
+            bar it was opened from stays visible and the sheet reads as belonging to the list it is
+            about to change.
+        -->
+        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.UpdatePreviewVisibility, Mode=OneWay}">
+            <!-- Clicking away is a cancel, same as Esc and the Cancel button. -->
+            <Border Background="#73000000" Tapped="UpdatePreviewBackdrop_Tapped" />
+
+            <Border
+                Width="640"
+                MaxHeight="560"
+                Margin="0,16,0,16"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Center"
+                Background="{ThemeResource DsBgBrush}"
+                BorderThickness="1"
+                BorderBrush="{ThemeResource DsLine2Brush}"
+                CornerRadius="{StaticResource DsCornerRadius}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel
+                        Grid.Row="0"
+                        Padding="22,20,22,14"
+                        Spacing="6"
+                        BorderThickness="0,0,0,1"
+                        BorderBrush="{ThemeResource DsLineBrush}">
+                        <TextBlock
+                            Text="{x:Bind ViewModel.UpdatePreview.Title, Mode=OneWay}"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            TextWrapping="Wrap"
+                            Foreground="{ThemeResource DsTextPrimaryBrush}" />
+                        <!--
+                            The reassurance is the point of the sheet, not decoration: it is the only
+                            place the app says a copy of the original is kept before it writes.
+                        -->
+                        <TextBlock
+                            Text="{x:Bind ViewModel.UpdatePreview.Body, Mode=OneWay}"
+                            FontSize="12.5"
+                            LineHeight="19"
+                            TextWrapping="Wrap"
+                            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.UpdatePreview.Updates, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="data:PendingDllUpdate">
+                                    <Grid
+                                        Height="40"
+                                        Padding="22,0"
+                                        ColumnSpacing="12"
+                                        BorderThickness="0,0,0,1"
+                                        BorderBrush="{ThemeResource DsLineBrush}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox
+                                            Grid.Column="0"
+                                            MinWidth="0"
+                                            Padding="0"
+                                            VerticalAlignment="Center"
+                                            IsChecked="{x:Bind IsSelected, Mode=TwoWay}" />
+
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Text="{x:Bind GameTitle}"
+                                            FontSize="13"
+                                            VerticalAlignment="Center"
+                                            TextWrapping="NoWrap"
+                                            TextTrimming="CharacterEllipsis"
+                                            Foreground="{ThemeResource DsTextPrimaryBrush}" />
+
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            Text="{x:Bind EngineName}"
+                                            FontSize="12"
+                                            VerticalAlignment="Center"
+                                            TextWrapping="NoWrap"
+                                            TextTrimming="CharacterEllipsis"
+                                            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+                                        <!--
+                                            Both versions, which the rows themselves deliberately
+                                            never show. On a row a version delta means nothing
+                                            without knowing which way is newer; here the whole
+                                            question is what changes, so it is the substance.
+                                        -->
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <TextBlock
+                                                Text="{x:Bind FromVersion}"
+                                                FontSize="12"
+                                                FontFamily="Consolas"
+                                                VerticalAlignment="Center"
+                                                Foreground="{ThemeResource DsTextTertiaryBrush}" />
+                                            <FontIcon
+                                                Glyph="&#xE72A;"
+                                                FontSize="10"
+                                                VerticalAlignment="Center"
+                                                Foreground="{ThemeResource DsTextTertiaryBrush}" />
+                                            <TextBlock
+                                                Text="{x:Bind ToVersion}"
+                                                FontSize="12"
+                                                FontFamily="Consolas"
+                                                MinWidth="74"
+                                                VerticalAlignment="Center"
+                                                Foreground="{StaticResource DsAccentBrush}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <Grid
+                        Grid.Row="2"
+                        Padding="22,14"
+                        ColumnSpacing="12"
+                        BorderThickness="0,1,0,0"
+                        BorderBrush="{ThemeResource DsLineBrush}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            Text="{x:Bind ViewModel.UpdatePreview.CloseGamesFirst, Mode=OneWay}"
+                            FontSize="12"
+                            VerticalAlignment="Center"
+                            TextWrapping="Wrap"
+                            Foreground="{ThemeResource DsTextTertiaryBrush}" />
+
+                        <Button
+                            Grid.Column="1"
+                            Height="32"
+                            Padding="16,0"
+                            CornerRadius="{StaticResource DsCornerRadius}"
+                            Content="{x:Bind ViewModel.UpdatePreview.CancelLabel, Mode=OneWay}"
+                            Command="{x:Bind ViewModel.CancelUpdatePreviewCommand}" />
+
+                        <Button
+                            Grid.Column="2"
+                            Height="32"
+                            Padding="16,0"
+                            CornerRadius="{StaticResource DsCornerRadius}"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            Content="{x:Bind ViewModel.UpdatePreview.ConfirmLabel, Mode=OneWay}"
+                            IsEnabled="{x:Bind ViewModel.UpdatePreview.CanConfirm, Mode=OneWay}"
+                            Command="{x:Bind ViewModel.ConfirmUpdatePreviewCommand}" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
     </Grid>
 </Page>
 

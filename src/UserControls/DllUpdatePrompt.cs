@@ -65,6 +65,23 @@ internal static class DllUpdatePrompt
             return;
         }
 
+        await RunConfirmedAsync(xamlRoot, games, title, operation, summaryTemplateResourceKey);
+    }
+
+    /// <summary>
+    /// Runs and reports, having been confirmed somewhere else.
+    /// </summary>
+    /// <remarks>
+    /// Split out for the preview sheet, which is itself the confirmation and a far better one: it
+    /// names every file. Asking again afterwards would be asking the same question twice.
+    /// </remarks>
+    internal static async Task RunConfirmedAsync(
+        XamlRoot xamlRoot,
+        IReadOnlyList<Game> games,
+        string title,
+        Func<IReadOnlyList<Game>, IProgress<string>, CancellationToken, Task<DllUpdateResult>> operation,
+        string summaryTemplateResourceKey)
+    {
         var progressRun = new Run() { Text = string.Empty };
         var progressTextBlock = new TextBlock() { TextWrapping = TextWrapping.Wrap };
         progressTextBlock.Inlines.Add(progressRun);
