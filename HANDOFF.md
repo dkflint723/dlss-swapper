@@ -42,16 +42,30 @@ All deliberate, all reasoned in the relevant commit messages.
 | Portrait 44x66 covers, not 96x54 | The cache holds 400x600 art; cropping a poster to 16:9 is unrecognisable |
 | Light brand green `#0E8A4F` to `#0E874F` | The spec's own 4.5:1 contrast requirement was not met by its own value |
 
+## Design source
+
+The design lives in a Claude Design project, reachable through the `DesignSync` tool without any
+extra login: project `bdbecbe5-df95-4a31-ba69-126debd66a1a`. `list_files` then `get_file`.
+`design_handoff_games_page_redesign/SPEC-pages.md` is the page-by-page spec and is much cheaper to
+read than the `.dc.html` mockup.
+
 ## Next, in order
 
-1. **Collapse the duplicated grid/list templates.** Extract a `GameStatusView` control (glyph,
-   sentence, engines, action button) rather than merging templates — they share meaning, not layout.
-   This caused three separate misses in one session; do it before touching rows again.
-2. **Collapsible launcher sections.** Click path is *proven* working
-   (`sender=Button, tag=GameGroup`). Unsolved piece: empty groups. Do not flip `HidesIfEmpty` — hide
-   rows instead, so "empty" keeps its original meaning.
-3. Remaining handoff steps: preview sheet, undo strip, Upscalers page, Settings page, first-run
+1. Remaining design steps: preview sheet, undo strip, Upscalers page, Settings page, first-run
    state.
+2. **A folded section during a search shows a heading with nothing under it.** The chevron says why,
+   but a search that matches only folded games looks like a search that matched nothing. Consider
+   unfolding on search and restoring afterwards.
+3. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
+   accent rule down its left edge, rather than in a gradient over it. Not yet reasoned about either
+   way.
+
+## Done since
+
+- **Grid/list duplication is gone.** `GameStatusView` and `GameActionButton` own the glyph,
+  sentence, engines and button. Two controls, not the one the old note called for: the card floats
+  the button over the cover and the row keeps it in line, so they cannot share a parent.
+- **Launcher sections fold**, persisted per library in `GameLibrarySettings.IsCollapsed`.
 
 ## Gotchas that cost real time
 
@@ -63,7 +77,18 @@ All deliberate, all reasoned in the relevant commit messages.
 - **Measure, do not infer.** Three wrong diagnoses: a "XAML parse error" that was an unsafe
   constructor call, a revert based on misread raw database bytes, and three wrong theories about a
   click handler. Each time, one bisect or one log line gave the answer in minutes.
+- **A `GridView` sizes every cell from the first item it measures.** Collapse the first card and the
+  whole grid goes to nothing — every section, not just that one. A `ListView` is fine with it. Any
+  "hide the row" idea has to be checked in the grid before it is believed.
+- `ContainerContentChanging`'s `ItemIndex` counts through all groups in order, so it maps back to a
+  group by walking `CollectionGroups` sizes. `ContainerFromIndex` does **not** agree with it, and
+  the realised panel holds headers among the rows, so its child order is not the item order either.
+- The XAML type generator emits an activator for every public-constructible type a dependency
+  property can reach. A type with `required` members needs a private constructor or the build fails
+  in generated code with no obvious link to the control that caused it.
 - PowerShell string replacements **silently fail on CRLF**. Verify the edit applied before trusting a
   test result.
+- The app can be driven and screenshotted from PowerShell (`SetForegroundWindow` + `CopyFromScreen`,
+  `SetCursorPos` + `mouse_event`). Three visual bugs this session were only visible that way.
 - Close the running app before building; it locks the exe.
 - `Start-Process` succeeding is not the same as the app surviving. Wait on the process.
