@@ -100,7 +100,7 @@ internal partial class GameManager : ObservableObject
         {
             // Read when the filter runs, not when it is built, so folding a section only has to ask
             // its view to filter again. The group does not exist yet the first time this is built.
-            if (libraryGameGroups.TryGetValue(library, out var gameGroup) && gameGroup.IsExpanded == false)
+            if (libraryGameGroups.TryGetValue(library, out var gameGroup) && gameGroup.IsFolded)
             {
                 return false;
             }
@@ -276,6 +276,15 @@ internal partial class GameManager : ObservableObject
 
     public ICollectionView GetGameCollection(string? filterText = null)
     {
+        // Set before the filters below are rebuilt, because they ask each group whether it is
+        // folded and a searching group is not. Here rather than anywhere nearer the search box,
+        // because this is the one function that knows the search text and applies it.
+        var isSearchActive = string.IsNullOrWhiteSpace(filterText) == false;
+        foreach (var gameGroup in libraryGameGroups.Values)
+        {
+            gameGroup.IsSearchActive = isSearchActive;
+        }
+
         // Refresh all filters.
         using (FavouriteGamesView.DeferRefresh())
         {

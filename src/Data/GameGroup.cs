@@ -21,11 +21,38 @@ internal partial class GameGroup : ObservableObject
     /// </remarks>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ChevronGlyph))]
+    [NotifyPropertyChangedFor(nameof(IsFolded))]
     [NotifyPropertyChangedFor(nameof(ShowsHeader))]
     public partial bool IsExpanded { get; set; } = true;
 
+    /// <summary>
+    /// Whether a search is narrowing the list, which suspends folding.
+    /// </summary>
+    /// <remarks>
+    /// A search looks through folded sections. Without this, searching for a game that lives in one
+    /// looked exactly like searching for a game that is not installed.
+    /// </remarks>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFolded))]
+    [NotifyPropertyChangedFor(nameof(ShowsFoldControl))]
+    [NotifyPropertyChangedFor(nameof(ShowsHeader))]
+    public partial bool IsSearchActive { get; set; }
+
     /// <summary>Only launcher sections fold. Favourites cuts across them, and the ungrouped list has no header at all.</summary>
     public bool IsCollapsible => GameLibrary is not null;
+
+    /// <summary>Whether this section is actually holding its games back right now.</summary>
+    public bool IsFolded => IsCollapsible && IsExpanded == false && IsSearchActive == false;
+
+    /// <summary>
+    /// Whether the heading offers to fold.
+    /// </summary>
+    /// <remarks>
+    /// It does not during a search, because folding is suspended then and the click would do
+    /// nothing visible. Taking the chevron away with it also stops it pointing the wrong way at a
+    /// section the search has just opened.
+    /// </remarks>
+    public bool ShowsFoldControl => IsCollapsible && IsSearchActive == false;
 
     public string ChevronGlyph => IsExpanded ? "\uE70D" : "\uE76C";
 
@@ -37,8 +64,9 @@ internal partial class GameGroup : ObservableObject
     /// section is empty by that same test and its heading is the only way back. An empty section
     /// still disappears - a launcher you own no games on, or every launcher but one while a search
     /// is running - but a folded one keeps its heading, because the user is the one who folded it.
+    /// During a search nothing is folded, so every section is judged on what it matched.
     /// </remarks>
-    public bool ShowsHeader => string.IsNullOrEmpty(Name) == false && (IsExpanded == false || Games.Count > 0);
+    public bool ShowsHeader => string.IsNullOrEmpty(Name) == false && (IsFolded || Games.Count > 0);
 
     public GameGroup(string name, GameLibrary? gameLibrary, AdvancedCollectionView games)
     {

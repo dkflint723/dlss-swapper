@@ -53,9 +53,10 @@ read than the `.dc.html` mockup.
 
 1. Remaining design steps: preview sheet, undo strip, Upscalers page, Settings page, first-run
    state.
-2. **A folded section during a search shows a heading with nothing under it.** The chevron says why,
-   but a search that matches only folded games looks like a search that matched nothing. Consider
-   unfolding on search and restoring afterwards.
+2. **The filter tabs do not suspend folding the way search now does.** On "Have an update", a folded
+   launcher still holds its updates back. The same defect, one condition away, but it needs a
+   different hook: `ActiveFilter` is read inside `PassesSharedFilters` rather than passed into
+   `GetGameCollection`, which is where `IsSearchActive` is set.
 3. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. Not yet reasoned about either
    way.
@@ -65,7 +66,8 @@ read than the `.dc.html` mockup.
 - **Grid/list duplication is gone.** `GameStatusView` and `GameActionButton` own the glyph,
   sentence, engines and button. Two controls, not the one the old note called for: the card floats
   the button over the cover and the row keeps it in line, so they cannot share a parent.
-- **Launcher sections fold**, persisted per library in `GameLibrarySettings.IsCollapsed`.
+- **Launcher sections fold**, persisted per library in `GameLibrarySettings.IsCollapsed`. A search
+  suspends folding entirely, chevron included, so it can look inside folded sections.
 
 ## Gotchas that cost real time
 
