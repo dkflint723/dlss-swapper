@@ -7,9 +7,6 @@ namespace DLSS_Swapper.UserControls;
 public class ShellSidebarModelTranslationProperties : LocalizedViewModelBase
 {
     [TranslationProperty]
-    public string AppName => ResourceHelper.GetString("ApplicationTitle");
-
-    [TranslationProperty]
     public string GamesText => ResourceHelper.GetString("GamesPage_Title");
 
     [TranslationProperty]

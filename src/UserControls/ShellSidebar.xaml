@@ -13,32 +13,22 @@
     <Grid Background="{ThemeResource DsBgBrush}" BorderThickness="0,0,1,0" BorderBrush="{ThemeResource DsLineBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Brand block: icon, app name, and how many games are in the library. -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="18,18,18,22" Spacing="11">
-            <Image Source="ms-appx:///Assets/icon_256.png" Width="26" Height="26" VerticalAlignment="Top" />
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock
-                    Text="{x:Bind ViewModel.TranslationProperties.AppName, Mode=OneWay}"
-                    FontSize="14"
-                    FontWeight="SemiBold"
-                    Foreground="{ThemeResource DsTextPrimaryBrush}" />
-                <TextBlock
-                    Text="{x:Bind ViewModel.GameCountText, Mode=OneWay}"
-                    FontSize="11"
-                    Foreground="{ThemeResource DsTextTertiaryBrush}" />
-            </StackPanel>
-        </StackPanel>
-
-        <StackPanel Grid.Row="1">
+        <!--
+            No brand block. The window already says what the app is called, and the app icon sits in
+            its title bar, so repeating both at the top of the sidebar spent the most prominent slot
+            in the column on something the user already knew. The game count it carried is a count
+            like any other, and now reads beside Games the way the dll count reads beside Upscalers.
+        -->
+        <StackPanel Grid.Row="0" Margin="0,18,0,0">
             <local:ShellNavItem
                 Glyph="&#xE7FC;"
                 Label="{x:Bind ViewModel.TranslationProperties.GamesText, Mode=OneWay}"
+                TrailingCount="{x:Bind ViewModel.GameCountText, Mode=OneWay}"
                 Section="Games"
                 ActiveSection="{x:Bind ViewModel.ActiveSection, Mode=OneWay}"
                 Invoked="NavItem_Invoked" />
@@ -69,7 +59,7 @@
             the same icon and gap, so it belongs to the column rather than sitting on top of it.
         -->
         <Border
-            Grid.Row="3"
+            Grid.Row="2"
             Padding="18,0,18,14"
             BorderThickness="0,1,0,0"
             BorderBrush="{ThemeResource DsLineBrush}"
@@ -124,7 +114,7 @@
         </Border>
 
         <TextBlock
-            Grid.Row="4"
+            Grid.Row="3"
             Margin="18,0,18,16"
             Text="{x:Bind ViewModel.VersionText, Mode=OneWay}"
             FontSize="11"

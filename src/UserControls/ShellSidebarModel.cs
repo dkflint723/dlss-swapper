@@ -38,7 +38,7 @@ public partial class ShellSidebarModel : ObservableObject
     [ObservableProperty]
     public partial ShellSection ActiveSection { get; set; } = ShellSection.Games;
 
-    /// <summary>Reads as "42 games", under the app name.</summary>
+    /// <summary>Trailing count on the Games item: how many games are in the library.</summary>
     [ObservableProperty]
     public partial string GameCountText { get; set; } = string.Empty;
 
@@ -92,7 +92,9 @@ public partial class ShellSidebarModel : ObservableObject
     {
         var summary = LibrarySummary.FromGames(_gamesSource());
 
-        GameCountText = ResourceHelper.GetFormattedResourceTemplate("Sidebar_GameCountTemplate", summary.TotalGames);
+        // Bare numbers, not "23 games". They sit beside their own label in the rail, which already
+        // says what is being counted, and the two counts have to read as the same kind of thing.
+        GameCountText = summary.TotalGames.ToString(System.Globalization.CultureInfo.CurrentCulture);
         UpscalerCountText = _upscalerCountSource().ToString(System.Globalization.CultureInfo.CurrentCulture);
 
         var withBackup = summary.TotalGames - summary.GamesMissingBackups;
