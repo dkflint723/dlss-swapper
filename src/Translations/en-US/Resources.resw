@@ -150,6 +150,59 @@
   <data name="DashboardPage_UndoneSwapTemplate" xml:space="preserve">
     <value>{0} replaced by a game update</value>
   </data>
+  <data name="GamesPage_Status_UpToDate" xml:space="preserve">
+    <value>Up to date</value>
+  </data>
+  <data name="GamesPage_Status_NewerVersionOne" xml:space="preserve">
+    <value>{0} has a newer version</value>
+  </data>
+  <data name="GamesPage_Status_NewerVersionMany" xml:space="preserve">
+    <value>{0} have newer versions</value>
+  </data>
+  <data name="GamesPage_Status_NoBackup" xml:space="preserve">
+    <value>No copy of the original is saved</value>
+  </data>
+  <data name="GamesPage_Status_UpdatesSkipped" xml:space="preserve">
+    <value>Updates are turned off for this game</value>
+  </data>
+  <data name="GamesPage_Action_TurnUpdatesOff" xml:space="preserve">
+    <value>Never update this game</value>
+  </data>
+  <data name="GamesPage_Action_TurnUpdatesOn" xml:space="preserve">
+    <value>Allow updates for this game</value>
+  </data>
+  <data name="GamesPage_Status_Swapping" xml:space="preserve">
+    <value>Swapping… keeping a copy of the original first</value>
+  </data>
+  <data name="GamesPage_Action_Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="GamesPage_Action_SaveACopy" xml:space="preserve">
+    <value>Save a copy</value>
+  </data>
+  <data name="GamesPage_ReviewUpdatesTemplate" xml:space="preserve">
+    <value>Review {0} updates</value>
+  </data>
+  <data name="GamesPage_Filter_All" xml:space="preserve">
+    <value>All games</value>
+  </data>
+  <data name="GamesPage_Filter_HaveUpdate" xml:space="preserve">
+    <value>Have an update</value>
+  </data>
+  <data name="GamesPage_Filter_MissingOriginal" xml:space="preserve">
+    <value>Missing a saved original</value>
+  </data>
+  <data name="GamesPage_Filter_Hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="General_ListSeparator" xml:space="preserve">
+    <value>, </value>
+    <comment>Separates all but the last item in a list, as in "DLSS, FSR and XeSS".</comment>
+  </data>
+  <data name="General_ListFinalSeparator" xml:space="preserve">
+    <value> and </value>
+    <comment>Joins the last item in a list, as in "DLSS and FSR". Deliberately no Oxford comma.</comment>
+  </data>
   <data name="Sidebar_Upscalers" xml:space="preserve">
     <value>Upscalers</value>
   </data>

@@ -198,6 +198,14 @@ internal static class DllUpdateRunner
 
         foreach (var game in games)
         {
+            // Enforced here as well as in the callers that build the list. This is the one place
+            // every batch passes through, so a caller that forgets cannot write to a game the user
+            // marked as leave alone.
+            if (game.SkipUpdates)
+            {
+                continue;
+            }
+
             if (cancellationToken.IsCancellationRequested)
             {
                 break;

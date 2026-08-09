@@ -332,6 +332,27 @@ public partial class GameGridPageModel : ObservableObject
     }
 
     /// <summary>
+    /// Marks a game as one that bulk updates should leave alone, or unmarks it.
+    /// </summary>
+    /// <remarks>
+    /// For games where a newer dll causes a problem rather than fixes one, most often anti cheat in
+    /// a multiplayer title refusing to launch with a modified dll. Without this the only way to keep
+    /// such a game safe is to never use update all, which gives up the feature for the whole
+    /// library to protect one game.
+    /// </remarks>
+    [RelayCommand]
+    async Task ToggleSkipUpdatesAsync(Game? game)
+    {
+        if (game is null)
+        {
+            return;
+        }
+
+        game.SkipUpdates = game.SkipUpdates == false;
+        await game.SaveToDatabaseAsync();
+    }
+
+    /// <summary>
     /// Updates every out of date dll in one game, from its card.
     /// </summary>
     /// <remarks>

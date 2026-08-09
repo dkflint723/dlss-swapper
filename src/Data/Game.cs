@@ -105,9 +105,55 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     [Column("is_hidden")]
     public partial bool? IsHidden { get; set; } = null;
 
+    /// <summary>
+    /// When true this game is left alone by every bulk update.
+    /// </summary>
+    /// <remarks>
+    /// For games where a swapped dll causes a problem rather than fixes one: anti cheat in
+    /// multiplayer titles can flag a modified dll and refuse to launch, and some games simply
+    /// misbehave on a newer version. Without this the only way to keep such a game safe is to never
+    /// use "update all", which gives up the feature for the whole library to protect one game.
+    /// </remarks>
+    [ObservableProperty]
+    [Column("skip_updates")]
+    public partial bool SkipUpdates { get; set; } = false;
+
+    partial void OnSkipUpdatesChanged(bool value)
+    {
+        // The row stops offering an update and starts saying why, so the sentence has to change
+        // with it.
+        RefreshRowStatus();
+    }
+
     [ObservableProperty]
     [Ignore]
     public partial bool Processing { get; set; } = false;
+
+    partial void OnProcessingChanged(bool value)
+    {
+        // The row sentence changes to and from "Swapping…" with this, so it has to be recomputed
+        // rather than only refreshed when versions change.
+        RefreshRowStatus();
+    }
+
+    /// <summary>
+    /// What this game's row says, as a sentence rather than a version delta.
+    /// </summary>
+    /// <remarks>
+    /// Held as a property rather than computed in the binding so it updates once per change instead
+    /// of on every layout pass, and so the view has nothing to decide.
+    /// </remarks>
+    [ObservableProperty]
+    [Ignore]
+    public partial GameRowStatus? RowStatus { get; set; }
+
+    internal void RefreshRowStatus()
+    {
+        UiThread.Run(() =>
+        {
+            RowStatus = GameRowStatus.For(this);
+        });
+    }
 
     [Ignore]
     public abstract GameLibrary GameLibrary { get; }
@@ -1418,6 +1464,9 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             OutdatedAssetTypes = outdatedAssetTypes;
             AvailableUpdates = availableUpdates;
             UpdateAvailable = availableUpdates.Count > 0;
+
+            // Last, so the sentence is built from the values just assigned.
+            RowStatus = GameRowStatus.For(this);
         });
     }
 

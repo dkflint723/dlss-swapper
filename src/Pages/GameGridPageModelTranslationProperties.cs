@@ -16,6 +16,9 @@ public class GameGridPageModelTranslationProperties : LocalizedViewModelBase
     public string UpdateThisGameText => ResourceHelper.GetString("GamesPage_UpdateThisGame");
 
     [TranslationProperty]
+    public string NeverUpdateThisGameText => ResourceHelper.GetString("GamesPage_Action_TurnUpdatesOff");
+
+    [TranslationProperty]
     public string AddGameText => ResourceHelper.GetString("GamesPage_AddGame");
 
     [TranslationProperty]

@@ -93,6 +93,14 @@ public class LibrarySummary
                 continue;
             }
 
+            // These counts drive a button that offers to update everything it counted, so a game
+            // the user has excluded must not be in them. The game is still behind, and its own row
+            // still says so; it is simply not part of what the batch will touch.
+            if (game.SkipUpdates)
+            {
+                continue;
+            }
+
             gamesWithUpdates += 1;
             outdatedDllCount += outdatedAssetTypes.Count;
 

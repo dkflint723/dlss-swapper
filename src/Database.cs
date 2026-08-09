@@ -118,6 +118,8 @@ internal class Database
                 "notes",
                 "is",
                 "hidden",
+                "skip",
+                "updates",
                 "epic",
                 "games",
                 "store",
