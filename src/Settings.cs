@@ -106,6 +106,23 @@ public class Settings
         }
     }
 
+    bool _backupNewGamesAutomatically = true;
+    public bool BackupNewGamesAutomatically
+    {
+        get { return _backupNewGamesAutomatically; }
+        set
+        {
+            if (_backupNewGamesAutomatically != value)
+            {
+                _backupNewGamesAutomatically = value;
+                if (_autoSave)
+                {
+                    SaveJson();
+                }
+            }
+        }
+    }
+
     bool _allowDebugDlls;
     public bool AllowDebugDlls
     {

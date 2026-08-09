@@ -355,7 +355,7 @@ public partial class GameGridPageModel : ObservableObject
             outdatedDllCount,
             ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmAllGamesTemplate", outdatedDllCount, gamesToUpdate.Count),
             ResourceHelper.GetString("DllUpdate_AllGamesUpToDate"),
-            (games, progress) => DllUpdateRunner.UpdateGamesAsync(games, progress),
+            (games, progress, cancellationToken) => DllUpdateRunner.UpdateGamesAsync(games, progress, cancellationToken),
             "DllUpdate_SwappedTemplate");
     }
 

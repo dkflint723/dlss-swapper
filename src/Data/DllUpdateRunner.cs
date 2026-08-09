@@ -72,10 +72,17 @@ internal static class DllUpdateRunner
 
             if (latestRecord.LocalRecord?.IsDownloaded == false)
             {
-                var didDownload = await latestRecord.DownloadAsync().ConfigureAwait(false);
+                // Cancellable, so pressing cancel during a large download stops it rather than
+                // waiting for it to finish.
+                var didDownload = await latestRecord.DownloadAsync(cancellationToken).ConfigureAwait(false);
                 if (didDownload.Success == false)
                 {
-                    result.Failures.Add($"{game.Title} - {assetTypeName}: {didDownload.Message}");
+                    // A cancelled download is the user's doing, not a failure worth reporting.
+                    if (didDownload.Cancelled == false)
+                    {
+                        result.Failures.Add($"{game.Title} - {assetTypeName}: {didDownload.Message}");
+                    }
+
                     continue;
                 }
             }

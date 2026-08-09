@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Helpers;
@@ -33,7 +34,7 @@ internal static class DllUpdatePrompt
         int affectedDllCount,
         string confirmationMessage,
         string nothingToDoMessage,
-        Func<IReadOnlyList<Game>, IProgress<string>, Task<DllUpdateResult>> operation,
+        Func<IReadOnlyList<Game>, IProgress<string>, CancellationToken, Task<DllUpdateResult>> operation,
         string summaryTemplateResourceKey)
     {
         if (affectedDllCount == 0)
@@ -68,9 +69,14 @@ internal static class DllUpdatePrompt
         var progressTextBlock = new TextBlock() { TextWrapping = TextWrapping.Wrap };
         progressTextBlock.Inlines.Add(progressRun);
 
+        // A run over a whole library downloads hundreds of megabytes, so it needs a way out.
+        // Cancelling stops before the next dll rather than mid write, so nothing is left half done.
+        using var cancellation = new CancellationTokenSource();
+
         var progressDialog = new EasyContentDialog(xamlRoot)
         {
             Title = ResourceHelper.GetString("DllUpdate_Updating"),
+            CloseButtonText = ResourceHelper.GetString("General_Cancel"),
             Content = new StackPanel()
             {
                 Spacing = 16,
@@ -82,6 +88,16 @@ internal static class DllUpdatePrompt
             },
         };
 
+        progressDialog.CloseButtonClick += (sender, args) =>
+        {
+            progressRun.Text = ResourceHelper.GetString("DllUpdate_Cancelling");
+            cancellation.Cancel();
+
+            // Held open so the run can finish the dll it is on rather than the dialog vanishing
+            // while files are still being written.
+            args.Cancel = true;
+        };
+
         var progress = new Progress<string>(x => progressRun.Text = x);
 
         _ = progressDialog.ShowAsync();
@@ -89,7 +105,7 @@ internal static class DllUpdatePrompt
         DllUpdateResult result;
         try
         {
-            result = await operation(games, progress);
+            result = await operation(games, progress, cancellation.Token);
         }
         finally
         {

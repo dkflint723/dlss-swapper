@@ -323,6 +323,11 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 var dllHistory = new List<GameHistory>();
                 var unknownGameAssets = new List<GameAsset>();
 
+                // We have never recorded a dll for this game, so whatever is here now is what the
+                // game shipped with. That is the only moment we can be sure of it, which is why
+                // backing up happens here and not on every scan.
+                var isFirstTimeSeeingThisGame = Settings.Instance.BackupNewGamesAutomatically && oldGameAssets.Count == 0;
+
                 void ProcessGame_ProcessGameAsset(GameAsset gameAsset)
                 {
                     // Version and size first, both metadata. The hash is only worth paying for when
@@ -404,6 +409,11 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                         unknownGameAssets.Add(gameAsset);
                     }
 
+                    if (isFirstTimeSeeingThisGame)
+                    {
+                        CreateOriginalBackupForGameAsset(gameAsset);
+                    }
+
                     LoadBackupForGameAsset(gameAsset, oldGameAssets);
 
                 }
@@ -477,6 +487,40 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 });
             }
         });
+    }
+
+    /// <summary>
+    /// Keeps a copy of a dll the first time we ever see the game it belongs to.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Only safe on first sight. On any later scan we cannot tell a dll the game shipped from one
+    /// that was swapped in, so backing up then could record a swapped dll as the original and make
+    /// "reset to default" restore the wrong thing.
+    /// </para>
+    /// <para>
+    /// Never overwrites an existing backup, so a game that already has one keeps it.
+    /// </para>
+    /// </remarks>
+    void CreateOriginalBackupForGameAsset(GameAsset gameAsset)
+    {
+        var backupPath = $"{gameAsset.Path}.dlsss";
+        if (File.Exists(backupPath))
+        {
+            return;
+        }
+
+        try
+        {
+            File.Copy(gameAsset.Path, backupPath);
+            Logger.Info($"Backed up {gameAsset.Path} on first detection of {Title}.");
+        }
+        catch (Exception err)
+        {
+            // Not worth interrupting a scan for. The game keeps working, it just has no backup,
+            // which is where it would have been anyway.
+            Logger.Warning($"Could not back up {gameAsset.Path}: {err.Message}");
+        }
     }
 
     /// <summary>

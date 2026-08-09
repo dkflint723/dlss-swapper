@@ -464,7 +464,7 @@ public partial class GameControlModel : ObservableObject
             Game.OutdatedAssetTypes.Count,
             ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmOneGameTemplate", Game.OutdatedAssetTypes.Count, Game.Title),
             ResourceHelper.GetString("DllUpdate_GameUpToDate"),
-            (games, progress) => DllUpdateRunner.UpdateGamesAsync(games, progress),
+            (games, progress, cancellationToken) => DllUpdateRunner.UpdateGamesAsync(games, progress, cancellationToken),
             "DllUpdate_SwappedTemplate");
     }
 
@@ -485,7 +485,7 @@ public partial class GameControlModel : ObservableObject
             revertableAssetTypes.Count,
             ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", revertableAssetTypes.Count, Game.Title),
             ResourceHelper.GetString("DllRevert_NothingToRevert"),
-            (games, progress) => DllUpdateRunner.RevertGamesAsync(games, progress),
+            (games, progress, cancellationToken) => DllUpdateRunner.RevertGamesAsync(games, progress, cancellationToken),
             "DllRevert_RevertedTemplate");
     }
 

@@ -261,7 +261,14 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
         _cancellationTokenSource = null;
     }
 
-    internal async Task<(bool Success, string Message, bool Cancelled)> DownloadAsync()
+    /// <summary>
+    /// Downloads this dll.
+    /// </summary>
+    /// <param name="callerCancellationToken">
+    /// Lets a caller stop the download. Without this a bulk run could only stop between dlls, so
+    /// cancelling during a download of tens of megabytes appeared to do nothing until it finished.
+    /// </param>
+    internal async Task<(bool Success, string Message, bool Cancelled)> DownloadAsync(CancellationToken callerCancellationToken = default)
     {
         if (string.IsNullOrEmpty(DownloadUrl))
         {
@@ -275,7 +282,8 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
 
         _cancellationTokenSource?.Cancel();
 
-        _cancellationTokenSource = new CancellationTokenSource();
+        // Linked so the existing per record cancel button still works alongside the caller's.
+        _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(callerCancellationToken);
         var cancellationToken = _cancellationTokenSource.Token;
 
         var fileDownloader = new FileDownloader(DownloadUrl);

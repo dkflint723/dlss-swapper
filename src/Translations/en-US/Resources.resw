@@ -210,6 +210,9 @@
   <data name="DllUpdate_AllGamesUpToDate" xml:space="preserve">
     <value>Every game is already using the newest dlls.</value>
   </data>
+  <data name="DllUpdate_Cancelling" xml:space="preserve">
+    <value>Finishing the current dll, then stopping...</value>
+  </data>
   <data name="DllUpdate_ConfirmAllGamesTemplate" xml:space="preserve">
     <value>Update {0} dlls across {1} games to the newest available version?</value>
   </data>
@@ -1062,6 +1065,12 @@ Because of this we recommend using caution for multiplayer games.</value>
   </data>
   <data name="SettingsPage_AddIgnoredPath" xml:space="preserve">
     <value>Add Ignored Path</value>
+  </data>
+  <data name="SettingsPage_BackupNewGames" xml:space="preserve">
+    <value>Back up dlls when a game is first found</value>
+  </data>
+  <data name="SettingsPage_BackupNewGamesInfo" xml:space="preserve">
+    <value>Keeps a copy of each dll the first time a game is detected, so you can always go back to the version it shipped with. Only done on first detection, because after that there is no way to tell an original dll from one you swapped in.</value>
   </data>
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Allow Debug DLLs</value>

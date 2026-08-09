@@ -109,6 +109,7 @@ internal class Database
                 "title",
                 "install",
                 "path",
+                "size",
                 "cover",
                 "image",
                 "has",

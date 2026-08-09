@@ -83,6 +83,9 @@ public partial class SettingsPageModel : ObservableObject
     public partial bool AllowUntrusted { get; set; } = false;
 
     [ObservableProperty]
+    public partial bool BackupNewGamesAutomatically { get; set; } = true;
+
+    [ObservableProperty]
     public partial bool AllowDebugDlls { get; set; } = false;
 
     [ObservableProperty]
@@ -164,6 +167,7 @@ public partial class SettingsPageModel : ObservableObject
 
         DlssLoggingToWindow = _dlssSettingsManager.GetLoggingWindow();
         AllowUntrusted = Settings.Instance.AllowUntrusted;
+        BackupNewGamesAutomatically = Settings.Instance.BackupNewGamesAutomatically;
         AllowDebugDlls = Settings.Instance.AllowDebugDlls;
         OnlyShowDownloadedDlls = Settings.Instance.OnlyShowDownloadedDlls;
 
@@ -298,6 +302,10 @@ public partial class SettingsPageModel : ObservableObject
         {
             Settings.Instance.AllowUntrusted = AllowUntrusted;
             App.CurrentApp.MainWindow.FilterDLLRecords();
+        }
+        else if (e.PropertyName == nameof(BackupNewGamesAutomatically))
+        {
+            Settings.Instance.BackupNewGamesAutomatically = BackupNewGamesAutomatically;
         }
         else if (e.PropertyName == nameof(AllowDebugDlls))
         {
