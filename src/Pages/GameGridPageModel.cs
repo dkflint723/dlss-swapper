@@ -102,12 +102,16 @@ public partial class GameGridPageModel : ObservableObject
     [RelayCommand]
     void SelectFilter(GameFilterTab? tab)
     {
-        if (tab is null)
+        if (tab is not null)
         {
-            return;
+            ShowFilter(tab.Filter);
         }
+    }
 
-        GameManager.Instance.ActiveFilter = tab.Filter;
+    /// <summary>Switches the page to a filter tab. Also used by the sidebar's backup card.</summary>
+    public void ShowFilter(GameFilter filter)
+    {
+        GameManager.Instance.ActiveFilter = filter;
         CurrentCollectionView = GameManager.Instance.GetGameCollection();
         RefreshFilterTabs();
     }

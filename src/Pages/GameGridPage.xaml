@@ -30,19 +30,6 @@
             secondary text.
         -->
         <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" TrueValue="0.55" FalseValue="1.0" NullValue="1.0" />
-        <converters:DllVendorToBrushConverter x:Key="DllVendorToBrushConverter" />
-
-        <!-- One badge per vendor with an out of date dll. The label is what identifies it, the colour
-             only reinforces, so it stays readable with any colour vision. -->
-        <DataTemplate x:Key="UpdateBadgeTemplate" x:DataType="data:DllVendorUpdate">
-            <Border Background="{x:Bind Vendor, Converter={StaticResource DllVendorToBrushConverter}}" CornerRadius="{StaticResource DsCornerRadius}" Padding="8,2,8,2" VerticalAlignment="Center" ToolTipService.ToolTip="{x:Bind ToolTip}">
-                <TextBlock Text="{x:Bind Label}" FontSize="11" FontWeight="SemiBold" Foreground="White" />
-            </Border>
-        </DataTemplate>
-
-        <ItemsPanelTemplate x:Key="UpdateBadgePanelTemplate">
-            <StackPanel Orientation="Horizontal" Spacing="4" />
-        </ItemsPanelTemplate>
         
 
 
@@ -270,9 +257,37 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Column="0" FontWeight="Bold" Text="DLSS" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" />
-                                <ItemsControl Grid.Column="1" VerticalAlignment="Center" IsTabStop="False" ItemsSource="{x:Bind AvailableUpdates, Mode=OneWay}" ItemTemplate="{StaticResource UpdateBadgeTemplate}" ItemsPanel="{StaticResource UpdateBadgePanelTemplate}" />
-                                <TextBlock Grid.Column="2" Text="{x:Bind DlssSlot.CurrentAsset.DisplayName, FallbackValue='N/A', Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="White" Visibility="{x:Bind Processing, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}" />
+                                <!--
+                                    The same status glyph and sentence the list rows carry, rather
+                                    than a hardcoded "DLSS" label, a version number and vendor
+                                    coloured badges. The card had been claiming every game was about
+                                    DLSS regardless of what it actually ships.
+                                -->
+                                <FontIcon
+                                    Grid.Column="0"
+                                    FontSize="11"
+                                    VerticalAlignment="Center"
+                                    Foreground="White"
+                                    Glyph="{x:Bind RowStatus.Glyph, Mode=OneWay}"
+                                    Visibility="{x:Bind RowStatus.Glyph, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{x:Bind RowStatus.Sentence, Mode=OneWay}"
+                                    FontSize="11"
+                                    VerticalAlignment="Center"
+                                    TextWrapping="NoWrap"
+                                    TextTrimming="CharacterEllipsis"
+                                    Foreground="White" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Text="{x:Bind RowStatus.Engines, Mode=OneWay}"
+                                    FontSize="10"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    TextWrapping="NoWrap"
+                                    Opacity="0.7"
+                                    Foreground="White"
+                                    Visibility="{x:Bind Processing, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}" />
                                 <ProgressRing Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="White" Width="16" Height="16" Visibility="{x:Bind Processing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             </Grid>
 

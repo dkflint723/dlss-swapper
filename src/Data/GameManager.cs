@@ -52,27 +52,42 @@ internal partial class GameManager : ObservableObject
     Dictionary<GameLibrary, AdvancedCollectionView> libraryGamesView = new Dictionary<GameLibrary, AdvancedCollectionView>();
 
 
+    /// <summary>
+    /// Everything the three views agree on: hidden games, the active tab, the search text, and
+    /// whether games without upscalers are shown.
+    /// </summary>
+    /// <remarks>
+    /// One copy rather than three. Written out per view, the same change had to be made in three
+    /// places and twice was made in only one: every tab showed the same list when games were
+    /// grouped by library, and the hidden tab counted its games and then showed none. Each view now
+    /// adds only the clause that is actually its own.
+    /// </remarks>
+    bool PassesSharedFilters(Game game, bool hideNonDLSSGames, string? filterText)
+    {
+        // The hidden tab is the one place hidden games are meant to be visible, so it overrides the
+        // setting rather than fighting it.
+        if (ActiveFilter != GameFilter.Hidden && ShowHiddenGames == false && game.IsHidden == true)
+        {
+            return false;
+        }
+
+        if (GameFilters.Matches(game, ActiveFilter) == false)
+        {
+            return false;
+        }
+
+        if (hideNonDLSSGames && game.HasSwappableItems == false)
+        {
+            return false;
+        }
+
+        return string.IsNullOrEmpty(filterText)
+            || game.Title.Contains(filterText, StringComparison.OrdinalIgnoreCase);
+    }
+
     Predicate<object> GetPredicateForAllGames(bool hideNonDLSSGames, string? filterText = null)
     {
-        return (obj) =>
-        {
-            var game = (Game)obj;
-
-            // The hidden tab is the one place hidden games are meant to be visible, so it overrides
-            // the setting rather than fighting it.
-            if (ActiveFilter != GameFilter.Hidden && ShowHiddenGames == false && game.IsHidden == true)
-            {
-                return false;
-            }
-
-            if (GameFilters.Matches(game, ActiveFilter) == false)
-            {
-                return false;
-            }
-
-            bool matchesText = string.IsNullOrEmpty(filterText) || game.Title.Contains(filterText, StringComparison.OrdinalIgnoreCase);
-            return (!hideNonDLSSGames || game.HasSwappableItems) && matchesText;
-        };
+        return (obj) => PassesSharedFilters((Game)obj, hideNonDLSSGames, filterText);
     }
 
     Predicate<object> GetPredicateForFavouriteGames(bool hideNonDLSSGames, string? filterText = null)
@@ -80,43 +95,16 @@ internal partial class GameManager : ObservableObject
         return (obj) =>
         {
             var game = (Game)obj;
-
-            // The hidden tab is the one place hidden games are meant to be visible.
-            if (ActiveFilter != GameFilter.Hidden && ShowHiddenGames == false && game.IsHidden == true)
-            {
-                return false;
-            }
-
-            if (GameFilters.Matches(game, ActiveFilter) == false)
-            {
-                return false;
-            }
-
-            bool matchesText = string.IsNullOrEmpty(filterText) || game.Title.Contains(filterText, StringComparison.OrdinalIgnoreCase);
-            return game.IsFavourite && (!hideNonDLSSGames || game.HasSwappableItems) && matchesText;
+            return game.IsFavourite && PassesSharedFilters(game, hideNonDLSSGames, filterText);
         };
     }
-
 
     Predicate<object> GetPredicateForLibraryGames(GameLibrary library, bool hideNonDLSSGames, string? filterText = null)
     {
         return (obj) =>
         {
             var game = (Game)obj;
-
-            // The hidden tab is the one place hidden games are meant to be visible.
-            if (ActiveFilter != GameFilter.Hidden && ShowHiddenGames == false && game.IsHidden == true)
-            {
-                return false;
-            }
-
-            if (GameFilters.Matches(game, ActiveFilter) == false)
-            {
-                return false;
-            }
-
-            bool matchesText = string.IsNullOrEmpty(filterText) || game.Title.Contains(filterText, StringComparison.OrdinalIgnoreCase);
-            return game.GameLibrary == library && (!hideNonDLSSGames || game.HasSwappableItems) && matchesText;
+            return game.GameLibrary == library && PassesSharedFilters(game, hideNonDLSSGames, filterText);
         };
     }
 

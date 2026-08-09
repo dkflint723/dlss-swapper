@@ -176,10 +176,10 @@ public sealed partial class MainWindow : Window
 
     void Sidebar_FixMissingBackupsInvoked(object? sender, EventArgs e)
     {
-        // Goes to Games for now. Landing on the missing-backup set specifically needs the filter
-        // tabs, which arrive with the Games page rebuild, so this is deliberately half of what the
-        // card promises until then.
+        // Lands on the games missing a copy, which is what the card offers. Navigating first, so
+        // the page exists to be filtered.
         GoToPage(GameGridPage.PageTag);
+        gameGridPage?.ViewModel.ShowFilter(GameFilter.MissingBackup);
     }
 
     static string PageTagForSection(ShellSection section)
