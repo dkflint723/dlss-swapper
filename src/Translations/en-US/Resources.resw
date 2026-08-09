@@ -224,6 +224,36 @@
   <data name="General_Open" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="FirstRun_Title" xml:space="preserve">
+    <value>Let's find your games.</value>
+  </data>
+  <data name="FirstRun_Body" xml:space="preserve">
+    <value>DLSS Swapper reads the install lists Steam, GOG, Epic and the others already keep. It only looks — nothing on your computer changes until you ask for a swap, and when you do, a copy of the original file is saved first.</value>
+  </data>
+  <data name="FirstRun_Scan" xml:space="preserve">
+    <value>Scan my libraries</value>
+  </data>
+  <data name="FirstRun_ChooseFolder" xml:space="preserve">
+    <value>Choose a folder instead</value>
+  </data>
+  <data name="FirstRun_Duration" xml:space="preserve">
+    <value>Takes about ten seconds. You can change which libraries are scanned in Settings.</value>
+  </data>
+  <data name="GamesPage_Empty_Title" xml:space="preserve">
+    <value>No games with upscalers yet</value>
+  </data>
+  <data name="GamesPage_Empty_BodyTemplate" xml:space="preserve">
+    <value>We found {0} installed games, but none of them ship DLSS, FSR or XeSS files — so there is nothing here to swap. This tool cannot add upscaling to a game that does not already support it.</value>
+  </data>
+  <data name="GamesPage_Empty_ShowAllTemplate" xml:space="preserve">
+    <value>Show all {0} games anyway</value>
+  </data>
+  <data name="GamesPage_NoSearchResultsTemplate" xml:space="preserve">
+    <value>No games match “{0}”</value>
+  </data>
+  <data name="GamesPage_ClearSearch" xml:space="preserve">
+    <value>Clear search</value>
+  </data>
   <data name="About_ThisBuild" xml:space="preserve">
     <value>This build:</value>
   </data>

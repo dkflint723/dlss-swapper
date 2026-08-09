@@ -51,7 +51,8 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-1. Remaining design steps: first-run and empty states (README §6 and §7).
+1. `src/Pages/InitialLoadingPage.xaml` is orphaned — nothing navigates to it, and the first-run
+   state it was supposed to become now lives on the games page. Safe to delete.
 2. **Settings is half done.** Every repeated row is now a `SettingsRow` with its explanation beside
    the name. Still to do from spec §6: the two column layout (560px main, 280px side), sections
    under uppercase rules, theme as a segmented control rather than radio buttons, the accent swatch
@@ -97,6 +98,12 @@ read than the `.dc.html` mockup.
   understood by reading past the thing you were about to change.
 - **`NewResourceStringTests`** asserts every resource key this work added resolves. A missing key
   renders as a sentinel string rather than throwing, so nothing else would notice.
+- **The empty states** (README §6 and §7). `GamesEmptyState.For` decides between first run, a
+  library with no upscaler games, and a search that matched nothing — three causes that a blank
+  content area answered identically. An empty *filter tab* is deliberately left blank, since
+  "no games with upscalers" would be a lie there and the tab already carries its own count.
+- **About names both repositories**, this fork for the code and reports, the original for credit.
+  The updater points at this fork, and is inert until the fork publishes a release.
 
 ## Gotchas that cost real time
 

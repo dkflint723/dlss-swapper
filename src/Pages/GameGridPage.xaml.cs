@@ -190,6 +190,18 @@ public sealed partial class GameGridPage : Page
 
     private void ClearSearchBox_Click(object sender, RoutedEventArgs e)
     {
+        ClearSearchBox();
+    }
+
+    /// <summary>
+    /// Empties the search box, which is what actually re-runs the search.
+    /// </summary>
+    /// <remarks>
+    /// The box owns the text, so the empty state's "Clear search" has to go through it rather than
+    /// clearing the collection behind its back and leaving the query still sitting there.
+    /// </remarks>
+    internal void ClearSearchBox()
+    {
         SearchBox.Text = string.Empty;
     }
 

@@ -144,6 +144,82 @@ public partial class GameGridPageModel : ObservableObject
     void ShowGameCollection(string? searchText = null)
     {
         CurrentCollectionView = GameManager.Instance.GetGameCollection(searchText);
+        lastSearchText = searchText ?? string.Empty;
+        RefreshEmptyState();
+    }
+
+    string lastSearchText = string.Empty;
+
+    /// <summary>What the content area says when it is showing nothing, or null when it is not.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EmptyStateVisibility))]
+    public partial GamesEmptyState? EmptyState { get; set; }
+
+    public Visibility EmptyStateVisibility => EmptyState is null ? Visibility.Collapsed : Visibility.Visible;
+
+    /// <summary>
+    /// Recomputed whenever the list or the library changes.
+    /// </summary>
+    /// <remarks>
+    /// Counted off the collection the page is actually showing rather than worked out from the
+    /// filters again, so the message and the emptiness it describes cannot disagree.
+    /// </remarks>
+    void RefreshEmptyState()
+    {
+        var visibleCount = 0;
+        var collectionGroups = CurrentCollectionView?.CollectionGroups;
+        if (collectionGroups is not null)
+        {
+            foreach (var collectionGroup in collectionGroups)
+            {
+                if (collectionGroup is ICollectionViewGroup viewGroup)
+                {
+                    visibleCount += viewGroup.GroupItems.Count;
+                }
+            }
+        }
+
+        var state = GamesEmptyState.For(
+            visibleCount,
+            GameManager.Instance.GetSynchronisedGamesListCopy().Count,
+            lastSearchText,
+            GameManager.Instance.ActiveFilter != GameFilter.All);
+
+        EmptyState = state.Kind == GamesEmptyStateKind.None ? null : state;
+    }
+
+    /// <summary>Runs whatever the empty state offered to do.</summary>
+    [RelayCommand]
+    async Task EmptyStatePrimaryAsync()
+    {
+        var kind = EmptyState?.Kind;
+
+        if (kind == GamesEmptyStateKind.NoSearchResults)
+        {
+            gameGridPage.ClearSearchBox();
+            return;
+        }
+
+        if (kind == GamesEmptyStateKind.FirstRun)
+        {
+            await RefreshGamesButtonAsync();
+            return;
+        }
+
+        if (kind == GamesEmptyStateKind.NoUpscalerGames)
+        {
+            // The button says "Show all 42 games anyway", so it turns off the setting that is
+            // hiding them rather than opening the filter dialog and hoping.
+            Settings.Instance.HideNonDLSSGames = false;
+            ReapplyFilters();
+        }
+    }
+
+    [RelayCommand]
+    async Task EmptyStateSecondaryAsync()
+    {
+        // Both remaining states offer the same thing: point the app at a folder yourself.
+        await AddManualGameButtonAsync();
     }
 
     public GameGridPageModel(GameGridPage gameGridPage)
@@ -161,7 +237,14 @@ public partial class GameGridPageModel : ObservableObject
         // taken whenever the library changes rather than once at construction.
         GameManager.Instance.GamesChanged += (sender, args) =>
         {
-            UiThread.Run(RefreshFilterTabs);
+            UiThread.Run(() =>
+            {
+                RefreshFilterTabs();
+
+                // Games arrive long after the page is built, so the first-run message has to go
+                // when they do rather than sitting over a list that has since filled up.
+                RefreshEmptyState();
+            });
         };
 
         RefreshFilterTabs();

@@ -511,6 +511,57 @@
         <ContentControl x:Name="MainContentControl" Grid.Row="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Content="{x:Bind ViewModel, Mode=OneWay}" ContentTemplateSelector="{StaticResource TemplateSelector}" />
 
         <!--
+            What the content area says when there is nothing in it. Flush left rather than centred
+            text, because it is a paragraph to read and a decision to make, not a placard.
+        -->
+        <Grid Grid.Row="1" Padding="60,0" Visibility="{x:Bind ViewModel.EmptyStateVisibility, Mode=OneWay}" Background="{ThemeResource DsBgBrush}">
+            <StackPanel MaxWidth="560" VerticalAlignment="Center" HorizontalAlignment="Left" Spacing="14">
+                <TextBlock
+                    Text="{x:Bind ViewModel.EmptyState.Title, Mode=OneWay}"
+                    FontSize="30"
+                    LineHeight="38"
+                    FontWeight="SemiBold"
+                    TextWrapping="Wrap"
+                    Foreground="{ThemeResource DsTextPrimaryBrush}" />
+
+                <TextBlock
+                    Text="{x:Bind ViewModel.EmptyState.Body, Mode=OneWay}"
+                    FontSize="14"
+                    LineHeight="22"
+                    TextWrapping="Wrap"
+                    Visibility="{x:Bind ViewModel.EmptyState.Body, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
+                    Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,8,0,0">
+                    <Button
+                        Height="36"
+                        Padding="20,0"
+                        CornerRadius="{StaticResource DsCornerRadius}"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Content="{x:Bind ViewModel.EmptyState.PrimaryLabel, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.EmptyState.PrimaryLabel, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
+                        Command="{x:Bind ViewModel.EmptyStatePrimaryCommand}" />
+
+                    <Button
+                        Height="36"
+                        Padding="20,0"
+                        CornerRadius="{StaticResource DsCornerRadius}"
+                        Content="{x:Bind ViewModel.EmptyState.SecondaryLabel, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.EmptyState.SecondaryLabel, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
+                        Command="{x:Bind ViewModel.EmptyStateSecondaryCommand}" />
+                </StackPanel>
+
+                <TextBlock
+                    Text="{x:Bind ViewModel.EmptyState.Hint, Mode=OneWay}"
+                    FontSize="12"
+                    TextWrapping="Wrap"
+                    Margin="0,4,0,0"
+                    Visibility="{x:Bind ViewModel.EmptyState.Hint, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
+                    Foreground="{ThemeResource DsTextTertiaryBrush}" />
+            </StackPanel>
+        </Grid>
+
+        <!--
             The batch strip: what a run is doing, then what it did. Docked to the bottom of the
             content rather than shown as a dialog, so the library stays visible and scrollable while
             the app writes to it.
