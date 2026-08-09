@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
     Microsoft ResX Schema
@@ -122,6 +122,51 @@
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
     <value>DLSS Swapper</value>
+  </data>
+  <data name="DashboardPage_Title" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="DashboardPage_HeadlineTemplate" xml:space="preserve">
+    <value>{0} of {1} games have updates</value>
+  </data>
+  <data name="DashboardPage_NoGames" xml:space="preserve">
+    <value>No games found yet. Run a scan from the Games page to get started.</value>
+  </data>
+  <data name="DashboardPage_ReviewGames" xml:space="preserve">
+    <value>Review games</value>
+  </data>
+  <data name="DashboardPage_MissingBackupsTemplate" xml:space="preserve">
+    <value>{0} games have a DLL with no backup</value>
+  </data>
+  <data name="DashboardPage_NothingToDo" xml:space="preserve">
+    <value>Nothing needs attention</value>
+  </data>
+  <data name="DashboardPage_UndoneSwaps" xml:space="preserve">
+    <value>Swaps that were undone</value>
+  </data>
+  <data name="DashboardPage_UndoneSwapsHint" xml:space="preserve">
+    <value>A game update replaced the DLL you swapped in, and the backup was removed at the same time.</value>
+  </data>
+  <data name="DashboardPage_UndoneSwapTemplate" xml:space="preserve">
+    <value>{0} replaced by a game update</value>
+  </data>
+  <data name="Sidebar_Upscalers" xml:space="preserve">
+    <value>Upscalers</value>
+  </data>
+  <data name="Sidebar_GameCountTemplate" xml:space="preserve">
+    <value>{0} games</value>
+  </data>
+  <data name="Sidebar_BackupCoverageTemplate" xml:space="preserve">
+    <value>Originals are kept for {0} of {1} games.</value>
+  </data>
+  <data name="Sidebar_FixTheOthersTemplate" xml:space="preserve">
+    <value>Fix the other {0}</value>
+  </data>
+  <data name="Sidebar_VersionTemplate" xml:space="preserve">
+    <value>v{0}</value>
+  </data>
+  <data name="GamesPage_UpdateThisGame" xml:space="preserve">
+    <value>Update to latest</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>Click to copy below details</value>

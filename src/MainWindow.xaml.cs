@@ -116,13 +116,12 @@ public sealed partial class MainWindow : Window
 
         SetIcon();
 
-        // Update settings text when language changes.
+        // The sidebar's labels come from its own translation properties, which repaint themselves
+        // on a language change, so nothing needs poking here any more. The counts do not, since
+        // they are formatted strings rather than plain lookups.
         LanguageManager.Instance.OnLanguageChanged += () =>
         {
-            if (MainNavigationView.SettingsItem is NavigationViewItem settingsNavigationViewItem)
-            {
-                settingsNavigationViewItem.Content = ResourceHelper.GetString("SettingsPage_Title");
-            }
+            Sidebar?.ViewModel.Refresh();
         };
     }
 
@@ -157,20 +156,37 @@ public sealed partial class MainWindow : Window
 
 
 
-    void MainNavigationView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    void Sidebar_SectionInvoked(object? sender, ShellSection section)
     {
-        if (args.IsSettingsInvoked)
+        GoToPage(PageTagForSection(section));
+    }
+
+    void Sidebar_FixMissingBackupsInvoked(object? sender, EventArgs e)
+    {
+        // Goes to Games for now. Landing on the missing-backup set specifically needs the filter
+        // tabs, which arrive with the Games page rebuild, so this is deliberately half of what the
+        // card promises until then.
+        GoToPage(GameGridPage.PageTag);
+    }
+
+    static string PageTagForSection(ShellSection section)
+    {
+        return section switch
         {
-            GoToPage(SettingsPage.PageTag);
-        }
-        else if (args.InvokedItemContainer.Tag is string invokedItem)
-        {
-            GoToPage(invokedItem);
-        }
-        else
-        {
-            Logger.Error($"MainNavigationView_ItemInvoked for a page that was not found. ({args.InvokedItemContainer?.Tag}, {args.InvokedItem})");
-        }
+            ShellSection.Upscalers => LibraryPage.PageTag,
+            ShellSection.Settings => SettingsPage.PageTag,
+            _ => GameGridPage.PageTag,
+        };
+    }
+
+    static ShellSection? SectionForPageTag(string page)
+    {
+        if (page == GameGridPage.PageTag) { return ShellSection.Games; }
+        if (page == LibraryPage.PageTag) { return ShellSection.Upscalers; }
+        if (page == SettingsPage.PageTag) { return ShellSection.Settings; }
+
+        // Acknowledgements has no sidebar item, so nothing should look selected.
+        return null;
     }
 
 
@@ -219,17 +235,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        // Only try manually set selected item if is not already selected.
-        if (MainNavigationView.SelectedItem is null || (MainNavigationView.SelectedItem is NavigationViewItem selectedItem && selectedItem.Tag.ToString() != page))
+        // Navigation can come from somewhere other than the sidebar, so the active marker is set
+        // from the destination rather than from the click.
+        var section = SectionForPageTag(page);
+        if (section is not null)
         {
-            foreach (NavigationViewItem navigationViewItem in MainNavigationView.MenuItems)
-            {
-                if (navigationViewItem.Tag.ToString() == page)
-                {
-                    MainNavigationView.SelectedItem = navigationViewItem;
-                    break;
-                }
-            }
+            Sidebar.ViewModel.ActiveSection = section.Value;
         }
     }
 
@@ -238,13 +249,8 @@ public sealed partial class MainWindow : Window
         GoToPage(AcknowledgementsPage.PageTag);
     }
 
-    async void MainNavigationView_Loaded(object sender, RoutedEventArgs e)
+    async void ShellGrid_Loaded(object sender, RoutedEventArgs e)
     {
-        if (sender is NavigationView navigationView && navigationView.SettingsItem is NavigationViewItem settingsNavigationViewItem)
-        {
-            settingsNavigationViewItem.Tag = SettingsPage.PageTag;
-            settingsNavigationViewItem.Content = ResourceHelper.GetString("SettingsPage_Title");
-        }
 
 
         // TODO: Disabled because CommunityToolkit.WinUI.Helpers.SystemInformation.Instance.IsAppUpdated throws exceptions for unpackaged apps.
@@ -268,7 +274,7 @@ public sealed partial class MainWindow : Window
 
         if (Settings.Instance.HasShownMultiplayerWarning == false)
         {
-            var dialog = new EasyContentDialog(MainNavigationView.XamlRoot)
+            var dialog = new EasyContentDialog(RootGrid.XamlRoot)
             {
                 Title = ResourceHelper.GetString("MainWindow_NoteForMultiplayerGames_Title"),
                 CloseButtonText = ResourceHelper.GetString("General_Okay"),
@@ -283,7 +289,7 @@ public sealed partial class MainWindow : Window
 
         if (DLLManager.Instance.HasLoadedManifest() == false)
         {
-            var dialog = new EasyContentDialog(MainNavigationView.XamlRoot)
+            var dialog = new EasyContentDialog(RootGrid.XamlRoot)
             {
                 Title = ResourceHelper.GetString("General_Error"),
                 CloseButtonText = ResourceHelper.GetString("General_Close"),
@@ -301,7 +307,7 @@ public sealed partial class MainWindow : Window
             }
             else if (response is ContentDialogResult.Secondary)
             {
-                dialog = new EasyContentDialog(MainNavigationView.XamlRoot)
+                dialog = new EasyContentDialog(RootGrid.XamlRoot)
                 {
                     Title = ResourceHelper.GetString("MainWindow_AttemptingManifestUpdate"),
                     DefaultButton = ContentDialogButton.Close,
@@ -325,7 +331,7 @@ public sealed partial class MainWindow : Window
 
             if (shouldClose)
             {
-                dialog = new EasyContentDialog(MainNavigationView.XamlRoot)
+                dialog = new EasyContentDialog(RootGrid.XamlRoot)
                 {
                     Title = ResourceHelper.GetString("MainWindow_DlssSwapperMustClose"),
                     CloseButtonText = ResourceHelper.GetString("General_Close"),
@@ -340,7 +346,7 @@ public sealed partial class MainWindow : Window
 
         if (DLLManager.Instance.ImportedManifest is null)
         {
-            var dialog = new EasyContentDialog(MainNavigationView.XamlRoot)
+            var dialog = new EasyContentDialog(RootGrid.XamlRoot)
             {
                 Title = ResourceHelper.GetString("LibraryPage_CouldNotLoadImportedDlls"),
                 DefaultButton = ContentDialogButton.Close,
@@ -371,7 +377,7 @@ public sealed partial class MainWindow : Window
             await releaseNotesTask;
             if (releaseNotesTask.Result is not null)
             {
-                gitHubUpdater?.DisplayWhatsNewDialog(releaseNotesTask.Result, MainNavigationView);
+                gitHubUpdater?.DisplayWhatsNewDialog(releaseNotesTask.Result, RootGrid);
             }
         }
         */
@@ -382,7 +388,7 @@ public sealed partial class MainWindow : Window
         {
             if (gitHubUpdater.HasPromptedBefore(newUpdateTask.Result) == false)
             {
-                await gitHubUpdater.DisplayNewUpdateDialog(newUpdateTask.Result, MainNavigationView.XamlRoot);
+                await gitHubUpdater.DisplayNewUpdateDialog(newUpdateTask.Result, RootGrid.XamlRoot);
             }
         }
     }
@@ -414,3 +420,6 @@ public sealed partial class MainWindow : Window
 
     }
 }
+
+
+

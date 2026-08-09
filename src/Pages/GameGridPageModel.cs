@@ -331,6 +331,34 @@ public partial class GameGridPageModel : ObservableObject
         CurrentCollectionView = GameManager.Instance.GetGameCollection();
     }
 
+    /// <summary>
+    /// Updates every out of date dll in one game, from its card.
+    /// </summary>
+    /// <remarks>
+    /// Runs through the same prompt and the same runner as updating every game, so there is one
+    /// swap path rather than a second shorter one that skips the confirmation or the backup.
+    /// </remarks>
+    [RelayCommand]
+    async Task UpdateGameAsync(Game? game)
+    {
+        if (game is null)
+        {
+            return;
+        }
+
+        var outdatedDllCount = game.OutdatedAssetTypes.Count;
+
+        await DllUpdatePrompt.RunAsync(
+            gameGridPage.XamlRoot,
+            new List<Game>() { game },
+            ResourceHelper.GetString("DllUpdate_Title"),
+            outdatedDllCount,
+            ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmOneGameTemplate", outdatedDllCount, game.Title),
+            ResourceHelper.GetString("DllUpdate_AllGamesUpToDate"),
+            (games, progress, cancellationToken) => DllUpdateRunner.UpdateGamesAsync(games, progress, cancellationToken),
+            "DllUpdate_SwappedTemplate");
+    }
+
     [RelayCommand]
     async Task UpdateAllGamesButtonAsync()
     {

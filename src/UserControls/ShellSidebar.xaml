@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DLSS_Swapper.UserControls.ShellSidebar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DLSS_Swapper.UserControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Name="RootShellSidebar"
+    Width="212">
+
+    <Grid Background="{ThemeResource DsBgBrush}" BorderThickness="0,0,1,0" BorderBrush="{ThemeResource DsLineBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Brand block: icon, app name, and how many games are in the library. -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="18,18,18,22" Spacing="11">
+            <Image Source="ms-appx:///Assets/icon_256.png" Width="26" Height="26" VerticalAlignment="Top" />
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock
+                    Text="{x:Bind ViewModel.TranslationProperties.AppName, Mode=OneWay}"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Foreground="{ThemeResource DsTextPrimaryBrush}" />
+                <TextBlock
+                    Text="{x:Bind ViewModel.GameCountText, Mode=OneWay}"
+                    FontSize="11"
+                    Foreground="{ThemeResource DsTextTertiaryBrush}" />
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1">
+            <local:ShellNavItem
+                Glyph="&#xE7FC;"
+                Label="{x:Bind ViewModel.TranslationProperties.GamesText, Mode=OneWay}"
+                Section="Games"
+                ActiveSection="{x:Bind ViewModel.ActiveSection, Mode=OneWay}"
+                Invoked="NavItem_Invoked" />
+            <local:ShellNavItem
+                Glyph="&#xE8F1;"
+                Label="{x:Bind ViewModel.TranslationProperties.UpscalersText, Mode=OneWay}"
+                TrailingCount="{x:Bind ViewModel.UpscalerCountText, Mode=OneWay}"
+                Section="Upscalers"
+                ActiveSection="{x:Bind ViewModel.ActiveSection, Mode=OneWay}"
+                Invoked="NavItem_Invoked" />
+            <local:ShellNavItem
+                Glyph="&#xE713;"
+                Label="{x:Bind ViewModel.TranslationProperties.SettingsText, Mode=OneWay}"
+                Section="Settings"
+                ActiveSection="{x:Bind ViewModel.ActiveSection, Mode=OneWay}"
+                Invoked="NavItem_Invoked" />
+        </StackPanel>
+
+        <!--
+            The only always visible statement that this app is reversible. Everything else about
+            backups is buried in a per game page, which is no use when someone is deciding whether
+            to trust the thing at all.
+        -->
+        <Border
+            Grid.Row="3"
+            Margin="14,0,14,12"
+            Padding="11,12"
+            BorderThickness="1"
+            BorderBrush="{ThemeResource DsLineBrush}"
+            CornerRadius="{StaticResource DsCornerRadius}">
+            <StackPanel Orientation="Horizontal" Spacing="9">
+                <FontIcon
+                    Glyph="&#xE8F7;"
+                    FontSize="13"
+                    VerticalAlignment="Top"
+                    Margin="0,1,0,0"
+                    Foreground="{ThemeResource DsTextTertiaryBrush}" />
+                <StackPanel Spacing="3">
+                    <TextBlock
+                        Text="{x:Bind ViewModel.BackupCoverageText, Mode=OneWay}"
+                        FontSize="11"
+                        LineHeight="16"
+                        TextWrapping="Wrap"
+                        Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                    <HyperlinkButton
+                        Padding="0"
+                        MinHeight="0"
+                        Visibility="{x:Bind ViewModel.FixTheOthersVisibility, Mode=OneWay}"
+                        Click="FixTheOthers_Click">
+                        <TextBlock
+                            Text="{x:Bind ViewModel.FixTheOthersText, Mode=OneWay}"
+                            FontSize="11"
+                            Foreground="{StaticResource DsAccentBrush}" />
+                    </HyperlinkButton>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <TextBlock
+            Grid.Row="4"
+            Margin="18,0,18,16"
+            Text="{x:Bind ViewModel.VersionText, Mode=OneWay}"
+            FontSize="11"
+            Foreground="{ThemeResource DsTextTertiaryBrush}" />
+    </Grid>
+</UserControl>

@@ -101,6 +101,14 @@
             <!-- Other app resources here -->
 
             <!--
+                Corner radius, defined once rather than as literals through the XAML so it stays one
+                decision. The handoff specifies 0 everywhere; 6 was chosen instead, with 8 for the
+                larger surfaces where 6 reads tight against their padding.
+            -->
+            <CornerRadius x:Key="DsCornerRadius">6</CornerRadius>
+            <CornerRadius x:Key="DsCornerRadiusLarge">8</CornerRadius>
+
+            <!--
                 The accent is chosen at runtime, so it cannot live in a theme dictionary. These are
                 declared once with the default brand green and have their colour replaced by
                 AccentManager, which repaints everything referencing them.

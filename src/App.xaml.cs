@@ -93,10 +93,6 @@ public sealed partial class App : Application
         GlobalElementTheme = Settings.Instance.AppTheme;
 
         this.InitializeComponent();
-
-        // After InitializeComponent, because the brushes it paints live in the application
-        // resources this call creates.
-        AccentManager.Start();
     }
 
     internal void RegenerateHttpClient()
@@ -248,6 +244,10 @@ public sealed partial class App : Application
             _mainWindow = new MainWindow();
         }
         WindowManager.ShowWindow(_mainWindow);
+
+        // Only now: UISettings and the resolved theme are both unsafe to touch before the window
+        // exists, and doing so kills the process before anything is logged.
+        AccentManager.Start();
 
 #if !PORTABLE
         // No need to calculate this for portable app.
@@ -442,3 +442,4 @@ public sealed partial class App : Application
     }
 
 }
+

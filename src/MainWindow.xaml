@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:pages="using:DLSS_Swapper.Pages"
+    xmlns:usercontrols="using:DLSS_Swapper.UserControls"
     Title="{x:Bind ViewModel.TranslationProperties.Title, Mode=OneWay}"
     mc:Ignorable="d">
 
@@ -42,23 +43,24 @@
         </Grid>
 
 
-        <muxc:NavigationView Grid.Row="1" x:Name="MainNavigationView"
-                             ItemInvoked="MainNavigationView_ItemInvoked"
-                             PaneDisplayMode="LeftCompact"
-                             IsBackButtonVisible="Collapsed"
-                             Loaded="MainNavigationView_Loaded"
-                             Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-            <muxc:NavigationView.MenuItems>
-                <muxc:NavigationViewItem Content="{x:Bind ViewModel.TranslationProperties.NavigationViewItemGamesText, Mode=OneWay}" Tag="{x:Bind pages:GameGridPage.PageTag}">
-                    <muxc:NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE7FC;"/>
-                    </muxc:NavigationViewItem.Icon>
-                </muxc:NavigationViewItem>
-                <muxc:NavigationViewItem Icon="Library" Content="{x:Bind ViewModel.TranslationProperties.NavigationViewItemLibraryText, Mode=OneWay}" Tag="{x:Bind pages:LibraryPage.PageTag}" />
-                <muxc:NavigationViewItem Icon="Emoji" Content="{x:Bind ViewModel.TranslationProperties.NavigationViewItemAcknowledgementsText, Mode=OneWay}" Tag="{x:Bind pages:AcknowledgementsPage.PageTag}" Visibility="{x:Bind ViewModel.AcknowledgementsVisibility, Mode=OneWay}" />
-            </muxc:NavigationView.MenuItems>
-            <Frame x:Name="ContentFrame" />
-        </muxc:NavigationView>
+        <!--
+            The LeftCompact icon rail is replaced by a labelled sidebar. The rail could not carry
+            the game count, the per section counts or the backup card, all of which are the point.
+        -->
+        <Grid Grid.Row="1" x:Name="ShellGrid" Loaded="ShellGrid_Loaded" Background="{ThemeResource DsBgBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <usercontrols:ShellSidebar
+                x:Name="Sidebar"
+                Grid.Column="0"
+                SectionInvoked="Sidebar_SectionInvoked"
+                FixMissingBackupsInvoked="Sidebar_FixMissingBackupsInvoked" />
+
+            <Frame x:Name="ContentFrame" Grid.Column="1" />
+        </Grid>
 
         <Grid x:Name="LoadingStackPanel" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" RowSpacing="10" Grid.Row="1">
 
@@ -73,3 +75,4 @@
         </Grid>
     </Grid>
 </Window>
+

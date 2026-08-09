@@ -29,8 +29,8 @@
         <!-- One badge per vendor with an out of date dll. The label is what identifies it, the colour
              only reinforces, so it stays readable with any colour vision. -->
         <DataTemplate x:Key="UpdateBadgeTemplate" x:DataType="data:DllVendorUpdate">
-            <Border Background="{x:Bind Vendor, Converter={StaticResource DllVendorToBrushConverter}}" CornerRadius="4" Padding="5,1,5,1" VerticalAlignment="Center" ToolTipService.ToolTip="{x:Bind ToolTip}">
-                <TextBlock Text="{x:Bind Label}" FontSize="11" Foreground="White" />
+            <Border Background="{x:Bind Vendor, Converter={StaticResource DllVendorToBrushConverter}}" CornerRadius="{StaticResource DsCornerRadius}" Padding="8,2,8,2" VerticalAlignment="Center" ToolTipService.ToolTip="{x:Bind ToolTip}">
+                <TextBlock Text="{x:Bind Label}" FontSize="11" FontWeight="SemiBold" Foreground="White" />
             </Border>
         </DataTemplate>
 
@@ -67,9 +67,17 @@
 
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="data:Game">
-                        <Grid ColumnSpacing="12" Opacity="{x:Bind IsHidden, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}">
+                        <!-- Rows read as cards rather than table lines, matching the grid view. -->
+                        <Grid ColumnSpacing="14"
+                              Padding="12"
+                              Margin="0,0,0,6"
+                              CornerRadius="{StaticResource DsCornerRadius}"
+                              Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                              BorderThickness="1"
+                              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                              Opacity="{x:Bind IsHidden, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="80" />
+                                <RowDefinition Height="72" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="40" />
@@ -77,9 +85,10 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Row="0" BorderThickness="0" CornerRadius="4" Width="40" Height="60" FlowDirection="LeftToRight">
+                            <Border Grid.Row="0" BorderThickness="0" CornerRadius="{StaticResource DsCornerRadius}" Width="46" Height="66" FlowDirection="LeftToRight">
                                 <Border.RenderTransform>
                                     <CompositeTransform ScaleX="1" />
                                 </Border.RenderTransform>
@@ -92,13 +101,27 @@
                                 </Border.Background>
                             </Border>
 
-                            <TextBlock Grid.Column="1" Text="{x:Bind Title, Mode=OneWay}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind Title, Mode=OneWay}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
                             <ProgressRing Grid.Column="2" VerticalAlignment="Center" Width="16" Height="16" Visibility="{x:Bind Processing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
-                            <TextBlock Grid.Column="3" VerticalAlignment="Center">
-                                <Run Text="DLSS: " />
+                            <TextBlock Grid.Column="3" VerticalAlignment="Center" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                <Run Text="DLSS" />
                                 <Run Text="{x:Bind DlssSlot.CurrentAsset.DisplayName, FallbackValue='N/A', Mode=OneWay}" />
                             </TextBlock>
                             <ItemsControl Grid.Column="4" VerticalAlignment="Center" IsTabStop="False" ItemsSource="{x:Bind AvailableUpdates, Mode=OneWay}" ItemTemplate="{StaticResource UpdateBadgeTemplate}" ItemsPanel="{StaticResource UpdateBadgePanelTemplate}" />
+
+                            <!-- Updates every out of date dll in this game, same as on the grid card. -->
+                            <Button
+                                Grid.Column="5"
+                                VerticalAlignment="Center"
+                                Margin="8,0,0,0"
+                                Padding="6"
+                                CornerRadius="{StaticResource DsCornerRadius}"
+                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.UpdateGameCommand}"
+                                CommandParameter="{x:Bind}"
+                                ToolTipService.ToolTip="{Binding ElementName=RootGameGridPage, Path=ViewModel.TranslationProperties.UpdateThisGameText, Mode=OneWay}"
+                                Visibility="{x:Bind UpdateAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <FontIcon Glyph="&#xE896;" FontSize="14" />
+                            </Button>
 
                         </Grid>
 
@@ -138,7 +161,7 @@
                         <Grid 
                             Width="{Binding ElementName=RootGameGridPage, Path=ViewModel.GridViewItemWidth, Mode=OneWay}"
                             Height="{Binding ElementName=RootGameGridPage, Path=ViewModel.GridViewItemHeight, Mode=OneWay}"
-                            CornerRadius="8" Opacity="{x:Bind IsHidden, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}" BorderThickness="1" ColumnSpacing="0" RowSpacing="0" Margin="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                            CornerRadius="{StaticResource DsCornerRadiusLarge}" Opacity="{x:Bind IsHidden, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}" BorderThickness="1" ColumnSpacing="0" RowSpacing="0" Margin="0,0,12,12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
@@ -163,7 +186,20 @@
                                 </Border.Background>
                             </Border>
 
-                            <Grid VerticalAlignment="Bottom"  Background="#CC000000" Padding="8" ColumnSpacing="8">
+                            <!--
+                                A gradient rather than a flat bar, so the cover fades into the
+                                caption instead of being cut off by a hard edge. The bottom stop is
+                                nearly opaque because white text has to stay readable over a bright
+                                cover, not just a dark one.
+                            -->
+                            <Grid VerticalAlignment="Bottom" Padding="10,20,10,10" ColumnSpacing="8">
+                                <Grid.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#00000000" Offset="0.0" />
+                                        <GradientStop Color="#99000000" Offset="0.4" />
+                                        <GradientStop Color="#F2000000" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Grid.Background>
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -180,6 +216,27 @@
                                 <TextBlock Grid.Column="2" Text="{x:Bind DlssSlot.CurrentAsset.DisplayName, FallbackValue='N/A', Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="White" Visibility="{x:Bind Processing, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}" />
                                 <ProgressRing Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="White" Width="16" Height="16" Visibility="{x:Bind Processing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             </Grid>
+
+                            <!--
+                                Out of date marker. A glyph rather than a colour, so it is still
+                                readable to anyone who cannot separate the vendor colours, and it
+                                sits over the cover where it is visible while scanning the grid.
+                                The button updates every out of date dll in this game.
+                            -->
+                            <Button
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Right"
+                                Margin="8"
+                                Padding="6"
+                                CornerRadius="{StaticResource DsCornerRadius}"
+                                Background="#CC000000"
+                                BorderThickness="0"
+                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.UpdateGameCommand}"
+                                CommandParameter="{x:Bind}"
+                                ToolTipService.ToolTip="{Binding ElementName=RootGameGridPage, Path=ViewModel.TranslationProperties.UpdateThisGameText, Mode=OneWay}"
+                                Visibility="{x:Bind UpdateAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <FontIcon Glyph="&#xE896;" FontSize="14" Foreground="White" />
+                            </Button>
                         </Grid>
                     </DataTemplate>
 
@@ -292,3 +349,4 @@
         
     </Grid>
 </Page>
+
