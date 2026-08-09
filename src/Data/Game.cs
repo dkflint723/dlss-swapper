@@ -1308,6 +1308,12 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         }
 
 
+        // These two copies have no effect either way, and neither does the absence of a third for
+        // DlssGPreset. The presets are not stored by this app at all, they live in the NVIDIA
+        // driver profile. These properties are only a cache for the game view, and GameControlModel
+        // reads all three back from the driver every time a game is opened. A rescan happens with
+        // no game open, so whatever is copied here is overwritten before anything reads it.
+        // Left as they are rather than tidied, because changing them cannot fix anything.
         if (DlssPreset != game.DlssPreset)
         {
             DlssPreset = game.DlssPreset;
