@@ -1,4 +1,4 @@
-using DLSS_Swapper.Data;
+﻿using DLSS_Swapper.Data;
 using DLSS_Swapper.UserControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -191,5 +191,13 @@ public sealed partial class GameGridPage : Page
     private void ClearSearchBox_Click(object sender, RoutedEventArgs e)
     {
         SearchBox.Text = string.Empty;
+    }
+
+    void GroupHeader_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: GameGroup group })
+        {
+            group.ToggleExpanded();
+        }
     }
 }

@@ -98,6 +98,13 @@ internal partial class GameManager : ObservableObject
     {
         return (obj) =>
         {
+            // Read when the filter runs, not when it is built, so folding a section only has to ask
+            // its view to filter again. The group does not exist yet the first time this is built.
+            if (libraryGameGroups.TryGetValue(library, out var gameGroup) && gameGroup.IsExpanded == false)
+            {
+                return false;
+            }
+
             var game = (Game)obj;
             return game.GameLibrary == library && PassesSharedFilters(game, hideNonDLSSGames, filterText);
         };

@@ -34,9 +34,80 @@
             One header for both views. It was two identical copies, and a launcher group is the same
             thing whichever way the games under it are drawn.
         -->
+        <!--
+            The container has no size of its own, so a header that decides not to draw leaves no
+            gap and no rule behind. Its own padding and the rule under it come from the template
+            below, which is only there when the header is.
+        -->
+        <Style x:Key="ListGroupHeaderContainerStyle" TargetType="ListViewHeaderItem">
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <!--
+                Stripped to the content and nothing else. The stock template draws its own rule,
+                which a hidden header kept drawing: a line across the page with no heading on it.
+            -->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewHeaderItem">
+                        <ContentPresenter
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            HorizontalAlignment="Stretch" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GridGroupHeaderContainerStyle" TargetType="GridViewHeaderItem">
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GridViewHeaderItem">
+                        <ContentPresenter
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            HorizontalAlignment="Stretch" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <DataTemplate x:Key="GroupHeaderTemplate" x:DataType="data:GameGroup">
-            <Grid Margin="0" Visibility="{x:Bind Name, Converter={StaticResource StringVisibilityConverter}}">
-                <TextBlock Text="{x:Bind Name}" Margin="0" Style="{StaticResource TitleTextBlockStyle}"/>
+            <!-- Margin rather than padding, so the rule starts where the games below it do. -->
+            <Grid
+                Padding="0,10,0,8"
+                Margin="15,0,0,8"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{ThemeResource DsLineBrush}"
+                Visibility="{x:Bind ShowsHeader, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <!--
+                    A button around the whole header rather than a chevron you have to hit: the
+                    heading is the target people aim at, and a launcher name is a much bigger one.
+                -->
+                <Button
+                    HorizontalAlignment="Left"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="0"
+                    Tag="{x:Bind}"
+                    IsHitTestVisible="{x:Bind IsCollapsible}"
+                    Click="GroupHeader_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{x:Bind Name}" Margin="0" Style="{StaticResource TitleTextBlockStyle}" />
+                        <FontIcon
+                            FontSize="12"
+                            VerticalAlignment="Center"
+                            Margin="0,4,0,0"
+                            Glyph="{x:Bind ChevronGlyph, Mode=OneWay}"
+                            Visibility="{x:Bind IsCollapsible, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                    </StackPanel>
+                </Button>
             </Grid>
         </DataTemplate>
 
@@ -54,7 +125,15 @@
                 -->
 
                 <ListView.GroupStyle>
-                    <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
+                    <!--
+                        The header decides for itself whether it is drawn, rather than HidesIfEmpty
+                        deciding for it. A folded section is empty by that test too, and its header
+                        is the only way to unfold it.
+                    -->
+                    <GroupStyle
+                        HidesIfEmpty="False"
+                        HeaderTemplate="{StaticResource GroupHeaderTemplate}"
+                        HeaderContainerStyle="{StaticResource ListGroupHeaderContainerStyle}" />
                 </ListView.GroupStyle>
 
                 <ListView.ItemTemplate>
@@ -155,7 +234,15 @@
             <GridView PointerWheelChanged="MainGridView_PointerWheelChanged" ManipulationMode="None" x:Name="MainGridView" ItemsSource="{x:Bind CurrentCollectionView, Mode=OneWay}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="GridAndListView_ItemClick" Padding="20"  >
 
                 <GridView.GroupStyle>
-                    <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
+                    <!--
+                        The header decides for itself whether it is drawn, rather than HidesIfEmpty
+                        deciding for it. A folded section is empty by that test too, and its header
+                        is the only way to unfold it.
+                    -->
+                    <GroupStyle
+                        HidesIfEmpty="False"
+                        HeaderTemplate="{StaticResource GroupHeaderTemplate}"
+                        HeaderContainerStyle="{StaticResource GridGroupHeaderContainerStyle}" />
                 </GridView.GroupStyle>
 
                 <GridView.ItemContainerStyle>
