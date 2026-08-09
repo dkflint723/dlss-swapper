@@ -88,7 +88,7 @@ public partial class GameGridPageModel : ObservableObject
 
         FilterTabs =
         [
-            GameFilterTab.For(GameFilter.All, "GamesPage_Filter_All", games, active, showCount: false),
+            GameFilterTab.For(GameFilter.All, "GamesPage_Filter_All", games, active),
             GameFilterTab.For(GameFilter.HasUpdate, "GamesPage_Filter_HaveUpdate", games, active),
             GameFilterTab.For(GameFilter.MissingBackup, "GamesPage_Filter_MissingOriginal", games, active),
             GameFilterTab.For(GameFilter.Hidden, "GamesPage_Filter_Hidden", games, active),
