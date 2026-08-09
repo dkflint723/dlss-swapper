@@ -51,15 +51,20 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-1. Remaining design steps: Upscalers page, Settings page, first-run and empty states.
-2. **Two pieces of the update flow are deliberately not built.** The per-row progress bar in the
+1. Remaining design steps: Settings page, first-run and empty states.
+2. **The upscalers page is not finished.** Still missing from spec §4.3: versions grouped under
+   uppercase rules by major line (`DLSS 310`, `DLSS 3.7`, `DLSS 3.5 and older`), the state column
+   (`On disk` / `Not downloaded` as words beside their glyph — right now state is only implied by
+   which buttons a row shows, which is icon-only), the size column, and the per-row overflow menu.
+   Clicking a usage count should filter Games to those titles.
+3. **Two pieces of the update flow are deliberately not built.** The per-row progress bar in the
    action slot (README §4 says a row being written shows a 150px bar where its button was; it still
    shows the sentence and a spinner), and `See what changed` on the done strip, which needs a
    history view filtered to a batch and there is no such view yet.
-3. The strip overlays the last of the content rather than shortening it, so the final row can sit
+4. The strip overlays the last of the content rather than shortening it, so the final row can sit
    behind it until you scroll. Docking it properly means the content row giving up 52px while it is
    there.
-4. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
+5. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. Not yet reasoned about either
    way.
 
@@ -77,6 +82,10 @@ read than the `.dc.html` mockup.
   dialogs on the games page. `DllUpdateRunner` now works a flat list of `DllWorkItem` and reports
   which file of how many, and a result keeps the items it wrote so `UndoAsync` can put back that
   batch and nothing else. The game page still uses the old dialogs.
+- **The upscalers page's shape** (README §8): a column of the nine engines with version counts in
+  place of the horizontally scrolling bar, versions as rows rather than cards, and `DllUsage`
+  answering how many games have each file in place — the column that says whether it is safe to
+  delete. See the unfinished list above for what is still missing from it.
 
 ## Gotchas that cost real time
 

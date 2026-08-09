@@ -27,8 +27,15 @@ public class LibraryPageModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string CancelText => ResourceHelper.GetString("General_Cancel");
 
+    /// <summary>
+    /// The same word the sidebar uses.
+    /// </summary>
+    /// <remarks>
+    /// The rail said Upscalers and the page it opened said Library, which is two names for one
+    /// place. "Upscalers" is the one that says what is in it.
+    /// </remarks>
     [TranslationProperty]
-    public string PageTitle => ResourceHelper.GetString("LibraryPage_Title");
+    public string PageTitle => ResourceHelper.GetString("Sidebar_Upscalers");
 
     [TranslationProperty]
     public string ImportFromLocalFilesText => ResourceHelper.GetString("LibraryPage_ImportFrom_LocalFiles");

@@ -221,6 +221,27 @@
   <data name="Preview_ConfirmOneFile" xml:space="preserve">
     <value>Update one file</value>
   </data>
+  <data name="Upscalers_NotUsed" xml:space="preserve">
+    <value>Not used</value>
+  </data>
+  <data name="Upscalers_UsedByOneGame" xml:space="preserve">
+    <value>1 game</value>
+  </data>
+  <data name="Upscalers_UsedByGamesTemplate" xml:space="preserve">
+    <value>{0} games</value>
+  </data>
+  <data name="Upscalers_OnDisk" xml:space="preserve">
+    <value>On disk</value>
+  </data>
+  <data name="Upscalers_Imported" xml:space="preserve">
+    <value>Imported</value>
+  </data>
+  <data name="Upscalers_NotDownloaded" xml:space="preserve">
+    <value>Not downloaded</value>
+  </data>
+  <data name="Upscalers_InUseNotOnDisk" xml:space="preserve">
+    <value>In use, not on disk</value>
+  </data>
   <data name="Update_StopAfterThisOne" xml:space="preserve">
     <value>Stop after this one</value>
   </data>

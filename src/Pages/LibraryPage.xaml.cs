@@ -26,12 +26,7 @@ public sealed partial class LibraryPage : Page
     }
 
 
-    void MainGridView_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        // via: https://stackoverflow.com/a/41141249
-        var columns = Math.Ceiling(MainGridView.ActualWidth / 400);
-        ((ItemsWrapGrid)MainGridView.ItemsPanelRoot).ItemWidth = (e.NewSize.Width / columns) - 1;
-    }
+    // The card grid's column sizing went with the cards. A list of rows fills the width on its own.
 
     private void MainGridView_ItemClick(object sender, ItemClickEventArgs e)
     {

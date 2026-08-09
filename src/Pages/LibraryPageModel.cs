@@ -46,8 +46,6 @@ public partial class LibraryPageModel : ObservableObject
     [ObservableProperty]
     public partial bool IsRefreshing { get; set; }
 
-    [ObservableProperty]
-    public partial SelectorBarItem? SelectedSelectorBarItem { get; set; } = null;
 
     public LibraryPageModelTranslationProperties TranslationProperties { get; } = new LibraryPageModelTranslationProperties();
 
@@ -55,63 +53,74 @@ public partial class LibraryPageModel : ObservableObject
     {
         _libraryPage = libraryPage;
 
-        var upscalerSelectorBar = _libraryPage.FindChild("UpscalerSelectorBar") as SelectorBar;
-        if (upscalerSelectorBar is not null)
+        // TODO: Change order based on prefered upscaler.
+        foreach (var dllTypeDefinition in DllTypes.All)
         {
-            // TODO: Change order based on prefered upscaler.
-            foreach (var dllTypeDefinition in DllTypes.All)
-            {
-                upscalerSelectorBar.Items.Add(new SelectorBarItem()
-                {
-                    Text = DLLManager.Instance.GetAssetTypeName(dllTypeDefinition.AssetType),
-                    Tag = dllTypeDefinition.AssetType,
-                });
-            }
+            UpscalerTypes.Add(new UpscalerTypeItem() { AssetType = dllTypeDefinition.AssetType });
+        }
 
-            SelectedSelectorBarItem = upscalerSelectorBar.Items[0];
+        RefreshUpscalerTypes();
+
+        if (UpscalerTypes.Count > 0)
+        {
+            SelectUpscalerType(UpscalerTypes[0]);
         }
 
         LanguageManager.Instance.OnLanguageChanged += OnLanguageChanged;
 
-        // The list is a filtered view built when you change tab, so without this the debug dll
+        // The list is a filtered view built when you change engine, so without this the debug dll
         // toggle appeared to do nothing until you navigated away and back.
         WeakReferenceMessenger.Default.Register<Messages.DebugDllsVisibilityChangedMessage>(this, (sender, message) =>
         {
-            if (SelectedSelectorBarItem?.Tag is GameAssetType gameAssetType)
+            App.CurrentApp.RunOnUIThread(() =>
             {
-                App.CurrentApp.RunOnUIThread(() => SelectLibrary(gameAssetType));
-            }
+                RefreshUpscalerTypes();
+                SelectLibrary(SelectedAssetType);
+            });
         });
     }
 
-    void OnLanguageChanged()
+    /// <summary>The engines down the left of the page.</summary>
+    public ObservableCollection<UpscalerTypeItem> UpscalerTypes { get; } = new ObservableCollection<UpscalerTypeItem>();
+
+    [ObservableProperty]
+    public partial GameAssetType SelectedAssetType { get; set; }
+
+    /// <summary>
+    /// Switches the page to an engine.
+    /// </summary>
+    /// <remarks>
+    /// The selected flag lives on the items rather than being worked out from a selected index, so
+    /// the row that draws the accent bar and the list that is shown come from the same answer.
+    /// </remarks>
+    [RelayCommand]
+    void SelectUpscalerType(UpscalerTypeItem? item)
     {
-        var upscalerSelectorBar = _libraryPage.FindChild("UpscalerSelectorBar") as SelectorBar;
-        if (upscalerSelectorBar is null)
+        if (item is null)
         {
             return;
         }
 
-        foreach (var item in upscalerSelectorBar.Items)
+        foreach (var upscalerType in UpscalerTypes)
         {
-            if (item?.Tag is GameAssetType gameAssetType)
-            {
-                item.Text = DLLManager.Instance.GetAssetTypeName(gameAssetType);
-            }
+            upscalerType.IsSelected = upscalerType == item;
+        }
+
+        SelectedAssetType = item.AssetType;
+        SelectLibrary(item.AssetType);
+    }
+
+    void RefreshUpscalerTypes()
+    {
+        foreach (var upscalerType in UpscalerTypes)
+        {
+            upscalerType.Refresh();
         }
     }
 
-    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    void OnLanguageChanged()
     {
-        base.OnPropertyChanged(e);
-
-        if (e.PropertyName == nameof(SelectedSelectorBarItem))
-        {
-            if (SelectedSelectorBarItem?.Tag is GameAssetType gameAssetType)
-            {
-                SelectLibrary(gameAssetType);
-            }
-        }
+        RefreshUpscalerTypes();
     }
 
     [RelayCommand]
@@ -123,11 +132,10 @@ public partial class LibraryPageModel : ObservableObject
 
         if (didUpdate)
         {
-            // Reload selected library.
-            if (SelectedSelectorBarItem?.Tag is GameAssetType gameAssetType)
-            {
-                SelectLibrary(gameAssetType);
-            }
+            // Reload selected library. The counts down the left move with it, since a refreshed
+            // manifest is exactly when the number of known versions changes.
+            RefreshUpscalerTypes();
+            SelectLibrary(SelectedAssetType);
         }
         else
         {
