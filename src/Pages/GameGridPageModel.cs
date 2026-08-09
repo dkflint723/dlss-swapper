@@ -290,6 +290,9 @@ public partial class GameGridPageModel : ObservableObject
         await GameManager.Instance.LoadGamesAsync(true);
 
         IsDLSSLoading = false;
+
+        // A scan can add games and take their first backups, both of which the sidebar counts.
+        App.CurrentApp.MainWindow?.RefreshSidebar();
     }
 
     [RelayCommand]
@@ -370,6 +373,9 @@ public partial class GameGridPageModel : ObservableObject
                 await dialog.ShowAsync();
             }
         }
+
+        // Both branches change the backup coverage the sidebar reports.
+        App.CurrentApp.MainWindow?.RefreshSidebar();
     }
 
     /// <summary>
@@ -419,6 +425,9 @@ public partial class GameGridPageModel : ObservableObject
             ResourceHelper.GetString("DllUpdate_AllGamesUpToDate"),
             (games, progress, cancellationToken) => DllUpdateRunner.UpdateGamesAsync(games, progress, cancellationToken),
             "DllUpdate_SwappedTemplate");
+
+        // Swapping saves an original first, so the backup coverage moves with it.
+        App.CurrentApp.MainWindow?.RefreshSidebar();
     }
 
     [RelayCommand]
@@ -447,6 +456,9 @@ public partial class GameGridPageModel : ObservableObject
             ResourceHelper.GetString("DllUpdate_AllGamesUpToDate"),
             (games, progress, cancellationToken) => DllUpdateRunner.UpdateGamesAsync(games, progress, cancellationToken),
             "DllUpdate_SwappedTemplate");
+
+        // Swapping saves an original first, so the backup coverage moves with it.
+        App.CurrentApp.MainWindow?.RefreshSidebar();
     }
 
     [RelayCommand]

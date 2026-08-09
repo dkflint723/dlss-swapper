@@ -62,27 +62,53 @@
             backups is buried in a per game page, which is no use when someone is deciding whether
             to trust the thing at all.
         -->
+        <!--
+            No border. A card drew a box around content that fills barely half its width, so the
+            empty right hand side became the most noticeable thing about it. Without the box it
+            reads as the last block of the sidebar, on the same 18px edge as the nav items and with
+            the same icon and gap, so it belongs to the column rather than sitting on top of it.
+        -->
         <Border
             Grid.Row="3"
-            Margin="14,0,14,12"
-            Padding="11,12"
-            BorderThickness="1"
+            Padding="18,0,18,14"
+            BorderThickness="0,1,0,0"
             BorderBrush="{ThemeResource DsLineBrush}"
-            CornerRadius="{StaticResource DsCornerRadius}">
-            <StackPanel Orientation="Horizontal" Spacing="9">
+            Margin="0,0,0,0">
+            <!--
+                A Grid rather than a horizontal StackPanel: a StackPanel measures its children with
+                infinite width in its own direction, so wrapping text never wraps and simply runs
+                off the 212px sidebar.
+            -->
+            <Grid ColumnSpacing="11" Margin="0,14,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Centred against the two lines rather than pinned to the first, which left it
+                     sitting high and made the card look unbalanced. -->
                 <FontIcon
+                    Grid.Column="0"
                     Glyph="&#xE8F7;"
-                    FontSize="13"
-                    VerticalAlignment="Top"
-                    Margin="0,1,0,0"
+                    FontSize="15"
+                    VerticalAlignment="Center"
                     Foreground="{ThemeResource DsTextTertiaryBrush}" />
-                <StackPanel Spacing="3">
+                <StackPanel Grid.Column="1" Spacing="1">
+                    <!-- Label above, count below, so the number is what the eye lands on. -->
+                    <TextBlock
+                        Text="{x:Bind ViewModel.TranslationProperties.BackupCoverageLabel, Mode=OneWay}"
+                        FontSize="11"
+                        LineHeight="15"
+                        TextWrapping="Wrap"
+                        Foreground="{ThemeResource DsTextSecondaryBrush}" />
                     <TextBlock
                         Text="{x:Bind ViewModel.BackupCoverageText, Mode=OneWay}"
                         FontSize="11"
-                        LineHeight="16"
+                        FontWeight="SemiBold"
+                        LineHeight="15"
+                        Margin="0,0,0,2"
                         TextWrapping="Wrap"
-                        Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                        Foreground="{ThemeResource DsTextPrimaryBrush}" />
                     <HyperlinkButton
                         Padding="0"
                         MinHeight="0"
@@ -94,7 +120,7 @@
                             Foreground="{StaticResource DsAccentBrush}" />
                     </HyperlinkButton>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </Border>
 
         <TextBlock

@@ -156,6 +156,19 @@ public sealed partial class MainWindow : Window
 
 
 
+    /// <summary>
+    /// Recomputes the sidebar's counts and the backup card.
+    /// </summary>
+    /// <remarks>
+    /// They are a snapshot, like every other count in this app, so anything that changes the games
+    /// or their backups has to say so. Called after the library loads, after a scan, and after any
+    /// swap or saved copy.
+    /// </remarks>
+    internal void RefreshSidebar()
+    {
+        Sidebar?.ViewModel.Refresh();
+    }
+
     void Sidebar_SectionInvoked(object? sender, ShellSection section)
     {
         GoToPage(PageTagForSection(section));
@@ -369,6 +382,10 @@ public sealed partial class MainWindow : Window
         LoadingStackPanel.Visibility = Visibility.Collapsed;
 
         GoToPage(GameGridPage.PageTag);
+
+        // The sidebar counts were built with its control, which is long before any game exists, so
+        // they have to be taken again now there is a library to count.
+        RefreshSidebar();
 
         // TODO: Disabled because CommunityToolkit.WinUI.Helpers.SystemInformation.Instance.IsAppUpdated throws exceptions for unpackaged apps.
         /*

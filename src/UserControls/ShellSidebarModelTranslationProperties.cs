@@ -17,4 +17,7 @@ public class ShellSidebarModelTranslationProperties : LocalizedViewModelBase
 
     [TranslationProperty]
     public string SettingsText => ResourceHelper.GetString("SettingsPage_Title");
+
+    [TranslationProperty]
+    public string BackupCoverageLabel => ResourceHelper.GetString("Sidebar_BackupCoverageLabel");
 }

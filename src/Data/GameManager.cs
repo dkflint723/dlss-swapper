@@ -101,8 +101,24 @@ internal partial class GameManager : ObservableObject
         };
     }
 
+    /// <summary>
+    /// Raised whenever games are added, removed or cleared.
+    /// </summary>
+    /// <remarks>
+    /// So anything showing a count can recompute rather than being told to by every caller that
+    /// might have changed something. Games load from a fire and forget on the games page, long
+    /// after the window and its sidebar are built, so a count taken at construction is always taken
+    /// against an empty library.
+    /// </remarks>
+    public event EventHandler? GamesChanged;
+
     private GameManager()
     {
+        _allGames.CollectionChanged += (sender, args) =>
+        {
+            GamesChanged?.Invoke(this, EventArgs.Empty);
+        };
+
         FavouriteGamesView = new AdvancedCollectionView(_allGames, true);
         FavouriteGamesView.Filter = GetPredicateForFavouriteGames(Settings.Instance.HideNonDLSSGames);
         FavouriteGamesView.ObserveFilterProperty(nameof(ShowHiddenGames));

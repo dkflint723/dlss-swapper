@@ -212,8 +212,12 @@
   <data name="Sidebar_GameCountTemplate" xml:space="preserve">
     <value>{0} games</value>
   </data>
-  <data name="Sidebar_BackupCoverageTemplate" xml:space="preserve">
-    <value>Originals are kept for {0} of {1} games.</value>
+  <data name="Sidebar_BackupCoverageLabel" xml:space="preserve">
+    <value>Originals kept for</value>
+    <comment>First line of the sidebar backup card. The count follows on its own line.</comment>
+  </data>
+  <data name="Sidebar_BackupCoverageCountTemplate" xml:space="preserve">
+    <value>{0} of {1} games</value>
   </data>
   <data name="Sidebar_FixTheOthersTemplate" xml:space="preserve">
     <value>Fix the other {0}</value>

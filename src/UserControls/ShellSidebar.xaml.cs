@@ -1,4 +1,5 @@
 using System;
+using DLSS_Swapper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -18,6 +19,13 @@ public sealed partial class ShellSidebar : UserControl
     {
         this.InitializeComponent();
         ViewModel = new ShellSidebarModel();
+
+        // The library is empty when this is built, so the counts are taken again whenever it
+        // changes rather than relying on every caller that loads games to say so.
+        GameManager.Instance.GamesChanged += (sender, args) =>
+        {
+            UiThread.Run(ViewModel.Refresh);
+        };
     }
 
     void NavItem_Invoked(object? sender, ShellSection section)

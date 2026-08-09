@@ -46,7 +46,7 @@ public partial class ShellSidebarModel : ObservableObject
     [ObservableProperty]
     public partial string UpscalerCountText { get; set; } = string.Empty;
 
-    /// <summary>Reads as "Originals are kept for 39 of 42 games."</summary>
+    /// <summary>Reads as "39 of 42 games", under a static label.</summary>
     [ObservableProperty]
     public partial string BackupCoverageText { get; set; } = string.Empty;
 
@@ -97,7 +97,7 @@ public partial class ShellSidebarModel : ObservableObject
 
         var withBackup = summary.TotalGames - summary.GamesMissingBackups;
         BackupCoverageText = ResourceHelper.GetFormattedResourceTemplate(
-            "Sidebar_BackupCoverageTemplate",
+            "Sidebar_BackupCoverageCountTemplate",
             withBackup,
             summary.TotalGames);
 
