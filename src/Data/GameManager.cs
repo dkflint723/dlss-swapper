@@ -127,6 +127,15 @@ internal partial class GameManager : ObservableObject
     /// </summary>
     public GameFilter ActiveFilter { get; set; } = GameFilter.All;
 
+    /// <summary>
+    /// Whether the page is showing a subset of the library, by search or by tab.
+    /// </summary>
+    /// <remarks>
+    /// Worked out in <see cref="GetGameCollection"/>, which is the one place both are known, and
+    /// read back from there rather than recomputed by anyone who needs it.
+    /// </remarks>
+    public bool IsListNarrowed { get; private set; }
+
     private GameManager()
     {
         _allGames.CollectionChanged += (sender, args) =>
@@ -277,12 +286,13 @@ internal partial class GameManager : ObservableObject
     public ICollectionView GetGameCollection(string? filterText = null)
     {
         // Set before the filters below are rebuilt, because they ask each group whether it is
-        // folded and a searching group is not. Here rather than anywhere nearer the search box,
-        // because this is the one function that knows the search text and applies it.
-        var isSearchActive = string.IsNullOrWhiteSpace(filterText) == false;
+        // folded and a narrowed one is not. Both ways of narrowing land here: the search text is an
+        // argument to this function, and the tab is set on this object immediately before it is
+        // called, so nothing can narrow the list without passing through here.
+        IsListNarrowed = string.IsNullOrWhiteSpace(filterText) == false || ActiveFilter != GameFilter.All;
         foreach (var gameGroup in libraryGameGroups.Values)
         {
-            gameGroup.IsSearchActive = isSearchActive;
+            gameGroup.IsListNarrowed = IsListNarrowed;
         }
 
         // Refresh all filters.

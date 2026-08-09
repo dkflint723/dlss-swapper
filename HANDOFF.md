@@ -53,11 +53,7 @@ read than the `.dc.html` mockup.
 
 1. Remaining design steps: preview sheet, undo strip, Upscalers page, Settings page, first-run
    state.
-2. **The filter tabs do not suspend folding the way search now does.** On "Have an update", a folded
-   launcher still holds its updates back. The same defect, one condition away, but it needs a
-   different hook: `ActiveFilter` is read inside `PassesSharedFilters` rather than passed into
-   `GetGameCollection`, which is where `IsSearchActive` is set.
-3. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
+2. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. Not yet reasoned about either
    way.
 
@@ -66,8 +62,8 @@ read than the `.dc.html` mockup.
 - **Grid/list duplication is gone.** `GameStatusView` and `GameActionButton` own the glyph,
   sentence, engines and button. Two controls, not the one the old note called for: the card floats
   the button over the cover and the row keeps it in line, so they cannot share a parent.
-- **Launcher sections fold**, persisted per library in `GameLibrarySettings.IsCollapsed`. A search
-  suspends folding entirely, chevron included, so it can look inside folded sections.
+- **Launcher sections fold**, persisted per library in `GameLibrarySettings.IsCollapsed`. A search,
+  or any tab but "All games", suspends folding so it can look inside folded sections.
 
 ## Gotchas that cost real time
 
@@ -85,6 +81,9 @@ read than the `.dc.html` mockup.
 - `ContainerContentChanging`'s `ItemIndex` counts through all groups in order, so it maps back to a
   group by walking `CollectionGroups` sizes. `ContainerFromIndex` does **not** agree with it, and
   the realised panel holds headers among the rows, so its child order is not the item order either.
+- **A group heading that hides while its group is empty never comes back.** It returns only when the
+  group's membership changes, and rebuilding the whole content control does not help. So any rule
+  for hiding a heading has to be one where the heading only ever reappears alongside its items.
 - The XAML type generator emits an activator for every public-constructible type a dependency
   property can reach. A type with `required` members needs a private constructor or the build fails
   in generated code with no obvious link to the control that caused it.

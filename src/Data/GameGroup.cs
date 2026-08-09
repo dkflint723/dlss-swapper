@@ -26,34 +26,31 @@ internal partial class GameGroup : ObservableObject
     public partial bool IsExpanded { get; set; } = true;
 
     /// <summary>
-    /// Whether a search is narrowing the list, which suspends folding.
+    /// Whether the page is showing a subset of the library, which suspends folding.
     /// </summary>
     /// <remarks>
-    /// A search looks through folded sections. Without this, searching for a game that lives in one
-    /// looked exactly like searching for a game that is not installed.
+    /// A search, or any tab but "All games", is a question about the whole library and has to be
+    /// answered from all of it. Without this, asking for the games with an update and asking for a
+    /// game by name both gave the same wrong answer about a folded launcher: nothing here.
     /// </remarks>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFolded))]
-    [NotifyPropertyChangedFor(nameof(ShowsFoldControl))]
-    [NotifyPropertyChangedFor(nameof(ShowsHeader))]
-    public partial bool IsSearchActive { get; set; }
+    public partial bool IsListNarrowed { get; set; }
 
     /// <summary>Only launcher sections fold. Favourites cuts across them, and the ungrouped list has no header at all.</summary>
     public bool IsCollapsible => GameLibrary is not null;
 
     /// <summary>Whether this section is actually holding its games back right now.</summary>
-    public bool IsFolded => IsCollapsible && IsExpanded == false && IsSearchActive == false;
+    public bool IsFolded => IsCollapsible && IsExpanded == false && IsListNarrowed == false;
 
     /// <summary>
-    /// Whether the heading offers to fold.
+    /// The chevron, from the stored fold state rather than <see cref="IsFolded"/>.
     /// </summary>
     /// <remarks>
-    /// It does not during a search, because folding is suspended then and the click would do
-    /// nothing visible. Taking the chevron away with it also stops it pointing the wrong way at a
-    /// section the search has just opened.
+    /// So it keeps pointing at what a click will do. During a search a folded section shows its
+    /// matches with the chevron still closed, which is the truth: the section is folded and the
+    /// search is looking inside it.
     /// </remarks>
-    public bool ShowsFoldControl => IsCollapsible && IsSearchActive == false;
-
     public string ChevronGlyph => IsExpanded ? "\uE70D" : "\uE76C";
 
     /// <summary>
@@ -64,9 +61,15 @@ internal partial class GameGroup : ObservableObject
     /// section is empty by that same test and its heading is the only way back. An empty section
     /// still disappears - a launcher you own no games on, or every launcher but one while a search
     /// is running - but a folded one keeps its heading, because the user is the one who folded it.
-    /// During a search nothing is folded, so every section is judged on what it matched.
+    ///
+    /// Deliberately the stored fold state rather than <see cref="IsFolded"/>, which would also hide
+    /// the heading of a folded section that a search did not match. That reads better and does not
+    /// work: a heading only comes back when its section's membership changes, and a folded section
+    /// is empty on both sides of a search, so the heading went and stayed gone, leaving no way to
+    /// unfold it. Measured, not assumed - rebuilding the whole view did not bring it back either.
+    /// Written this way, a heading only ever has to appear when games appear with it.
     /// </remarks>
-    public bool ShowsHeader => string.IsNullOrEmpty(Name) == false && (IsFolded || Games.Count > 0);
+    public bool ShowsHeader => string.IsNullOrEmpty(Name) == false && (IsExpanded == false || Games.Count > 0);
 
     public GameGroup(string name, GameLibrary? gameLibrary, AdvancedCollectionView games)
     {

@@ -120,7 +120,7 @@ public partial class GameGridPageModel : ObservableObject
     /// </remarks>
     public void ReapplyFilters()
     {
-        CurrentCollectionView = GameManager.Instance.GetGameCollection();
+        ShowGameCollection();
         RefreshFilterTabs();
     }
 
@@ -128,8 +128,20 @@ public partial class GameGridPageModel : ObservableObject
     public void ShowFilter(GameFilter filter)
     {
         GameManager.Instance.ActiveFilter = filter;
-        CurrentCollectionView = GameManager.Instance.GetGameCollection();
+        ShowGameCollection();
         RefreshFilterTabs();
+    }
+
+    /// <summary>
+    /// Points the page at the games collection, however it was asked for.
+    /// </summary>
+    /// <remarks>
+    /// One route rather than four copies of the same two calls, which is how the search box came to
+    /// have its own version that skipped the filter text when it was empty.
+    /// </remarks>
+    void ShowGameCollection(string? searchText = null)
+    {
+        CurrentCollectionView = GameManager.Instance.GetGameCollection(searchText);
     }
 
     public GameGridPageModel(GameGridPage gameGridPage)
@@ -174,12 +186,7 @@ public partial class GameGridPageModel : ObservableObject
             throw new ArgumentException("Sender must be a TextBox");
         }
 
-        if (string.IsNullOrEmpty(textBox.Text))
-        {
-            CurrentCollectionView = GameManager.Instance.GetGameCollection();
-            return;
-        }
-        CurrentCollectionView = GameManager.Instance.GetGameCollection(textBox.Text);
+        ShowGameCollection(textBox.Text);
     }
 
     [RelayCommand]
@@ -408,7 +415,7 @@ public partial class GameGridPageModel : ObservableObject
 
         //MainGridView.ItemsSource = null;
         CurrentCollectionView = null;
-        CurrentCollectionView = GameManager.Instance.GetGameCollection();
+        ShowGameCollection();
     }
 
     /// <summary>
