@@ -220,7 +220,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             return;
         }
 
-        App.CurrentApp.RunOnUIThread(() =>
+        UiThread.Run(() =>
         {
             NeedsProcessing = false;
         });
@@ -235,7 +235,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             return;
         }
 
-        App.CurrentApp.RunOnUIThread(() =>
+        UiThread.Run(() =>
         {
             Processing = true;
             HasSwappableItems = false;
@@ -438,7 +438,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                     GameAssets.Add(gameAsset);
                 }
 
-                App.CurrentApp.RunOnUIThread(() =>
+                UiThread.Run(() =>
                 {
                     UpdateCurrentDLLsFromGameAssets();
                 });
@@ -574,7 +574,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         if (File.Exists(ExpectedCustomCoverImage))
         {
             // If a custom cover exists use it.
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 CoverImage = ExpectedCustomCoverImage;
             });
@@ -582,7 +582,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         else if (File.Exists(ExpectedCoverImage))
         {
             // If a standard cover exists use it.
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 CoverImage = ExpectedCoverImage;
             });
@@ -923,7 +923,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
     void UpdateCurrentAsset(GameAsset newGameAsset, GameAssetType gameAssetType)
     {
-        App.CurrentApp.RunOnUIThread(() =>
+        UiThread.Run(() =>
         {
             var assetSlot = GetAssetSlot(gameAssetType);
             if (assetSlot is null)
@@ -986,7 +986,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 //image.SaveAsJpeg(ExpectedCoverImage);
             }
 
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 CoverImage = null;
                 CoverImage = ExpectedCoverImage;
@@ -1031,7 +1031,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 //image.SaveAsJpeg(ExpectedCustomCoverImage);
             }
 
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 CoverImage = ExpectedCustomCoverImage;
             });
@@ -1335,7 +1335,11 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
     public abstract bool UpdateFromGame(Game game);
 
-    void UpdateCurrentDLLsFromGameAssets()
+    /// <summary>
+    /// Rebuilds the per type slots from the current GameAssets. Internal rather than private so
+    /// tests can drive it without going through the database.
+    /// </summary>
+    internal void UpdateCurrentDLLsFromGameAssets()
     {
         foreach (var assetSlot in _assetSlots)
         {
@@ -1409,7 +1413,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             })
             .ToList();
 
-        App.CurrentApp.RunOnUIThread(() =>
+        UiThread.Run(() =>
         {
             OutdatedAssetTypes = outdatedAssetTypes;
             AvailableUpdates = availableUpdates;

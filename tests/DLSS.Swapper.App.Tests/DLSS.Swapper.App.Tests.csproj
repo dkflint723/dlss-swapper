@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <RootNamespace>DLSS_Swapper.App.Tests</RootNamespace>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DLSS Swapper.csproj" />
+  </ItemGroup>
+
+  <!--
+    ResourceHelper resolves strings from a resources.pri next to the running executable, and builds
+    its resource map in a static initializer, so without the file any code path that reads a
+    translated string throws on first touch rather than returning an untranslated one. The app
+    renames its own pri to that name after build (see src/CopyPriFile.targets); the test output
+    already has the app's pri copied in by the project reference, so it needs the same rename.
+  -->
+  <Target Name="CopyAppPriFile" AfterTargets="AfterBuild">
+    <Copy SourceFiles="$(TargetDir)DLSS Swapper.pri"
+          DestinationFiles="$(TargetDir)resources.pri"
+          Condition="Exists('$(TargetDir)DLSS Swapper.pri')" />
+  </Target>
+
+</Project>

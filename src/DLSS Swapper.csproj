@@ -382,6 +382,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="DLSS.Swapper.App.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AsyncAwaitBestPractices" Version="10.0.0" />
     <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="10.0.0" />
     <PackageReference Include="ByteSize" Version="2.1.2" />
