@@ -294,7 +294,7 @@ internal class GOGLibrary : IGameLibrary
 
             await gogGame.SaveToDatabaseAsync();
 
-            if (gogGame.NeedsProcessing == true || forceNeedsProcessing == true)
+            if (gogGame.NeedsProcessing == true || forceNeedsProcessing == true || gogGame.HasUnrecordedDlls())
             {
                 gogGame.ProcessGame(forceNeedsProcessing: forceNeedsProcessing);
             }

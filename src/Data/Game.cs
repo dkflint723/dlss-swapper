@@ -675,6 +675,57 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
 
     /// <summary>
+    /// Whether the install folder holds a dll this game has no record of.
+    /// </summary>
+    /// <remarks>
+    /// A game was only ever processed the first time it was seen, so one that gained dlls later was
+    /// never looked at again: DOOM shipped three DLSS dlls in a patch and the app went on offering
+    /// only its FSR and XeSS, silently, with nothing on screen suggesting anything was missing.
+    /// This is the cheap half of a scan, an enumeration and a set comparison with no hashing or
+    /// version reading, so it can run for every game on every launch.
+    /// </remarks>
+    internal bool HasUnrecordedDlls()
+    {
+        if (string.IsNullOrWhiteSpace(InstallPath) || Directory.Exists(InstallPath) == false)
+        {
+            return false;
+        }
+
+        try
+        {
+            var enumerationOptions = new EnumerationOptions();
+            enumerationOptions.RecurseSubdirectories = true;
+            enumerationOptions.AttributesToSkip |= FileAttributes.ReparsePoint;
+
+            var recorded = new HashSet<string>(
+                GameAssets.Select(x => x.Path),
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var dllPath in Directory.EnumerateFiles(InstallPath, "*.dll", enumerationOptions))
+            {
+                // Only the dlls this app manages. Everything else in a game folder is noise.
+                if (DllTypes.ForFileName(Path.GetFileName(dllPath)) is null)
+                {
+                    continue;
+                }
+
+                if (recorded.Contains(dllPath) == false)
+                {
+                    return true;
+                }
+            }
+        }
+        catch (Exception err)
+        {
+            // A folder that cannot be read is not a reason to fail a launch. The game keeps
+            // whatever it already had recorded.
+            Logger.Warning($"Could not check {Title} for unrecorded dlls: {err.Message}");
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Whether a cached cover is worth using.
     /// </summary>
     /// <remarks>

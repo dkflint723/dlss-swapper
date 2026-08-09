@@ -167,7 +167,7 @@ internal class EpicGamesStoreLibrary : IGameLibrary
                     activeGame.NeedsProcessing = true;
                 }
 
-                if (activeGame.NeedsProcessing == true || forceNeedsProcessing == true)
+                if (activeGame.NeedsProcessing == true || forceNeedsProcessing == true || activeGame.HasUnrecordedDlls())
                 {
                     activeGame.ProcessGame(forceNeedsProcessing: forceNeedsProcessing);
                 }
