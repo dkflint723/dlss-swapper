@@ -199,6 +199,13 @@
                         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                         <Setter Property="Margin" Value="8"/>
                         <Setter Property="BorderThickness" Value="0"/>
+
+                        <!--
+                            Matched to the card's radius. The container paints its own rest and
+                            hover background with square corners, which showed at each corner of the
+                            rounded card and read as a shadow that did not fit the shape.
+                        -->
+                        <Setter Property="CornerRadius" Value="{StaticResource DsCornerRadiusLarge}"/>
                     </Style>
                 </GridView.ItemContainerStyle>
 

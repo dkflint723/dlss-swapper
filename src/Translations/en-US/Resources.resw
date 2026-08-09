@@ -166,7 +166,8 @@
     <value>Could not save a copy of the original DLLs for {0}. Close the game if it is running, and check DLSS Swapper can write to the game's folder.</value>
   </data>
   <data name="GamesPage_Status_UpdatesSkipped" xml:space="preserve">
-    <value>Updates are turned off for this game</value>
+    <value>Updates turned off</value>
+    <comment>Shown on a game row. Kept short because the grid card is narrow and truncates.</comment>
   </data>
   <data name="GamesPage_Action_TurnUpdatesOff" xml:space="preserve">
     <value>Never update this game</value>

@@ -674,6 +674,20 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     }
 
 
+    /// <summary>
+    /// Whether a cached cover is worth using.
+    /// </summary>
+    /// <remarks>
+    /// An empty file counts as no cover. A save that fails partway leaves a zero byte png behind,
+    /// which renders as nothing, and because the file exists the game never tries to fetch it
+    /// again. Treating it as absent makes that self correcting.
+    /// </remarks>
+    static bool HasUsableCover(string path)
+    {
+        var file = new FileInfo(path);
+        return file.Exists && file.Length > 0;
+    }
+
     public async Task LoadCoverImageAsync()
     {
         if (_isLoadingCoverImage == true)
@@ -685,7 +699,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
         // TODO: Update if the image last write is > 1 week old or something
 
-        if (File.Exists(ExpectedCustomCoverImage))
+        if (HasUsableCover(ExpectedCustomCoverImage))
         {
             // If a custom cover exists use it.
             UiThread.Run(() =>
@@ -693,7 +707,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 CoverImage = ExpectedCustomCoverImage;
             });
         }
-        else if (File.Exists(ExpectedCoverImage))
+        else if (HasUsableCover(ExpectedCoverImage))
         {
             // If a standard cover exists use it.
             UiThread.Run(() =>
@@ -1095,9 +1109,13 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                     Mode = ResizeMode.Min, // If image is smaller it won't be resized up.
                 };
                 image.Mutate(x => x.Resize(resizeOptions));
-                image.SaveAsPng(ExpectedCoverImage);
-                //image.SaveAsWebp(ExpectedCoverImage);
-                //image.SaveAsJpeg(ExpectedCoverImage);
+
+                // Written beside the target and moved into place, so a save that fails partway
+                // cannot leave a zero byte png where the cover should be. One did, and because the
+                // file existed the game treated the cover as cached and never fetched it again.
+                var partialPath = ExpectedCoverImage + ".part";
+                image.SaveAsPng(partialPath);
+                File.Move(partialPath, ExpectedCoverImage, true);
             }
 
             UiThread.Run(() =>
