@@ -238,7 +238,7 @@
                     </TextBlock>
                 </StackPanel>
 
-                <TextBlock Visibility="{x:Bind local:BuildInfo.IsFromTagBuild, Converter={StaticResource BoolToNegationVisibilityConverter}}">
+                <TextBlock Visibility="{x:Bind local:BuildInfo.ShowsGitCommit, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Run Text="{x:Bind ViewModel.TranslationProperties.BuildCommitText, Mode=OneWay}" FontWeight="Bold" />
                     <Run Text="{x:Bind local:BuildInfo.GitCommitShort}" />
                     <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.CopyGitCommitCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.CopyText, Mode=OneWay}" FontStyle="Normal" FontSize="12">
@@ -246,7 +246,8 @@
                     </Hyperlink>
                 </TextBlock>
 
-                <TextBlock>
+                <!-- Absent on a build the release workflow did not stamp, rather than dated 1970. -->
+                <TextBlock Visibility="{x:Bind local:BuildInfo.IsStamped, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Run Text="{x:Bind ViewModel.TranslationProperties.BuildDateText, Mode=OneWay}" FontWeight="Bold" />
                     <Run Text="{x:Bind local:BuildInfo.BuildDateTimeFormattedString}" />
                 </TextBlock>
