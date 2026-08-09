@@ -162,6 +162,9 @@
   <data name="GamesPage_Status_NoBackup" xml:space="preserve">
     <value>No copy of the original is saved</value>
   </data>
+  <data name="GamesPage_SaveACopyFailedTemplate" xml:space="preserve">
+    <value>Could not save a copy of the original DLLs for {0}. Close the game if it is running, and check DLSS Swapper can write to the game's folder.</value>
+  </data>
   <data name="GamesPage_Status_UpdatesSkipped" xml:space="preserve">
     <value>Updates are turned off for this game</value>
   </data>

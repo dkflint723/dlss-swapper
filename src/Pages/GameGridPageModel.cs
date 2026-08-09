@@ -332,6 +332,47 @@ public partial class GameGridPageModel : ObservableObject
     }
 
     /// <summary>
+    /// Runs whatever the row's button offers, which depends on what the row is saying.
+    /// </summary>
+    /// <remarks>
+    /// One command rather than one per state, because the button's meaning comes from the row's
+    /// status and the two must not be able to disagree. They did: the button was wired to the
+    /// update command whatever it said, so "Save a copy" ran an update.
+    /// </remarks>
+    [RelayCommand]
+    async Task RowActionAsync(Game? game)
+    {
+        if (game is null)
+        {
+            return;
+        }
+
+        var status = GameRowStatus.For(game);
+
+        if (status.State == GameRowState.HasUpdates)
+        {
+            await UpdateGameAsync(game);
+            return;
+        }
+
+        if (status.State == GameRowState.NoBackup)
+        {
+            var saved = await game.SaveOriginalCopiesAsync();
+
+            if (saved == 0)
+            {
+                var dialog = new EasyContentDialog(gameGridPage.XamlRoot)
+                {
+                    Title = ResourceHelper.GetString("GamesPage_Action_SaveACopy"),
+                    CloseButtonText = ResourceHelper.GetString("General_Okay"),
+                    Content = ResourceHelper.GetFormattedResourceTemplate("GamesPage_SaveACopyFailedTemplate", game.Title),
+                };
+                await dialog.ShowAsync();
+            }
+        }
+    }
+
+    /// <summary>
     /// Marks a game as one that bulk updates should leave alone, or unmarks it.
     /// </summary>
     /// <remarks>

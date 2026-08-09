@@ -577,6 +577,74 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     /// Backups are the same size as the dlls they shadow, so this is worth as much as it is for
     /// the dlls themselves.
     /// </param>
+    /// <summary>
+    /// Saves a copy of every swappable dll in this game that does not already have one.
+    /// </summary>
+    /// <remarks>
+    /// Backups are normally taken the first time a game is seen. This is for the games that missed
+    /// that, either because they were in the library before the app started doing it or because the
+    /// copy failed at the time. Existing backups are never overwritten, so a game that already has
+    /// one keeps the original it has rather than gaining a copy of a dll that was swapped in later.
+    /// </remarks>
+    /// <returns>How many dlls now have a copy that did not before.</returns>
+    internal async Task<int> SaveOriginalCopiesAsync()
+    {
+        var saved = SaveOriginalCopiesOnDisk();
+
+        if (saved > 0)
+        {
+            // The list in memory is not the record. Games are read back from this table on the next
+            // launch, so a backup that only exists in memory is reported as missing again the
+            // moment the app restarts, which is exactly what happened.
+            using (await Database.Instance.Mutex.LockAsync())
+            {
+                await Database.Instance.Connection.ExecuteAsync("DELETE FROM game_asset WHERE id = ?", ID).ConfigureAwait(false);
+                await Database.Instance.Connection.InsertAllAsync(GameAssets, false).ConfigureAwait(false);
+            }
+        }
+
+        return saved;
+    }
+
+    int SaveOriginalCopiesOnDisk()
+    {
+        var cachedGameAssets = new List<GameAsset>(GameAssets);
+        var saved = 0;
+
+        foreach (var gameAsset in cachedGameAssets)
+        {
+            var definition = DllTypes.ForAssetType(gameAsset.AssetType);
+            if (definition is null)
+            {
+                // Already a backup, or a type we do not manage.
+                continue;
+            }
+
+            if (GameAssets.Any(x => x.AssetType == definition.BackupAssetType))
+            {
+                continue;
+            }
+
+            CreateOriginalBackupForGameAsset(gameAsset);
+
+            // Registers the copy as a game asset, so the row stops reporting it as missing.
+            LoadBackupForGameAsset(gameAsset, cachedGameAssets);
+
+            if (GameAssets.Any(x => x.AssetType == definition.BackupAssetType))
+            {
+                saved += 1;
+            }
+        }
+
+        if (saved > 0)
+        {
+            UpdateCurrentDLLsFromGameAssets();
+        }
+
+        RefreshRowStatus();
+        return saved;
+    }
+
     void LoadBackupForGameAsset(GameAsset gameAsset, List<GameAsset> cachedGameAssets)
     {
         var backupPath = $"{gameAsset.Path}.dlsss";

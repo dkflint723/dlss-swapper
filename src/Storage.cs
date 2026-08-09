@@ -25,6 +25,20 @@ static class Storage
     public static string StoragePath => _storagePath  ??= Path.Combine(Environment.ExpandEnvironmentVariables("%LOCALAPPDATA%"), "DLSS Swapper");
 #endif
 
+    /// <summary>
+    /// Points storage at a different folder.
+    /// </summary>
+    /// <remarks>
+    /// For tests, which need a real database to check that changes survive a reload but must not be
+    /// able to touch the one the user's own install is using. A debug build resolves the path above
+    /// to the same folder the developer's copy of the app uses, so without this a test run would
+    /// rewrite a real library.
+    /// </remarks>
+    internal static void OverrideStoragePath(string path)
+    {
+        _storagePath = path;
+    }
+
 
     static Storage()
     {

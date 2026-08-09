@@ -17,6 +17,11 @@ internal class TestGame : Game
 
     public override bool IsReadyToPlay => true;
 
+    /// <summary>Required by sqlite-net, which materialises rows through a parameterless constructor.</summary>
+    public TestGame()
+    {
+    }
+
     public TestGame(string id)
     {
         ID = id;

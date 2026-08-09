@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Data.BattleNet;
 using DLSS_Swapper.Data.EAApp;
@@ -29,6 +30,25 @@ internal class Database
 {
     static Database? _instance;
     internal static Database Instance => _instance ??= new Database();
+
+    /// <summary>
+    /// Drops the current connection so the next use opens a fresh one.
+    /// </summary>
+    /// <remarks>
+    /// For tests, which point storage at a temporary folder and need the singleton to reopen there
+    /// rather than keep a handle on whichever database it opened first.
+    /// </remarks>
+    internal static async Task ResetInstanceAsync()
+    {
+        var existing = _instance;
+        _instance = null;
+
+        if (existing is not null)
+        {
+            // Closed rather than abandoned, so the file can be deleted on Windows.
+            await existing.Connection.CloseAsync().ConfigureAwait(false);
+        }
+    }
 
     internal AsyncLock Mutex { get; init; }
     internal SQLiteAsyncConnection Connection { get; init; }

@@ -78,6 +78,7 @@
                               Padding="26,0"
                               BorderThickness="0,0,0,1"
                               BorderBrush="{ThemeResource DsLineBrush}"
+                              Background="Transparent"
                               Opacity="{x:Bind IsHidden, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}">
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
@@ -94,13 +95,26 @@
                             </Grid.ContextFlyout>
 
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="96" />
+                                <ColumnDefinition Width="44" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="130" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0" BorderThickness="0" CornerRadius="{StaticResource DsCornerRadius}" Width="96" Height="54" VerticalAlignment="Center" FlowDirection="LeftToRight">
+                            <!--
+                                Portrait, matching the 400x600 art the cache actually holds. The
+                                handoff drew a 96x54 landscape thumbnail, which assumes key art this
+                                app does not have: cropping a poster to 16:9 leaves a band through
+                                its middle, which is unrecognisable for most games.
+                            -->
+                            <Border Grid.Column="0"
+                                    BorderThickness="1"
+                                    BorderBrush="{ThemeResource DsLine2Brush}"
+                                    CornerRadius="{StaticResource DsCornerRadius}"
+                                    Width="44"
+                                    Height="66"
+                                    VerticalAlignment="Center"
+                                    FlowDirection="LeftToRight">
                                 <Border.Background>
                                     <ImageBrush Stretch="UniformToFill">
                                         <ImageBrush.ImageSource>
@@ -136,14 +150,20 @@
                                 </StackPanel>
                             </StackPanel>
 
+                            <!--
+                                Secondary ink rather than the tertiary the handoff specifies. Which
+                                upscalers a game ships is the substance of the row, not metadata, and
+                                at 10px tertiary measured about 2.5:1 against the background. Also
+                                nudged up a point, since 10px is small for text carrying meaning.
+                            -->
                             <TextBlock
                                 Grid.Column="2"
                                 Text="{x:Bind RowStatus.Engines, Mode=OneWay}"
-                                FontSize="10"
+                                FontSize="11"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
                                 TextWrapping="NoWrap"
-                                Foreground="{ThemeResource DsTextTertiaryBrush}" />
+                                Foreground="{ThemeResource DsTextSecondaryBrush}" />
 
                             <!-- Only rendered when the row has something to do. -->
                             <Button
@@ -153,7 +173,7 @@
                                 VerticalAlignment="Center"
                                 CornerRadius="{StaticResource DsCornerRadius}"
                                 Content="{x:Bind RowStatus.ActionLabel, Mode=OneWay}"
-                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.UpdateGameCommand}"
+                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.RowActionCommand}"
                                 CommandParameter="{x:Bind}"
                                 Visibility="{x:Bind RowStatus.ActionLabel, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}" />
                         </Grid>
