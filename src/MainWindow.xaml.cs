@@ -277,10 +277,11 @@ public sealed partial class MainWindow : Window
         }
         */
 
-        // No update check. This build is a fork, and the releases it would compare itself against
-        // are the original project's, so every check would offer to replace this app with a
-        // different one -- and this check went further than offering, downloading the installer and
-        // running it. Nothing here knows how to update this fork, so it does not claim to.
+        var gitHubUpdater = new Data.GitHub.GitHubUpdater();
+
+        // If this is a GitHub build check if there is a new version.
+        var newUpdateTask = gitHubUpdater.CheckForNewGitHubRelease(false);
+
         await DLLManager.Instance.LoadManifestsAsync();
 
 
@@ -398,6 +399,15 @@ public sealed partial class MainWindow : Window
         }
         */
 
+        // TODO: What happens if you have no internet
+        await newUpdateTask;
+        if (newUpdateTask.Result is not null)
+        {
+            if (gitHubUpdater.HasPromptedBefore(newUpdateTask.Result) == false)
+            {
+                await gitHubUpdater.DisplayNewUpdateDialog(newUpdateTask.Result, RootGrid.XamlRoot);
+            }
+        }
     }
 
     /// <summary>

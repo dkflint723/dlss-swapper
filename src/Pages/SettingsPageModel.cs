@@ -107,6 +107,9 @@ public partial class SettingsPageModel : ObservableObject
         new ComboBoxOption("SettingsPage_Logging_Error", (int)DLSS_Swapper.LoggingLevel.Error),
     };
 
+    [ObservableProperty]
+    public partial bool IsCheckingForUpdates { get; set; } = false;
+
     public ObservableCollection<string> IgnoredPaths { get; set; }
 
     bool _hasSetDefaults;
@@ -389,9 +392,36 @@ public partial class SettingsPageModel : ObservableObject
         }
     }
 
-    // No "check for updates". It asked the original project what its newest release was and
-    // offered to install it over this one, which is a different application, not a newer version
-    // of this one. Nothing here knows how to update a fork, so the app no longer pretends it does.
+    [RelayCommand]
+    async Task CheckForUpdatesAsync()
+    {
+        IsCheckingForUpdates = true;
+        var githubUpdater = new Data.GitHub.GitHubUpdater();
+        var newUpdate = await githubUpdater.CheckForNewGitHubRelease(true);
+
+        if (_weakPage.TryGetTarget(out SettingsPage? settingsPage))
+        {
+            if (newUpdate is not null)
+            {
+                await githubUpdater.DisplayNewUpdateDialog(newUpdate, settingsPage.XamlRoot);
+            }
+            else
+            {
+                var dialog = new EasyContentDialog(settingsPage.XamlRoot)
+                {
+                    CloseButtonText = ResourceHelper.GetString("General_Okay"),
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = ResourceHelper.GetString("SettingsPage_NoNewUpdatesAvailable"),
+                };
+                await dialog.ShowAsync();
+
+                IsCheckingForUpdates = false;
+                return;
+            }
+        }
+
+        IsCheckingForUpdates = false;
+    }
 
     [RelayCommand]
     async Task OpenLogFileAsync()

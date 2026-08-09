@@ -128,6 +128,9 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string ApliesOnlyToDllPickerNotLibraryText => ResourceHelper.GetString("SettingsPage_AppliesOnlyToDllPickerNotLibrary");
 
     [TranslationProperty]
+    public string CheckForUpdatesText => ResourceHelper.GetString("SettingsPage_SettingsCheckForUpdates");
+
+    [TranslationProperty]
     public string GiveFeedbackText => ResourceHelper.GetString("SettingsPage_GiveFeedback");
 
     [TranslationProperty]
