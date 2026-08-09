@@ -224,6 +224,18 @@
   <data name="General_Open" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="About_ThisBuild" xml:space="preserve">
+    <value>This build:</value>
+  </data>
+  <data name="About_BasedOn" xml:space="preserve">
+    <value>A fork of the original DLSS Swapper by beeradmoore:</value>
+  </data>
+  <data name="About_OriginalCommunity" xml:space="preserve">
+    <value>The original project's community:</value>
+  </data>
+  <data name="About_FeedbackForkInfo" xml:space="preserve">
+    <value>Anything wrong here is most likely a change made in this fork, so report it on this fork's issue tracker rather than the original project's:</value>
+  </data>
   <data name="Upscalers_NotUsed" xml:space="preserve">
     <value>Not used</value>
   </data>

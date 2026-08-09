@@ -68,6 +68,18 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string OpenText => ResourceHelper.GetString("General_Open");
 
     [TranslationProperty]
+    public string ThisBuildText => ResourceHelper.GetString("About_ThisBuild");
+
+    [TranslationProperty]
+    public string BasedOnText => ResourceHelper.GetString("About_BasedOn");
+
+    [TranslationProperty]
+    public string OriginalCommunityText => ResourceHelper.GetString("About_OriginalCommunity");
+
+    [TranslationProperty]
+    public string FeedbackForkInfoText => ResourceHelper.GetString("About_FeedbackForkInfo");
+
+    [TranslationProperty]
     public string ThemeLightText => ResourceHelper.GetString("SettingsPage_ThemeLight");
 
     [TranslationProperty]

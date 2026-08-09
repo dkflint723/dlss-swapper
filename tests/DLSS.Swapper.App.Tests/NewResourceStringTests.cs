@@ -38,6 +38,10 @@ public class NewResourceStringTests
     [InlineData("Upscalers_UsedByOneGame")]
     [InlineData("Upscalers_UsedByGamesTemplate")]
     [InlineData("General_Open")]
+    [InlineData("About_ThisBuild")]
+    [InlineData("About_BasedOn")]
+    [InlineData("About_OriginalCommunity")]
+    [InlineData("About_FeedbackForkInfo")]
     public void TheStringResolves(string resourceKey)
     {
         var value = ResourceHelper.GetString(resourceKey);

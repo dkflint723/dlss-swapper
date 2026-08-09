@@ -257,17 +257,26 @@
                     <ProgressRing Width="25" Height="25" IsIndeterminate="True" IsActive="{x:Bind ViewModel.IsCheckingForUpdates, Mode=OneWay}" />
                 </StackPanel>
 
+                <!--
+                    Which repository is which. The app used to list only the original project, which
+                    is where its own name and history come from but not where this build does, so
+                    the one link it offered went somewhere that has never seen this code. The
+                    original is still named, and named first among the things it is owed, because a
+                    fork that quietly drops the credit is the worse mistake of the two.
+                -->
                 <RichTextBlock Margin="0,24,0,0">
                     <Paragraph Margin="0,12,0,0">
-                        GitHub:
+                        <Run Text="{x:Bind ViewModel.TranslationProperties.ThisBuildText, Mode=OneWay}" />
+                        <Hyperlink NavigateUri="https://github.com/dkflint723/dlss-swapper">dkflint723/dlss-swapper</Hyperlink>
+                    </Paragraph>
+                    <Paragraph Margin="0,12,0,0">
+                        <Run Text="{x:Bind ViewModel.TranslationProperties.BasedOnText, Mode=OneWay}" />
                         <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper">beeradmoore/dlss-swapper</Hyperlink>
                     </Paragraph>
-                    <Paragraph Margin="0,0,0,0">
-                        Twitter:
+                    <Paragraph Margin="0,12,0,0">
+                        <Run Text="{x:Bind ViewModel.TranslationProperties.OriginalCommunityText, Mode=OneWay}" />
                         <Hyperlink NavigateUri="https://twitter.com/dlss_swapper">@dlss_swapper</Hyperlink>
-                    </Paragraph>
-                    <Paragraph Margin="0,0,0,0">
-                        Reddit:
+                        <Run Text="·" />
                         <Hyperlink NavigateUri="https://www.reddit.com/r/DLSS_Swapper/">r/DLSS_Swapper</Hyperlink>
                     </Paragraph>
                     <Paragraph Margin="0,12,0,0">
@@ -281,10 +290,14 @@
                     Style="{StaticResource SubtitleTextBlockStyle}"
                     Margin="0,40,0,0"
                     Text="{x:Bind ViewModel.TranslationProperties.GiveFeedbackText, Mode=OneWay}" />
+                <!--
+                    Reports go where the changes were made. Sending them to the original project's
+                    tracker would ask its maintainer to answer for code they have never seen.
+                -->
                 <RichTextBlock Margin="0,12,0,0">
                     <Paragraph>
-                        <Run Text="{x:Bind ViewModel.TranslationProperties.GiveFeedbackInfo, Mode=OneWay}" />
-                        <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper/issues">GitHub repository</Hyperlink>
+                        <Run Text="{x:Bind ViewModel.TranslationProperties.FeedbackForkInfoText, Mode=OneWay}" />
+                        <Hyperlink NavigateUri="https://github.com/dkflint723/dlss-swapper/issues">dkflint723/dlss-swapper/issues</Hyperlink>
                     </Paragraph>
                 </RichTextBlock>
 
