@@ -63,6 +63,55 @@ public partial class GameGridPageModel : ObservableObject
 
     public GameGridPageModelTranslationProperties TranslationProperties { get; } = new GameGridPageModelTranslationProperties();
 
+    /// <summary>The filter tabs, with their counts. Rebuilt whenever the library changes.</summary>
+    [ObservableProperty]
+    public partial IReadOnlyList<GameFilterTab> FilterTabs { get; set; } = [];
+
+    /// <summary>Reads as "Review 7 updates". Hidden when nothing is behind.</summary>
+    [ObservableProperty]
+    public partial string ReviewUpdatesText { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial Visibility ReviewUpdatesVisibility { get; set; } = Visibility.Collapsed;
+
+    /// <summary>
+    /// Recomputes the tab counts and the review button.
+    /// </summary>
+    /// <remarks>
+    /// The counts come from the same rule that decides what each tab shows, so a tab reading "3"
+    /// cannot open onto four games.
+    /// </remarks>
+    public void RefreshFilterTabs()
+    {
+        var games = GameManager.Instance.GetSynchronisedGamesListCopy();
+        var active = GameManager.Instance.ActiveFilter;
+
+        FilterTabs =
+        [
+            GameFilterTab.For(GameFilter.All, "GamesPage_Filter_All", games, active, showCount: false),
+            GameFilterTab.For(GameFilter.HasUpdate, "GamesPage_Filter_HaveUpdate", games, active),
+            GameFilterTab.For(GameFilter.MissingBackup, "GamesPage_Filter_MissingOriginal", games, active),
+            GameFilterTab.For(GameFilter.Hidden, "GamesPage_Filter_Hidden", games, active),
+        ];
+
+        var behind = GameFilters.Count(games, GameFilter.HasUpdate);
+        ReviewUpdatesText = ResourceHelper.GetFormattedResourceTemplate("GamesPage_ReviewUpdatesTemplate", behind);
+        ReviewUpdatesVisibility = behind > 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    [RelayCommand]
+    void SelectFilter(GameFilterTab? tab)
+    {
+        if (tab is null)
+        {
+            return;
+        }
+
+        GameManager.Instance.ActiveFilter = tab.Filter;
+        CurrentCollectionView = GameManager.Instance.GetGameCollection();
+        RefreshFilterTabs();
+    }
+
     public GameGridPageModel(GameGridPage gameGridPage)
     {
         WeakReferenceMessenger.Default.Register<GameLibrariesStateChangedMessage>(this, async (sender, message) =>
@@ -73,6 +122,15 @@ public partial class GameGridPageModel : ObservableObject
 
         this.gameGridPage = gameGridPage;
         ApplyGameGroupFilter();
+
+        // Same reason as the sidebar: games arrive long after this is built, so the counts are
+        // taken whenever the library changes rather than once at construction.
+        GameManager.Instance.GamesChanged += (sender, args) =>
+        {
+            UiThread.Run(RefreshFilterTabs);
+        };
+
+        RefreshFilterTabs();
     }
 
     public async Task InitialLoadAsync()

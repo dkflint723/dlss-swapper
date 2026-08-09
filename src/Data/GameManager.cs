@@ -58,7 +58,14 @@ internal partial class GameManager : ObservableObject
         {
             var game = (Game)obj;
 
-            if (ShowHiddenGames == false && game.IsHidden == true)
+            // The hidden tab is the one place hidden games are meant to be visible, so it overrides
+            // the setting rather than fighting it.
+            if (ActiveFilter != GameFilter.Hidden && ShowHiddenGames == false && game.IsHidden == true)
+            {
+                return false;
+            }
+
+            if (GameFilters.Matches(game, ActiveFilter) == false)
             {
                 return false;
             }
@@ -74,7 +81,13 @@ internal partial class GameManager : ObservableObject
         {
             var game = (Game)obj;
 
-            if (ShowHiddenGames == false && game.IsHidden == true)
+            // The hidden tab is the one place hidden games are meant to be visible.
+            if (ActiveFilter != GameFilter.Hidden && ShowHiddenGames == false && game.IsHidden == true)
+            {
+                return false;
+            }
+
+            if (GameFilters.Matches(game, ActiveFilter) == false)
             {
                 return false;
             }
@@ -91,7 +104,13 @@ internal partial class GameManager : ObservableObject
         {
             var game = (Game)obj;
 
-            if (ShowHiddenGames == false && game.IsHidden == true)
+            // The hidden tab is the one place hidden games are meant to be visible.
+            if (ActiveFilter != GameFilter.Hidden && ShowHiddenGames == false && game.IsHidden == true)
+            {
+                return false;
+            }
+
+            if (GameFilters.Matches(game, ActiveFilter) == false)
             {
                 return false;
             }
@@ -111,6 +130,12 @@ internal partial class GameManager : ObservableObject
     /// against an empty library.
     /// </remarks>
     public event EventHandler? GamesChanged;
+
+    /// <summary>
+    /// Which filter tab the games page is on. Session only, so opening the app always shows
+    /// everything rather than a subset the user set once and forgot.
+    /// </summary>
+    public GameFilter ActiveFilter { get; set; } = GameFilter.All;
 
     private GameManager()
     {
@@ -304,6 +329,11 @@ internal partial class GameManager : ObservableObject
         {
             game.RefreshUpdateAvailable();
         }
+
+        // Whether a game is behind is only decided once the manifest has loaded, which is long
+        // after the games themselves. Anything counting them has to be told, or it keeps the
+        // answer it computed while every game still looked up to date.
+        GamesChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public List<Game> GetSynchronisedGamesListCopy()

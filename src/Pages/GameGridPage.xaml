@@ -23,7 +23,13 @@
         <ct_converters:StringVisibilityConverter x:Key="StringVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
         <ct_converters:StringVisibilityConverter x:Key="InverseStringVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         <converters:BitmapImageUriConverter x:Key="BitmapImageUriConverter" />
-        <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" TrueValue="0.25" FalseValue="1.0" NullValue="1.0" />
+        <!--
+            Hidden games are dimmed rather than absent. 0.25 was set when they only ever appeared
+            alongside normal rows, where it read as "ignore this one". On the hidden tab they are
+            the entire list, so it has to stay legible; 0.55 is the same ratio the tokens use for
+            secondary text.
+        -->
+        <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" TrueValue="0.55" FalseValue="1.0" NullValue="1.0" />
         <converters:DllVendorToBrushConverter x:Key="DllVendorToBrushConverter" />
 
         <!-- One badge per vendor with an out of date dll. The label is what identifies it, the colour
@@ -318,6 +324,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="16">
@@ -396,6 +403,72 @@
                  Title="Warning"
                  Message="{x:Bind ViewModel.TranslationProperties.ApplicationRunsInAdministrativeModeInfo, Mode=OneWay}"
                  Visibility="{x:Bind system:Environment.IsPrivilegedProcess, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+            <!--
+                Filter tabs. Each carries the count of what it would show, from the same rule that
+                decides what it shows, so the number cannot disagree with the list. A tab with
+                nothing in it shows no number rather than a zero, which reads as an error.
+            -->
+            <Grid Grid.Row="2" Height="38" Margin="16,4,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ItemsControl Grid.Column="0" ItemsSource="{x:Bind ViewModel.FilterTabs, Mode=OneWay}" VerticalAlignment="Stretch">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="20" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="data:GameFilterTab">
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                CornerRadius="0"
+                                Padding="0"
+                                VerticalAlignment="Stretch"
+                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.SelectFilterCommand}"
+                                CommandParameter="{x:Bind}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="2" />
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Opacity="{x:Bind LabelOpacity}">
+                                        <TextBlock Text="{x:Bind Label}" FontSize="13" Foreground="{ThemeResource DsTextPrimaryBrush}" />
+                                        <TextBlock
+                                            Text="{x:Bind CountText}"
+                                            FontSize="11"
+                                            VerticalAlignment="Center"
+                                            Visibility="{x:Bind CountVisibility}"
+                                            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                                    </StackPanel>
+
+                                    <Border
+                                        Grid.Row="1"
+                                        Background="{ThemeResource DsTextPrimaryBrush}"
+                                        Visibility="{x:Bind UnderlineVisibility}" />
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button
+                    Grid.Column="1"
+                    Height="32"
+                    Padding="16,0"
+                    Margin="0,0,16,0"
+                    VerticalAlignment="Center"
+                    CornerRadius="{StaticResource DsCornerRadius}"
+                    Style="{ThemeResource AccentButtonStyle}"
+                    Content="{x:Bind ViewModel.ReviewUpdatesText, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.ReviewUpdatesVisibility, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.UpdateAllGamesButtonCommand}" />
+            </Grid>
         </Grid>
 
         <ContentControl x:Name="MainContentControl" Grid.Row="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Content="{x:Bind ViewModel, Mode=OneWay}" ContentTemplateSelector="{StaticResource TemplateSelector}" />
