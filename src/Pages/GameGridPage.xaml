@@ -312,10 +312,10 @@
                                 CornerRadius="{StaticResource DsCornerRadius}"
                                 Background="#CC000000"
                                 BorderThickness="0"
-                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.UpdateGameCommand}"
+                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.RowActionCommand}"
                                 CommandParameter="{x:Bind}"
                                 ToolTipService.ToolTip="{Binding ElementName=RootGameGridPage, Path=ViewModel.TranslationProperties.UpdateThisGameText, Mode=OneWay}"
-                                Visibility="{x:Bind UpdateAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                Visibility="{x:Bind RowStatus.ActionLabel, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
                                 <FontIcon Glyph="&#xE896;" FontSize="14" Foreground="White" />
                             </Button>
                         </Grid>
