@@ -1,4 +1,5 @@
-﻿using DLSS_Swapper.Data;
+﻿using System.Linq;
+using DLSS_Swapper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -87,5 +88,26 @@ public sealed partial class GameAssetPicker : UserControl
         gameAssetPicker.TypeName = gameAssetPicker.AssetType == GameAssetType.Unknown
             ? string.Empty
             : DLLManager.Instance.GetAssetTypeName(gameAssetPicker.AssetType);
+
+        gameAssetPicker.UpdatePresence();
+    }
+
+    /// <summary>
+    /// Hides itself when the game does not ship this dll.
+    /// </summary>
+    /// <remarks>
+    /// All nine pickers are declared in the game view whatever the game has, so most of them used
+    /// to read "Not found". A game with only XeSS showed eight controls saying nothing and one
+    /// saying something. The absent types are still worth naming, but as one line rather than as
+    /// eight controls, which is what the summary beneath them is for.
+    /// </remarks>
+    void UpdatePresence()
+    {
+        var game = ViewModel?.Game;
+
+        var hasThisDll = game is not null
+            && game.GameAssets.Any(x => x.AssetType == AssetType);
+
+        Visibility = hasThisDll ? Visibility.Visible : Visibility.Collapsed;
     }
 }

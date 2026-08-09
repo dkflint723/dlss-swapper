@@ -73,11 +73,55 @@ public partial class GameControlModel : ObservableObject
 
     public GameControlModelTranslationProperties TranslationProperties { get; } = new GameControlModelTranslationProperties();
 
+    /// <summary>
+    /// Whether each preset control is shown.
+    /// </summary>
+    /// <remarks>
+    /// A preset belongs to a dll, so it has to disappear with it. Hiding only the pickers left
+    /// their partners stranded: a game with no DLSS showed three preset dropdowns reading "Not
+    /// supported" beside an empty column. These are computed once here rather than combined in the
+    /// binding, because x:Bind cannot express "has the dll and the preset is selectable".
+    /// </remarks>
+    [ObservableProperty]
+    public partial Visibility DlssPresetVisibility { get; set; } = Visibility.Collapsed;
+
+    [ObservableProperty]
+    public partial Visibility DlssDPresetVisibility { get; set; } = Visibility.Collapsed;
+
+    [ObservableProperty]
+    public partial Visibility DlssGPresetVisibility { get; set; } = Visibility.Collapsed;
+
+    static Visibility VisibleIfPresent(GameEngineSplit engines, GameAssetType assetType)
+    {
+        return engines.Present.Contains(assetType) ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    /// <summary>Names the upscalers this game does not have, in place of eight empty pickers.</summary>
+    [ObservableProperty]
+    public partial string NotPresentSummary { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial Visibility NotPresentSummaryVisibility { get; set; } = Visibility.Collapsed;
+
     public GameControlModel(GameControl gameControl, Game game) : base()
     {
         gameControlWeakReference = new WeakReference<GameControl>(gameControl);
         Game = game;
         GameTitle = game.Title;
+
+        var engines = GameEngines.Split(game);
+
+        DlssPresetVisibility = VisibleIfPresent(engines, GameAssetType.DLSS);
+        DlssDPresetVisibility = VisibleIfPresent(engines, GameAssetType.DLSS_D);
+        DlssGPresetVisibility = VisibleIfPresent(engines, GameAssetType.DLSS_G);
+
+        NotPresentSummary = engines.AbsentSummary;
+        NotPresentSummaryVisibility = engines.Absent.Count > 0 && engines.Present.Count > 0
+            ? Visibility.Visible
+
+            // A game with no upscalers at all would otherwise get a line listing all nine, which is
+            // just a long way of saying the app has nothing to do here.
+            : Visibility.Collapsed;
 
 
         // Make sure NVAPIHelper is supported and the game has DLSS.

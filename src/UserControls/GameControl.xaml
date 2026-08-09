@@ -205,7 +205,7 @@
                         <usercontrols:GameAssetPicker Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top"
                                                       ViewModel="{x:Bind ViewModel}" AssetType="DLSS" />
 
-                        <StackPanel Grid.Column="1" Grid.Row="0" Spacing="6" Orientation="Horizontal">
+                        <StackPanel Grid.Column="1" Grid.Row="0" Spacing="6" Orientation="Horizontal" Visibility="{x:Bind ViewModel.DlssPresetVisibility, Mode=OneWay}">
                             <TextBlock Text="{x:Bind ViewModel.TranslationProperties.DLSSPresetText, Mode=OneWay}" FontWeight="Bold"/>
                             <Button Style="{StaticResource TextBlockButtonStyle}" Visibility="{x:Bind ViewModel.CanSelectDlssPreset, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{Binding DLSSPresetInfoCommand}" Padding="0" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoTooltipText, Mode=OneWay}">
                                 <Button.Content>
@@ -214,7 +214,7 @@
                             </Button>
                         </StackPanel>
 
-                        <Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch">
+                        <Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.DlssPresetVisibility, Mode=OneWay}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -239,7 +239,7 @@
                         <usercontrols:GameAssetPicker Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" VerticalAlignment="Top"
                                                       ViewModel="{x:Bind ViewModel}" AssetType="DLSS_D" />
 
-                        <StackPanel Grid.Column="1" Grid.Row="3" Spacing="6" Orientation="Horizontal">
+                        <StackPanel Grid.Column="1" Grid.Row="3" Spacing="6" Orientation="Horizontal" Visibility="{x:Bind ViewModel.DlssDPresetVisibility, Mode=OneWay}">
                             <TextBlock Text="{x:Bind ViewModel.TranslationProperties.DLSSDPresetText, Mode=OneWay}" FontWeight="Bold"/>
                             <Button Style="{StaticResource TextBlockButtonStyle}" Visibility="{x:Bind ViewModel.CanSelectDlssDPreset, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{Binding DLSSPresetInfoCommand}" Padding="0" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoTooltipText, Mode=OneWay}">
                                 <Button.Content>
@@ -250,7 +250,7 @@
 
 
 
-                        <Grid Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch">
+                        <Grid Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.DlssDPresetVisibility, Mode=OneWay}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -277,7 +277,7 @@
                                                       ViewModel="{x:Bind ViewModel}" AssetType="DLSS_G" />
 
 
-                        <StackPanel Grid.Column="1" Grid.Row="6" Spacing="6" Orientation="Horizontal">
+                        <StackPanel Grid.Column="1" Grid.Row="6" Spacing="6" Orientation="Horizontal" Visibility="{x:Bind ViewModel.DlssGPresetVisibility, Mode=OneWay}">
                             <TextBlock Text="{x:Bind ViewModel.TranslationProperties.DLSSGPresetText, Mode=OneWay}" FontWeight="Bold"/>
                             <Button Style="{StaticResource TextBlockButtonStyle}" Visibility="{x:Bind ViewModel.CanSelectDlssGPreset, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{Binding DLSSPresetInfoCommand}" Padding="0" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoTooltipText, Mode=OneWay}">
                                 <Button.Content>
@@ -287,7 +287,7 @@
                         </StackPanel>
 
 
-                        <Grid Grid.Column="1" Grid.Row="7" HorizontalAlignment="Stretch">
+                        <Grid Grid.Column="1" Grid.Row="7" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.DlssGPresetVisibility, Mode=OneWay}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -358,6 +358,19 @@
                         <usercontrols:GameAssetPicker Grid.Column="1" Grid.Row="3" Grid.RowSpan="2" VerticalAlignment="Top"
                                                       ViewModel="{x:Bind ViewModel}" AssetType="XeLL" />
                     </Grid>
+
+                    <!--
+                        The pickers for upscalers this game does not have are hidden rather than
+                        left reading "Not found". They are still worth naming, so they are named
+                        here, in one line instead of eight controls.
+                    -->
+                    <TextBlock
+                        Margin="0,16,0,0"
+                        Text="{x:Bind ViewModel.NotPresentSummary, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.NotPresentSummaryVisibility, Mode=OneWay}"
+                        TextWrapping="Wrap"
+                        Style="{ThemeResource CaptionTextBlockStyle}"
+                        Foreground="{ThemeResource DsTextSecondaryBrush}" />
                 </StackPanel>
             </Grid>
         </Grid>
