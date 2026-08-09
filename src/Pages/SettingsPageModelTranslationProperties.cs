@@ -63,6 +63,10 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string OpenTranslationToolboxText => ResourceHelper.GetString("SettingsPage_OpenTranslationToolbox");
 
+    /// <summary>For a button whose row already names what it opens.</summary>
+    [TranslationProperty]
+    public string OpenText => ResourceHelper.GetString("General_Open");
+
     [TranslationProperty]
     public string ThemeLightText => ResourceHelper.GetString("SettingsPage_ThemeLight");
 

@@ -1,19 +1,19 @@
-# DLSS Swapper — session handoff
+﻿# DLSS Swapper — session handoff
 
 **Repo:** personal fork (`dkflint723/dlss-swapper`) of `beeradmoore/dlss-swapper`. WinUI 3 / .NET 10,
 x64, unpackaged. Treated as a **personal divergence, not upstream PRs** — aggressive refactoring is
 fine.
 
-**State:** `main`, 38 commits ahead of upstream, all pushed and CI-green. 272 tests (161 app, 111
-core). Working tree clean except `src/Assets/static_manifest.json`, which predates the work and has
-been deliberately excluded from every commit.
+**State:** `main`, all pushed and CI-green. 322 tests (211 app, 111 core). Working tree clean except
+`src/Assets/static_manifest.json` and `docs/manifest.json`, which predate the work and have been
+deliberately excluded from every commit — `git add -A` will sweep them in, so stage by path.
 
 ## Structure
 
 - `core/DLSS.Swapper.Core` — pure `net10.0`, no WinUI. Swap executor, version ranking, `DllTypes`
   registry.
 - `tests/DLSS.Swapper.Core.Tests` — 111 tests.
-- `tests/DLSS.Swapper.App.Tests` — 161 tests; references the WinUI app directly. Needs
+- `tests/DLSS.Swapper.App.Tests` — 211 tests; references the WinUI app directly. Needs
   `resources.pri` (a build target renames the app's `.pri`) or every string lookup throws.
 - `TemporaryDatabase` fixture gives tests a **real SQLite database** in temp, via
   `Storage.OverrideStoragePath` + `Database.ResetInstanceAsync` (internal, test-only seams). Debug
@@ -51,20 +51,26 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-1. Remaining design steps: Settings page, first-run and empty states.
-2. **The upscalers page is not finished.** Still missing from spec §4.3: versions grouped under
+1. Remaining design steps: first-run and empty states (README §6 and §7).
+2. **Settings is half done.** Every repeated row is now a `SettingsRow` with its explanation beside
+   the name. Still to do from spec §6: the two column layout (560px main, 280px side), sections
+   under uppercase rules, theme as a segmented control rather than radio buttons, the accent swatch
+   row and `Match my desktop accent`, and moving Game libraries and About into the side column.
+   `GameLibrarySelectorControl`, the ignored paths list and the DLSS preset block are untouched and
+   still use the old shape.
+3. **The upscalers page is not finished.** Still missing from spec §4.3: versions grouped under
    uppercase rules by major line (`DLSS 310`, `DLSS 3.7`, `DLSS 3.5 and older`), the state column
    (`On disk` / `Not downloaded` as words beside their glyph — right now state is only implied by
    which buttons a row shows, which is icon-only), the size column, and the per-row overflow menu.
    Clicking a usage count should filter Games to those titles.
-3. **Two pieces of the update flow are deliberately not built.** The per-row progress bar in the
+4. **Two pieces of the update flow are deliberately not built.** The per-row progress bar in the
    action slot (README §4 says a row being written shows a 150px bar where its button was; it still
    shows the sentence and a spinner), and `See what changed` on the done strip, which needs a
    history view filtered to a batch and there is no such view yet.
-4. The strip overlays the last of the content rather than shortening it, so the final row can sit
+5. The strip overlays the last of the content rather than shortening it, so the final row can sit
    behind it until you scroll. Docking it properly means the content row giving up 52px while it is
    there.
-5. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
+6. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. Not yet reasoned about either
    way.
 
@@ -86,6 +92,11 @@ read than the `.dc.html` mockup.
   place of the horizontally scrolling bar, versions as rows rather than cards, and `DllUsage`
   answering how many games have each file in place — the column that says whether it is safe to
   delete. See the unfinished list above for what is still missing from it.
+- **`SettingsRow`** — title, one line saying what the setting does, and the control. The page had
+  ten copies of a heading, a control and an italic caption *below* it, so a setting could only be
+  understood by reading past the thing you were about to change.
+- **`NewResourceStringTests`** asserts every resource key this work added resolves. A missing key
+  renders as a sentinel string rather than throwing, so nothing else would notice.
 
 ## Gotchas that cost real time
 
