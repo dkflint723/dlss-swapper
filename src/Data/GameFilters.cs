@@ -21,8 +21,17 @@ public enum GameFilter
 /// </remarks>
 public static class GameFilters
 {
-    public static bool Matches(Game game, GameFilter filter)
+    /// <param name="hideNonDLSSGames">
+    /// When true, games with no upscaler in their install folder are excluded. Part of this rule
+    /// rather than of the view, so the tab counts and the list it shows cannot disagree about it.
+    /// </param>
+    public static bool Matches(Game game, GameFilter filter, bool hideNonDLSSGames)
     {
+        if (hideNonDLSSGames && game.HasSwappableItems == false)
+        {
+            return false;
+        }
+
         return filter switch
         {
             GameFilter.HasUpdate => HasUpdate(game),
@@ -35,9 +44,9 @@ public static class GameFilters
     /// <summary>
     /// Games this filter would show, so a tab's count and its contents come from one rule.
     /// </summary>
-    public static int Count(System.Collections.Generic.IEnumerable<Game> games, GameFilter filter)
+    public static int Count(System.Collections.Generic.IEnumerable<Game> games, GameFilter filter, bool hideNonDLSSGames)
     {
-        return games.Count(x => Matches(x, filter));
+        return games.Count(x => Matches(x, filter, hideNonDLSSGames));
     }
 
     /// <summary>

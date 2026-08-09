@@ -34,6 +34,12 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string AcknowledgementsText => ResourceHelper.GetString("SettingsPage_OpenAcknowledgements");
 
     [TranslationProperty]
+    public string HideNonDLSSGamesText => ResourceHelper.GetString("SettingsPage_HideNonDLSSGames");
+
+    [TranslationProperty]
+    public string HideNonDLSSGamesInfo => ResourceHelper.GetString("SettingsPage_HideNonDLSSGamesInfo");
+
+    [TranslationProperty]
     public string BackupNewGamesText => ResourceHelper.GetString("SettingsPage_BackupNewGames");
 
     [TranslationProperty]

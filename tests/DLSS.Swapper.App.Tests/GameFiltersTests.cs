@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Dlls;
 using Xunit;
@@ -49,8 +49,8 @@ public class GameFiltersTests
         var hidden = new TestGame("filter_1");
         hidden.IsHidden = true;
 
-        Assert.True(GameFilters.Matches(new TestGame("filter_1b"), GameFilter.All));
-        Assert.True(GameFilters.Matches(hidden, GameFilter.All));
+        Assert.True(GameFilters.Matches(new TestGame("filter_1b"), GameFilter.All, hideNonDLSSGames: false));
+        Assert.True(GameFilters.Matches(hidden, GameFilter.All, hideNonDLSSGames: false));
     }
 
     [Fact]
@@ -62,8 +62,8 @@ public class GameFiltersTests
         var behind = GameWith("filter_2a", (GameAssetType.DLSS, "310.1.0.0"));
         var current = GameWith("filter_2b", (GameAssetType.DLSS, "310.7.0.0"));
 
-        Assert.True(GameFilters.Matches(behind, GameFilter.HasUpdate));
-        Assert.False(GameFilters.Matches(current, GameFilter.HasUpdate));
+        Assert.True(GameFilters.Matches(behind, GameFilter.HasUpdate, hideNonDLSSGames: false));
+        Assert.False(GameFilters.Matches(current, GameFilter.HasUpdate, hideNonDLSSGames: false));
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class GameFiltersTests
         var skipped = GameWith("filter_3", (GameAssetType.DLSS, "310.1.0.0"));
         skipped.SkipUpdates = true;
 
-        Assert.False(GameFilters.Matches(skipped, GameFilter.HasUpdate));
+        Assert.False(GameFilters.Matches(skipped, GameFilter.HasUpdate, hideNonDLSSGames: false));
     }
 
     [Fact]
@@ -89,8 +89,8 @@ public class GameFiltersTests
         var withoutBackup = new TestGame("filter_4b");
         withoutBackup.GameAssets.Add(Asset(withoutBackup.ID, GameAssetType.DLSS, "310.7.0.0"));
 
-        Assert.False(GameFilters.Matches(withBackup, GameFilter.MissingBackup));
-        Assert.True(GameFilters.Matches(withoutBackup, GameFilter.MissingBackup));
+        Assert.False(GameFilters.Matches(withBackup, GameFilter.MissingBackup, hideNonDLSSGames: false));
+        Assert.True(GameFilters.Matches(withoutBackup, GameFilter.MissingBackup, hideNonDLSSGames: false));
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class GameFiltersTests
     {
         using var manifest = new ManifestScope();
 
-        Assert.False(GameFilters.Matches(new TestGame("filter_5"), GameFilter.MissingBackup));
+        Assert.False(GameFilters.Matches(new TestGame("filter_5"), GameFilter.MissingBackup, hideNonDLSSGames: false));
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class GameFiltersTests
         game.GameAssets.Add(Asset(game.ID, GameAssetType.DLSS, "310.7.0.0"));
         game.SkipUpdates = true;
 
-        Assert.True(GameFilters.Matches(game, GameFilter.MissingBackup));
+        Assert.True(GameFilters.Matches(game, GameFilter.MissingBackup, hideNonDLSSGames: false));
     }
 
     [Fact]
@@ -122,8 +122,8 @@ public class GameFiltersTests
         var hidden = new TestGame("filter_7a");
         hidden.IsHidden = true;
 
-        Assert.True(GameFilters.Matches(hidden, GameFilter.Hidden));
-        Assert.False(GameFilters.Matches(new TestGame("filter_7b"), GameFilter.Hidden));
+        Assert.True(GameFilters.Matches(hidden, GameFilter.Hidden, hideNonDLSSGames: false));
+        Assert.False(GameFilters.Matches(new TestGame("filter_7b"), GameFilter.Hidden, hideNonDLSSGames: false));
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class GameFiltersTests
         var game = new TestGame("filter_8");
         game.IsHidden = null;
 
-        Assert.False(GameFilters.Matches(game, GameFilter.Hidden));
+        Assert.False(GameFilters.Matches(game, GameFilter.Hidden, hideNonDLSSGames: false));
     }
 
     [Fact]
@@ -161,10 +161,59 @@ public class GameFiltersTests
 
         foreach (var filter in new[] { GameFilter.All, GameFilter.HasUpdate, GameFilter.MissingBackup, GameFilter.Hidden })
         {
-            var shown = games.FindAll(x => GameFilters.Matches(x, filter)).Count;
+            var shown = games.FindAll(x => GameFilters.Matches(x, filter, hideNonDLSSGames: false)).Count;
 
-            Assert.Equal(shown, GameFilters.Count(games, filter));
+            Assert.Equal(shown, GameFilters.Count(games, filter, hideNonDLSSGames: false));
         }
+    }
+
+    [Fact]
+    public void HidingGamesWithoutAnUpscalerRemovesThemFromEveryTab()
+    {
+        // The setting existed and was read by all three views, but nothing counted with it, so the
+        // tabs would have gone on including games the list was hiding.
+        using var manifest = new ManifestScope();
+        manifest.Add(GameAssetType.DLSS, "310.7.0.0");
+
+        var withUpscaler = GameWith("filter_11a", (GameAssetType.DLSS, "310.1.0.0"));
+        withUpscaler.HasSwappableItems = true;
+
+        var withoutUpscaler = new TestGame("filter_11b");
+        withoutUpscaler.HasSwappableItems = false;
+
+        var games = new List<Game>() { withUpscaler, withoutUpscaler };
+
+        Assert.Equal(2, GameFilters.Count(games, GameFilter.All, hideNonDLSSGames: false));
+        Assert.Equal(1, GameFilters.Count(games, GameFilter.All, hideNonDLSSGames: true));
+    }
+
+    [Fact]
+    public void AGameWithAnUpscalerSurvivesTheSetting()
+    {
+        using var manifest = new ManifestScope();
+        manifest.Add(GameAssetType.DLSS, "310.7.0.0");
+
+        var game = GameWith("filter_12", (GameAssetType.DLSS, "310.1.0.0"));
+        game.HasSwappableItems = true;
+
+        Assert.True(GameFilters.Matches(game, GameFilter.HasUpdate, hideNonDLSSGames: true));
+    }
+
+    [Fact]
+    public void TheSettingAppliesToEveryTabNotJustAll()
+    {
+        // A game with no upscaler cannot be behind or missing a backup, but it can be hidden, and
+        // the hidden tab must respect the setting too or it becomes a way to see what was excluded.
+        using var manifest = new ManifestScope();
+
+        var hiddenWithoutUpscaler = new TestGame("filter_13");
+        hiddenWithoutUpscaler.IsHidden = true;
+        hiddenWithoutUpscaler.HasSwappableItems = false;
+
+        var games = new List<Game>() { hiddenWithoutUpscaler };
+
+        Assert.Equal(1, GameFilters.Count(games, GameFilter.Hidden, hideNonDLSSGames: false));
+        Assert.Equal(0, GameFilters.Count(games, GameFilter.Hidden, hideNonDLSSGames: true));
     }
 
     [Fact]
@@ -183,9 +232,9 @@ public class GameFiltersTests
             noBackup,
         };
 
-        Assert.Equal(3, GameFilters.Count(games, GameFilter.All));
-        Assert.Equal(1, GameFilters.Count(games, GameFilter.HasUpdate));
-        Assert.Equal(1, GameFilters.Count(games, GameFilter.MissingBackup));
-        Assert.Equal(0, GameFilters.Count(games, GameFilter.Hidden));
+        Assert.Equal(3, GameFilters.Count(games, GameFilter.All, hideNonDLSSGames: false));
+        Assert.Equal(1, GameFilters.Count(games, GameFilter.HasUpdate, hideNonDLSSGames: false));
+        Assert.Equal(1, GameFilters.Count(games, GameFilter.MissingBackup, hideNonDLSSGames: false));
+        Assert.Equal(0, GameFilters.Count(games, GameFilter.Hidden, hideNonDLSSGames: false));
     }
 }

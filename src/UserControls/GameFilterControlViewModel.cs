@@ -6,9 +6,6 @@ namespace DLSS_Swapper.UserControls;
 public partial class GameFilterControlViewModel : ObservableObject
 {
     [ObservableProperty]
-    public partial bool HideNonSwappableGames { get; set; } = false;
-
-    [ObservableProperty]
     public partial bool ShowHiddenGames { get; set; } = false;
 
     [ObservableProperty]
@@ -18,7 +15,6 @@ public partial class GameFilterControlViewModel : ObservableObject
 
     public GameFilterControlViewModel()
     {
-        HideNonSwappableGames = Settings.Instance.HideNonDLSSGames;
         ShowHiddenGames = GameManager.Instance.ShowHiddenGames;
         GroupGameLibrariesTogether = Settings.Instance.GroupGameLibrariesTogether;
     }

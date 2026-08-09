@@ -161,6 +161,15 @@
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"
                     Margin="0,40,0,0"
+                    Text="{x:Bind ViewModel.TranslationProperties.HideNonDLSSGamesText, Mode=OneWay}" />
+                <StackPanel Margin="0,10,0,0">
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.HideNonDLSSGames, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{x:Bind ViewModel.TranslationProperties.HideNonDLSSGamesInfo, Mode=OneWay}" Style="{ThemeResource CaptionTextBlockStyle}" FontStyle="Italic" Margin="0,8,0,0" />
+                </StackPanel>
+
+                <TextBlock
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Margin="0,40,0,0"
                     Text="{x:Bind ViewModel.TranslationProperties.BackupNewGamesText, Mode=OneWay}" />
                 <StackPanel Margin="0,10,0,0">
                     <ToggleSwitch IsOn="{x:Bind ViewModel.BackupNewGamesAutomatically, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" Margin="0,0,0,4"/>

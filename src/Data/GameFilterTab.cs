@@ -36,9 +36,10 @@ public class GameFilterTab
         string labelResourceKey,
         IReadOnlyList<Game> games,
         GameFilter activeFilter,
+        bool hideNonDLSSGames,
         bool showCount = true)
     {
-        var count = showCount ? GameFilters.Count(games, filter) : 0;
+        var count = showCount ? GameFilters.Count(games, filter, hideNonDLSSGames) : 0;
 
         return new GameFilterTab()
         {

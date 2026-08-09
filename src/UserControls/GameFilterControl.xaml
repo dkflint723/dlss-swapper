@@ -9,7 +9,11 @@
 
     <StackPanel>
         <TextBlock Text="{x:Bind ViewModel.TranslationProperties.OptionsText, Mode=OneWay}" Style="{ThemeResource BaseTextBlockStyle}" />
-        <CheckBox Content="{x:Bind ViewModel.TranslationProperties.HideGamesWithNoSwappableItemsText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.HideNonSwappableGames, Mode=TwoWay}" />
+        <!--
+            Only showing games with an upscaler lives in Settings now. It is a standing preference
+            rather than something toggled while browsing, and having it in two places meant two
+            controls for one setting.
+        -->
         <CheckBox Content="{x:Bind ViewModel.TranslationProperties.ShowHiddenGamesText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.ShowHiddenGames, Mode=TwoWay}" />
         
         <TextBlock Text="{x:Bind ViewModel.TranslationProperties.GroupingText, Mode=OneWay}" Style="{ThemeResource BaseTextBlockStyle}"  Margin="0,10,0,0" />

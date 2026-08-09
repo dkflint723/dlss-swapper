@@ -71,12 +71,7 @@ internal partial class GameManager : ObservableObject
             return false;
         }
 
-        if (GameFilters.Matches(game, ActiveFilter) == false)
-        {
-            return false;
-        }
-
-        if (hideNonDLSSGames && game.HasSwappableItems == false)
+        if (GameFilters.Matches(game, ActiveFilter, hideNonDLSSGames) == false)
         {
             return false;
         }

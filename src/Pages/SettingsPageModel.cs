@@ -83,6 +83,9 @@ public partial class SettingsPageModel : ObservableObject
     public partial bool AllowUntrusted { get; set; } = false;
 
     [ObservableProperty]
+    public partial bool HideNonDLSSGames { get; set; } = false;
+
+    [ObservableProperty]
     public partial bool BackupNewGamesAutomatically { get; set; } = true;
 
     [ObservableProperty]
@@ -167,6 +170,7 @@ public partial class SettingsPageModel : ObservableObject
 
         DlssLoggingToWindow = _dlssSettingsManager.GetLoggingWindow();
         AllowUntrusted = Settings.Instance.AllowUntrusted;
+        HideNonDLSSGames = Settings.Instance.HideNonDLSSGames;
         BackupNewGamesAutomatically = Settings.Instance.BackupNewGamesAutomatically;
         AllowDebugDlls = Settings.Instance.AllowDebugDlls;
         OnlyShowDownloadedDlls = Settings.Instance.OnlyShowDownloadedDlls;
@@ -302,6 +306,13 @@ public partial class SettingsPageModel : ObservableObject
         {
             Settings.Instance.AllowUntrusted = AllowUntrusted;
             App.CurrentApp.MainWindow.FilterDLLRecords();
+        }
+        else if (e.PropertyName == nameof(HideNonDLSSGames))
+        {
+            Settings.Instance.HideNonDLSSGames = HideNonDLSSGames;
+
+            // The three view predicates already read this, they just need rebuilding with it.
+            App.CurrentApp.MainWindow?.GameGridPage?.ViewModel.ReapplyFilters();
         }
         else if (e.PropertyName == nameof(BackupNewGamesAutomatically))
         {

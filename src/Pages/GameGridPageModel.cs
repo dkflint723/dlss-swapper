@@ -86,15 +86,18 @@ public partial class GameGridPageModel : ObservableObject
         var games = GameManager.Instance.GetSynchronisedGamesListCopy();
         var active = GameManager.Instance.ActiveFilter;
 
+        // Same setting the views apply, so a count cannot include a game the list is hiding.
+        var hideNonDLSS = Settings.Instance.HideNonDLSSGames;
+
         FilterTabs =
         [
-            GameFilterTab.For(GameFilter.All, "GamesPage_Filter_All", games, active),
-            GameFilterTab.For(GameFilter.HasUpdate, "GamesPage_Filter_HaveUpdate", games, active),
-            GameFilterTab.For(GameFilter.MissingBackup, "GamesPage_Filter_MissingOriginal", games, active),
-            GameFilterTab.For(GameFilter.Hidden, "GamesPage_Filter_Hidden", games, active),
+            GameFilterTab.For(GameFilter.All, "GamesPage_Filter_All", games, active, hideNonDLSS),
+            GameFilterTab.For(GameFilter.HasUpdate, "GamesPage_Filter_HaveUpdate", games, active, hideNonDLSS),
+            GameFilterTab.For(GameFilter.MissingBackup, "GamesPage_Filter_MissingOriginal", games, active, hideNonDLSS),
+            GameFilterTab.For(GameFilter.Hidden, "GamesPage_Filter_Hidden", games, active, hideNonDLSS),
         ];
 
-        var behind = GameFilters.Count(games, GameFilter.HasUpdate);
+        var behind = GameFilters.Count(games, GameFilter.HasUpdate, hideNonDLSS);
         ReviewUpdatesText = ResourceHelper.GetFormattedResourceTemplate("GamesPage_ReviewUpdatesTemplate", behind);
         ReviewUpdatesVisibility = behind > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -106,6 +109,19 @@ public partial class GameGridPageModel : ObservableObject
         {
             ShowFilter(tab.Filter);
         }
+    }
+
+    /// <summary>
+    /// Rebuilds the views against the current settings.
+    /// </summary>
+    /// <remarks>
+    /// The predicates read settings when they are built, not when they run, so changing one has no
+    /// effect until they are made again.
+    /// </remarks>
+    public void ReapplyFilters()
+    {
+        CurrentCollectionView = GameManager.Instance.GetGameCollection();
+        RefreshFilterTabs();
     }
 
     /// <summary>Switches the page to a filter tab. Also used by the sidebar's backup card.</summary>
@@ -376,7 +392,6 @@ public partial class GameGridPageModel : ObservableObject
         {
             if (gameFilterControl.DataContext is GameFilterControlViewModel gameFilterControlViewModel)
             {
-                Settings.Instance.HideNonDLSSGames = gameFilterControlViewModel.HideNonSwappableGames;
                 GameManager.Instance.ShowHiddenGames = gameFilterControlViewModel.ShowHiddenGames;
                 Settings.Instance.GroupGameLibrariesTogether = gameFilterControlViewModel.GroupGameLibrariesTogether;
             }
