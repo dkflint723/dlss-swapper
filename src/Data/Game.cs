@@ -372,7 +372,12 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 // We have never recorded a dll for this game, so whatever is here now is what the
                 // game shipped with. That is the only moment we can be sure of it, which is why
                 // backing up happens here and not on every scan.
-                var isFirstTimeSeeingThisGame = Settings.Instance.BackupNewGamesAutomatically && oldGameAssets.Count == 0;
+                // Was "the first time this game is seen", which left every dll found later
+                // unprotected: a game that gained one in a patch had it detected and never backed
+                // up. A dll the app has only just noticed has never been swapped by it, so the file
+                // sitting there is the original, and CreateOriginalBackupForGameAsset refuses to
+                // overwrite an existing copy, so this cannot promote a swapped dll to "original".
+                var shouldBackUpNewDlls = Settings.Instance.BackupNewGamesAutomatically;
 
                 void ProcessGame_ProcessGameAsset(GameAsset gameAsset)
                 {
@@ -455,7 +460,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                         unknownGameAssets.Add(gameAsset);
                     }
 
-                    if (isFirstTimeSeeingThisGame)
+                    if (shouldBackUpNewDlls)
                     {
                         CreateOriginalBackupForGameAsset(gameAsset);
                     }
