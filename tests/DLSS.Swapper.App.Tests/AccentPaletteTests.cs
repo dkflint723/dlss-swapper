@@ -108,8 +108,37 @@ public class AccentPaletteTests
 
         Assert.Equal(Color.FromArgb(255, 0x2E, 0xE0, 0x7A), brandGreen.Dark);
 
-        // Darkened from the handoff's #0E8A4F, which measured 4.41:1 against white and so missed
-        // the 4.5:1 the handoff itself requires. See AccentPalette for the reasoning.
-        Assert.Equal(Color.FromArgb(255, 0x0E, 0x87, 0x4F), brandGreen.Light);
+        // Darkened twice from the handoff's #0E8A4F: once so white on it clears 4.5:1, and again so
+        // the accent works as text on the light ground. See AccentPalette for the reasoning.
+        Assert.Equal(Color.FromArgb(255, 0x0C, 0x75, 0x45), brandGreen.Light);
+    }
+
+    /// <summary>The window ground each theme paints, which accent text has to be readable on.</summary>
+    /// <remarks>
+    /// Copied from DsBgBrush in App.xaml. XAML resources cannot be read without a window, and the
+    /// alternative to copying them is not checking, which is how these values went unchecked in the
+    /// first place.
+    /// </remarks>
+    static Color Background(bool isDark) => isDark
+        ? Color.FromArgb(255, 0x15, 0x1C, 0x26)
+        : Color.FromArgb(255, 0xDC, 0xE5, 0xEF);
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void EveryAccentIsReadableAsTextOnTheWindowGround(bool isDark)
+    {
+        // The accent is not only a fill. It is the newer version in the preview sheet and the link
+        // in the sidebar, both of them small text on the page background. The light values were
+        // chosen to carry white text and nobody checked them the other way round: three of the four
+        // were between 3.5:1 and 4.5:1 as text, which is unreadable at 11px and looks deliberate.
+        foreach (var accent in AccentPalette.All)
+        {
+            var ratio = ContrastRatio(accent.ForTheme(isDark), Background(isDark));
+
+            Assert.True(
+                ratio >= 4.5,
+                $"{accent.Id} as text in {(isDark ? "dark" : "light")} theme is only {ratio:F2}:1");
+        }
     }
 }

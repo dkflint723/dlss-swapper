@@ -33,8 +33,19 @@
                             <SolidColorBrush x:Key="DsLineBrush" Color="#13FFFFFF" />
                             <SolidColorBrush x:Key="DsLine2Brush" Color="#24FFFFFF" />
                             <SolidColorBrush x:Key="DsTextPrimaryBrush" Color="#F2F3F5" />
-                            <SolidColorBrush x:Key="DsTextSecondaryBrush" Color="#8CF2F3F5" />
-                            <SolidColorBrush x:Key="DsTextTertiaryBrush" Color="#4DF2F3F5" />
+                            <!--
+                                Both raised well above the handoff's alphas, and measured rather
+                                than judged. Every level is checked against the *lightest* surface
+                                it can land on, which is surf2, not the window ground: text that
+                                passes on the background and fails on the progress track has not
+                                passed. Secondary reaches 7.06:1 there and tertiary 4.50:1, the AA
+                                threshold for text this size, with primary at 15.43:1 above them.
+                                At the specified alphas these were 5.48:1 and 2.58:1. Tertiary was
+                                below the 3:1 floor for anything at all, and it carries the sidebar
+                                counts, file sizes, dates and every setting's explanation.
+                            -->
+                            <SolidColorBrush x:Key="DsTextSecondaryBrush" Color="#B8F2F3F5" />
+                            <SolidColorBrush x:Key="DsTextTertiaryBrush" Color="#87F2F3F5" />
                             <SolidColorBrush x:Key="DsHoverBrush" Color="#0DFFFFFF" />
                             <SolidColorBrush x:Key="DsSelectedBrush" Color="#0FFFFFFF" />
                             <SolidColorBrush x:Key="DsCoverPlaceholderBrush" Color="#1F2733" />
@@ -67,8 +78,9 @@
                             <SolidColorBrush x:Key="DsLineBrush" Color="#1A101215" />
                             <SolidColorBrush x:Key="DsLine2Brush" Color="#2E101215" />
                             <SolidColorBrush x:Key="DsTextPrimaryBrush" Color="#16181B" />
-                            <SolidColorBrush x:Key="DsTextSecondaryBrush" Color="#9E16181B" />
-                            <SolidColorBrush x:Key="DsTextTertiaryBrush" Color="#6116181B" />
+                            <!-- Same measurement, same targets. See the dark dictionary. -->
+                            <SolidColorBrush x:Key="DsTextSecondaryBrush" Color="#CF16181B" />
+                            <SolidColorBrush x:Key="DsTextTertiaryBrush" Color="#A616181B" />
                             <SolidColorBrush x:Key="DsHoverBrush" Color="#0A101215" />
                             <SolidColorBrush x:Key="DsSelectedBrush" Color="#0D101215" />
                             <SolidColorBrush x:Key="DsCoverPlaceholderBrush" Color="#CDD9E6" />

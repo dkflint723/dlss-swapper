@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Windows.UI;
 
 namespace DLSS_Swapper.Data;
@@ -49,11 +49,12 @@ public static class AccentPalette
             Dark = FromHex(0x2E, 0xE0, 0x7A),
             DarkInk = FromHex(0x06, 0x21, 0x0F),
 
-            // The handoff specifies #0E8A4F here, but white on it measures 4.41:1, just under the
-            // 4.5:1 the same document requires of every accent. Green dropped from 8A to 87, which
-            // reaches 4.57:1 and is the smallest change that clears it. This is the default accent
-            // on the primary buttons, so it is the most read text in the app.
-            Light = FromHex(0x0E, 0x87, 0x4F),
+            // Darker than the handoff's #0E8A4F, twice over. White on that measured 4.41:1,
+            // under the 4.5:1 the document requires of its own accents; and the accent is used as
+            // text as well as a fill -- the newer version in the preview sheet, the link in the
+            // sidebar -- where the light values were never checked at all. As text on the light
+            // ground #0E8A4F is 3.5:1. This reaches 4.52:1 as text and 5.76:1 under white.
+            Light = FromHex(0x0C, 0x75, 0x45),
             LightInk = FromHex(0xFF, 0xFF, 0xFF),
         },
         new AccentOption()
@@ -62,7 +63,8 @@ public static class AccentPalette
             NameResourceKey = "Settings_Accent_WindowsBlue",
             Dark = FromHex(0x4C, 0xC2, 0xFF),
             DarkInk = FromHex(0x06, 0x20, 0x2B),
-            Light = FromHex(0x00, 0x67, 0xC0),
+            // 4.46:1 as text at #0067C0, just short. This clears it.
+            Light = FromHex(0x00, 0x66, 0xBE),
             LightInk = FromHex(0xFF, 0xFF, 0xFF),
         },
         new AccentOption()
@@ -80,7 +82,8 @@ public static class AccentPalette
             NameResourceKey = "Settings_Accent_Amber",
             Dark = FromHex(0xFF, 0xC8, 0x3D),
             DarkInk = FromHex(0x2A, 0x1F, 0x00),
-            Light = FromHex(0xB4, 0x53, 0x09),
+            // 3.94:1 as text at #B45309.
+            Light = FromHex(0xA6, 0x4C, 0x08),
             LightInk = FromHex(0xFF, 0xFF, 0xFF),
         },
     ];

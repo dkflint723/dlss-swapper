@@ -40,7 +40,8 @@ All deliberate, all reasoned in the relevant commit messages.
 | Radius 6/8, not 0 | User preference, after seeing the options rendered |
 | No Downloads page | Downloads are sequential and take seconds, so the page would always be empty |
 | Portrait 44x66 covers, not 96x54 | The cache holds 400x600 art; cropping a poster to 16:9 is unrecognisable |
-| Light brand green `#0E8A4F` to `#0E874F` | The spec's own 4.5:1 contrast requirement was not met by its own value |
+| Light brand green `#0E8A4F` to `#0C7545` | Twice: white on the spec's value is 4.41:1, and the accent is also used *as text*, where the spec's light values were never checked at all |
+| Text tokens raised well above the spec's alphas | Measured, not judged. Secondary was 5.48:1 and tertiary 2.58:1 on dark; tertiary was below the 3:1 floor for anything while carrying counts, sizes and every setting's explanation. Every level is now checked against the lightest surface it can land on |
 
 ## Design source
 
