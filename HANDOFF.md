@@ -4,7 +4,7 @@
 x64, unpackaged. Treated as a **personal divergence, not upstream PRs** — aggressive refactoring is
 fine.
 
-**State:** `main`, all pushed and CI-green. 333 tests (222 app, 111 core). Working tree clean except
+**State:** `main`, all pushed and CI-green. 358 tests (247 app, 111 core). Working tree clean except
 `src/Assets/static_manifest.json` and `docs/manifest.json`, which predate the work and have been
 deliberately excluded from every commit — `git add -A` will sweep them in, so stage by path.
 
@@ -13,7 +13,7 @@ deliberately excluded from every commit — `git add -A` will sweep them in, so 
 - `core/DLSS.Swapper.Core` — pure `net10.0`, no WinUI. Swap executor, version ranking, `DllTypes`
   registry.
 - `tests/DLSS.Swapper.Core.Tests` — 111 tests.
-- `tests/DLSS.Swapper.App.Tests` — 222 tests; references the WinUI app directly. Needs
+- `tests/DLSS.Swapper.App.Tests` — 247 tests; references the WinUI app directly. Needs
   `resources.pri` (a build target renames the app's `.pri`) or every string lookup throws.
 - `TemporaryDatabase` fixture gives tests a **real SQLite database** in temp, via
   `Storage.OverrideStoragePath` + `Database.ResetInstanceAsync` (internal, test-only seams). Debug
@@ -102,6 +102,10 @@ read than the `.dc.html` mockup.
   "no games with upscalers" would be a lie there and the tab already carries its own count.
 - **About names both repositories**, this fork for the code and reports, the original for credit.
   The updater points at this fork, and is inert until the fork publishes a release.
+- **Contrast is measured, not judged.** Every text level is checked against the lightest surface it
+  can land on, and the accents are checked as text as well as under ink. `AccentPaletteTests` holds
+  both rules. If a token is ever changed, re-measure rather than eyeball it.
+- **Where each dll file is**, in words rather than only in which buttons a row shows.
 - **The accent picker** (spec §6.1). `AccentManager`, `AccentPalette` and `AccentResolver` already
   existed and were already tested; all that was missing was a way to choose one. Four named
   swatches plus `Match my desktop accent`, repainting live because the brushes the app binds to have
