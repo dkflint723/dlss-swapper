@@ -224,6 +224,12 @@
   <data name="General_Open" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="Settings_Behaviour" xml:space="preserve">
+    <value>Behaviour</value>
+  </data>
   <data name="Settings_Theme_Desc" xml:space="preserve">
     <value>System follows your Windows light/dark setting</value>
   </data>

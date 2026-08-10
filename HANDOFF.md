@@ -52,12 +52,9 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-1. **Settings is half done.** Every repeated row is now a `SettingsRow` with its explanation beside
-   the name. Still to do from spec §6: the two column layout (560px main, 280px side), sections
-   under uppercase rules (the copy is sentence case in the `.resw`, so this needs either uppercase
-   strings or a converter), and moving Game libraries and About into the side column.
-   `GameLibrarySelectorControl`, the ignored paths list and the DLSS preset block are untouched and
-   still use the old shape.
+1. Settings still has two blocks in the old shape: `GameLibrarySelectorControl` (its own toggle
+   rows, not `SettingsRow`) and the DLSS preset block. Neither is wrong, they just do not match the
+   rows around them.
 2. **The upscalers page is not finished.** Still missing from spec §4.3: the size column and the
    per-row overflow menu. Clicking a usage count should filter Games to those titles. The
    downloading row still shows the old inline progress bar rather than the spec's 2px one.
@@ -90,6 +87,8 @@ read than the `.dc.html` mockup.
   place of the horizontally scrolling bar, versions as rows rather than cards, and `DllUsage`
   answering how many games have each file in place — the column that says whether it is safe to
   delete. See the unfinished list above for what is still missing from it.
+- **The settings page in two columns** (spec §6): what the app does and how it looks on the left,
+  what it found and what it is on the right, with `SectionRule` between blocks.
 - **`SettingsRow`** — title, one line saying what the setting does, and the control. The page had
   ten copies of a heading, a control and an italic caption *below* it, so a setting could only be
   understood by reading past the thing you were about to change.

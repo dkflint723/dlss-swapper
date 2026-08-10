@@ -47,418 +47,437 @@
                  Visibility="{x:Bind system:Environment.IsPrivilegedProcess, Converter={StaticResource BoolToVisibilityConverter}}" />
 
         <ScrollViewer Grid.Row="2">
-            <StackPanel Padding="56,0,56,56">
-                <!--
-                    One row of three segments rather than a stack of radio buttons. The three are
-                    one choice and read as one control, and it puts the theme on the same shape as
-                    every other setting on the page instead of a list floating under a heading.
-                -->
-                <usercontrols:SettingsRow
-                    Title="{x:Bind ViewModel.TranslationProperties.ThemeModeText, Mode=OneWay}"
-                    Description="{x:Bind ViewModel.TranslationProperties.ThemeDescriptionText, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <Border
-                            BorderThickness="1"
-                            BorderBrush="{ThemeResource DsLine2Brush}"
-                            CornerRadius="{StaticResource DsCornerRadius}">
-                            <StackPanel Orientation="Horizontal">
-                                <Button
-                                    MinWidth="72"
-                                    Height="30"
-                                    Padding="12,0"
-                                    CornerRadius="0"
-                                    BorderThickness="0"
-                                    Background="Transparent"
-                                    Command="{x:Bind ViewModel.SelectThemeCommand}"
-                                    CommandParameter="Light">
-                                    <Grid>
-                                        <!-- The selected fill, behind the label, so the label keeps its own colour. -->
-                                        <Border
-                                            Margin="-12,-8"
-                                            Background="{ThemeResource DsSelectedBrush}"
-                                            Visibility="{x:Bind ViewModel.LightThemeSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                        <TextBlock
-                                            Text="{x:Bind ViewModel.TranslationProperties.ThemeLightText, Mode=OneWay}"
-                                            FontSize="13"
-                                            Foreground="{ThemeResource DsTextPrimaryBrush}" />
-                                    </Grid>
-                                </Button>
-
-                                <Border Width="1" Background="{ThemeResource DsLine2Brush}" />
-
-                                <Button
-                                    MinWidth="72"
-                                    Height="30"
-                                    Padding="12,0"
-                                    CornerRadius="0"
-                                    BorderThickness="0"
-                                    Background="Transparent"
-                                    Command="{x:Bind ViewModel.SelectThemeCommand}"
-                                    CommandParameter="Dark">
-                                    <Grid>
-                                        <Border
-                                            Margin="-12,-8"
-                                            Background="{ThemeResource DsSelectedBrush}"
-                                            Visibility="{x:Bind ViewModel.DarkThemeSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                        <TextBlock
-                                            Text="{x:Bind ViewModel.TranslationProperties.ThemeDarkText, Mode=OneWay}"
-                                            FontSize="13"
-                                            Foreground="{ThemeResource DsTextPrimaryBrush}" />
-                                    </Grid>
-                                </Button>
-
-                                <Border Width="1" Background="{ThemeResource DsLine2Brush}" />
-
-                                <Button
-                                    MinWidth="72"
-                                    Height="30"
-                                    Padding="12,0"
-                                    CornerRadius="0"
-                                    BorderThickness="0"
-                                    Background="Transparent"
-                                    Command="{x:Bind ViewModel.SelectThemeCommand}"
-                                    CommandParameter="Default">
-                                    <Grid>
-                                        <Border
-                                            Margin="-12,-8"
-                                            Background="{ThemeResource DsSelectedBrush}"
-                                            Visibility="{x:Bind ViewModel.DefaultThemeSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                        <TextBlock
-                                            Text="{x:Bind ViewModel.TranslationProperties.ThemeSystemSettingDefaultText, Mode=OneWay}"
-                                            FontSize="13"
-                                            Foreground="{ThemeResource DsTextPrimaryBrush}" />
-                                    </Grid>
-                                </Button>
-                            </StackPanel>
-                        </Border>
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
+            <Grid Padding="56,0,56,56" ColumnSpacing="40" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="560" />
+                    <ColumnDefinition Width="280" />
+                </Grid.ColumnDefinitions>
 
                 <!--
-                    The accent, which the app has been able to change without a restart since the
-                    brushes were built for it, but had no way to choose. Each swatch is named as
-                    well as coloured: four colours told apart by colour alone is exactly the thing
-                    this redesign removed everywhere else.
+                    Two columns, because these are two kinds of thing. The left is what the
+                    app does and how it looks, read top to bottom and changed often. The right
+                    is what it found and what it is, referred to rather than adjusted.
                 -->
-                <usercontrols:SettingsRow
-                    Title="{x:Bind ViewModel.TranslationProperties.AccentText, Mode=OneWay}"
-                    Description="{x:Bind ViewModel.AccentDescription, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <ItemsControl
-                            ItemsSource="{x:Bind ViewModel.AccentSwatches, Mode=OneWay}"
-                            Opacity="{x:Bind ViewModel.AccentSwatchesOpacity, Mode=OneWay}"
-                            IsEnabled="{x:Bind ViewModel.AccentSwatchesEnabled, Mode=OneWay}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="10" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="pages:AccentSwatchItem">
+                <StackPanel Grid.Column="0">
+                    <usercontrols:SectionRule
+                        Margin="0,4,0,4"
+                        Label="{x:Bind ViewModel.TranslationProperties.AppearanceText, Mode=OneWay}" />
+
+                    <!--
+                        One row of three segments rather than a stack of radio buttons. The three are
+                        one choice and read as one control, and it puts the theme on the same shape as
+                        every other setting on the page instead of a list floating under a heading.
+                    -->
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.ThemeModeText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.ThemeDescriptionText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <Border
+                                BorderThickness="1"
+                                BorderBrush="{ThemeResource DsLine2Brush}"
+                                CornerRadius="{StaticResource DsCornerRadius}">
+                                <StackPanel Orientation="Horizontal">
                                     <Button
-                                        Width="34"
-                                        Height="34"
-                                        Padding="0"
-                                        Background="Transparent"
+                                        MinWidth="72"
+                                        Height="30"
+                                        Padding="12,0"
+                                        CornerRadius="0"
                                         BorderThickness="0"
-                                        CornerRadius="{StaticResource DsCornerRadius}"
-                                        ToolTipService.ToolTip="{x:Bind Name}"
-                                        AutomationProperties.Name="{x:Bind Name}"
-                                        Command="{x:Bind SelectCommand}"
-                                        CommandParameter="{x:Bind}">
+                                        Background="Transparent"
+                                        Command="{x:Bind ViewModel.SelectThemeCommand}"
+                                        CommandParameter="Light">
                                         <Grid>
-                                            <!-- A ring rather than a tick, which would not read at this size. -->
+                                            <!-- The selected fill, behind the label, so the label keeps its own colour. -->
                                             <Border
-                                                Width="34"
-                                                Height="34"
-                                                BorderThickness="2"
-                                                CornerRadius="{StaticResource DsCornerRadius}"
-                                                BorderBrush="{ThemeResource DsTextPrimaryBrush}"
-                                                Visibility="{x:Bind SelectionVisibility, Mode=OneWay}" />
-                                            <Border
-                                                Width="26"
-                                                Height="26"
-                                                CornerRadius="{StaticResource DsCornerRadius}"
-                                                Background="{x:Bind Fill, Mode=OneWay}" />
+                                                Margin="-12,-8"
+                                                Background="{ThemeResource DsSelectedBrush}"
+                                                Visibility="{x:Bind ViewModel.LightThemeSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                            <TextBlock
+                                                Text="{x:Bind ViewModel.TranslationProperties.ThemeLightText, Mode=OneWay}"
+                                                FontSize="13"
+                                                Foreground="{ThemeResource DsTextPrimaryBrush}" />
                                         </Grid>
                                     </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
 
-                <usercontrols:SettingsRow
-                    Title="{x:Bind ViewModel.TranslationProperties.MatchDesktopAccentText, Mode=OneWay}"
-                    Description="{x:Bind ViewModel.TranslationProperties.MatchDesktopAccentDescriptionText, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.MatchDesktopAccent, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
+                                    <Border Width="1" Background="{ThemeResource DsLine2Brush}" />
 
-                <usercontrols:SectionRule
-                    Margin="0,36,0,4"
-                    Label="{x:Bind ViewModel.TranslationProperties.GameLibrariesText, Mode=OneWay}" />
-                <StackPanel Margin="0,10,0,0">
-                    <usercontrols:GameLibrarySelectorControl />
-                </StackPanel>
-
-                <usercontrols:SectionRule
-                    Margin="0,36,0,4"
-                    Label="{x:Bind ViewModel.TranslationProperties.IgnoredPathsText, Mode=OneWay}" />
-                <StackPanel Margin="0,10,0,0">
-                    <StackPanel.Resources>
-                        <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="Transparent" />
-                        <x:Double x:Key="CornerRadius">0</x:Double>
-                        <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
-                        <Thickness x:Key="ExpanderHeaderPadding">0,0,0,0</Thickness>
-                    </StackPanel.Resources>
-
-                    <Button Content="{x:Bind ViewModel.TranslationProperties.AddIgnoredPathText, Mode=OneWay}" Command="{x:Bind ViewModel.AddIgnoredPathCommand}" />
-
-                    <ListView ItemsSource="{x:Bind ViewModel.IgnoredPaths}" SelectionMode="Single">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="x:String">
-                                <Expander
-                                    ExpandDirection="Down"
-                                    HorizontalAlignment="Stretch"
-                                    BorderThickness="0"
-                                    Background="Transparent"
-                                    BorderBrush="Transparent"
-                                    HorizontalContentAlignment="Stretch"
-                                    >
-                                    <Expander.Header>
-                                        <TextBlock Text="{x:Bind}" TextWrapping="Wrap" />
-                                    </Expander.Header>
-                                    <Expander.Content>
-                                        <Grid HorizontalAlignment="Right">
-                                            <Button Command="{Binding ElementName=RootPage, Path=ViewModel.DeleteIgnoredPathCommand}" CommandParameter="{x:Bind }">Remove</Button>
+                                    <Button
+                                        MinWidth="72"
+                                        Height="30"
+                                        Padding="12,0"
+                                        CornerRadius="0"
+                                        BorderThickness="0"
+                                        Background="Transparent"
+                                        Command="{x:Bind ViewModel.SelectThemeCommand}"
+                                        CommandParameter="Dark">
+                                        <Grid>
+                                            <Border
+                                                Margin="-12,-8"
+                                                Background="{ThemeResource DsSelectedBrush}"
+                                                Visibility="{x:Bind ViewModel.DarkThemeSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                            <TextBlock
+                                                Text="{x:Bind ViewModel.TranslationProperties.ThemeDarkText, Mode=OneWay}"
+                                                FontSize="13"
+                                                Foreground="{ThemeResource DsTextPrimaryBrush}" />
                                         </Grid>
-                                    </Expander.Content>
-                                </Expander>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </StackPanel>
+                                    </Button>
 
-                <StackPanel Orientation="Horizontal"
-                       Margin="0,40,0,0" Spacing="10">
+                                    <Border Width="1" Background="{ThemeResource DsLine2Brush}" />
+
+                                    <Button
+                                        MinWidth="72"
+                                        Height="30"
+                                        Padding="12,0"
+                                        CornerRadius="0"
+                                        BorderThickness="0"
+                                        Background="Transparent"
+                                        Command="{x:Bind ViewModel.SelectThemeCommand}"
+                                        CommandParameter="Default">
+                                        <Grid>
+                                            <Border
+                                                Margin="-12,-8"
+                                                Background="{ThemeResource DsSelectedBrush}"
+                                                Visibility="{x:Bind ViewModel.DefaultThemeSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                            <TextBlock
+                                                Text="{x:Bind ViewModel.TranslationProperties.ThemeSystemSettingDefaultText, Mode=OneWay}"
+                                                FontSize="13"
+                                                Foreground="{ThemeResource DsTextPrimaryBrush}" />
+                                        </Grid>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+
+                    <!--
+                        The accent, which the app has been able to change without a restart since the
+                        brushes were built for it, but had no way to choose. Each swatch is named as
+                        well as coloured: four colours told apart by colour alone is exactly the thing
+                        this redesign removed everywhere else.
+                    -->
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.AccentText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.AccentDescription, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ItemsControl
+                                ItemsSource="{x:Bind ViewModel.AccentSwatches, Mode=OneWay}"
+                                Opacity="{x:Bind ViewModel.AccentSwatchesOpacity, Mode=OneWay}"
+                                IsEnabled="{x:Bind ViewModel.AccentSwatchesEnabled, Mode=OneWay}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="10" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="pages:AccentSwatchItem">
+                                        <Button
+                                            Width="34"
+                                            Height="34"
+                                            Padding="0"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            CornerRadius="{StaticResource DsCornerRadius}"
+                                            ToolTipService.ToolTip="{x:Bind Name}"
+                                            AutomationProperties.Name="{x:Bind Name}"
+                                            Command="{x:Bind SelectCommand}"
+                                            CommandParameter="{x:Bind}">
+                                            <Grid>
+                                                <!-- A ring rather than a tick, which would not read at this size. -->
+                                                <Border
+                                                    Width="34"
+                                                    Height="34"
+                                                    BorderThickness="2"
+                                                    CornerRadius="{StaticResource DsCornerRadius}"
+                                                    BorderBrush="{ThemeResource DsTextPrimaryBrush}"
+                                                    Visibility="{x:Bind SelectionVisibility, Mode=OneWay}" />
+                                                <Border
+                                                    Width="26"
+                                                    Height="26"
+                                                    CornerRadius="{StaticResource DsCornerRadius}"
+                                                    Background="{x:Bind Fill, Mode=OneWay}" />
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.MatchDesktopAccentText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.MatchDesktopAccentDescriptionText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.MatchDesktopAccent, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
                     <usercontrols:SectionRule
-                           Margin="0,36,0,4"
-                           Label="{x:Bind ViewModel.TranslationProperties.DLSSOptionsText, Mode=OneWay}" />
-                </StackPanel>
+                        Margin="0,4,0,4"
+                        Label="{x:Bind ViewModel.TranslationProperties.BehaviourText, Mode=OneWay}" />
 
-                <StackPanel Margin="0,10,0,0">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                        <ComboBox Header="{x:Bind ViewModel.TranslationProperties.DLSSOptionsGlobalPresetText, Mode=OneWay}" IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.DlssPresetOptions, Mode=OneTime}" SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssPreset, Mode=TwoWay}" DisplayMemberPath="Name" />
-                        <Button Visibility="{x:Bind helpers:NVAPIHelper.Instance.PermissionIssue, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{x:Bind ViewModel.NVAPIErrorCommand, Mode=OneTime}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.NVAPIErrorTooltipText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}" VerticalAlignment="Bottom">
-                            <Button.Content>
-                                <FontIcon Style="{StaticResource ErrorFontIcon}" />
-                            </Button.Content>
-                        </Button>
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.AllowUntrustedText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.AllowUntrustedInfo, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.AllowUntrusted, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.HideNonDLSSGamesText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.HideNonDLSSGamesInfo, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.HideNonDLSSGames, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.BackupNewGamesText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.BackupNewGamesInfo, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.BackupNewGamesAutomatically, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.AllowDebugDllsText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.AllowDebugDllsInfo, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.AllowDebugDlls, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.ShowOnlyDownloadedDllsText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.ApliesOnlyToDllPickerNotLibraryText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.OnlyShowDownloadedDlls, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.NetworkingText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <Button Content="{x:Bind ViewModel.TranslationProperties.ProxySettingsText, Mode=OneWay}" Command="{x:Bind ViewModel.OpenProxySettingsCommand}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.LoggingText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ComboBox x:Name="LoggingComboBox" ItemsSource="{x:Bind ViewModel.LoggingLevelOptions}" DisplayMemberPath="Label" SelectedItem="{x:Bind ViewModel.LoggingLevel, Mode=TwoWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <!-- Kept out of the row above because it is a link, not a description of the setting. -->
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,8,0,0" Foreground="{ThemeResource DsTextTertiaryBrush}">
+                        <Run Text="{x:Bind ViewModel.TranslationProperties.YourCurrentLogfileText, Mode=OneWay}" /><Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenLogFileCommand}"><Run Text="{x:Bind ViewModel.CurrentLogPath}" /></Hyperlink>.
+                    </TextBlock>
+
+                    <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.LanguageText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ComboBox x:Name="LanguageComboBox" ItemsSource="{x:Bind ViewModel.Languages}" DisplayMemberPath="Value" SelectedItem="{x:Bind ViewModel.SelectedLanguage, Mode=TwoWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <!-- The row names what the button opens, so the button does not have to say it again. -->
+                    <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.OpenTranslationToolboxText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <Button Content="{x:Bind ViewModel.TranslationProperties.OpenText, Mode=OneWay}" Command="{x:Bind ViewModel.OpenTranslationToolboxCommand}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <StackPanel Orientation="Horizontal"
+                           Margin="0,40,0,0" Spacing="10">
+                        <usercontrols:SectionRule
+                               Margin="0,36,0,4"
+                               Label="{x:Bind ViewModel.TranslationProperties.DLSSOptionsText, Mode=OneWay}" />
+                    </StackPanel>
+
+                    <StackPanel Margin="0,10,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <ComboBox Header="{x:Bind ViewModel.TranslationProperties.DLSSOptionsGlobalPresetText, Mode=OneWay}" IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.DlssPresetOptions, Mode=OneTime}" SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssPreset, Mode=TwoWay}" DisplayMemberPath="Name" />
+                            <Button Visibility="{x:Bind helpers:NVAPIHelper.Instance.PermissionIssue, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{x:Bind ViewModel.NVAPIErrorCommand, Mode=OneTime}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.NVAPIErrorTooltipText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}" VerticalAlignment="Bottom">
+                                <Button.Content>
+                                    <FontIcon Style="{StaticResource ErrorFontIcon}" />
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,10,0,0">
+                        <ComboBox Header="{x:Bind ViewModel.TranslationProperties.DLSSDOptionsGlobalPresetText, Mode=OneWay}" IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneTime}" ItemsSource="{x:Bind ViewModel.DlssDPresetOptions, Mode=OneTime}" SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssDPreset, Mode=TwoWay}" DisplayMemberPath="Name" Margin="0,0,0,8" />
+                    </StackPanel>
+
+                    <StackPanel Margin="0,10,0,0">
+                        <ComboBox Header="{x:Bind ViewModel.TranslationProperties.DLSSGOptionsGlobalPresetText, Mode=OneWay}" IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneTime}" ItemsSource="{x:Bind ViewModel.DlssGPresetOptions, Mode=OneTime}" SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssGPreset, Mode=TwoWay}" DisplayMemberPath="Name" Margin="0,0,0,8" />
+                    </StackPanel>
+
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" FontStyle="Italic" Margin="0,8,0,0">
+                            <Run Text="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoTooltipText, Mode=OneWay}" /> <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.DLSSPresetInfoCommand}"><Run Text="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoText, Mode=OneWay}" /></Hyperlink>.
+                    </TextBlock>
+
+                    <usercontrols:SectionRule
+                        Margin="0,36,0,4"
+                        Label="{x:Bind ViewModel.TranslationProperties.DLSSDeveloperOptionsText, Mode=OneWay}" />
+                    <StackPanel Margin="0,10,0,0">
+                        <ComboBox Header="{x:Bind ViewModel.TranslationProperties.ShowOnScreenIndicatorText, Mode=OneWay}" ItemsSource="{Binding DLSSOnScreenIndicatorOptions, Mode=OneTime}" SelectedItem="{Binding SelectedDlssOnScreenIndicator, Mode=TwoWay}" DisplayMemberPath="Label" Margin="0,0,0,8" />
+                        <CheckBox Content="{x:Bind ViewModel.TranslationProperties.EnableLoggingToFileText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.DlssEnableLogging, Mode=TwoWay}" Margin="0,0,0,4"/>
+                        <CheckBox Content="{x:Bind ViewModel.TranslationProperties.VerboseLoggingText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.DlssVerboseLogging, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.DlssEnableLogging, Mode=TwoWay}" Margin="0,0,0,4"/>
+                        <CheckBox Content="{x:Bind ViewModel.TranslationProperties.EnableLoggingToConsoleWindowText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.DlssLoggingToWindow, Mode=TwoWay}"  Margin="0,0,0,4"/>
+                    </StackPanel>
+
+                    <usercontrols:SectionRule
+                        Margin="0,36,0,4"
+                        Label="{x:Bind ViewModel.TranslationProperties.IgnoredPathsText, Mode=OneWay}" />
+                    <StackPanel Margin="0,10,0,0">
+                        <StackPanel.Resources>
+                            <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="Transparent" />
+                            <x:Double x:Key="CornerRadius">0</x:Double>
+                            <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
+                            <Thickness x:Key="ExpanderHeaderPadding">0,0,0,0</Thickness>
+                        </StackPanel.Resources>
+
+                        <Button Content="{x:Bind ViewModel.TranslationProperties.AddIgnoredPathText, Mode=OneWay}" Command="{x:Bind ViewModel.AddIgnoredPathCommand}" />
+
+                        <ListView ItemsSource="{x:Bind ViewModel.IgnoredPaths}" SelectionMode="Single">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Expander
+                                        ExpandDirection="Down"
+                                        HorizontalAlignment="Stretch"
+                                        BorderThickness="0"
+                                        Background="Transparent"
+                                        BorderBrush="Transparent"
+                                        HorizontalContentAlignment="Stretch"
+                                        >
+                                        <Expander.Header>
+                                            <TextBlock Text="{x:Bind}" TextWrapping="Wrap" />
+                                        </Expander.Header>
+                                        <Expander.Content>
+                                            <Grid HorizontalAlignment="Right">
+                                                <Button Command="{Binding ElementName=RootPage, Path=ViewModel.DeleteIgnoredPathCommand}" CommandParameter="{x:Bind }">Remove</Button>
+                                            </Grid>
+                                        </Expander.Content>
+                                    </Expander>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </StackPanel>
                 </StackPanel>
 
-                <StackPanel Margin="0,10,0,0">
-                    <ComboBox Header="{x:Bind ViewModel.TranslationProperties.DLSSDOptionsGlobalPresetText, Mode=OneWay}" IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneTime}" ItemsSource="{x:Bind ViewModel.DlssDPresetOptions, Mode=OneTime}" SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssDPreset, Mode=TwoWay}" DisplayMemberPath="Name" Margin="0,0,0,8" />
-                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    <usercontrols:SectionRule
+                        Margin="0,36,0,4"
+                        Label="{x:Bind ViewModel.TranslationProperties.GameLibrariesText, Mode=OneWay}" />
+                    <StackPanel Margin="0,10,0,0">
+                        <usercontrols:GameLibrarySelectorControl />
+                    </StackPanel>
 
-                <StackPanel Margin="0,10,0,0">
-                    <ComboBox Header="{x:Bind ViewModel.TranslationProperties.DLSSGOptionsGlobalPresetText, Mode=OneWay}" IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneTime}" ItemsSource="{x:Bind ViewModel.DlssGPresetOptions, Mode=OneTime}" SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssGPreset, Mode=TwoWay}" DisplayMemberPath="Name" Margin="0,0,0,8" />
-                </StackPanel>
+                    <usercontrols:SectionRule
+                        Margin="0,36,0,4"
+                        Label="{x:Bind ViewModel.TranslationProperties.AboutText, Mode=OneWay}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <TextBlock Visibility="{x:Bind local:BuildInfo.IsFromTagBuild, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Run Text="{x:Bind ViewModel.TranslationProperties.VersionText, Mode=OneWay}" FontWeight="Bold" />
+                            <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenVersionCommand}" >
+                                <Run Text="{x:Bind ViewModel.AppVersion}" />
+                            </Hyperlink>
+                        </TextBlock>
 
-                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" FontStyle="Italic" Margin="0,8,0,0">
-                        <Run Text="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoTooltipText, Mode=OneWay}" /> <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.DLSSPresetInfoCommand}"><Run Text="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoText, Mode=OneWay}" /></Hyperlink>.
-                </TextBlock>
-
-
-                <usercontrols:SectionRule
-                    Margin="0,36,0,4"
-                    Label="{x:Bind ViewModel.TranslationProperties.DLSSDeveloperOptionsText, Mode=OneWay}" />
-                <StackPanel Margin="0,10,0,0">
-                    <ComboBox Header="{x:Bind ViewModel.TranslationProperties.ShowOnScreenIndicatorText, Mode=OneWay}" ItemsSource="{Binding DLSSOnScreenIndicatorOptions, Mode=OneTime}" SelectedItem="{Binding SelectedDlssOnScreenIndicator, Mode=TwoWay}" DisplayMemberPath="Label" Margin="0,0,0,8" />
-                    <CheckBox Content="{x:Bind ViewModel.TranslationProperties.EnableLoggingToFileText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.DlssEnableLogging, Mode=TwoWay}" Margin="0,0,0,4"/>
-                    <CheckBox Content="{x:Bind ViewModel.TranslationProperties.VerboseLoggingText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.DlssVerboseLogging, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.DlssEnableLogging, Mode=TwoWay}" Margin="0,0,0,4"/>
-                    <CheckBox Content="{x:Bind ViewModel.TranslationProperties.EnableLoggingToConsoleWindowText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.DlssLoggingToWindow, Mode=TwoWay}"  Margin="0,0,0,4"/>
-                </StackPanel>
-
-
-                <usercontrols:SettingsRow
-                    Title="{x:Bind ViewModel.TranslationProperties.AllowUntrustedText, Mode=OneWay}"
-                    Description="{x:Bind ViewModel.TranslationProperties.AllowUntrustedInfo, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.AllowUntrusted, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
-
-                <usercontrols:SettingsRow
-                    Title="{x:Bind ViewModel.TranslationProperties.HideNonDLSSGamesText, Mode=OneWay}"
-                    Description="{x:Bind ViewModel.TranslationProperties.HideNonDLSSGamesInfo, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.HideNonDLSSGames, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
-                <usercontrols:SettingsRow
-                    Title="{x:Bind ViewModel.TranslationProperties.BackupNewGamesText, Mode=OneWay}"
-                    Description="{x:Bind ViewModel.TranslationProperties.BackupNewGamesInfo, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.BackupNewGamesAutomatically, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
-                <usercontrols:SettingsRow
-                    Title="{x:Bind ViewModel.TranslationProperties.AllowDebugDllsText, Mode=OneWay}"
-                    Description="{x:Bind ViewModel.TranslationProperties.AllowDebugDllsInfo, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.AllowDebugDlls, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
-
-                <usercontrols:SettingsRow
-                    Title="{x:Bind ViewModel.TranslationProperties.ShowOnlyDownloadedDllsText, Mode=OneWay}"
-                    Description="{x:Bind ViewModel.TranslationProperties.ApliesOnlyToDllPickerNotLibraryText, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.OnlyShowDownloadedDlls, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
-                <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.NetworkingText, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <Button Content="{x:Bind ViewModel.TranslationProperties.ProxySettingsText, Mode=OneWay}" Command="{x:Bind ViewModel.OpenProxySettingsCommand}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
-                <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.LoggingText, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <ComboBox x:Name="LoggingComboBox" ItemsSource="{x:Bind ViewModel.LoggingLevelOptions}" DisplayMemberPath="Label" SelectedItem="{x:Bind ViewModel.LoggingLevel, Mode=TwoWay}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
-                <!-- Kept out of the row above because it is a link, not a description of the setting. -->
-                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,8,0,0" Foreground="{ThemeResource DsTextTertiaryBrush}">
-                    <Run Text="{x:Bind ViewModel.TranslationProperties.YourCurrentLogfileText, Mode=OneWay}" /><Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenLogFileCommand}"><Run Text="{x:Bind ViewModel.CurrentLogPath}" /></Hyperlink>.
-                </TextBlock>
-
-                <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.LanguageText, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <ComboBox x:Name="LanguageComboBox" ItemsSource="{x:Bind ViewModel.Languages}" DisplayMemberPath="Value" SelectedItem="{x:Bind ViewModel.SelectedLanguage, Mode=TwoWay}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
-                <!-- The row names what the button opens, so the button does not have to say it again. -->
-                <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.OpenTranslationToolboxText, Mode=OneWay}">
-                    <usercontrols:SettingsRow.Control>
-                        <Button Content="{x:Bind ViewModel.TranslationProperties.OpenText, Mode=OneWay}" Command="{x:Bind ViewModel.OpenTranslationToolboxCommand}" />
-                    </usercontrols:SettingsRow.Control>
-                </usercontrols:SettingsRow>
-
-                <usercontrols:SectionRule
-                    Margin="0,36,0,4"
-                    Label="{x:Bind ViewModel.TranslationProperties.AboutText, Mode=OneWay}" />
-                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                    <TextBlock Visibility="{x:Bind local:BuildInfo.IsFromTagBuild, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <Run Text="{x:Bind ViewModel.TranslationProperties.VersionText, Mode=OneWay}" FontWeight="Bold" />
-                        <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenVersionCommand}" >
+                        <TextBlock Visibility="{x:Bind local:BuildInfo.IsFromTagBuild, Converter={StaticResource BoolToNegationVisibilityConverter}}">
+                            <Run Text="{x:Bind ViewModel.TranslationProperties.VersionText, Mode=OneWay}" FontWeight="Bold" />
                             <Run Text="{x:Bind ViewModel.AppVersion}" />
+                        </TextBlock>
+                    </StackPanel>
+
+                    <TextBlock Visibility="{x:Bind local:BuildInfo.ShowsGitCommit, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Run Text="{x:Bind ViewModel.TranslationProperties.BuildCommitText, Mode=OneWay}" FontWeight="Bold" />
+                        <Run Text="{x:Bind local:BuildInfo.GitCommitShort}" />
+                        <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.CopyGitCommitCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.CopyText, Mode=OneWay}" FontStyle="Normal" FontSize="12">
+                            <Run Text="&#xE8C8;" FontFamily="/Assets/Fonts/Segoe-Fluent-Icons.ttf#Segoe Fluent Icons" />
                         </Hyperlink>
                     </TextBlock>
 
-                    <TextBlock Visibility="{x:Bind local:BuildInfo.IsFromTagBuild, Converter={StaticResource BoolToNegationVisibilityConverter}}">
-                        <Run Text="{x:Bind ViewModel.TranslationProperties.VersionText, Mode=OneWay}" FontWeight="Bold" />
-                        <Run Text="{x:Bind ViewModel.AppVersion}" />
+                    <!-- Absent on a build the release workflow did not stamp, rather than dated 1970. -->
+                    <TextBlock Visibility="{x:Bind local:BuildInfo.IsStamped, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Run Text="{x:Bind ViewModel.TranslationProperties.BuildDateText, Mode=OneWay}" FontWeight="Bold" />
+                        <Run Text="{x:Bind local:BuildInfo.BuildDateTimeFormattedString}" />
                     </TextBlock>
-                </StackPanel>
-
-                <TextBlock Visibility="{x:Bind local:BuildInfo.ShowsGitCommit, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Run Text="{x:Bind ViewModel.TranslationProperties.BuildCommitText, Mode=OneWay}" FontWeight="Bold" />
-                    <Run Text="{x:Bind local:BuildInfo.GitCommitShort}" />
-                    <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.CopyGitCommitCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.CopyText, Mode=OneWay}" FontStyle="Normal" FontSize="12">
-                        <Run Text="&#xE8C8;" FontFamily="/Assets/Fonts/Segoe-Fluent-Icons.ttf#Segoe Fluent Icons" />
-                    </Hyperlink>
-                </TextBlock>
-
-                <!-- Absent on a build the release workflow did not stamp, rather than dated 1970. -->
-                <TextBlock Visibility="{x:Bind local:BuildInfo.IsStamped, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Run Text="{x:Bind ViewModel.TranslationProperties.BuildDateText, Mode=OneWay}" FontWeight="Bold" />
-                    <Run Text="{x:Bind local:BuildInfo.BuildDateTimeFormattedString}" />
-                </TextBlock>
                 
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,12,0,0" Spacing="16" >
-                    <Button Content="{x:Bind ViewModel.TranslationProperties.CheckForUpdatesText, Mode=OneWay}" Command="{x:Bind ViewModel.CheckForUpdatesCommand}" />
-                    <ProgressRing Width="25" Height="25" IsIndeterminate="True" IsActive="{x:Bind ViewModel.IsCheckingForUpdates, Mode=OneWay}" />
-                </StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,12,0,0" Spacing="16" >
+                        <Button Content="{x:Bind ViewModel.TranslationProperties.CheckForUpdatesText, Mode=OneWay}" Command="{x:Bind ViewModel.CheckForUpdatesCommand}" />
+                        <ProgressRing Width="25" Height="25" IsIndeterminate="True" IsActive="{x:Bind ViewModel.IsCheckingForUpdates, Mode=OneWay}" />
+                    </StackPanel>
 
-                <!--
-                    Which repository is which. The app used to list only the original project, which
-                    is where its own name and history come from but not where this build does, so
-                    the one link it offered went somewhere that has never seen this code. The
-                    original is still named, and named first among the things it is owed, because a
-                    fork that quietly drops the credit is the worse mistake of the two.
-                -->
-                <RichTextBlock Margin="0,24,0,0">
-                    <Paragraph Margin="0,12,0,0">
-                        <Run Text="{x:Bind ViewModel.TranslationProperties.ThisBuildText, Mode=OneWay}" />
-                        <Hyperlink NavigateUri="https://github.com/dkflint723/dlss-swapper">dkflint723/dlss-swapper</Hyperlink>
-                    </Paragraph>
-                    <Paragraph Margin="0,12,0,0">
-                        <Run Text="{x:Bind ViewModel.TranslationProperties.BasedOnText, Mode=OneWay}" />
-                        <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper">beeradmoore/dlss-swapper</Hyperlink>
-                    </Paragraph>
-                    <Paragraph Margin="0,12,0,0">
-                        <Run Text="{x:Bind ViewModel.TranslationProperties.OriginalCommunityText, Mode=OneWay}" />
-                        <Hyperlink NavigateUri="https://twitter.com/dlss_swapper">@dlss_swapper</Hyperlink>
-                        <Run Text="·" />
-                        <Hyperlink NavigateUri="https://www.reddit.com/r/DLSS_Swapper/">r/DLSS_Swapper</Hyperlink>
-                    </Paragraph>
-                    <Paragraph Margin="0,12,0,0">
-                        <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenAcknowledgementsCommand}">
-                            <Run Text="{x:Bind ViewModel.TranslationProperties.AcknowledgementsText, Mode=OneWay}" />
-                        </Hyperlink>
-                    </Paragraph>
-                </RichTextBlock>
-
-                <usercontrols:SectionRule
-                    Margin="0,36,0,4"
-                    Label="{x:Bind ViewModel.TranslationProperties.GiveFeedbackText, Mode=OneWay}" />
-                <!--
-                    Reports go where the changes were made. Sending them to the original project's
-                    tracker would ask its maintainer to answer for code they have never seen.
-                -->
-                <RichTextBlock Margin="0,12,0,0">
-                    <Paragraph>
-                        <Run Text="{x:Bind ViewModel.TranslationProperties.FeedbackForkInfoText, Mode=OneWay}" />
-                        <Hyperlink NavigateUri="https://github.com/dkflint723/dlss-swapper/issues">dkflint723/dlss-swapper/issues</Hyperlink>
-                    </Paragraph>
-                </RichTextBlock>
-
-                <usercontrols:SectionRule
-                    Margin="0,36,0,4"
-                    Label="{x:Bind ViewModel.TranslationProperties.TroubleshootingText, Mode=OneWay}" />
-                <StackPanel Margin="0,10,0,0" Orientation="Vertical">
-                    <RichTextBlock>
+                    <!--
+                        Which repository is which. The app used to list only the original project, which
+                        is where its own name and history come from but not where this build does, so
+                        the one link it offered went somewhere that has never seen this code. The
+                        original is still named, and named first among the things it is owed, because a
+                        fork that quietly drops the credit is the worse mistake of the two.
+                    -->
+                    <RichTextBlock Margin="0,24,0,0">
                         <Paragraph Margin="0,12,0,0">
-                            <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper/wiki/Troubleshooting">
-                                <Run Text="{x:Bind ViewModel.TranslationProperties.GeneralTroubleshootingGuideText, Mode=OneWay}" />
-                            </Hyperlink>
+                            <Run Text="{x:Bind ViewModel.TranslationProperties.ThisBuildText, Mode=OneWay}" />
+                            <Hyperlink NavigateUri="https://github.com/dkflint723/dlss-swapper">dkflint723/dlss-swapper</Hyperlink>
                         </Paragraph>
                         <Paragraph Margin="0,12,0,0">
-                            <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenNetworkTesterCommand}">
-                                <Run Text="{x:Bind ViewModel.TranslationProperties.NetworkTesterText, Mode=OneWay}" />
-                            </Hyperlink>
+                            <Run Text="{x:Bind ViewModel.TranslationProperties.BasedOnText, Mode=OneWay}" />
+                            <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper">beeradmoore/dlss-swapper</Hyperlink>
                         </Paragraph>
                         <Paragraph Margin="0,12,0,0">
-                            <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenDiagnosticsCommand}">
-                                <Run Text="{x:Bind ViewModel.TranslationProperties.DiagnosticsText, Mode=OneWay}" />
+                            <Run Text="{x:Bind ViewModel.TranslationProperties.OriginalCommunityText, Mode=OneWay}" />
+                            <Hyperlink NavigateUri="https://twitter.com/dlss_swapper">@dlss_swapper</Hyperlink>
+                            <Run Text="·" />
+                            <Hyperlink NavigateUri="https://www.reddit.com/r/DLSS_Swapper/">r/DLSS_Swapper</Hyperlink>
+                        </Paragraph>
+                        <Paragraph Margin="0,12,0,0">
+                            <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenAcknowledgementsCommand}">
+                                <Run Text="{x:Bind ViewModel.TranslationProperties.AcknowledgementsText, Mode=OneWay}" />
                             </Hyperlink>
                         </Paragraph>
                     </RichTextBlock>
-                </StackPanel>
 
-            </StackPanel>
+                    <usercontrols:SectionRule
+                        Margin="0,36,0,4"
+                        Label="{x:Bind ViewModel.TranslationProperties.GiveFeedbackText, Mode=OneWay}" />
+                    <!--
+                        Reports go where the changes were made. Sending them to the original project's
+                        tracker would ask its maintainer to answer for code they have never seen.
+                    -->
+                    <RichTextBlock Margin="0,12,0,0">
+                        <Paragraph>
+                            <Run Text="{x:Bind ViewModel.TranslationProperties.FeedbackForkInfoText, Mode=OneWay}" />
+                            <Hyperlink NavigateUri="https://github.com/dkflint723/dlss-swapper/issues">dkflint723/dlss-swapper/issues</Hyperlink>
+                        </Paragraph>
+                    </RichTextBlock>
+
+                    <usercontrols:SectionRule
+                        Margin="0,36,0,4"
+                        Label="{x:Bind ViewModel.TranslationProperties.TroubleshootingText, Mode=OneWay}" />
+                    <StackPanel Margin="0,10,0,0" Orientation="Vertical">
+                        <RichTextBlock>
+                            <Paragraph Margin="0,12,0,0">
+                                <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper/wiki/Troubleshooting">
+                                    <Run Text="{x:Bind ViewModel.TranslationProperties.GeneralTroubleshootingGuideText, Mode=OneWay}" />
+                                </Hyperlink>
+                            </Paragraph>
+                            <Paragraph Margin="0,12,0,0">
+                                <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenNetworkTesterCommand}">
+                                    <Run Text="{x:Bind ViewModel.TranslationProperties.NetworkTesterText, Mode=OneWay}" />
+                                </Hyperlink>
+                            </Paragraph>
+                            <Paragraph Margin="0,12,0,0">
+                                <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenDiagnosticsCommand}">
+                                    <Run Text="{x:Bind ViewModel.TranslationProperties.DiagnosticsText, Mode=OneWay}" />
+                                </Hyperlink>
+                            </Paragraph>
+                        </RichTextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
         </ScrollViewer>
     </Grid>
 </Page>
