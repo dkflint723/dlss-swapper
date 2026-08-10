@@ -182,6 +182,7 @@
                           BorderBrush="{ThemeResource DsLineBrush}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="140" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -190,12 +191,30 @@
                         <TextBlock Grid.Column="0" Text="{x:Bind DisplayName}" FontSize="14" FontWeight="SemiBold" FontFamily="Consolas" VerticalAlignment="Center" ToolTipService.ToolTip="{x:Bind DisplayName}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource DsTextPrimaryBrush}" />
 
                         <!--
+                            Where the file is, in words. It used to be readable only from which
+                            buttons the row had, which is state carried by iconography alone.
+                        -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <FontIcon
+                                FontSize="11"
+                                VerticalAlignment="Center"
+                                Glyph="{x:Bind data:DllRecordState.Glyph(LocalRecord.IsDownloaded, LocalRecord.IsImported), Mode=OneWay}"
+                                Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                            <TextBlock
+                                Text="{x:Bind data:DllRecordState.Describe(LocalRecord.IsDownloaded, LocalRecord.IsImported), Mode=OneWay}"
+                                FontSize="12"
+                                VerticalAlignment="Center"
+                                TextWrapping="NoWrap"
+                                Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                        </StackPanel>
+
+                        <!--
                             How many games have this exact file in place. New, and the point of the
                             page: everything else here describes the file, this says what would
                             break if it went.
                         -->
                         <TextBlock
-                            Grid.Column="1"
+                            Grid.Column="2"
                             Text="{x:Bind data:DllUsage.DescribeUsage(AssetType, MD5Hash, Version)}"
                             FontSize="12"
                             VerticalAlignment="Center"
@@ -203,12 +222,12 @@
                             Foreground="{ThemeResource DsTextSecondaryBrush}" />
 
                         <!-- Imported -->
-                        <StackPanel Grid.Column="2" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsLocalConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left">
+                        <StackPanel Grid.Column="3" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsLocalConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left">
                             <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE7B8;" ToolTipService.ToolTip="{x:Bind TranslationProperties.ImportedText, Mode=OneWay}" />
                         </StackPanel>
 
                         <!-- Not downloaded -->
-                        <StackPanel Grid.Column="3" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsNotFoundConverter}, Mode=OneWay}">
+                        <StackPanel Grid.Column="4" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsNotFoundConverter}, Mode=OneWay}">
 
                             <Button ToolTipService.ToolTip="{x:Bind TranslationProperties.DownloadErrorText, Mode=OneWay}" Visibility="{x:Bind LocalRecord.HasDownloadError, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{Binding ElementName=thisPage, Path=ViewModel.ShowDownloadErrorCommand}" CommandParameter="{x:Bind }">
                                 <Button.Content>
@@ -224,7 +243,7 @@
                         </StackPanel>
 
                         <!-- Downloading -->
-                        <Grid Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center" ColumnSpacing="8" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadingConverter}, Mode=OneWay}">
+                        <Grid Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Center" ColumnSpacing="8" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadingConverter}, Mode=OneWay}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -260,7 +279,7 @@
                         </Grid>
 
                         <!-- Downloaded -->
-                        <StackPanel Grid.Column="3" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadedConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                        <StackPanel Grid.Column="4" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadedConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
                             <Button ToolTipService.ToolTip="{x:Bind TranslationProperties.ExportText, Mode=OneWay}" Command="{Binding ElementName=thisPage, Path=ViewModel.ExportRecordCommand}" CommandParameter="{x:Bind }">
                                 <Button.Content>
                                     <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xEDE1;"/>

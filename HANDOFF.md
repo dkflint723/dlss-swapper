@@ -59,10 +59,9 @@ read than the `.dc.html` mockup.
    `GameLibrarySelectorControl`, the ignored paths list and the DLSS preset block are untouched and
    still use the old shape.
 2. **The upscalers page is not finished.** Still missing from spec §4.3: versions grouped under
-   uppercase rules by major line (`DLSS 310`, `DLSS 3.7`, `DLSS 3.5 and older`), the state column
-   (`On disk` / `Not downloaded` as words beside their glyph — right now state is only implied by
-   which buttons a row shows, which is icon-only), the size column, and the per-row overflow menu.
-   Clicking a usage count should filter Games to those titles.
+   uppercase rules by major line (`DLSS 310`, `DLSS 3.7`, `DLSS 3.5 and older`), the size column,
+   and the per-row overflow menu. Clicking a usage count should filter Games to those titles. The
+   downloading row still shows the old inline progress bar rather than the spec's 2px one.
 3. **Two pieces of the update flow are deliberately not built.** The per-row progress bar in the
    action slot (README §4 says a row being written shows a 150px bar where its button was; it still
    shows the sentence and a spinner), and `See what changed` on the done strip, which needs a
