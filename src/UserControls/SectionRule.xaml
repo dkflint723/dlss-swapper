@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DLSS_Swapper.UserControls.SectionRule"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DLSS_Swapper.UserControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Height="26" ColumnSpacing="12" VerticalAlignment="Bottom">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!--
+            Small, spaced and uppercase: a section label is a signpost between blocks, not a title
+            competing with the settings under it. The headings this replaces were the largest text
+            on the page, so the page read as a stack of announcements.
+        -->
+        <TextBlock
+            x:Name="LabelText"
+            Grid.Column="0"
+            FontSize="10"
+            FontWeight="SemiBold"
+            CharacterSpacing="90"
+            VerticalAlignment="Center"
+            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+        <Border
+            Grid.Column="1"
+            Height="1"
+            VerticalAlignment="Center"
+            Background="{ThemeResource DsLineBrush}" />
+    </Grid>
+</UserControl>
