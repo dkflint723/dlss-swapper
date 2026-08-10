@@ -55,9 +55,11 @@ read than the `.dc.html` mockup.
 1. Settings still has two blocks in the old shape: `GameLibrarySelectorControl` (its own toggle
    rows, not `SettingsRow`) and the DLSS preset block. Neither is wrong, they just do not match the
    rows around them.
-2. **The upscalers page is not finished.** Still missing from spec §4.3: the size column and the
-   per-row overflow menu. Clicking a usage count should filter Games to those titles. The
-   downloading row still shows the old inline progress bar rather than the spec's 2px one.
+2. **The upscalers page is not finished.** Still missing from spec §4.3: the per-row overflow menu
+   (the row shows its actions as bare icon buttons, and `File details`, `Copy hash` and `Show the
+   games using this` have nowhere to live). Clicking a usage count should filter Games to those
+   titles. The downloading row still shows the old inline progress bar rather than the spec's 2px
+   one.
 3. **Two pieces of the update flow are deliberately not built.** The per-row progress bar in the
    action slot (README §4 says a row being written shows a 150px bar where its button was; it still
    shows the sentence and a spinner), and `See what changed` on the done strip, which needs a

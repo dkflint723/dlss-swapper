@@ -205,6 +205,7 @@
                             <ColumnDefinition Width="130" />
                             <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="90" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
@@ -234,6 +235,20 @@
                             page: everything else here describes the file, this says what would
                             break if it went.
                         -->
+                        <!--
+                            What the file costs, beside what it is worth. The two together are the
+                            whole question in front of the delete button, and the page could answer
+                            neither.
+                        -->
+                        <TextBlock
+                            Grid.Column="3"
+                            Text="{x:Bind FileSize, Converter={StaticResource BytesToMegaBytesConverter}}"
+                            FontSize="12"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Right"
+                            TextWrapping="NoWrap"
+                            Foreground="{ThemeResource DsTextTertiaryBrush}" />
+
                         <TextBlock
                             Grid.Column="2"
                             Text="{x:Bind data:DllUsage.DescribeUsage(AssetType, MD5Hash, Version)}"
@@ -243,12 +258,12 @@
                             Foreground="{ThemeResource DsTextSecondaryBrush}" />
 
                         <!-- Imported -->
-                        <StackPanel Grid.Column="3" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsLocalConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left">
+                        <StackPanel Grid.Column="4" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsLocalConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left">
                             <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE7B8;" ToolTipService.ToolTip="{x:Bind TranslationProperties.ImportedText, Mode=OneWay}" />
                         </StackPanel>
 
                         <!-- Not downloaded -->
-                        <StackPanel Grid.Column="4" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsNotFoundConverter}, Mode=OneWay}">
+                        <StackPanel Grid.Column="5" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsNotFoundConverter}, Mode=OneWay}">
 
                             <Button ToolTipService.ToolTip="{x:Bind TranslationProperties.DownloadErrorText, Mode=OneWay}" Visibility="{x:Bind LocalRecord.HasDownloadError, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{Binding ElementName=thisPage, Path=ViewModel.ShowDownloadErrorCommand}" CommandParameter="{x:Bind }">
                                 <Button.Content>
@@ -264,7 +279,7 @@
                         </StackPanel>
 
                         <!-- Downloading -->
-                        <Grid Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Center" ColumnSpacing="8" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadingConverter}, Mode=OneWay}">
+                        <Grid Grid.Column="4" Grid.ColumnSpan="2" VerticalAlignment="Center" ColumnSpacing="8" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadingConverter}, Mode=OneWay}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -300,7 +315,7 @@
                         </Grid>
 
                         <!-- Downloaded -->
-                        <StackPanel Grid.Column="4" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadedConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                        <StackPanel Grid.Column="5" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadedConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
                             <Button ToolTipService.ToolTip="{x:Bind TranslationProperties.ExportText, Mode=OneWay}" Command="{Binding ElementName=thisPage, Path=ViewModel.ExportRecordCommand}" CommandParameter="{x:Bind }">
                                 <Button.Content>
                                     <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xEDE1;"/>
