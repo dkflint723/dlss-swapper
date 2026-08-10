@@ -10,6 +10,7 @@
     xmlns:usercontrols="using:DLSS_Swapper.UserControls"
     xmlns:system="using:System"
     xmlns:local="using:DLSS_Swapper"
+    xmlns:pages="using:DLSS_Swapper.Pages"
     xmlns:ct_winui="using:CommunityToolkit.WinUI"
     mc:Ignorable="d"
     NavigationCacheMode="Required"
@@ -57,6 +58,68 @@
                     <RadioButton x:Name="DefaultThemeRadioButton" GroupName="ThemeGroup" Tag="Default" IsChecked="{x:Bind ViewModel.DefaultThemeSelected, Mode=TwoWay}" Content="{x:Bind ViewModel.TranslationProperties.ThemeSystemSettingDefaultText, Mode=OneWay}" />
                 </StackPanel>
 
+
+                <!--
+                    The accent, which the app has been able to change without a restart since the
+                    brushes were built for it, but had no way to choose. Each swatch is named as
+                    well as coloured: four colours told apart by colour alone is exactly the thing
+                    this redesign removed everywhere else.
+                -->
+                <usercontrols:SettingsRow
+                    Title="{x:Bind ViewModel.TranslationProperties.AccentText, Mode=OneWay}"
+                    Description="{x:Bind ViewModel.AccentDescription, Mode=OneWay}">
+                    <usercontrols:SettingsRow.Control>
+                        <ItemsControl
+                            ItemsSource="{x:Bind ViewModel.AccentSwatches, Mode=OneWay}"
+                            Opacity="{x:Bind ViewModel.AccentSwatchesOpacity, Mode=OneWay}"
+                            IsEnabled="{x:Bind ViewModel.AccentSwatchesEnabled, Mode=OneWay}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="10" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="pages:AccentSwatchItem">
+                                    <Button
+                                        Width="34"
+                                        Height="34"
+                                        Padding="0"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        CornerRadius="{StaticResource DsCornerRadius}"
+                                        ToolTipService.ToolTip="{x:Bind Name}"
+                                        AutomationProperties.Name="{x:Bind Name}"
+                                        Command="{x:Bind SelectCommand}"
+                                        CommandParameter="{x:Bind}">
+                                        <Grid>
+                                            <!-- A ring rather than a tick, which would not read at this size. -->
+                                            <Border
+                                                Width="34"
+                                                Height="34"
+                                                BorderThickness="2"
+                                                CornerRadius="{StaticResource DsCornerRadius}"
+                                                BorderBrush="{ThemeResource DsTextPrimaryBrush}"
+                                                Visibility="{x:Bind SelectionVisibility, Mode=OneWay}" />
+                                            <Border
+                                                Width="26"
+                                                Height="26"
+                                                CornerRadius="{StaticResource DsCornerRadius}"
+                                                Background="{x:Bind Fill, Mode=OneWay}" />
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </usercontrols:SettingsRow.Control>
+                </usercontrols:SettingsRow>
+
+                <usercontrols:SettingsRow
+                    Title="{x:Bind ViewModel.TranslationProperties.MatchDesktopAccentText, Mode=OneWay}"
+                    Description="{x:Bind ViewModel.TranslationProperties.MatchDesktopAccentDescriptionText, Mode=OneWay}">
+                    <usercontrols:SettingsRow.Control>
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.MatchDesktopAccent, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                    </usercontrols:SettingsRow.Control>
+                </usercontrols:SettingsRow>
 
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"

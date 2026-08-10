@@ -96,6 +96,16 @@ internal static class AccentManager
         }
     }
 
+    /// <summary>
+    /// Which theme the accent is currently being painted for.
+    /// </summary>
+    /// <remarks>
+    /// Exposed for the settings swatches, which have to show the same value the app would actually
+    /// use. Each preset carries a different colour per theme, so a swatch painted from the wrong
+    /// one would offer a colour the app never paints.
+    /// </remarks>
+    internal static bool IsDark => IsDarkTheme();
+
     static bool IsDarkTheme()
     {
         var appTheme = Settings.Instance.AppTheme;

@@ -53,8 +53,8 @@ read than the `.dc.html` mockup.
 
 1. **Settings is half done.** Every repeated row is now a `SettingsRow` with its explanation beside
    the name. Still to do from spec §6: the two column layout (560px main, 280px side), sections
-   under uppercase rules, theme as a segmented control rather than radio buttons, the accent swatch
-   row and `Match my desktop accent`, and moving Game libraries and About into the side column.
+   under uppercase rules, theme as a segmented control rather than radio buttons, and moving Game
+   libraries and About into the side column.
    `GameLibrarySelectorControl`, the ignored paths list and the DLSS preset block are untouched and
    still use the old shape.
 2. **The upscalers page is not finished.** Still missing from spec §4.3: versions grouped under
@@ -102,6 +102,10 @@ read than the `.dc.html` mockup.
   "no games with upscalers" would be a lie there and the tab already carries its own count.
 - **About names both repositories**, this fork for the code and reports, the original for credit.
   The updater points at this fork, and is inert until the fork publishes a release.
+- **The accent picker** (spec §6.1). `AccentManager`, `AccentPalette` and `AccentResolver` already
+  existed and were already tested; all that was missing was a way to choose one. Four named
+  swatches plus `Match my desktop accent`, repainting live because the brushes the app binds to have
+  their colour replaced in place.
 
 ## Gotchas that cost real time
 
@@ -122,6 +126,10 @@ read than the `.dc.html` mockup.
 - **A group heading that hides while its group is empty never comes back.** It returns only when the
   group's membership changes, and rebuilding the whole content control does not help. So any rule
   for hiding a heading has to be one where the heading only ever reappears alongside its items.
+- **An `ElementName` binding stops resolving once its element is placed in a `UserControl`'s content
+  property**, because it is reparented out of the namescope the name lives in. It fails silently —
+  the control renders and the click does nothing. Anything inside `SettingsRow.Control` has to carry
+  its own command rather than reach back through the page.
 - The XAML type generator emits an activator for every public-constructible type a dependency
   property can reach. A type with `required` members needs a private constructor or the build fails
   in generated code with no obvious link to the control that caused it.

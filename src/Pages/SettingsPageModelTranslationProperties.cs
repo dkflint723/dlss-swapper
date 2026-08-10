@@ -68,6 +68,15 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string OpenText => ResourceHelper.GetString("General_Open");
 
     [TranslationProperty]
+    public string AccentText => ResourceHelper.GetString("Settings_Accent");
+
+    [TranslationProperty]
+    public string MatchDesktopAccentText => ResourceHelper.GetString("Settings_MatchDesktopAccent");
+
+    [TranslationProperty]
+    public string MatchDesktopAccentDescriptionText => ResourceHelper.GetString("Settings_MatchDesktopAccent_Desc");
+
+    [TranslationProperty]
     public string ThisBuildText => ResourceHelper.GetString("About_ThisBuild");
 
     [TranslationProperty]

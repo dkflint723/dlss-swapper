@@ -224,6 +224,33 @@
   <data name="General_Open" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="Settings_Accent" xml:space="preserve">
+    <value>Accent colour</value>
+  </data>
+  <data name="Settings_Accent_Desc" xml:space="preserve">
+    <value>Pick one, or follow Windows below</value>
+  </data>
+  <data name="Settings_Accent_FollowingDesktop" xml:space="preserve">
+    <value>Following the Windows accent colour — changes when you change it in Windows Settings.</value>
+  </data>
+  <data name="Settings_Accent_BrandGreen" xml:space="preserve">
+    <value>Brand green</value>
+  </data>
+  <data name="Settings_Accent_WindowsBlue" xml:space="preserve">
+    <value>Windows blue</value>
+  </data>
+  <data name="Settings_Accent_Violet" xml:space="preserve">
+    <value>Violet</value>
+  </data>
+  <data name="Settings_Accent_Amber" xml:space="preserve">
+    <value>Amber</value>
+  </data>
+  <data name="Settings_MatchDesktopAccent" xml:space="preserve">
+    <value>Match my desktop accent</value>
+  </data>
+  <data name="Settings_MatchDesktopAccent_Desc" xml:space="preserve">
+    <value>Reads the Windows personalisation colour and repaints on change</value>
+  </data>
   <data name="FirstRun_Title" xml:space="preserve">
     <value>Let's find your games.</value>
   </data>

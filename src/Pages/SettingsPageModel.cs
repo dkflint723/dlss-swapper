@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -110,6 +110,84 @@ public partial class SettingsPageModel : ObservableObject
     [ObservableProperty]
     public partial bool IsCheckingForUpdates { get; set; } = false;
 
+    /// <summary>The four accent presets, as swatches.</summary>
+    public ObservableCollection<AccentSwatchItem> AccentSwatches { get; } = new ObservableCollection<AccentSwatchItem>();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AccentSwatchesOpacity))]
+    [NotifyPropertyChangedFor(nameof(AccentSwatchesEnabled))]
+    [NotifyPropertyChangedFor(nameof(AccentDescription))]
+    public partial bool MatchDesktopAccent { get; set; }
+
+    /// <summary>
+    /// The swatches step back while Windows is choosing.
+    /// </summary>
+    /// <remarks>
+    /// Dimmed and inert rather than hidden, so it stays obvious that picking one is still possible
+    /// and what is standing in the way of it.
+    /// </remarks>
+    public double AccentSwatchesOpacity => MatchDesktopAccent ? 0.4 : 1.0;
+
+    public bool AccentSwatchesEnabled => MatchDesktopAccent == false;
+
+    /// <summary>Says which of the two things is deciding the colour right now.</summary>
+    public string AccentDescription => MatchDesktopAccent
+        ? ResourceHelper.GetString("Settings_Accent_FollowingDesktop")
+        : ResourceHelper.GetString("Settings_Accent_Desc");
+
+    partial void OnMatchDesktopAccentChanged(bool value)
+    {
+        if (_hasSetDefaults == false)
+        {
+            return;
+        }
+
+        Settings.Instance.MatchDesktopAccent = value;
+        AccentManager.Apply();
+    }
+
+    /// <summary>
+    /// Chooses an accent, and repaints immediately.
+    /// </summary>
+    /// <remarks>
+    /// No restart and no apply button: the brushes the whole app binds to have their colour
+    /// replaced in place, which is the reason the accent system was built that way.
+    /// </remarks>
+    [RelayCommand]
+    void SelectAccent(AccentSwatchItem? swatch)
+    {
+        if (swatch is null || MatchDesktopAccent)
+        {
+            return;
+        }
+
+        Settings.Instance.AccentPreset = swatch.Index;
+        AccentManager.Apply();
+
+        foreach (var accentSwatch in AccentSwatches)
+        {
+            accentSwatch.IsSelected = accentSwatch.Index == swatch.Index;
+        }
+    }
+
+    /// <summary>
+    /// Rebuilds the swatches for the theme in use.
+    /// </summary>
+    /// <remarks>
+    /// Called again when the theme changes, since each preset is a different colour in each theme.
+    /// </remarks>
+    void RefreshAccentSwatches()
+    {
+        var isDark = AccentManager.IsDark;
+        var selectedIndex = Settings.Instance.AccentPreset;
+
+        AccentSwatches.Clear();
+        for (var index = 0; index < AccentPalette.All.Count; index++)
+        {
+            AccentSwatches.Add(AccentSwatchItem.For(index, AccentPalette.All[index], isDark, selectedIndex, SelectAccentCommand));
+        }
+    }
+
     public ObservableCollection<string> IgnoredPaths { get; set; }
 
     bool _hasSetDefaults;
@@ -169,6 +247,9 @@ public partial class SettingsPageModel : ObservableObject
         }
 
         DlssLoggingToWindow = _dlssSettingsManager.GetLoggingWindow();
+        MatchDesktopAccent = Settings.Instance.MatchDesktopAccent;
+        RefreshAccentSwatches();
+
         AllowUntrusted = Settings.Instance.AllowUntrusted;
         HideNonDLSSGames = Settings.Instance.HideNonDLSSGames;
         BackupNewGamesAutomatically = Settings.Instance.BackupNewGamesAutomatically;
@@ -258,6 +339,10 @@ public partial class SettingsPageModel : ObservableObject
             {
                 Settings.Instance.AppTheme = ElementTheme.Light;
                 ((App)Application.Current).WindowManager.UpdateColors(ElementTheme.Light);
+
+                // Each preset is a different colour per theme, so the swatches are wrong
+                // the moment the theme moves under them.
+                RefreshAccentSwatches();
             }
         }
         else if (e.PropertyName == nameof(DarkThemeSelected))
@@ -266,6 +351,10 @@ public partial class SettingsPageModel : ObservableObject
             {
                 Settings.Instance.AppTheme = ElementTheme.Dark;
                 ((App)Application.Current).WindowManager.UpdateColors(ElementTheme.Dark);
+
+                // Each preset is a different colour per theme, so the swatches are wrong
+                // the moment the theme moves under them.
+                RefreshAccentSwatches();
             }
         }
         else if (e.PropertyName == nameof(DefaultThemeSelected))
@@ -274,6 +363,10 @@ public partial class SettingsPageModel : ObservableObject
             {
                 Settings.Instance.AppTheme = ElementTheme.Default;
                 ((App)Application.Current).WindowManager.UpdateColors(ElementTheme.Default);
+
+                // Each preset is a different colour per theme, so the swatches are wrong
+                // the moment the theme moves under them.
+                RefreshAccentSwatches();
             }
         }
         else if (e.PropertyName == nameof(SelectedDlssOnScreenIndicator))
