@@ -638,9 +638,22 @@ public partial class GameGridPageModel : ObservableObject
     /// <summary>The strip along the bottom, or null when there is nothing to report.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(UpdateBatchVisibility))]
+    [NotifyPropertyChangedFor(nameof(ContentBottomMargin))]
     public partial UpdateBatchModel? UpdateBatch { get; set; }
 
     public Visibility UpdateBatchVisibility => UpdateBatch is null ? Visibility.Collapsed : Visibility.Visible;
+
+    /// <summary>
+    /// Keeps the list clear of the batch strip while it is showing.
+    /// </summary>
+    /// <remarks>
+    /// 52px, which is the strip's height. The strip is docked over the content rather than taking a
+    /// row of its own, so the bottom of the list has to give the same space back or the last game
+    /// sits behind it, and a list that ends behind an opaque bar looks like a list that ended.
+    /// </remarks>
+    public Thickness ContentBottomMargin => UpdateBatch is null
+        ? new Thickness(0)
+        : new Thickness(0, 0, 0, 52);
 
     CancellationTokenSource? batchCancellation;
 

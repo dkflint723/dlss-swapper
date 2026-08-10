@@ -64,10 +64,7 @@ read than the `.dc.html` mockup.
    action slot (README §4 says a row being written shows a 150px bar where its button was; it still
    shows the sentence and a spinner), and `See what changed` on the done strip, which needs a
    history view filtered to a batch and there is no such view yet.
-4. The strip overlays the last of the content rather than shortening it, so the final row can sit
-   behind it until you scroll. Docking it properly means the content row giving up 52px while it is
-   there.
-5. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
+4. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. Not yet reasoned about either
    way.
 

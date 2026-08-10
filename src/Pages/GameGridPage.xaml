@@ -508,7 +508,12 @@
             </Grid>
         </Grid>
 
-        <ContentControl x:Name="MainContentControl" Grid.Row="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Content="{x:Bind ViewModel, Mode=OneWay}" ContentTemplateSelector="{StaticResource TemplateSelector}" />
+        <!--
+            The bottom margin is the batch strip's height, applied only while the strip is there.
+            The strip is docked over the content rather than beside it, so without this the last row
+            sits behind it and looks like the end of the list.
+        -->
+        <ContentControl x:Name="MainContentControl" Grid.Row="1" Margin="{x:Bind ViewModel.ContentBottomMargin, Mode=OneWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Content="{x:Bind ViewModel, Mode=OneWay}" ContentTemplateSelector="{StaticResource TemplateSelector}" />
 
         <!--
             What the content area says when there is nothing in it. Flush left rather than centred
