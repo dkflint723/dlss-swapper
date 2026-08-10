@@ -48,15 +48,91 @@
 
         <ScrollViewer Grid.Row="2">
             <StackPanel Padding="56,0,56,56">
-                <TextBlock
-                    Style="{StaticResource SubtitleTextBlockStyle}"
-                    Margin="0,40,0,0"
-                    Text="{x:Bind ViewModel.TranslationProperties.ThemeModeText, Mode=OneWay}" />
-                <StackPanel x:Name="ThemePanel" Margin="0,10,0,0">
-                    <RadioButton x:Name="LightThemeRadioButton" GroupName="ThemeGroup" Tag="Light" IsChecked="{x:Bind ViewModel.LightThemeSelected, Mode=TwoWay}" Content="{x:Bind ViewModel.TranslationProperties.ThemeLightText, Mode=OneWay}" />
-                    <RadioButton x:Name="DarkThemeRadioButton" GroupName="ThemeGroup" Tag="Dark" IsChecked="{x:Bind ViewModel.DarkThemeSelected, Mode=TwoWay}" Content="{x:Bind ViewModel.TranslationProperties.ThemeDarkText, Mode=OneWay}" />
-                    <RadioButton x:Name="DefaultThemeRadioButton" GroupName="ThemeGroup" Tag="Default" IsChecked="{x:Bind ViewModel.DefaultThemeSelected, Mode=TwoWay}" Content="{x:Bind ViewModel.TranslationProperties.ThemeSystemSettingDefaultText, Mode=OneWay}" />
-                </StackPanel>
+                <!--
+                    One row of three segments rather than a stack of radio buttons. The three are
+                    one choice and read as one control, and it puts the theme on the same shape as
+                    every other setting on the page instead of a list floating under a heading.
+                -->
+                <usercontrols:SettingsRow
+                    Title="{x:Bind ViewModel.TranslationProperties.ThemeModeText, Mode=OneWay}"
+                    Description="{x:Bind ViewModel.TranslationProperties.ThemeDescriptionText, Mode=OneWay}">
+                    <usercontrols:SettingsRow.Control>
+                        <Border
+                            BorderThickness="1"
+                            BorderBrush="{ThemeResource DsLine2Brush}"
+                            CornerRadius="{StaticResource DsCornerRadius}">
+                            <StackPanel Orientation="Horizontal">
+                                <Button
+                                    MinWidth="72"
+                                    Height="30"
+                                    Padding="12,0"
+                                    CornerRadius="0"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    Command="{x:Bind ViewModel.SelectThemeCommand}"
+                                    CommandParameter="Light">
+                                    <Grid>
+                                        <!-- The selected fill, behind the label, so the label keeps its own colour. -->
+                                        <Border
+                                            Margin="-12,-8"
+                                            Background="{ThemeResource DsSelectedBrush}"
+                                            Visibility="{x:Bind ViewModel.LightThemeSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                        <TextBlock
+                                            Text="{x:Bind ViewModel.TranslationProperties.ThemeLightText, Mode=OneWay}"
+                                            FontSize="13"
+                                            Foreground="{ThemeResource DsTextPrimaryBrush}" />
+                                    </Grid>
+                                </Button>
+
+                                <Border Width="1" Background="{ThemeResource DsLine2Brush}" />
+
+                                <Button
+                                    MinWidth="72"
+                                    Height="30"
+                                    Padding="12,0"
+                                    CornerRadius="0"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    Command="{x:Bind ViewModel.SelectThemeCommand}"
+                                    CommandParameter="Dark">
+                                    <Grid>
+                                        <Border
+                                            Margin="-12,-8"
+                                            Background="{ThemeResource DsSelectedBrush}"
+                                            Visibility="{x:Bind ViewModel.DarkThemeSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                        <TextBlock
+                                            Text="{x:Bind ViewModel.TranslationProperties.ThemeDarkText, Mode=OneWay}"
+                                            FontSize="13"
+                                            Foreground="{ThemeResource DsTextPrimaryBrush}" />
+                                    </Grid>
+                                </Button>
+
+                                <Border Width="1" Background="{ThemeResource DsLine2Brush}" />
+
+                                <Button
+                                    MinWidth="72"
+                                    Height="30"
+                                    Padding="12,0"
+                                    CornerRadius="0"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    Command="{x:Bind ViewModel.SelectThemeCommand}"
+                                    CommandParameter="Default">
+                                    <Grid>
+                                        <Border
+                                            Margin="-12,-8"
+                                            Background="{ThemeResource DsSelectedBrush}"
+                                            Visibility="{x:Bind ViewModel.DefaultThemeSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                        <TextBlock
+                                            Text="{x:Bind ViewModel.TranslationProperties.ThemeSystemSettingDefaultText, Mode=OneWay}"
+                                            FontSize="13"
+                                            Foreground="{ThemeResource DsTextPrimaryBrush}" />
+                                    </Grid>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </usercontrols:SettingsRow.Control>
+                </usercontrols:SettingsRow>
 
 
                 <!--

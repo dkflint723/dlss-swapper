@@ -110,6 +110,22 @@ public partial class SettingsPageModel : ObservableObject
     [ObservableProperty]
     public partial bool IsCheckingForUpdates { get; set; } = false;
 
+    /// <summary>
+    /// Picks a theme from the segmented control.
+    /// </summary>
+    /// <remarks>
+    /// Sets the same three flags the radio buttons set, so the theme is still applied in one place.
+    /// The chosen one is set last: setting it fires the handler that repaints, and the other two
+    /// have to already be false by then or the group briefly disagrees with itself.
+    /// </remarks>
+    [RelayCommand]
+    void SelectTheme(string? theme)
+    {
+        LightThemeSelected = theme == "Light";
+        DarkThemeSelected = theme == "Dark";
+        DefaultThemeSelected = theme != "Light" && theme != "Dark";
+    }
+
     /// <summary>The four accent presets, as swatches.</summary>
     public ObservableCollection<AccentSwatchItem> AccentSwatches { get; } = new ObservableCollection<AccentSwatchItem>();
 
@@ -174,9 +190,12 @@ public partial class SettingsPageModel : ObservableObject
     /// Rebuilds the swatches for the theme in use.
     /// </summary>
     /// <remarks>
-    /// Called again when the theme changes, since each preset is a different colour in each theme.
+    /// Driven by the window's own theme change rather than by the button that caused it. "Use
+    /// system setting" does not say which theme that turns out to be, and the effective theme has
+    /// not settled by the time the command runs — refreshing there left the swatches painted for
+    /// the theme the app had just stopped using.
     /// </remarks>
-    void RefreshAccentSwatches()
+    internal void RefreshAccentSwatches()
     {
         var isDark = AccentManager.IsDark;
         var selectedIndex = Settings.Instance.AccentPreset;

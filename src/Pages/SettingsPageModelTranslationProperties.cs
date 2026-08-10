@@ -68,6 +68,9 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string OpenText => ResourceHelper.GetString("General_Open");
 
     [TranslationProperty]
+    public string ThemeDescriptionText => ResourceHelper.GetString("Settings_Theme_Desc");
+
+    [TranslationProperty]
     public string AccentText => ResourceHelper.GetString("Settings_Accent");
 
     [TranslationProperty]

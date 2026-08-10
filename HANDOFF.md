@@ -53,8 +53,8 @@ read than the `.dc.html` mockup.
 
 1. **Settings is half done.** Every repeated row is now a `SettingsRow` with its explanation beside
    the name. Still to do from spec §6: the two column layout (560px main, 280px side), sections
-   under uppercase rules, theme as a segmented control rather than radio buttons, and moving Game
-   libraries and About into the side column.
+   under uppercase rules (the copy is sentence case in the `.resw`, so this needs either uppercase
+   strings or a converter), and moving Game libraries and About into the side column.
    `GameLibrarySelectorControl`, the ignored paths list and the DLSS preset block are untouched and
    still use the old shape.
 2. **The upscalers page is not finished.** Still missing from spec §4.3: versions grouped under
@@ -105,7 +105,10 @@ read than the `.dc.html` mockup.
 - **The accent picker** (spec §6.1). `AccentManager`, `AccentPalette` and `AccentResolver` already
   existed and were already tested; all that was missing was a way to choose one. Four named
   swatches plus `Match my desktop accent`, repainting live because the brushes the app binds to have
-  their colour replaced in place.
+  their colour replaced in place. Theme is a segmented control on the same row shape.
+  The swatches rebuild from the page's `ActualThemeChanged`, not from the theme buttons: "use system
+  setting" does not say which theme it resolves to, and the effective theme has not settled when the
+  command runs.
 
 ## Gotchas that cost real time
 

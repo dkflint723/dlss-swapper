@@ -16,5 +16,10 @@ public sealed partial class SettingsPage : Page
         this.InitializeComponent();
         ViewModel = new SettingsPageModel(this);
         DataContext = ViewModel;
+
+        // The accent swatches are painted per theme, and this is the event that knows the theme
+        // actually changed. Refreshing them from the button that requested it fires before the
+        // change has taken, and "use system setting" does not say which theme it resolves to.
+        ActualThemeChanged += (sender, args) => ViewModel.RefreshAccentSwatches();
     }
 }

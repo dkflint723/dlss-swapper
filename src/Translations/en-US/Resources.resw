@@ -224,6 +224,9 @@
   <data name="General_Open" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="Settings_Theme_Desc" xml:space="preserve">
+    <value>System follows your Windows light/dark setting</value>
+  </data>
   <data name="Settings_Accent" xml:space="preserve">
     <value>Accent colour</value>
   </data>
