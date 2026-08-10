@@ -10,6 +10,7 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:data="using:DLSS_Swapper.Data"
     xmlns:pages="using:DLSS_Swapper.Pages"
+    xmlns:usercontrols="using:DLSS_Swapper.UserControls"
     mc:Ignorable="d"
     NavigationCacheMode="Required"
     x:Name="thisPage">
@@ -22,6 +23,16 @@
         <ct_converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
         <converters:BytesToMegaBytesConverter x:Key="BytesToMegaBytesConverter" />
         <converters:TotalBytesVisbilityConverter x:Key="TotalBytesVisbilityConverter" />
+
+        <!--
+            Grouped by release line. One engine can carry over a hundred versions, and as a flat run
+            they are a wall of near identical numbers.
+        -->
+        <CollectionViewSource
+            x:Name="GroupedVersions"
+            IsSourceGrouped="True"
+            ItemsPath="Versions"
+            Source="{x:Bind ViewModel.VersionGroups, Mode=OneWay}" />
     </Page.Resources>
 
 
@@ -159,10 +170,20 @@
                 Grid.Column="1"
                 x:Name="MainGridView"
                 Margin="16,0,0,0"
-                ItemsSource="{x:Bind ViewModel.SelectedLibraryList, Mode=OneWay}"
+                ItemsSource="{x:Bind GroupedVersions.View, Mode=OneWay}"
                 SelectionMode="None"
                 IsItemClickEnabled="True"
                 ItemClick="MainGridView_ItemClick">
+
+                <ListView.GroupStyle>
+                    <GroupStyle HidesIfEmpty="True">
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate x:DataType="data:DllVersionGroup">
+                                <usercontrols:SectionRule Margin="0,14,0,2" Label="{x:Bind Label}" />
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListView.GroupStyle>
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">

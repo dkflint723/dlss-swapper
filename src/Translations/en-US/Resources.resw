@@ -296,6 +296,9 @@
   <data name="About_FeedbackForkInfo" xml:space="preserve">
     <value>Anything wrong here is most likely a change made in this fork, so report it on this fork's issue tracker rather than the original project's:</value>
   </data>
+  <data name="Upscalers_VersionLineAndOlderTemplate" xml:space="preserve">
+    <value>{0} and older</value>
+  </data>
   <data name="Upscalers_NotUsed" xml:space="preserve">
     <value>Not used</value>
   </data>

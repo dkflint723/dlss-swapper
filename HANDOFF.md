@@ -58,9 +58,8 @@ read than the `.dc.html` mockup.
    strings or a converter), and moving Game libraries and About into the side column.
    `GameLibrarySelectorControl`, the ignored paths list and the DLSS preset block are untouched and
    still use the old shape.
-2. **The upscalers page is not finished.** Still missing from spec §4.3: versions grouped under
-   uppercase rules by major line (`DLSS 310`, `DLSS 3.7`, `DLSS 3.5 and older`), the size column,
-   and the per-row overflow menu. Clicking a usage count should filter Games to those titles. The
+2. **The upscalers page is not finished.** Still missing from spec §4.3: the size column and the
+   per-row overflow menu. Clicking a usage count should filter Games to those titles. The
    downloading row still shows the old inline progress bar rather than the spec's 2px one.
 3. **Two pieces of the update flow are deliberately not built.** The per-row progress bar in the
    action slot (README §4 says a row being written shows a 150px bar where its button was; it still
@@ -106,6 +105,9 @@ read than the `.dc.html` mockup.
   can land on, and the accents are checked as text as well as under ink. `AccentPaletteTests` holds
   both rules. If a token is ever changed, re-measure rather than eyeball it.
 - **Where each dll file is**, in words rather than only in which buttons a row shows.
+- **Versions grouped by release line** (`DllVersionLine`, `DllVersionGroup`), newest three lines
+  separate and the rest rolled into one heading. Derived from the version, never stored, and the
+  order the page is given is kept rather than re-sorted.
 - **The accent picker** (spec §6.1). `AccentManager`, `AccentPalette` and `AccentResolver` already
   existed and were already tested; all that was missing was a way to choose one. Four named
   swatches plus `Match my desktop accent`, repainting live because the brushes the app binds to have

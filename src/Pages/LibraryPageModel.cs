@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -1516,6 +1517,67 @@ public partial class LibraryPageModel : ObservableObject
         SelectedLibraryList = null;
         SelectedLibraryList = newList;
         OnPropertyChanged(nameof(SelectedLibraryList));
+
+        WatchRecords(records);
+        RebuildVersionGroups();
+    }
+
+    /// <summary>The versions of the selected engine, under one heading per release line.</summary>
+    public ObservableCollection<DllVersionGroup> VersionGroups { get; } = new ObservableCollection<DllVersionGroup>();
+
+    INotifyCollectionChanged? watchedRecords;
+
+    /// <summary>
+    /// Follows the records for the selected engine so the groups rebuild when they change.
+    /// </summary>
+    /// <remarks>
+    /// The list this replaced was a live view over the master collection, so an import or a
+    /// manifest refresh showed up without rebuilding the page. Grouping means holding a snapshot,
+    /// and a snapshot nobody refreshes is a page that quietly stops matching what is on disk.
+    /// </remarks>
+    void WatchRecords(INotifyCollectionChanged? records)
+    {
+        if (ReferenceEquals(watchedRecords, records))
+        {
+            return;
+        }
+
+        if (watchedRecords is not null)
+        {
+            watchedRecords.CollectionChanged -= OnRecordsChanged;
+        }
+
+        watchedRecords = records;
+
+        if (watchedRecords is not null)
+        {
+            watchedRecords.CollectionChanged += OnRecordsChanged;
+        }
+    }
+
+    void OnRecordsChanged(object? sender, NotifyCollectionChangedEventArgs args)
+    {
+        App.CurrentApp.RunOnUIThread(RebuildVersionGroups);
+    }
+
+    void RebuildVersionGroups()
+    {
+        VersionGroups.Clear();
+
+        if (SelectedLibraryList is null)
+        {
+            return;
+        }
+
+        // Read from the filtered view, so a debug dll that is being hidden is not counted into a
+        // line heading that then has nothing under it.
+        var records = SelectedLibraryList.OfType<DLLRecord>().ToList();
+        var engineName = DLLManager.Instance.GetAssetTypeName(SelectedAssetType);
+
+        foreach (var group in DllVersionGroup.Build(records, engineName))
+        {
+            VersionGroups.Add(group);
+        }
     }
 
     [RelayCommand]
