@@ -258,9 +258,6 @@
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>Pogrupuj gry z tej samej biblioteki</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>Grupowanie</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AnotherNoteTitle" xml:space="preserve">
     <value>Kolejna informacja dotycząca ręcznego dodawania gier</value>
   </data>
@@ -380,9 +377,6 @@ Jeśli sprawdziłeś te ustawienia, a Twoja gra nadal nie jest wyświetlana, mo�
   <data name="General_ExportAll" xml:space="preserve">
     <value>Eksport wszystkich</value>
   </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>Filtr</value>
-  </data>
   <data name="General_Help" xml:space="preserve">
     <value>Pomoc</value>
   </data>
@@ -412,9 +406,6 @@ Jeśli sprawdziłeś te ustawienia, a Twoja gra nadal nie jest wyświetlana, mo�
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(opcjonalnie)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>Opcje</value>
   </data>
   <data name="General_Refresh" xml:space="preserve">
     <value>Odśwież</value>

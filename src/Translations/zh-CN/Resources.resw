@@ -352,9 +352,6 @@
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>将不同平台的游戏分组显示</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>分组</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>只能拖入单个文件作为封面</value>
   </data>
@@ -429,9 +426,6 @@
   <data name="GamesPage_ReloadingGame" xml:space="preserve">
     <value>重新载入现有游戏</value>
   </data>
-  <data name="GamesPage_ShowHiddenGamesText" xml:space="preserve">
-    <value>显示隐藏游戏（启动时默认为关闭状态）</value>
-  </data>
   <data name="GamesPage_Title" xml:space="preserve">
     <value>游戏库</value>
   </data>
@@ -485,9 +479,6 @@
   </data>
   <data name="General_Failed" xml:space="preserve">
     <value>失败</value>
-  </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>筛选</value>
   </data>
   <data name="General_Help" xml:space="preserve">
     <value>帮助</value>
@@ -569,9 +560,6 @@
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(可选)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>选项</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>发布</value>

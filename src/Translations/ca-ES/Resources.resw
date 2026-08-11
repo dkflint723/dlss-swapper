@@ -334,9 +334,6 @@ Per verificar quin perfil s'està utilitzant, activeu l'indicador de DLSS en pan
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>Agrupa jocs de la mateixa biblioteca junts</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>Agrupant</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Només podeu arrossegar un sol fitxer per a una coberta</value>
   </data>
@@ -411,9 +408,6 @@ Si heu marcat aquestes opcions i el vostre joc encara no apareix, pot haver-hi u
   <data name="GamesPage_ReloadingGame" xml:space="preserve">
     <value>Recarregant el joc</value>
   </data>
-  <data name="GamesPage_ShowHiddenGamesText" xml:space="preserve">
-    <value>Mostra els jocs ocults (per defecte, desactivat en iniciar-se)</value>
-  </data>
   <data name="GamesPage_Title" xml:space="preserve">
     <value>Jocs</value>
   </data>
@@ -467,9 +461,6 @@ Si heu marcat aquestes opcions i el vostre joc encara no apareix, pot haver-hi u
   </data>
   <data name="General_Failed" xml:space="preserve">
     <value>Fallat</value>
-  </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>Filtre</value>
   </data>
   <data name="General_Help" xml:space="preserve">
     <value>Ajuda</value>
@@ -539,9 +530,6 @@ Si heu marcat aquestes opcions i el vostre joc encara no apareix, pot haver-hi u
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(opcional)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>Opcions</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>Publica</value>

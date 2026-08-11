@@ -490,9 +490,6 @@
   <data name="DllUpdate_Title" xml:space="preserve">
     <value>Update dlls</value>
   </data>
-  <data name="DllUpdate_UpdateAllGames" xml:space="preserve">
-    <value>Update all games</value>
-  </data>
   <data name="DllUpdate_UpdateThisGame" xml:space="preserve">
     <value>Update all dlls</value>
   </data>
@@ -714,9 +711,6 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>Group games from the same library together</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>Grouping</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>You may only drag over a single file for a cover</value>
   </data>
@@ -793,9 +787,6 @@ If you have checked these and your game is still not showing up there may be a b
     <comment>Used as a loading box title when the user clicks reload game button on a games detail page</comment>
     <value>Reloading game</value>
   </data>
-  <data name="GamesPage_ShowHiddenGamesText" xml:space="preserve">
-    <value>Show hidden games (defaults to off on launch)</value>
-  </data>
   <data name="GamesPage_Title" xml:space="preserve">
     <value>Games</value>
   </data>
@@ -850,9 +841,6 @@ If you have checked these and your game is still not showing up there may be a b
   </data>
   <data name="General_Failed" xml:space="preserve">
     <value>Failed</value>
-  </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>Filter</value>
   </data>
   <data name="General_Help" xml:space="preserve">
     <value>Help</value>
@@ -946,9 +934,6 @@ If you have checked these and your game is still not showing up there may be a b
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(optional)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>Options</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>Publish</value>

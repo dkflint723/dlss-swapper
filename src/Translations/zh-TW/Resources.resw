@@ -325,9 +325,6 @@
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>依照遊戲平台對遊戲進行分組</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>分組</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>您只能選擇一張圖片</value>
   </data>
@@ -402,9 +399,6 @@
   <data name="GamesPage_ReloadingGame" xml:space="preserve">
     <value>正在重新載入遊戲</value>
   </data>
-  <data name="GamesPage_ShowHiddenGamesText" xml:space="preserve">
-    <value>顯示已隱藏遊戲 (啟動時預設關閉)</value>
-  </data>
   <data name="GamesPage_Title" xml:space="preserve">
     <value>收藏庫</value>
   </data>
@@ -459,9 +453,6 @@
   <data name="General_Failed" xml:space="preserve">
     <value>失敗</value>
   </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>篩選</value>
-  </data>
   <data name="General_Help" xml:space="preserve">
     <value>幫助</value>
   </data>
@@ -500,9 +491,6 @@
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(可選)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>選項</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>發佈</value>

@@ -42,7 +42,7 @@ public class GameFiltersTests
     }
 
     [Fact]
-    public void AllShowsEverything()
+    public void AllShowsEverythingExceptHiddenGames()
     {
         using var manifest = new ManifestScope();
 
@@ -50,7 +50,29 @@ public class GameFiltersTests
         hidden.IsHidden = true;
 
         Assert.True(GameFilters.Matches(new TestGame("filter_1b"), GameFilter.All, hideNonDLSSGames: false));
-        Assert.True(GameFilters.Matches(hidden, GameFilter.All, hideNonDLSSGames: false));
+
+        // This used to assert the opposite, and the opposite was the bug. The exclusion lived in
+        // the view's predicate and nowhere else, so "All games" counted hidden games and then did
+        // not show them — most visibly on Steam and Xbox, which mark their own non-game entries
+        // hidden the first time they are seen.
+        Assert.False(GameFilters.Matches(hidden, GameFilter.All, hideNonDLSSGames: false));
+    }
+
+    [Fact]
+    public void OnlyTheHiddenTabShowsHiddenGames()
+    {
+        using var manifest = new ManifestScope();
+        manifest.Add(GameAssetType.DLSS, "310.7.0.0");
+
+        var hidden = GameWith("filter_1c", (GameAssetType.DLSS, "310.1.0.0"));
+        hidden.IsHidden = true;
+
+        // Behind on a dll, and missing nothing, but hidden: it belongs to its own tab and to no
+        // other. A hidden game counted by "Have an update" is one the update button would offer to
+        // write to without ever showing it.
+        Assert.True(GameFilters.Matches(hidden, GameFilter.Hidden, hideNonDLSSGames: false));
+        Assert.False(GameFilters.Matches(hidden, GameFilter.HasUpdate, hideNonDLSSGames: false));
+        Assert.False(GameFilters.Matches(hidden, GameFilter.MissingBackup, hideNonDLSSGames: false));
     }
 
     [Fact]

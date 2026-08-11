@@ -324,9 +324,6 @@
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>تجميع الألعاب من نفس المكتبة معًا</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>التجميع</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>يمكنك سحب ملف واحد فقط لاستخدامه كغلاف.</value>
   </data>
@@ -455,9 +452,6 @@
   <data name="General_Failed" xml:space="preserve">
     <value>فشل</value>
   </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>فلتر</value>
-  </data>
   <data name="General_Help" xml:space="preserve">
     <value>المساعدة</value>
   </data>
@@ -493,9 +487,6 @@
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(اختياري)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>الخيارات</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>نشر</value>

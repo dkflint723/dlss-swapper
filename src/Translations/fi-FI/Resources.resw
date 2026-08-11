@@ -361,9 +361,6 @@ Varmista käytetty esiasetus ottamalla käyttöön DLSS-näyttöilmaisin.</value
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>Ryhmitä pelit samasta kirjastosta yhteen</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>Ryhmittely</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Voit vetää vain yhden tiedoston kansikuvaksi</value>
   </data>
@@ -440,9 +437,6 @@ Jos olet tarkistanut nämä ja peliäsi ei silti näy, saattaa se olla ohjelmist
     <value>Ladataan peliä uudelleen</value>
     <comment>Used as a loading box title when the user clicks reload game button on a games detail page</comment>
   </data>
-  <data name="GamesPage_ShowHiddenGamesText" xml:space="preserve">
-    <value>Näytä piilotetut pelit (oletuksena pois päältä käynnistettäessä)</value>
-  </data>
   <data name="GamesPage_Title" xml:space="preserve">
     <value>Pelit</value>
   </data>
@@ -497,9 +491,6 @@ Jos olet tarkistanut nämä ja peliäsi ei silti näy, saattaa se olla ohjelmist
   </data>
   <data name="General_Failed" xml:space="preserve">
     <value>Epäonnistui</value>
-  </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>Suodatin</value>
   </data>
   <data name="General_Help" xml:space="preserve">
     <value>Apu</value>
@@ -589,9 +580,6 @@ Jos olet tarkistanut nämä ja peliäsi ei silti näy, saattaa se olla ohjelmist
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(valinnainen)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>Asetukset</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>Julkaise</value>

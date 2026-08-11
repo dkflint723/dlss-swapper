@@ -241,9 +241,6 @@ Para verificar qual predefinição está sendo usada, ative o indicador DLSS na 
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>Agrupar jogos da mesma biblioteca</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>Agrupamento</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Você só pode arrastar um único arquivo para a capa</value>
   </data>
@@ -369,9 +366,6 @@ Se você verificou tudo isso e seu jogo ainda não aparece, pode ser um bug. Agr
   <data name="General_Failed" xml:space="preserve">
     <value>Falhou</value>
   </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>Filtro</value>
-  </data>
   <data name="General_Help" xml:space="preserve">
     <value>Ajuda</value>
   </data>
@@ -407,9 +401,6 @@ Se você verificou tudo isso e seu jogo ainda não aparece, pode ser um bug. Agr
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(opcional)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>Opções</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>Publicar</value>

@@ -87,6 +87,31 @@ public class UpdatePreviewTests
     }
 
     [Fact]
+    public void AHiddenGameIsNeitherCountedNorOffered()
+    {
+        using var manifest = new ManifestScope();
+        manifest.Add(GameAssetType.DLSS, "310.7.0.0");
+
+        var shown = OutdatedGame("preview_hidden_1", "Shown");
+        var hidden = OutdatedGame("preview_hidden_2", "Hidden");
+        hidden.IsHidden = true;
+
+        var library = new[] { shown, hidden };
+
+        // "Hidden" means stop showing me this, so the bulk update must not quietly write to one.
+        // The count and the sheet both come from the same predicate, which is what makes that true
+        // in one place rather than two.
+        var behind = library.Where(x => GameFilters.Matches(x, GameFilter.HasUpdate, hideNonDLSSGames: false)).ToList();
+
+        Assert.Single(behind);
+
+        var pendingUpdates = PendingDllUpdate.ForGames(behind);
+
+        Assert.NotEmpty(pendingUpdates);
+        Assert.All(pendingUpdates, x => Assert.Equal("Shown", x.GameTitle));
+    }
+
+    [Fact]
     public void AGameUpToDateOffersNothing()
     {
         using var manifest = new ManifestScope();

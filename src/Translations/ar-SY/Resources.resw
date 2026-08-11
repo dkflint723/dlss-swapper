@@ -319,9 +319,6 @@
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>تجميع الألعاب من نفس المكتبة معاً</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>التجميع</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>تعذر تغيير الإعداد المسبق. يرجى مراجعة سجل الأخطاء للحصول على مزيد من المعلومات.</value>
   </data>
@@ -446,9 +443,6 @@
   <data name="General_Failed" xml:space="preserve">
     <value>فشل</value>
   </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>فلترة</value>
-  </data>
   <data name="General_Help" xml:space="preserve">
     <value>مساعدة</value>
   </data>
@@ -484,9 +478,6 @@
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(اختياري)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>خيارات</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>نشر</value>

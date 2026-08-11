@@ -9,8 +9,6 @@ public class GameGridPageModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string NewDllsText => ResourceHelper.GetString("GamesPage_NewDlls");
 
-    [TranslationProperty]
-    public string UpdateAllGamesText => ResourceHelper.GetString("DllUpdate_UpdateAllGames");
 
     [TranslationProperty]
     public string NeverUpdateThisGameText => ResourceHelper.GetString("GamesPage_Action_TurnUpdatesOff");
@@ -21,8 +19,9 @@ public class GameGridPageModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string RefreshText => ResourceHelper.GetString("General_Refresh");
 
+    /// <summary>The View menu's grouping toggle, which used to live behind the Filter button.</summary>
     [TranslationProperty]
-    public string FilterText => ResourceHelper.GetString("General_Filter");
+    public string GroupByLibraryText => ResourceHelper.GetString("GamesPage_GroupGamesFromTheSameLibraryTogether");
 
     [TranslationProperty]
     public string SearchText => ResourceHelper.GetString("General_Search");

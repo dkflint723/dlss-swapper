@@ -54,7 +54,14 @@ public partial class GameGridPageModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GameGridViewIcon))]
+    [NotifyPropertyChangedFor(nameof(IsGridView))]
+    [NotifyPropertyChangedFor(nameof(IsListView))]
     public partial GameGridViewType GameGridViewType { get; set; } = Settings.Instance.GameGridViewType;
+
+    /// <summary>So the open View menu marks the one that is current, rather than leaving it to a glyph.</summary>
+    public bool IsGridView => GameGridViewType == GameGridViewType.GridView;
+
+    public bool IsListView => GameGridViewType == GameGridViewType.ListView;
 
     public FontIcon GameGridViewIcon => GameGridViewType switch
     {
@@ -92,16 +99,20 @@ public partial class GameGridPageModel : ObservableObject
     /// with the tab counts narrowed and the review button still reading the full library, the
     /// button said "Review 3 updates" and opened a sheet holding twelve.
     ///
-    /// Not the tab, though. The tab is a further narrowing that each tab count applies for itself.
+    /// Not the tab, though. The tab is a further narrowing that each tab count applies for itself —
+    /// including the Hidden tab, which is the one place a hidden game is meant to appear.
     /// </remarks>
     static List<Game> GamesOnThePage()
     {
         var games = GameManager.Instance.GetSynchronisedGamesListCopy();
         var dllFilter = GameManager.Instance.DllFilter;
 
-        return dllFilter is null
-            ? games
-            : games.Where(dllFilter.Matches).ToList();
+        if (dllFilter is not null)
+        {
+            games = games.Where(dllFilter.Matches).ToList();
+        }
+
+        return games;
     }
 
     public void RefreshFilterTabs()
@@ -292,7 +303,7 @@ public partial class GameGridPageModel : ObservableObject
         });
 
         this.gameGridPage = gameGridPage;
-        ApplyGameGroupFilter();
+        ShowGameCollection();
 
         // Same reason as the sidebar: games arrive long after this is built, so the counts are
         // taken whenever the library changes rather than once at construction.
@@ -526,42 +537,40 @@ public partial class GameGridPageModel : ObservableObject
         App.CurrentApp.MainWindow?.RefreshSidebar();
     }
 
-    [RelayCommand]
-    async Task FilterGamesButtonAsync()
+    /// <summary>
+    /// Whether the list is broken into a section per launcher.
+    /// </summary>
+    /// <remarks>
+    /// A view option, so it lives in the View menu beside grid and list rather than behind a
+    /// "Filter" button, which is where it used to be and which is not what it does: it changes how
+    /// the same games are arranged, never which ones are shown.
+    ///
+    /// It applies on click, like view type already does. Behind the old dialog it needed an Apply.
+    /// </remarks>
+    public bool IsGroupedByLibrary
     {
-        var gameFilterControl = new GameFilterControl();
-
-        var dialog = new EasyContentDialog(gameGridPage.XamlRoot)
+        get => Settings.Instance.GroupGameLibrariesTogether;
+        set
         {
-            Title = ResourceHelper.GetString("General_Filter"),
-            PrimaryButtonText = ResourceHelper.GetString("General_Apply"),
-            CloseButtonText = ResourceHelper.GetString("General_Cancel"),
-            DefaultButton = ContentDialogButton.Primary,
-            Content = gameFilterControl,
-        };
-        var result = await dialog.ShowAsync();
-
-        if (result == ContentDialogResult.Primary)
-        {
-            if (gameFilterControl.DataContext is GameFilterControlViewModel gameFilterControlViewModel)
+            if (Settings.Instance.GroupGameLibrariesTogether == value)
             {
-                GameManager.Instance.ShowHiddenGames = gameFilterControlViewModel.ShowHiddenGames;
-                Settings.Instance.GroupGameLibrariesTogether = gameFilterControlViewModel.GroupGameLibrariesTogether;
+                return;
             }
 
-            ApplyGameGroupFilter();
-        }
+            Settings.Instance.GroupGameLibrariesTogether = value;
+            OnPropertyChanged();
 
+            // Through the collection rather than by swapping the source: the grouped branch is what
+            // re-assigns the per-library filters, and nothing else refreshes them.
+            CurrentCollectionView = null;
+            ReapplyFilters();
+        }
     }
 
-    void ApplyGameGroupFilter()
+    [RelayCommand]
+    void ToggleGroupByLibrary()
     {
-        // TODO: Remove weird hack which otherwise causes MainGridView_SelectionChanged to fire when changing MainGridView.ItemsSource.
-        //gameGridPage.MainGridView.SelectionChanged -= MainGridView_SelectionChanged;
-
-        //MainGridView.ItemsSource = null;
-        CurrentCollectionView = null;
-        ShowGameCollection();
+        IsGroupedByLibrary = !IsGroupedByLibrary;
     }
 
     /// <summary>
@@ -666,9 +675,16 @@ public partial class GameGridPageModel : ObservableObject
     [RelayCommand]
     void UpdateAllGamesButton()
     {
-        // The same games the button counted. While a dll filter is on this is the narrowed set, so
-        // "Review 3 updates" opens onto those three rather than everything in the library.
-        var pendingUpdates = PendingDllUpdate.ForGames(GamesOnThePage());
+        // The same games the button counted, through the same predicate that counted them. Not
+        // merely the same list: the button's number is the count of games matching HasUpdate, so
+        // anything that rule excludes — a hidden game, one marked leave alone — has to be excluded
+        // here too or the sheet opens holding rows the button never counted.
+        var hideNonDLSSGames = Settings.Instance.HideNonDLSSGames;
+        var behind = GamesOnThePage()
+            .Where(x => GameFilters.Matches(x, GameFilter.HasUpdate, hideNonDLSSGames))
+            .ToList();
+
+        var pendingUpdates = PendingDllUpdate.ForGames(behind);
         if (pendingUpdates.Count == 0)
         {
             return;

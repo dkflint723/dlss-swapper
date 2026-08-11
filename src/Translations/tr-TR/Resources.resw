@@ -325,9 +325,6 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>Aynı kütüphanedeki oyunları birlikte grupla</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>Gruplama</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Kapak resmi için yalnızca tek bir dosya sürükleyebilirsiniz</value>
   </data>
@@ -397,9 +394,6 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
   <data name="GamesPage_ReloadingGame" xml:space="preserve">
     <value>Oyun yeniden yükleniyor</value>
   </data>
-  <data name="GamesPage_ShowHiddenGamesText" xml:space="preserve">
-    <value>Gizli oyunları göster (varsayılan olarak kapalı)</value>
-  </data>
   <data name="GamesPage_Title" xml:space="preserve">
     <value>Oyunlar</value>
   </data>
@@ -454,9 +448,6 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
   <data name="General_Failed" xml:space="preserve">
     <value>Başarısız</value>
   </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>Filtrele</value>
-  </data>
   <data name="General_Help" xml:space="preserve">
     <value>Yardım</value>
   </data>
@@ -495,9 +486,6 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(isteğe bağlı)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>Seçenekler</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>Yayınla</value>

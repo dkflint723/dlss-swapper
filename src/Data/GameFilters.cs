@@ -32,6 +32,15 @@ public static class GameFilters
             return false;
         }
 
+        // Here rather than in the view's predicate, which is where it used to live and nowhere
+        // else: "All games" counted hidden games and then did not show them. Steam and Xbox mark
+        // their own non-game entries hidden on sight, so that gap was widest on the libraries most
+        // people have.
+        if (filter != GameFilter.Hidden && game.IsHidden == true)
+        {
+            return false;
+        }
+
         return filter switch
         {
             GameFilter.HasUpdate => HasUpdate(game),

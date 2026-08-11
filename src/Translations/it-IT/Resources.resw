@@ -335,9 +335,6 @@ Per verificare quale preset stia venendo utilizzato, abilita l'overlay di DLSS.<
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>Raggruppa i giochi della stessa libreria</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>Raggruppa</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>È possibile trascinare solo un singolo file di copertina</value>
   </data>
@@ -412,9 +409,6 @@ Se hai verificato queste opzioni e il tuo gioco continua a non essere visualizza
   <data name="GamesPage_ReloadingGame" xml:space="preserve">
     <value>Ricaricando il gioco</value>
   </data>
-  <data name="GamesPage_ShowHiddenGamesText" xml:space="preserve">
-    <value>Mostra giochi nascosti (disattivato per impostazione predefinita all'avvio)</value>
-  </data>
   <data name="GamesPage_Title" xml:space="preserve">
     <value>Giochi</value>
   </data>
@@ -468,9 +462,6 @@ Se hai verificato queste opzioni e il tuo gioco continua a non essere visualizza
   </data>
   <data name="General_Failed" xml:space="preserve">
     <value>Fallito</value>
-  </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>Filtro</value>
   </data>
   <data name="General_Help" xml:space="preserve">
     <value>Aiuto</value>
@@ -540,9 +531,6 @@ Se hai verificato queste opzioni e il tuo gioco continua a non essere visualizza
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(facoltativo)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>Opzioni</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>Pubblica</value>

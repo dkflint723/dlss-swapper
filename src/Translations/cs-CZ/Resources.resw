@@ -352,9 +352,6 @@ Chcete-li ověřit, který preset se používá, povolte prosím indikátor DLSS
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>Seskupit společně hry z jedné knihovny</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>Seskupení</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Pro vytvoření obalu je možné přetáhnout pouze jeden soubor</value>
   </data>
@@ -429,9 +426,6 @@ Pokud jste tyto možnosti zkontrolovali a hra se stále nezobrazuje, může se j
   <data name="GamesPage_ReloadingGame" xml:space="preserve">
     <value>Obnovuji hru</value>
   </data>
-  <data name="GamesPage_ShowHiddenGamesText" xml:space="preserve">
-    <value>Zobrazit skryté hry (výchozí nastavení při spuštění je "vypnuto")</value>
-  </data>
   <data name="GamesPage_Title" xml:space="preserve">
     <value>Hry</value>
   </data>
@@ -485,9 +479,6 @@ Pokud jste tyto možnosti zkontrolovali a hra se stále nezobrazuje, může se j
   </data>
   <data name="General_Failed" xml:space="preserve">
     <value>Selhalo</value>
-  </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>Filtr</value>
   </data>
   <data name="General_Help" xml:space="preserve">
     <value>Nápověda</value>
@@ -566,9 +557,6 @@ Pokud jste tyto možnosti zkontrolovali a hra se stále nezobrazuje, může se j
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(volitelné)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>Nastavení</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>Publikovat</value>

@@ -352,9 +352,6 @@
   <data name="GamesPage_GroupGamesFromTheSameLibraryTogether" xml:space="preserve">
     <value>Группировать игры из одной библиотеки вместе</value>
   </data>
-  <data name="GamesPage_Grouping" xml:space="preserve">
-    <value>Группировка</value>
-  </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Вы можете перетащить только один файл для обложки</value>
   </data>
@@ -429,9 +426,6 @@
   <data name="GamesPage_ReloadingGame" xml:space="preserve">
     <value>Перезагрузка игры</value>
   </data>
-  <data name="GamesPage_ShowHiddenGamesText" xml:space="preserve">
-    <value>Показать скрытые игры (по умолчанию отключено при запуске)</value>
-  </data>
   <data name="GamesPage_Title" xml:space="preserve">
     <value>Игры</value>
   </data>
@@ -485,9 +479,6 @@
   </data>
   <data name="General_Failed" xml:space="preserve">
     <value>Сбой</value>
-  </data>
-  <data name="General_Filter" xml:space="preserve">
-    <value>Фильтр</value>
   </data>
   <data name="General_Help" xml:space="preserve">
     <value>Помощь</value>
@@ -569,9 +560,6 @@
   </data>
   <data name="General_Optional" xml:space="preserve">
     <value>(необязательно)</value>
-  </data>
-  <data name="General_Options" xml:space="preserve">
-    <value>Опции</value>
   </data>
   <data name="General_Publish" xml:space="preserve">
     <value>Oпубликовать</value>

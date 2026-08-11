@@ -410,11 +410,6 @@
                         <FontIcon Glyph="&#xE946;" />
                     </AppBarButton.Content>
                 </AppBarButton>
-                <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.UpdateAllGamesText, Mode=OneWay}" Command="{x:Bind ViewModel.UpdateAllGamesButtonCommand}" IsEnabled="{x:Bind ViewModel.IsGameListLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
-                    <AppBarButton.Content>
-                        <FontIcon Glyph="&#xE896;" />
-                    </AppBarButton.Content>
-                </AppBarButton>
                 <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.AddGameText, Mode=OneWay}" Command="{x:Bind ViewModel.AddManualGameButtonCommand}" IsEnabled="{x:Bind ViewModel.IsGameListLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
                     <AppBarButton.Content>
                         <FontIcon Glyph="&#xE710;" />
@@ -425,11 +420,12 @@
                         <FontIcon Glyph="&#xE72C;" />
                     </AppBarButton.Content>
                 </AppBarButton>
-                <AppBarButton Icon="Filter" Label="{x:Bind ViewModel.TranslationProperties.FilterText, Mode=OneWay}" Command="{x:Bind ViewModel.FilterGamesButtonCommand}" IsEnabled="{x:Bind ViewModel.IsGameListLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
-                    <AppBarButton.Content>
-                        <FontIcon Glyph="&#xE71C;" />
-                    </AppBarButton.Content>
-                </AppBarButton>
+                <!--
+                    Nothing in this toolbar decides which games are shown any more. There was a
+                    "Filter" button holding two controls: one was a worse copy of the Hidden tab,
+                    and the other was this — how the same games are arranged, which is a view
+                    option and belongs here beside grid and list.
+                -->
                 <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.ViewTypeText, Mode=OneWay}" Content="{x:Bind ViewModel.GameGridViewIcon, Mode=OneWay}">
                     <AppBarButton.Flyout>
                         <!--
@@ -441,8 +437,35 @@
                             than of the presenter, so it cannot be set once in a Style.
                         -->
                         <MenuFlyout ShouldConstrainToRootBounds="True" Placement="Bottom">
-                            <MenuFlyoutItem Text="{x:Bind ViewModel.TranslationProperties.GridViewText, Mode=OneWay}" Command="{x:Bind ViewModel.ChangeGameGridViewCommand}" CommandParameter="{x:Bind pages:GameGridViewType.GridView}" />
-                            <MenuFlyoutItem Text="{x:Bind ViewModel.TranslationProperties.ListViewText, Mode=OneWay}" Command="{x:Bind ViewModel.ChangeGameGridViewCommand}" CommandParameter="{x:Bind pages:GameGridViewType.ListView}" />
+                            <!--
+                                Radio items rather than plain ones, so an open menu says which view
+                                is current. It was readable only from the button's glyph, which
+                                means knowing the glyphs already.
+                            -->
+                            <RadioMenuFlyoutItem
+                                GroupName="GameView"
+                                Text="{x:Bind ViewModel.TranslationProperties.GridViewText, Mode=OneWay}"
+                                IsChecked="{x:Bind ViewModel.IsGridView, Mode=OneWay}"
+                                Command="{x:Bind ViewModel.ChangeGameGridViewCommand}"
+                                CommandParameter="{x:Bind pages:GameGridViewType.GridView}" />
+                            <RadioMenuFlyoutItem
+                                GroupName="GameView"
+                                Text="{x:Bind ViewModel.TranslationProperties.ListViewText, Mode=OneWay}"
+                                IsChecked="{x:Bind ViewModel.IsListView, Mode=OneWay}"
+                                Command="{x:Bind ViewModel.ChangeGameGridViewCommand}"
+                                CommandParameter="{x:Bind pages:GameGridViewType.ListView}" />
+
+                            <MenuFlyoutSeparator />
+
+                            <!--
+                                Checked rather than two items, so the menu states the setting rather
+                                than only offering to change it. Applies on click; behind the old
+                                dialog it needed an Apply.
+                            -->
+                            <ToggleMenuFlyoutItem
+                                Text="{x:Bind ViewModel.TranslationProperties.GroupByLibraryText, Mode=OneWay}"
+                                IsChecked="{x:Bind ViewModel.IsGroupedByLibrary, Mode=OneWay}"
+                                Command="{x:Bind ViewModel.ToggleGroupByLibraryCommand}" />
                         </MenuFlyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>

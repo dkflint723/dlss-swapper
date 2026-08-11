@@ -36,9 +36,6 @@ internal partial class GameManager : ObservableObject
 
     List<UnknownGameAsset> _unknownGameAssets { get; } = new List<UnknownGameAsset>();
 
-    [ObservableProperty]
-    public partial bool ShowHiddenGames { get; set; } = false;
-
     object gameLock = new object();
     object unknownGameAsseetLock = new object();
 
@@ -64,13 +61,8 @@ internal partial class GameManager : ObservableObject
     /// </remarks>
     bool PassesSharedFilters(Game game, bool hideNonDLSSGames, string? filterText)
     {
-        // The hidden tab is the one place hidden games are meant to be visible, so it overrides the
-        // setting rather than fighting it.
-        if (ActiveFilter != GameFilter.Hidden && ShowHiddenGames == false && game.IsHidden == true)
-        {
-            return false;
-        }
-
+        // Hidden games are GameFilters' business now, along with the counts. They were excluded
+        // here and only here, which is how "All games" came to count games it would not show.
         if (GameFilters.Matches(game, ActiveFilter, hideNonDLSSGames) == false)
         {
             return false;
@@ -163,7 +155,6 @@ internal partial class GameManager : ObservableObject
 
         FavouriteGamesView = new AdvancedCollectionView(_allGames, true);
         FavouriteGamesView.Filter = GetPredicateForFavouriteGames(Settings.Instance.HideNonDLSSGames);
-        FavouriteGamesView.ObserveFilterProperty(nameof(ShowHiddenGames));
         FavouriteGamesView.ObserveFilterProperty(nameof(Game.IsFavourite));
         FavouriteGamesView.ObserveFilterProperty(nameof(Game.HasSwappableItems));
         FavouriteGamesView.ObserveFilterProperty(nameof(Game.IsHidden));
@@ -171,7 +162,6 @@ internal partial class GameManager : ObservableObject
 
         AllGamesView = new AdvancedCollectionView(_allGames, true);
         AllGamesView.Filter = GetPredicateForAllGames(Settings.Instance.HideNonDLSSGames);
-        AllGamesView.ObserveFilterProperty(nameof(ShowHiddenGames));
         AllGamesView.ObserveFilterProperty(nameof(Game.HasSwappableItems));
         AllGamesView.ObserveFilterProperty(nameof(Game.IsHidden));
         AllGamesView.SortDescriptions.Add(new SortDescription(nameof(Game.Title), SortDirection.Ascending));
@@ -199,7 +189,6 @@ internal partial class GameManager : ObservableObject
             var gameView = new AdvancedCollectionView(_allGames, true);
             gameView.Filter = GetPredicateForLibraryGames(gameLibraryEnum, Settings.Instance.HideNonDLSSGames);
             gameView.ObserveFilterProperty(nameof(Game.HasSwappableItems));
-            gameView.ObserveFilterProperty(nameof(ShowHiddenGames));
             gameView.ObserveFilterProperty(nameof(Game.IsHidden));
             gameView.SortDescriptions.Add(new SortDescription(nameof(Game.Title), SortDirection.Ascending));
 
