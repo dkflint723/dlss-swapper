@@ -144,6 +144,38 @@
   <data name="SettingsPage_HideNonDLSSGamesInfo" xml:space="preserve">
     <value>Hides games with no DLSS, FSR or XeSS file in their install folder. This tool cannot add upscaling to a game that does not already support it, so there is nothing to swap in those games.</value>
   </data>
+  <data name="GamePage_NotPresentOneTemplate" xml:space="preserve">
+    <value>1 upscaler not in this game — {0}</value>
+    <comment>The singular of GamePage_NotPresentTemplate, which rendered "1 upscalers".</comment>
+  </data>
+  <data name="GamePage_Row_ClauseSeparator" xml:space="preserve">
+    <value> — </value>
+    <comment>Joins the clauses of an upscaler row's sentence, as in "v310.7 installed — no saved original".</comment>
+  </data>
+  <data name="GamePage_Row_NothingInstalled" xml:space="preserve">
+    <value>Nothing installed</value>
+  </data>
+  <data name="GamePage_Row_InstalledNewestTemplate" xml:space="preserve">
+    <value>{0} installed, which is the newest</value>
+    <comment>{0} is the installed version, eg. v310.7</comment>
+  </data>
+  <data name="GamePage_Row_BehindTemplate" xml:space="preserve">
+    <value>{0} installed, {1} is available</value>
+    <comment>{0} is the installed version, {1} the newest available</comment>
+  </data>
+  <data name="GamePage_Row_InstalledLeftAloneTemplate" xml:space="preserve">
+    <value>{0} installed, and this game is set to be left alone</value>
+    <comment>{0} is the installed version</comment>
+  </data>
+  <data name="GamePage_Row_MultipleCopies" xml:space="preserve">
+    <value>found in more than one folder</value>
+  </data>
+  <data name="GamePage_Row_NoSavedOriginal" xml:space="preserve">
+    <value>no saved original</value>
+  </data>
+  <data name="GamePage_Row_Choose" xml:space="preserve">
+    <value>Choose…</value>
+  </data>
   <data name="GamePage_NotPresentTemplate" xml:space="preserve">
     <value>{0} upscalers not in this game — {1}</value>
     <comment>One line replacing nine controls that would each have read "Not found".</comment>

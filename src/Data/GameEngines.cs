@@ -63,11 +63,18 @@ public static class GameEngines
             return string.Empty;
         }
 
-        var names = absent.Select(x => DLLManager.Instance.GetAssetTypeName(x));
+        var names = string.Join(", ", absent.Select(x => DLLManager.Instance.GetAssetTypeName(x)));
+
+        // Its own sentence rather than a count and a plural s, because the template rendered
+        // "1 upscalers not in this game" for a game missing exactly one.
+        if (absent.Count == 1)
+        {
+            return ResourceHelper.GetFormattedResourceTemplate("GamePage_NotPresentOneTemplate", names);
+        }
 
         return ResourceHelper.GetFormattedResourceTemplate(
             "GamePage_NotPresentTemplate",
             absent.Count,
-            string.Join(", ", names));
+            names);
     }
 }
