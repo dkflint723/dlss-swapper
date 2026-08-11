@@ -74,7 +74,10 @@ read than the `.dc.html` mockup.
   sentence, engines and button. Two controls, not the one the old note called for: the card floats
   the button over the cover and the row keeps it in line, so they cannot share a parent.
 - **Launcher sections fold**, persisted per library in `GameLibrarySettings.IsCollapsed`. A search,
-  or any tab but "All games", suspends folding so it can look inside folded sections.
+  or any tab but "All games", suspends folding so it can look inside folded sections. The heading is
+  brought back into view after a toggle: folding removes items rather than hiding them, so the
+  content gets shorter and the scroll viewer clamps, and unfolding put the games back above where
+  the view now sat — they arrived off the top of the screen.
 - **The update preview sheet** (README §3). `PendingDllUpdate.ForGames` builds the rows and
   `DllUpdateRunner.UpdateSelectedAsync` runs exactly those, so the list and the run cannot diverge.
   `UpdatePreviewModel` holds no controls, so its counts and copy are covered by tests.

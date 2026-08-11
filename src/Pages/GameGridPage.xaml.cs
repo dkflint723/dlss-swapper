@@ -230,11 +230,31 @@ public sealed partial class GameGridPage : Page
         args.Handled = true;
     }
 
+    /// <summary>
+    /// Folds or unfolds a launcher section, and keeps its heading where it was.
+    /// </summary>
+    /// <remarks>
+    /// Folding removes the games from the view rather than hiding them, because a GridView sizes
+    /// every cell from the first item it measures and hiding rows collapsed the whole grid. The cost
+    /// is that the content gets shorter, so the scroll viewer clamps how far down it is; unfolding
+    /// puts the games back above where it now sits, and they arrive off the top of the screen.
+    ///
+    /// So the heading is brought back into view afterwards. No alignment ratio, which means the
+    /// least scrolling that works: a heading still on screen does not move at all, and one that has
+    /// gone off the top comes back just far enough to see. Queued rather than called here, because
+    /// at this point the list has not been laid out again and the heading's new position does not
+    /// exist yet.
+    /// </remarks>
     void GroupHeader_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement { Tag: GameGroup group })
+        if (sender is FrameworkElement { Tag: GameGroup group } header)
         {
             group.ToggleExpanded();
+
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                header.StartBringIntoView(new BringIntoViewOptions() { AnimationDesired = false });
+            });
         }
     }
 }
