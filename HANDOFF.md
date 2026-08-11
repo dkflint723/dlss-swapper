@@ -111,14 +111,9 @@ surface and the leak with it); one row per present upscaler in `SettingsRow` sha
 small host interface instead of its control.
 
 
-1. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
-   accent rule down its left edge, rather than in a gradient over it. **Left for the user to call**,
-   not because it is hard: it is taste, and picking quietly is the wrong way to settle it.
-2. The preset dropdowns disable themselves when NVAPI is unsupported and say nothing about why. The
-   error button beside the first one only appears for a permission problem, not for "this is not an
-   NVIDIA machine". A disabled control with no reason is the same failure the rest of this work has
-   been removing.
-3. **Nothing stops dead keys coming back.** The sweep below was a one-off script, not a test. A test
+**Also still open, unrelated to the game page:**
+
+- **Nothing stops dead keys coming back.** The sweep below was a one-off script, not a test. A test
    cannot easily do it: it would have to read the `.resw` from the source tree, and the test host
    only has the compiled `resources.pri`, where duplicates have already collapsed. Re-run the sweep
    by hand after any block of work that deletes a page. The method is in the commit message for the
