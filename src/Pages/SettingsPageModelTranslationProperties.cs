@@ -63,6 +63,9 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string OpenTranslationToolboxText => ResourceHelper.GetString("SettingsPage_OpenTranslationToolbox");
 
+    [TranslationProperty]
+    public string OpenTranslationToolboxDescText => ResourceHelper.GetString("SettingsPage_OpenTranslationToolbox_Desc");
+
     /// <summary>For a button whose row already names what it opens.</summary>
     [TranslationProperty]
     public string OpenText => ResourceHelper.GetString("General_Open");
@@ -181,6 +184,16 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string LoggingText => ResourceHelper.GetString("SettingsPage_Logging");
 
+    /// <summary>
+    /// Doing double duty as the answer to "what does Verbose mean". The levels are a bare list of
+    /// six one-word labels with nowhere to explain any of them: <see cref="Data.ComboBoxOption"/>
+    /// carries only a label and a value, and the dropdown binds DisplayMemberPath to the label.
+    /// Naming the two ends of the range in the row's own sentence costs nothing and is the only
+    /// place a user is told what they are choosing between.
+    /// </summary>
+    [TranslationProperty]
+    public string LoggingDescText => ResourceHelper.GetString("SettingsPage_Logging_Desc");
+
     [TranslationProperty]
     public string AboutText => ResourceHelper.GetString("SettingsPage_About");
 
@@ -194,6 +207,9 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string LanguageText => ResourceHelper.GetString("SettingsPage_Language");
 
     [TranslationProperty]
+    public string LanguageDescText => ResourceHelper.GetString("SettingsPage_Language_Desc");
+
+    [TranslationProperty]
     public string DLSSPresetInfoTooltipText => ResourceHelper.GetString("GamePage_DLSSPresetInfo_Tooltip");
 
     [TranslationProperty]
@@ -204,6 +220,9 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
 
     [TranslationProperty]
     public string NetworkingText => ResourceHelper.GetString("SettingsPage_Networking");
+
+    [TranslationProperty]
+    public string NetworkingDescText => ResourceHelper.GetString("SettingsPage_Networking_Desc");
 
     [TranslationProperty]
     public string ProxySettingsText => ResourceHelper.GetString("SettingsPage_ProxySettings");

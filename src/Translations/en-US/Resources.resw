@@ -1404,6 +1404,9 @@ Because of this we recommend using caution for multiplayer games.</value>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Language</value>
   </data>
+  <data name="SettingsPage_Language_Desc" xml:space="preserve">
+    <value>The language the app's own text is shown in. It changes as soon as you pick one; nothing needs restarting.</value>
+  </data>
   <data name="SettingsPage_LibraryFound" xml:space="preserve">
     <value>Found on this PC</value>
   </data>
@@ -1412,6 +1415,9 @@ Because of this we recommend using caution for multiplayer games.</value>
   </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Logging</value>
+  </data>
+  <data name="SettingsPage_Logging_Desc" xml:space="preserve">
+    <value>How much detail the app records about what it is doing. Verbose keeps everything and Error keeps only failures, so switch to Verbose before reproducing a problem you want to report.</value>
   </data>
   <data name="SettingsPage_Logging_Debug" xml:space="preserve">
     <value>Debug</value>
@@ -1434,6 +1440,9 @@ Because of this we recommend using caution for multiplayer games.</value>
   <data name="SettingsPage_Networking" xml:space="preserve">
     <value>Networking</value>
   </data>
+  <data name="SettingsPage_Networking_Desc" xml:space="preserve">
+    <value>Sends this app's own downloads and update checks through a proxy server, for networks that need one to reach the internet. It does not affect your games or the rest of Windows.</value>
+  </data>
   <data name="SettingsPage_NoNewUpdatesAvailable" xml:space="preserve">
     <value>No new updates are available.</value>
   </data>
@@ -1448,6 +1457,9 @@ Because of this we recommend using caution for multiplayer games.</value>
   </data>
   <data name="SettingsPage_OpenTranslationToolbox" xml:space="preserve">
     <value>Open translation toolbox</value>
+  </data>
+  <data name="SettingsPage_OpenTranslationToolbox_Desc" xml:space="preserve">
+    <value>Opens a window for translating the app's text into another language and saving it to a file you can send in.</value>
   </data>
   <data name="SettingsPage_PathAlreadyIgnored" xml:space="preserve">
     <value>The path {0} is already ignored.</value>

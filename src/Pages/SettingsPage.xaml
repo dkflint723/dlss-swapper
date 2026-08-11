@@ -258,31 +258,46 @@
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
-                    <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.NetworkingText, Mode=OneWay}">
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.NetworkingText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.NetworkingDescText, Mode=OneWay}">
                         <usercontrols:SettingsRow.Control>
                             <Button Content="{x:Bind ViewModel.TranslationProperties.ProxySettingsText, Mode=OneWay}" Command="{x:Bind ViewModel.OpenProxySettingsCommand}" />
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
-                    <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.LoggingText, Mode=OneWay}">
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.LoggingText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.LoggingDescText, Mode=OneWay}">
                         <usercontrols:SettingsRow.Control>
                             <ComboBox x:Name="LoggingComboBox" ItemsSource="{x:Bind ViewModel.LoggingLevelOptions}" DisplayMemberPath="Label" SelectedItem="{x:Bind ViewModel.LoggingLevel, Mode=TwoWay}" />
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
-                    <!-- Kept out of the row above because it is a link, not a description of the setting. -->
-                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,8,0,0" Foreground="{ThemeResource DsTextTertiaryBrush}">
-                        <Run Text="{x:Bind ViewModel.TranslationProperties.YourCurrentLogfileText, Mode=OneWay}" /><Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenLogFileCommand}"><Run Text="{x:Bind ViewModel.CurrentLogPath}" /></Hyperlink>.
+                    <!--
+                        Still its own block rather than the row's description, because a description
+                        is a string and this is a link. It hugs the Logging row above and keeps its
+                        distance from the Language row below, so it reads as belonging to logging.
+                        OneWay, not OneTime: the page is cached for the process lifetime, and the
+                        path carries today's date, so an app left open overnight named yesterday's
+                        file.
+                    -->
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,6,0,14" Foreground="{ThemeResource DsTextTertiaryBrush}">
+                        <Run Text="{x:Bind ViewModel.TranslationProperties.YourCurrentLogfileText, Mode=OneWay}" /><Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenLogFileCommand}"><Run Text="{x:Bind ViewModel.CurrentLogPath, Mode=OneWay}" /></Hyperlink>.
                     </TextBlock>
 
-                    <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.LanguageText, Mode=OneWay}">
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.LanguageText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.LanguageDescText, Mode=OneWay}">
                         <usercontrols:SettingsRow.Control>
                             <ComboBox x:Name="LanguageComboBox" ItemsSource="{x:Bind ViewModel.Languages}" DisplayMemberPath="Value" SelectedItem="{x:Bind ViewModel.SelectedLanguage, Mode=TwoWay}" />
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
                     <!-- The row names what the button opens, so the button does not have to say it again. -->
-                    <usercontrols:SettingsRow Title="{x:Bind ViewModel.TranslationProperties.OpenTranslationToolboxText, Mode=OneWay}">
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.OpenTranslationToolboxText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.OpenTranslationToolboxDescText, Mode=OneWay}">
                         <usercontrols:SettingsRow.Control>
                             <Button Content="{x:Bind ViewModel.TranslationProperties.OpenText, Mode=OneWay}" Command="{x:Bind ViewModel.OpenTranslationToolboxCommand}" />
                         </usercontrols:SettingsRow.Control>
