@@ -106,6 +106,57 @@ public partial class GameControlModel : ObservableObject
     [ObservableProperty]
     public partial Visibility CanChangeDllsVisibility { get; set; } = Visibility.Visible;
 
+    /// <summary>
+    /// Shown only for libraries this app can actually start a game through.
+    /// </summary>
+    /// <remarks>
+    /// The same reasoning as the note above, applied to the button that had been ignoring it:
+    /// Launch was always shown, and for a library that cannot be launched from its only possible
+    /// outcome was an error dialog saying so. <see cref="GameManager.CanLaunchGame"/> knows the
+    /// answer before the click.
+    /// </remarks>
+    public Visibility CanLaunchVisibility => GameManager.Instance.CanLaunchGame(Game)
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
+    /// <summary>
+    /// Shown only when there is something to update.
+    /// </summary>
+    /// <remarks>
+    /// It used to be offered whatever the game's state, and on an up-to-date game it did nothing
+    /// and said nothing.
+    /// </remarks>
+    public Visibility HasUpdatesVisibility => CanChangeDllsVisibility == Visibility.Visible
+        && Game.OutdatedAssetTypes.Count > 0
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
+    /// <summary>Reads as "Never update this game", checked when it is set.</summary>
+    public bool SkipUpdates => Game.SkipUpdates;
+
+    /// <summary>
+    /// The setting that greys out every row on this page, finally reachable from it.
+    /// </summary>
+    /// <remarks>
+    /// It was only ever settable by right-clicking the game on another page, which the lock's own
+    /// tooltip had to tell people to go and do.
+    /// </remarks>
+    [RelayCommand]
+    async Task ToggleSkipUpdatesAsync()
+    {
+        Game.SkipUpdates = Game.SkipUpdates == false;
+        await Game.SaveToDatabaseAsync();
+
+        CanChangeDllsVisibility = Game.SkipUpdates ? Visibility.Collapsed : Visibility.Visible;
+
+        OnPropertyChanged(nameof(SkipUpdates));
+        OnPropertyChanged(nameof(HasUpdatesVisibility));
+
+        // The Hidden and "Have an update" counts are taken from the library, and this changes what
+        // one of them contains.
+        App.CurrentApp.MainWindow?.GameGridPage?.ViewModel.RefreshFilterTabs();
+    }
+
     /// <summary>Names the upscalers this game does not have, in place of eight empty pickers.</summary>
     [ObservableProperty]
     public partial string NotPresentSummary { get; set; } = string.Empty;

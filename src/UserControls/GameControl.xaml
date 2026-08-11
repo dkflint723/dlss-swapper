@@ -40,52 +40,98 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" XYFocusKeyboardNavigation="Enabled" Padding="{ThemeResource ContentDialogPadding}" Background="{TemplateBinding Background}" Spacing="8">
 
 
-                <Button Command="{Binding LaunchCommand}" ToolTipService.ToolTip="{Binding TranslationProperties.LaunchText, Mode=OneWay}">
-                    <Button.Content>
-                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE768;" />
-                    </Button.Content>
-                </Button>
+                <!--
+                    Eight unlabelled glyphs became three labelled actions and one named menu.
+                    Every one of the eight was a tooltip away from being unreadable, and a tooltip
+                    is not a name: it never reaches a screen reader and does not appear on keyboard
+                    focus. Two of them could also only ever refuse — Launch on a library that
+                    cannot be launched from, and Update all on a game with nothing to update — so
+                    both now appear only when they can act.
+                -->
+                <Button
+                    Style="{ThemeResource AccentButtonStyle}"
+                    Content="{Binding TranslationProperties.UpdateAllDllsText, Mode=OneWay}"
+                    Command="{Binding UpdateAllDllsCommand}"
+                    Visibility="{Binding HasUpdatesVisibility}" />
 
-                <Button ToolTipService.ToolTip="{Binding TranslationProperties.NotesText, Mode=OneWay}" Command="{Binding EditNotesCommand}">
-                    <Button.Content>
-                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE70B;"/>
-                    </Button.Content>
-                </Button>
+                <Button
+                    Content="{Binding TranslationProperties.LaunchText, Mode=OneWay}"
+                    Command="{Binding LaunchCommand}"
+                    Visibility="{Binding CanLaunchVisibility}" />
 
-                <Button ToolTipService.ToolTip="{Binding TranslationProperties.HistoryText, Mode=OneWay}" Command="{Binding ViewHistoryCommand}">
-                    <Button.Content>
-                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE81C;"/>
-                    </Button.Content>
-                </Button>
+                <Button
+                    Content="{Binding TranslationProperties.OpenFolderText, Mode=OneWay}"
+                    Command="{Binding OpenInstallPathCommand}" />
 
-                <Button ToolTipService.ToolTip="{Binding TranslationProperties.ResetAllText, Mode=OneWay}" Command="{Binding ResetAllCommand}" Visibility="{Binding CanChangeDllsVisibility}">
-                    <Button.Content>
-                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xED62;"/>
-                    </Button.Content>
-                </Button>
+                <Button
+                    Width="32"
+                    Padding="0"
+                    ToolTipService.ToolTip="{Binding TranslationProperties.MoreActionsText, Mode=OneWay}"
+                    AutomationProperties.Name="{Binding TranslationProperties.MoreActionsText, Mode=OneWay}">
+                    <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE712;" />
+                    <Button.Flyout>
+                        <MenuFlyout ShouldConstrainToRootBounds="True">
+                            <!--
+                                Checked rather than two items, so the menu states the setting rather
+                                than only offering to change it. This is the one that greys out
+                                every row on this page, and until now it could only be set by
+                                right-clicking the game on another page — which the lock's own
+                                tooltip had to tell people to go and do.
+                            -->
+                            <ToggleMenuFlyoutItem
+                                Text="{Binding TranslationProperties.NeverUpdateThisGameText, Mode=OneWay}"
+                                IsChecked="{Binding SkipUpdates, Mode=OneWay}"
+                                Command="{Binding ToggleSkipUpdatesCommand}" />
 
-                <Button Command="{Binding FavouriteCommand}" ToolTipService.ToolTip="{Binding Game.IsFavourite, Converter={StaticResource FavouriteTextConverter}}">
-                    <Button.Content>
-                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="{Binding Game.IsFavourite, Converter={StaticResource FavouriteGlyphConverter}}"/>
-                    </Button.Content>
-                </Button>
+                            <ToggleMenuFlyoutItem
+                                Text="{Binding TranslationProperties.FavouriteText, Mode=OneWay}"
+                                IsChecked="{Binding Game.IsFavourite, Mode=OneWay}"
+                                Command="{Binding FavouriteCommand}" />
 
-                <Button Command="{Binding UpdateAllDllsCommand}" ToolTipService.ToolTip="{Binding TranslationProperties.UpdateAllDllsText, Mode=OneWay}" Visibility="{Binding CanChangeDllsVisibility}">
-                    <Button.Content>
-                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE896;"/>
-                    </Button.Content>
-                </Button>
+                            <ToggleMenuFlyoutItem
+                                Text="{Binding TranslationProperties.HideThisGameText, Mode=OneWay}"
+                                IsChecked="{Binding Game.IsHidden, Mode=OneWay}"
+                                Command="{Binding ShowHideGameCommand}" />
 
-                <Button Command="{Binding ReloadGameCommand}" ToolTipService.ToolTip="{Binding TranslationProperties.ReloadText, Mode=OneWay}">
-                    <Button.Content>
-                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE72C;"/>
-                    </Button.Content>
-                </Button>
+                            <MenuFlyoutSeparator />
 
-                <Button Command="{Binding ShowHideGameCommand}" ToolTipService.ToolTip="{Binding Game.IsHidden, Mode=OneWay, Converter={StaticResource HideGameTextConverter}}">
-                    <Button.Content>
-                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="{Binding Game.IsHidden, Mode=OneWay, Converter={StaticResource HideGameGlyphConverter}}" />
-                    </Button.Content>
+                            <MenuFlyoutItem
+                                Text="{Binding TranslationProperties.NotesText, Mode=OneWay}"
+                                Command="{Binding EditNotesCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE70B;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem
+                                Text="{Binding TranslationProperties.HistoryText, Mode=OneWay}"
+                                Command="{Binding ViewHistoryCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE81C;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem
+                                Text="{Binding TranslationProperties.ReloadText, Mode=OneWay}"
+                                Command="{Binding ReloadGameCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE72C;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <!-- Last, and behind a separator: the only one that undoes anything. -->
+                            <MenuFlyoutSeparator Visibility="{Binding CanChangeDllsVisibility}" />
+
+                            <MenuFlyoutItem
+                                Text="{Binding TranslationProperties.ResetAllText, Mode=OneWay}"
+                                Visibility="{Binding CanChangeDllsVisibility}"
+                                Command="{Binding ResetAllCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xED62;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
                 </Button>
 
             </StackPanel>

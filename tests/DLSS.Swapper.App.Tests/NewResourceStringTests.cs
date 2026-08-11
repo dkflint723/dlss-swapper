@@ -48,6 +48,8 @@ public class NewResourceStringTests
     [InlineData("GamePage_Row_MultipleCopies")]
     [InlineData("GamePage_Row_NoSavedOriginal")]
     [InlineData("GamePage_Row_Choose")]
+    [InlineData("GamePage_Favourite")]
+    [InlineData("GamePage_HideThisGame")]
     [InlineData("Upscalers_Search")]
     [InlineData("Upscalers_SearchHint")]
     [InlineData("Upscalers_ClearSearch")]

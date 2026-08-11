@@ -48,6 +48,22 @@ public class GameControlModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string LaunchText => ResourceHelper.GetString("GamePage_Launch");
 
+    /// <summary>
+    /// The three that were glyph-only toggles. Each states the setting rather than the click, so
+    /// the menu says what is true and the check mark says whether it is on.
+    /// </summary>
+    [TranslationProperty]
+    public string FavouriteText => ResourceHelper.GetString("GamePage_Favourite");
+
+    [TranslationProperty]
+    public string HideThisGameText => ResourceHelper.GetString("GamePage_HideThisGame");
+
+    [TranslationProperty]
+    public string NeverUpdateThisGameText => ResourceHelper.GetString("GamesPage_Action_TurnUpdatesOff");
+
+    [TranslationProperty]
+    public string MoreActionsText => ResourceHelper.GetString("General_MoreActions");
+
     [TranslationProperty]
     public string DLSSPresetInfoTooltipText => ResourceHelper.GetString("GamePage_DLSSPresetInfo_Tooltip");
 

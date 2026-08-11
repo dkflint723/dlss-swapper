@@ -173,6 +173,13 @@
   <data name="GamePage_Row_NoSavedOriginal" xml:space="preserve">
     <value>no saved original</value>
   </data>
+  <data name="GamePage_Favourite" xml:space="preserve">
+    <value>Favourite</value>
+    <comment>A checked menu item stating the setting, replacing a star icon that only implied it.</comment>
+  </data>
+  <data name="GamePage_HideThisGame" xml:space="preserve">
+    <value>Hide this game</value>
+  </data>
   <data name="GamePage_Row_Choose" xml:space="preserve">
     <value>Choose…</value>
   </data>
