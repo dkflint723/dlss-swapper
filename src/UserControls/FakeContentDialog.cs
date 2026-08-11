@@ -311,9 +311,32 @@ public class FakeContentDialog : Control
 
         }
 
+        RemoveFromRoot();
+
         if (taskCompletionSource.TrySetResult(contentDialogResult) == false)
         {
 
+        }
+    }
+
+    /// <summary>
+    /// Takes the dialog back out of the window it added itself to.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="ShowAsync"/> adds this into the main window's root grid and nothing ever took it
+    /// out, so every game opened left one behind — still in the visual tree, still holding its
+    /// model, its game and its cover bitmap. Hiding only ran a visual state, which made them
+    /// invisible rather than gone.
+    ///
+    /// Removed immediately rather than after the hide transition. The transition is a fade this
+    /// loses; the alternative is waiting on a storyboard that may not exist in the template, and an
+    /// instance that survives its own dismissal is the worse of the two.
+    /// </remarks>
+    void RemoveFromRoot()
+    {
+        if (Parent is Panel parentPanel)
+        {
+            parentPanel.Children.Remove(this);
         }
     }
 
