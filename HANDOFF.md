@@ -52,15 +52,13 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-**The per-game dialog is half rebuilt.** Two of its four stages have landed:
+**The per-game dialog rebuild is done as far as the user can see it:**
 
 - ✅ `UpscalerRowStatus` / `UpscalerRows.For(game)` — the rule that says what each upscaler in a
   game is, and produces the rows *and* the "N upscalers not in this game" line from one split.
-  Tested. **Nothing renders it yet.**
 - ✅ The action row: eight unlabelled glyphs became three labelled buttons and a named `···` menu,
   with Launch and Update all dlls appearing only when they can act, and `Never update this game`
   reachable from the page it affects for the first time.
-
 - ✅ The upscaler rows. `GameAssetPicker` is deleted along with its duplicate presence rule; the
   rows come from `UpscalerRows.For` and say what is installed, what is available, whether an
   original was kept and whether the dll was found twice.
