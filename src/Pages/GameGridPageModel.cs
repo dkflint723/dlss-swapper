@@ -83,18 +83,31 @@ public partial class GameGridPageModel : ObservableObject
     /// The counts come from the same rule that decides what each tab shows, so a tab reading "3"
     /// cannot open onto four games.
     /// </remarks>
-    public void RefreshFilterTabs()
+    /// <summary>
+    /// The games the page is currently about.
+    /// </summary>
+    /// <remarks>
+    /// The whole library, unless a dll filter is on, in which case it is the games using that file.
+    /// Every count the page shows and every button that acts on "the games" has to come from here:
+    /// with the tab counts narrowed and the review button still reading the full library, the
+    /// button said "Review 3 updates" and opened a sheet holding twelve.
+    ///
+    /// Not the tab, though. The tab is a further narrowing that each tab count applies for itself.
+    /// </remarks>
+    static List<Game> GamesOnThePage()
     {
         var games = GameManager.Instance.GetSynchronisedGamesListCopy();
-        var active = GameManager.Instance.ActiveFilter;
-
-        // The dll filter narrows every tab, so it has to narrow every count as well. Left out, the
-        // "All games" tab would read 23 and open onto the three games using that file.
         var dllFilter = GameManager.Instance.DllFilter;
-        if (dllFilter is not null)
-        {
-            games = games.Where(dllFilter.Matches).ToList();
-        }
+
+        return dllFilter is null
+            ? games
+            : games.Where(dllFilter.Matches).ToList();
+    }
+
+    public void RefreshFilterTabs()
+    {
+        var games = GamesOnThePage();
+        var active = GameManager.Instance.ActiveFilter;
 
         // Same setting the views apply, so a count cannot include a game the list is hiding.
         var hideNonDLSS = Settings.Instance.HideNonDLSSGames;
@@ -653,7 +666,9 @@ public partial class GameGridPageModel : ObservableObject
     [RelayCommand]
     void UpdateAllGamesButton()
     {
-        var pendingUpdates = PendingDllUpdate.ForGames(GameManager.Instance.GetSynchronisedGamesListCopy());
+        // The same games the button counted. While a dll filter is on this is the narrowed set, so
+        // "Review 3 updates" opens onto those three rather than everything in the library.
+        var pendingUpdates = PendingDllUpdate.ForGames(GamesOnThePage());
         if (pendingUpdates.Count == 0)
         {
             return;

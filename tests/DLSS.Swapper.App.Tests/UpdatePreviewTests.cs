@@ -59,6 +59,34 @@ public class UpdatePreviewTests
     }
 
     [Fact]
+    public void TheReviewButtonAndTheSheetAgreeUnderADllFilter()
+    {
+        using var manifest = new ManifestScope();
+        manifest.Add(GameAssetType.DLSS, "310.7.0.0");
+
+        // Two games behind: one using the filtered dll, one not.
+        var usingIt = OutdatedGame("preview_filter_1", "Using it");
+        var notUsingIt = new TestGame("preview_filter_2") { Title = "Not using it" };
+        notUsingIt.GameAssets.Add(Asset(notUsingIt.ID, GameAssetType.DLSS, "310.2.0.0"));
+        notUsingIt.RefreshUpdateAvailable();
+
+        var library = new[] { usingIt, notUsingIt };
+        var filter = new DllFilter(GameAssetType.DLSS, string.Empty, "310.1.0.0", "label");
+        var onThePage = library.Where(filter.Matches).ToList();
+
+        // The button counts games behind in the narrowed set...
+        var behind = GameFilters.Count(onThePage, GameFilter.HasUpdate, hideNonDLSSGames: false);
+        Assert.Equal(1, behind);
+
+        // ...so the sheet it opens must hold only those games. It counted the narrowed set and
+        // opened the whole library, which is the one disagreement the preview exists to prevent.
+        var pendingUpdates = PendingDllUpdate.ForGames(onThePage);
+
+        Assert.NotEmpty(pendingUpdates);
+        Assert.All(pendingUpdates, x => Assert.Equal("Using it", x.GameTitle));
+    }
+
+    [Fact]
     public void AGameUpToDateOffersNothing()
     {
         using var manifest = new ManifestScope();

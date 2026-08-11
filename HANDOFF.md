@@ -129,6 +129,11 @@ read than the `.dc.html` mockup.
   would have read 23 and opened onto 3. It lands on "All games" deliberately: arriving into whatever
   tab was last used, narrowed to one dll, is a page empty for two reasons and the user asked for
   one. The count is only a button when there are games behind it; "Not used" is plain text.
+  **`GamesOnThePage` is the one place that answers "which games is this page about".** Every count
+  and every button that acts on "the games" reads it, after a QA pass caught the review button
+  counting the narrowed set and opening the whole library. That includes `Update all games`, which
+  while a filter is on means all games *shown* — deliberate, and part of why the chip must stay
+  visible.
 - **Where each dll file is**, in words rather than only in which buttons a row shows. A row mid
   download says so, which it did not: it read `Not downloaded` for the whole download, and that is
   the one moment the words were false. The 2px bar runs along the row's own bottom edge, on the
