@@ -708,6 +708,26 @@ public partial class GameGridPageModel : ObservableObject
         UpdatePreview = new UpdatePreviewModel(pendingUpdates);
     }
 
+    /// <summary>
+    /// Opens the preview sheet for one game, from that game's own page.
+    /// </summary>
+    /// <remarks>
+    /// So the game page gets the same review-then-write-then-undo the games page has, rather than
+    /// the modal progress and summary dialogs it used to run. Everything after this point is
+    /// shared: the sheet lists exactly what will be written, and the strip that follows keeps what
+    /// it wrote so it can put that batch back.
+    /// </remarks>
+    public void ShowUpdatePreviewFor(Game game)
+    {
+        var pendingUpdates = PendingDllUpdate.ForGames(new[] { game });
+        if (pendingUpdates.Count == 0)
+        {
+            return;
+        }
+
+        UpdatePreview = new UpdatePreviewModel(pendingUpdates);
+    }
+
     /// <summary>Dismisses the sheet without writing anything.</summary>
     [RelayCommand]
     void CancelUpdatePreview()

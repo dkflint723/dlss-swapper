@@ -212,26 +212,34 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" VerticalAlignment="Stretch" Text="{x:Bind ViewModel.GameTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{x:Bind ViewModel.IsManuallyAdded, Converter={StaticResource BoolNegationConverter}}" />
-                        <Button Grid.Column="1" VerticalAlignment="Stretch" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.SaveText, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsManuallyAdded, Converter={StaticResource BoolToVisibilityConverter}}" IsEnabled="{x:Bind ViewModel.GameTitleHasChanged, Mode=OneWay}" Command="{x:Bind ViewModel.SaveTitleCommand}">
-                            <Button.Content>
-                                <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE74E;"/>
-                            </Button.Content>
-                        </Button>
+
+                        <!--
+                            A word rather than a floppy disk glyph. It is the only control on this
+                            surface that commits a typed edit, and it was the one thing here whose
+                            meaning you had to already know.
+                        -->
+                        <Button
+                            Grid.Column="1"
+                            VerticalAlignment="Stretch"
+                            Content="{x:Bind ViewModel.TranslationProperties.SaveText, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.IsManuallyAdded, Converter={StaticResource BoolToVisibilityConverter}}"
+                            IsEnabled="{x:Bind ViewModel.GameTitleHasChanged, Mode=OneWay}"
+                            Command="{x:Bind ViewModel.SaveTitleCommand}" />
                     </Grid>
 
+                    <!--
+                        The path is a fact, not a field. It was a disabled TextBox, which looks like
+                        somewhere you could type and then refuses, and the only way to open it was a
+                        nameless folder glyph — that is a labelled button in the action row now.
+                        Selectable, because copying a path out of here is a real thing to want.
+                    -->
                     <TextBlock Text="{x:Bind ViewModel.TranslationProperties.InstallPathText, Mode=OneWay}" FontWeight="Bold" Padding="0,8,0,0" />
-                    <Grid HorizontalAlignment="Stretch" ColumnSpacing="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" IsReadOnly="True" Text="{x:Bind ViewModel.Game.InstallPath}" VerticalAlignment="Stretch" />
-                        <Button Grid.Column="1" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.OpenFolderText, Mode=OneWay}" VerticalAlignment="Stretch" Command="{x:Bind ViewModel.OpenInstallPathCommand}">
-                            <Button.Content>
-                                <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE8A7;"/>
-                            </Button.Content>
-                        </Button>
-                    </Grid>
+                    <TextBlock
+                        Text="{x:Bind ViewModel.Game.InstallPath}"
+                        IsTextSelectionEnabled="True"
+                        TextWrapping="Wrap"
+                        FontSize="12"
+                        Foreground="{ThemeResource DsTextSecondaryBrush}" />
 
                     <!--
                         One row per upscaler this game actually has, in the shape the settings page

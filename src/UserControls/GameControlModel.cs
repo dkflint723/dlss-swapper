@@ -631,23 +631,29 @@ public partial class GameControlModel : ObservableObject
         OnPropertyChanged(nameof(GameTitleHasChanged));
     }
 
+    /// <summary>
+    /// Hands this game's outdated dlls to the games page's preview sheet.
+    /// </summary>
+    /// <remarks>
+    /// It used to run <c>DllUpdatePrompt</c>: a confirmation giving only a count, then a modal
+    /// progress dialog, then a summary — and no way back. The games page replaced all three with a
+    /// sheet that lists exactly which files will be written and a strip that keeps what it wrote so
+    /// it can put that batch back, and there was no reason this surface should not have the same.
+    ///
+    /// Closes first, because the sheet and the strip live on the page behind this dialog. That is
+    /// the honest order: the review happens where the result will be visible.
+    /// </remarks>
     [RelayCommand]
-    async Task UpdateAllDllsAsync()
+    void UpdateAllDlls()
     {
-        if (gameControlWeakReference.TryGetTarget(out var gameControl) == false)
+        var gameGridPageModel = App.CurrentApp.MainWindow?.GameGridPage?.ViewModel;
+        if (gameGridPageModel is null)
         {
             return;
         }
 
-        await DllUpdatePrompt.RunAsync(
-            gameControl.XamlRoot,
-            [Game],
-            ResourceHelper.GetString("DllUpdate_Title"),
-            Game.OutdatedAssetTypes.Count,
-            ResourceHelper.GetFormattedResourceTemplate("DllUpdate_ConfirmOneGameTemplate", Game.OutdatedAssetTypes.Count, Game.Title),
-            ResourceHelper.GetString("DllUpdate_GameUpToDate"),
-            (games, progress, cancellationToken) => DllUpdateRunner.UpdateGamesAsync(games, progress, cancellationToken),
-            "DllUpdate_SwappedTemplate");
+        Close();
+        gameGridPageModel.ShowUpdatePreviewFor(Game);
     }
 
     [RelayCommand]
