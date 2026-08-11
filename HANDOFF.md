@@ -4,7 +4,7 @@
 x64, unpackaged. Treated as a **personal divergence, not upstream PRs** — aggressive refactoring is
 fine.
 
-**State:** `main`, all pushed and CI-green. 358 tests (247 app, 111 core). Working tree clean except
+**State:** `main`, all pushed and CI-green. 373 tests (262 app, 111 core). Working tree clean except
 `src/Assets/static_manifest.json` and `docs/manifest.json`, which predate the work and have been
 deliberately excluded from every commit — `git add -A` will sweep them in, so stage by path.
 
@@ -13,7 +13,7 @@ deliberately excluded from every commit — `git add -A` will sweep them in, so 
 - `core/DLSS.Swapper.Core` — pure `net10.0`, no WinUI. Swap executor, version ranking, `DllTypes`
   registry.
 - `tests/DLSS.Swapper.Core.Tests` — 111 tests.
-- `tests/DLSS.Swapper.App.Tests` — 247 tests; references the WinUI app directly. Needs
+- `tests/DLSS.Swapper.App.Tests` — 262 tests; references the WinUI app directly. Needs
   `resources.pri` (a build target renames the app's `.pri`) or every string lookup throws.
 - `TemporaryDatabase` fixture gives tests a **real SQLite database** in temp, via
   `Storage.OverrideStoragePath` + `Database.ResetInstanceAsync` (internal, test-only seams). Debug
@@ -56,13 +56,11 @@ read than the `.dc.html` mockup.
    rows, not `SettingsRow`) and the DLSS preset block. Neither is wrong, they just do not match the
    rows around them.
 2. **The upscalers page is not finished.** `Show the games using this` is still missing from the row
-   menu, and clicking a usage count should filter Games to those titles — both need a way to carry
-   a dll filter across to the games page, which does not exist yet. The downloading row also still
-   shows the old inline progress bar rather than the spec's 2px one.
-3. **Two pieces of the update flow are deliberately not built.** The per-row progress bar in the
-   action slot (README §4 says a row being written shows a 150px bar where its button was; it still
-   shows the sentence and a spinner), and `See what changed` on the done strip, which needs a
-   history view filtered to a batch and there is no such view yet.
+   menu, and clicking a usage count should filter Games to those titles. Both need the same missing
+   piece — a way to carry a dll filter across to the games page — so build it once. Whatever it is
+   has to make the filter visible and clearable on arrival, or the games page just looks broken.
+3. `See what changed` on the done strip is still not built. It needs a history view filtered to one
+   batch, and there is no such view yet.
 4. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. Not yet reasoned about either
    way.
@@ -101,7 +99,14 @@ read than the `.dc.html` mockup.
 - **Contrast is measured, not judged.** Every text level is checked against the lightest surface it
   can land on, and the accents are checked as text as well as under ink. `AccentPaletteTests` holds
   both rules. If a token is ever changed, re-measure rather than eyeball it.
-- **Where each dll file is**, in words rather than only in which buttons a row shows.
+- **Where each dll file is**, in words rather than only in which buttons a row shows. A row mid
+  download says so, which it did not: it read `Not downloaded` for the whole download, and that is
+  the one moment the words were false. The 2px bar runs along the row's own bottom edge, on the
+  hairline it already draws, so nothing moves when it appears.
+- **A row being written shows a bar where its button was** (README §4), built into
+  `GameActionButton` because that control already *is* the action slot for both shapes. The card
+  keeps a ring instead — its slot is a 28px button on cover art, where a hairline would not be seen.
+  That is the only thing the two variants do differently, and it is written down in both files.
 - **Versions grouped by release line** (`DllVersionLine`, `DllVersionGroup`), newest three lines
   separate and the rest rolled into one heading. Derived from the version, never stored, and the
   order the page is given is kept rather than re-sorted.
@@ -143,5 +148,9 @@ read than the `.dc.html` mockup.
   test result.
 - The app can be driven and screenshotted from PowerShell (`SetForegroundWindow` + `CopyFromScreen`,
   `SetCursorPos` + `mouse_event`). Three visual bugs this session were only visible that way.
+- **`-p:Platform=x64` builds to `src\bin\x64\Debug\...`, not `src\bin\Debug\...`.** Both exist, and
+  the second one is stale. Launching it screenshots an old build and every conclusion drawn from
+  that screenshot is wrong. Check the dll's timestamp against the source before believing a
+  screenshot that shows a change missing.
 - Close the running app before building; it locks the exe.
 - `Start-Process` succeeding is not the same as the app surviving. Wait on the process.

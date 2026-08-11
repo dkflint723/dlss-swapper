@@ -37,6 +37,7 @@ public class NewResourceStringTests
     [InlineData("Upscalers_NotUsed")]
     [InlineData("Upscalers_UsedByOneGame")]
     [InlineData("Upscalers_UsedByGamesTemplate")]
+    [InlineData("Upscalers_Downloading")]
     [InlineData("General_Open")]
     [InlineData("Settings_Accent")]
     [InlineData("Settings_Accent_Desc")]

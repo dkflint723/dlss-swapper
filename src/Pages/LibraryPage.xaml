@@ -220,10 +220,10 @@
                             <FontIcon
                                 FontSize="11"
                                 VerticalAlignment="Center"
-                                Glyph="{x:Bind data:DllRecordState.Glyph(LocalRecord.IsDownloaded, LocalRecord.IsImported), Mode=OneWay}"
+                                Glyph="{x:Bind data:DllRecordState.Glyph(LocalRecord.IsDownloaded, LocalRecord.IsImported, LocalRecord.IsDownloading), Mode=OneWay}"
                                 Foreground="{ThemeResource DsTextSecondaryBrush}" />
                             <TextBlock
-                                Text="{x:Bind data:DllRecordState.Describe(LocalRecord.IsDownloaded, LocalRecord.IsImported), Mode=OneWay}"
+                                Text="{x:Bind data:DllRecordState.Describe(LocalRecord.IsDownloaded, LocalRecord.IsImported, LocalRecord.IsDownloading), Mode=OneWay}"
                                 FontSize="12"
                                 VerticalAlignment="Center"
                                 TextWrapping="NoWrap"
@@ -256,6 +256,24 @@
                             VerticalAlignment="Center"
                             TextWrapping="NoWrap"
                             Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+                        <!--
+                            Along the row's own bottom edge rather than inside a column, so it reads
+                            as this row filling up. It sits on the hairline the row already draws, so
+                            nothing moves when it appears and nothing is left behind when it goes.
+                        -->
+                        <ProgressBar
+                            Grid.Column="0"
+                            Grid.ColumnSpan="6"
+                            Height="2"
+                            Minimum="0"
+                            Maximum="100"
+                            Margin="0,0,0,-1"
+                            VerticalAlignment="Bottom"
+                            IsIndeterminate="{x:Bind LocalRecord.FileDownloader.IsIndeterminate, Mode=OneWay}"
+                            Value="{x:Bind LocalRecord.FileDownloader.Percent, Mode=OneWay}"
+                            Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadingConverter}, Mode=OneWay}"
+                            ToolTipService.ToolTip="{x:Bind TranslationProperties.DownloadingText, Mode=OneWay}" />
 
                         <!--
                             One menu instead of a row of bare icon buttons. The buttons meant the

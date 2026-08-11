@@ -78,9 +78,23 @@ public sealed partial class GameActionButton : UserControl
         var status = Status;
         var label = status?.ActionLabel ?? string.Empty;
 
+        // A row being written has no button, but it does have something to show, so the slot stays.
+        // Rows only: the card's slot is a small button on cover art, so its progress stays a ring
+        // in GameStatusView.
+        var isSwapping = status?.State == GameRowState.Swapping && Variant == GameStatusVariant.Row;
+
         // No label means the row has nothing to offer. Collapsing the control rather than the
         // button keeps it from holding a column open in the row.
-        Visibility = string.IsNullOrEmpty(label) ? Visibility.Collapsed : Visibility.Visible;
+        Visibility = string.IsNullOrEmpty(label) && isSwapping == false
+            ? Visibility.Collapsed
+            : Visibility.Visible;
+
+        ActionButton.Visibility = string.IsNullOrEmpty(label) ? Visibility.Collapsed : Visibility.Visible;
+        ActionProgress.Visibility = isSwapping ? Visibility.Visible : Visibility.Collapsed;
+
+        // Stopped as well as hidden. An indeterminate bar left running off screen keeps animating,
+        // and there is one of these per row.
+        ActionProgress.IsIndeterminate = isSwapping;
 
         ActionButton.Command = Command;
         ActionButton.CommandParameter = Game;

@@ -1,3 +1,4 @@
+using System.Linq;
 using DLSS_Swapper.Data;
 using Xunit;
 
@@ -15,20 +16,20 @@ public class DllRecordStateTests
     [Fact]
     public void EveryStateSaysSomething()
     {
-        var onDisk = DllRecordState.Describe(isDownloaded: true, isImported: false);
-        var imported = DllRecordState.Describe(isDownloaded: true, isImported: true);
-        var missing = DllRecordState.Describe(isDownloaded: false, isImported: false);
+        var onDisk = DllRecordState.Describe(isDownloaded: true, isImported: false, isDownloading: false);
+        var imported = DllRecordState.Describe(isDownloaded: true, isImported: true, isDownloading: false);
+        var missing = DllRecordState.Describe(isDownloaded: false, isImported: false, isDownloading: false);
+        var downloading = DllRecordState.Describe(isDownloaded: false, isImported: false, isDownloading: true);
 
-        foreach (var text in new[] { onDisk, imported, missing })
+        foreach (var text in new[] { onDisk, imported, missing, downloading })
         {
             Assert.False(string.IsNullOrWhiteSpace(text));
             Assert.DoesNotContain("LangResourceError", text);
         }
 
-        // Three states, three sentences. If any two collapse the column stops distinguishing them.
-        Assert.NotEqual(onDisk, imported);
-        Assert.NotEqual(onDisk, missing);
-        Assert.NotEqual(imported, missing);
+        // Four states, four sentences. If any two collapse the column stops distinguishing them.
+        var all = new[] { onDisk, imported, missing, downloading };
+        Assert.Equal(all.Length, all.Distinct().Count());
     }
 
     [Fact]
@@ -37,23 +38,38 @@ public class DllRecordStateTests
         // An imported dll is on disk too. Where it came from is the more useful of the two, because
         // it is the one the manifest cannot vouch for.
         Assert.Equal(
-            DllRecordState.Describe(isDownloaded: true, isImported: true),
-            DllRecordState.Describe(isDownloaded: false, isImported: true));
+            DllRecordState.Describe(isDownloaded: true, isImported: true, isDownloading: false),
+            DllRecordState.Describe(isDownloaded: false, isImported: true, isDownloading: false));
 
         Assert.NotEqual(
-            DllRecordState.Describe(isDownloaded: true, isImported: true),
-            DllRecordState.Describe(isDownloaded: true, isImported: false));
+            DllRecordState.Describe(isDownloaded: true, isImported: true, isDownloading: false),
+            DllRecordState.Describe(isDownloaded: true, isImported: false, isDownloading: false));
+    }
+
+    [Fact]
+    public void DownloadingBeatsEverything()
+    {
+        // The row is mid-download, so whatever was true a moment ago is about to stop being true.
+        // It read "Not downloaded" for the whole download, which is when that was least true.
+        var downloading = DllRecordState.Describe(isDownloaded: false, isImported: false, isDownloading: true);
+
+        Assert.Equal(downloading, DllRecordState.Describe(isDownloaded: true, isImported: false, isDownloading: true));
+        Assert.Equal(downloading, DllRecordState.Describe(isDownloaded: true, isImported: true, isDownloading: true));
     }
 
     [Fact]
     public void OnlyTheStatesWorthMarkingCarryAGlyph()
     {
-        Assert.False(string.IsNullOrEmpty(DllRecordState.Glyph(isDownloaded: true, isImported: false)));
-        Assert.False(string.IsNullOrEmpty(DllRecordState.Glyph(isDownloaded: true, isImported: true)));
+        Assert.False(string.IsNullOrEmpty(DllRecordState.Glyph(isDownloaded: true, isImported: false, isDownloading: false)));
+        Assert.False(string.IsNullOrEmpty(DllRecordState.Glyph(isDownloaded: true, isImported: true, isDownloading: false)));
 
         // Not downloaded is most of the page. Marking every one would make the absence of a mark
         // the exception rather than the rule.
-        Assert.Empty(DllRecordState.Glyph(isDownloaded: false, isImported: false));
+        Assert.Empty(DllRecordState.Glyph(isDownloaded: false, isImported: false, isDownloading: false));
+
+        // Downloading has the bar along the row, which says more than a mark can.
+        Assert.Empty(DllRecordState.Glyph(isDownloaded: false, isImported: false, isDownloading: true));
+        Assert.Empty(DllRecordState.Glyph(isDownloaded: true, isImported: true, isDownloading: true));
     }
 
     [Fact]
@@ -62,7 +78,7 @@ public class DllRecordStateTests
         // Neither the words nor the glyphs may be shared: the two states are distinguishable
         // without seeing a colour at all.
         Assert.NotEqual(
-            DllRecordState.Glyph(isDownloaded: true, isImported: false),
-            DllRecordState.Glyph(isDownloaded: true, isImported: true));
+            DllRecordState.Glyph(isDownloaded: true, isImported: false, isDownloading: false),
+            DllRecordState.Glyph(isDownloaded: true, isImported: true, isDownloading: false));
     }
 }

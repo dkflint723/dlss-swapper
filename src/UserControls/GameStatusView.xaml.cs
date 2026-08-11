@@ -74,12 +74,16 @@ public sealed partial class GameStatusView : UserControl
         StatusSentence.Text = status?.Sentence ?? string.Empty;
         StatusEngines.Text = status?.Engines ?? string.Empty;
 
-        // While a swap is running the engine list is about to be wrong, so the spinner takes its
-        // place. The list rows used to show the stale list here and only the card swapped it out.
+        // While a swap is running the engine list is about to be wrong, so it goes away either way.
+        // What replaces it is the one thing that does differ between the variants: a row shows a
+        // bar in its action slot, which is wide and empty by then, while a card's action slot is a
+        // 28px button floating on cover art, where a hairline bar would not be seen. So the card
+        // keeps the ring here and the row does not.
         var isBusy = status?.State == GameRowState.Swapping;
+        var ringCarriesIt = isBusy && Variant == GameStatusVariant.Card;
         StatusEngines.Visibility = isBusy ? Visibility.Collapsed : Visibility.Visible;
-        BusyRing.Visibility = isBusy ? Visibility.Visible : Visibility.Collapsed;
-        BusyRing.IsActive = isBusy;
+        BusyRing.Visibility = ringCarriesIt ? Visibility.Visible : Visibility.Collapsed;
+        BusyRing.IsActive = ringCarriesIt;
 
         VisualStateManager.GoToState(this, Variant == GameStatusVariant.Card ? "CardVariant" : "RowVariant", false);
     }

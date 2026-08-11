@@ -12,9 +12,17 @@ namespace DLSS_Swapper.Data;
 /// </remarks>
 public static class DllRecordState
 {
-    /// <summary>Reads as "On disk", "Imported" or "Not downloaded".</summary>
-    public static string Describe(bool isDownloaded, bool isImported)
+    /// <summary>Reads as "Downloading", "On disk", "Imported" or "Not downloaded".</summary>
+    public static string Describe(bool isDownloaded, bool isImported, bool isDownloading)
     {
+        if (isDownloading)
+        {
+            // Checked before everything else, because it is the one state that is about to stop
+            // being true. A row mid-download read "Not downloaded" for as long as the download ran,
+            // which is exactly when it was least true.
+            return ResourceHelper.GetString("Upscalers_Downloading");
+        }
+
         if (isImported)
         {
             // Checked first: an imported dll is on disk too, and where it came from is the more
@@ -32,10 +40,16 @@ public static class DllRecordState
     /// </summary>
     /// <remarks>
     /// Not downloaded gets no glyph. It is the default state of most rows on this page, and marking
-    /// every one of them would turn the absence of a mark into the exceptional case.
+    /// every one of them would turn the absence of a mark into the exceptional case. Downloading
+    /// gets none either: the bar along the row is already moving, and it says more than a mark can.
     /// </remarks>
-    public static string Glyph(bool isDownloaded, bool isImported)
+    public static string Glyph(bool isDownloaded, bool isImported, bool isDownloading)
     {
+        if (isDownloading)
+        {
+            return string.Empty;
+        }
+
         if (isImported)
         {
             return "\uE7B8";

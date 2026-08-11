@@ -332,6 +332,9 @@
   <data name="Upscalers_NotDownloaded" xml:space="preserve">
     <value>Not downloaded</value>
   </data>
+  <data name="Upscalers_Downloading" xml:space="preserve">
+    <value>Downloading</value>
+  </data>
   <data name="Upscalers_InUseNotOnDisk" xml:space="preserve">
     <value>In use, not on disk</value>
   </data>

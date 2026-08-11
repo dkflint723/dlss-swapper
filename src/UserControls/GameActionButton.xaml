@@ -9,12 +9,28 @@
     mc:Ignorable="d"
     x:Name="RootGameActionButton">
 
-    <!-- The variant only changes how it is painted; the code behind owns that, and everything else. -->
-    <Button
-        x:Name="ActionButton"
-        Height="32"
-        Padding="16,0"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch"
-        CornerRadius="{StaticResource DsCornerRadius}" />
+    <Grid>
+        <!-- The variant only changes how it is painted; the code behind owns that, and everything else. -->
+        <Button
+            x:Name="ActionButton"
+            Height="32"
+            Padding="16,0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            CornerRadius="{StaticResource DsCornerRadius}" />
+
+        <!--
+            Shown in place of the button while this game is being written, rather than the button
+            turning into a spinner. A spinner where a button was still looks like something you
+            could press; a bar in the empty slot reads as the row being busy, which it is.
+        -->
+        <ProgressBar
+            x:Name="ActionProgress"
+            Width="150"
+            Height="2"
+            IsIndeterminate="True"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Visibility="Collapsed" />
+    </Grid>
 </UserControl>

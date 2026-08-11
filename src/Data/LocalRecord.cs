@@ -18,6 +18,18 @@ public partial class LocalRecord : ObservableObject, IEquatable<LocalRecord>
     [ObservableProperty]
     public partial FileDownloader? FileDownloader { get; set; } = null;
 
+    /// <summary>
+    /// True for exactly as long as a download is running, because that is exactly how long the
+    /// downloader is held. Set when the download starts and cleared in its finally, so this needs
+    /// no state of its own to fall out of step with.
+    /// </summary>
+    public bool IsDownloading => FileDownloader is not null;
+
+    partial void OnFileDownloaderChanged(FileDownloader? value)
+    {
+        OnPropertyChanged(nameof(IsDownloading));
+    }
+
     [ObservableProperty]
     public partial bool HasDownloadError { get; set; } = false;
 
