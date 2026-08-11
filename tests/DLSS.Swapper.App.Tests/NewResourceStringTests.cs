@@ -39,6 +39,8 @@ public class NewResourceStringTests
     [InlineData("Upscalers_UsedByGamesTemplate")]
     [InlineData("Upscalers_Downloading")]
     [InlineData("Upscalers_ShowGamesUsing")]
+    [InlineData("Update_SeeWhatChanged")]
+    [InlineData("Update_VersionChangeTemplate")]
     [InlineData("GamesPage_ClearDllFilter")]
     [InlineData("SettingsPage_LibraryFound")]
     [InlineData("SettingsPage_LibraryNotFound")]

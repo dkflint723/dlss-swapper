@@ -37,6 +37,92 @@ public class UpdateBatchTests
         return result;
     }
 
+    static DllUpdateResult ResultWithChanges(int succeeded, params string[] failures)
+    {
+        var result = ResultWith(succeeded, failures);
+
+        for (var i = 0; i < succeeded; i++)
+        {
+            result.Changes.Add(new DllChange()
+            {
+                GameTitle = $"Game {i}",
+                EngineName = "DLSS",
+                FromVersion = "3.7.20",
+                ToVersion = "310.7",
+            });
+        }
+
+        return result;
+    }
+
+    [Fact]
+    public void ADoneBatchCanSayWhatEachFileBecame()
+    {
+        var batch = new UpdateBatchModel();
+
+        batch.Complete(ResultWithChanges(2));
+
+        Assert.True(batch.HasChanges);
+        Assert.Equal(2, batch.Changes.Count);
+
+        // The version it came from is the part the strip could never say, and the part worth
+        // checking before deciding to keep the batch.
+        var change = batch.Changes[0];
+        Assert.Contains("3.7.20", change.VersionChange);
+        Assert.Contains("310.7", change.VersionChange);
+        Assert.Contains("Game 0", change.Description);
+        Assert.Contains("DLSS", change.Description);
+    }
+
+    [Fact]
+    public void AFileWithNothingBeforeItJustSaysWhatItIsNow()
+    {
+        var change = new DllChange()
+        {
+            GameTitle = "Cyberpunk 2077",
+            EngineName = "DLSS",
+            FromVersion = string.Empty,
+            ToVersion = "310.7",
+        };
+
+        // An arrow from nothing reads as a missing value rather than as a new file.
+        Assert.Equal("310.7", change.VersionChange);
+    }
+
+    [Fact]
+    public void FailuresAreOfferedBeforeChanges()
+    {
+        // Both buttons are the same slot on the strip. A batch that half worked has changes as well
+        // as failures, and drawing both would put one on top of the other.
+        var partial = new UpdateBatchModel();
+        partial.Complete(ResultWithChanges(2, "Could not replace nvngx_dlss.dll"));
+
+        Assert.True(partial.HasFailures);
+        Assert.True(partial.HasChanges);
+        Assert.Equal(Microsoft.UI.Xaml.Visibility.Visible, partial.FailuresVisibility);
+        Assert.Equal(Microsoft.UI.Xaml.Visibility.Collapsed, partial.ChangesVisibility);
+
+        var clean = new UpdateBatchModel();
+        clean.Complete(ResultWithChanges(2));
+
+        Assert.Equal(Microsoft.UI.Xaml.Visibility.Collapsed, clean.FailuresVisibility);
+        Assert.Equal(Microsoft.UI.Xaml.Visibility.Visible, clean.ChangesVisibility);
+    }
+
+    [Fact]
+    public void UndoingABatchLeavesNothingToShow()
+    {
+        var batch = new UpdateBatchModel();
+        batch.Complete(ResultWithChanges(2));
+
+        batch.CompleteUndo(ResultWith(2));
+
+        // The batch it described has just been put back, so there is nothing left for it to be
+        // about. Leaving the list up would offer to show changes that are no longer on disk.
+        Assert.False(batch.HasChanges);
+        Assert.Equal(Microsoft.UI.Xaml.Visibility.Collapsed, batch.ChangesVisibility);
+    }
+
     [Fact]
     public void WhileRunningItSaysHowFarThroughItIs()
     {

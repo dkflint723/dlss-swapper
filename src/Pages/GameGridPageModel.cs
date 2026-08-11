@@ -810,6 +810,64 @@ public partial class GameGridPageModel : ObservableObject
     }
 
     /// <summary>
+    /// Names what each replaced file was, and what it is now.
+    /// </summary>
+    /// <remarks>
+    /// The done strip can only say how many files were written. The version each one came from is
+    /// the thing worth checking before deciding to keep the batch, and it is knowable only while
+    /// the run is happening, so it is recorded then and read here.
+    /// </remarks>
+    [RelayCommand]
+    async Task ShowBatchChangesAsync()
+    {
+        var batch = UpdateBatch;
+        if (batch is null || batch.HasChanges == false)
+        {
+            return;
+        }
+
+        var rows = new StackPanel() { Spacing = 10 };
+
+        foreach (var change in batch.Changes)
+        {
+            var row = new StackPanel() { Spacing = 2 };
+
+            row.Children.Add(new TextBlock()
+            {
+                Text = change.Description,
+                FontSize = 13,
+                TextWrapping = TextWrapping.Wrap,
+            });
+
+            // The versions on their own line rather than appended to the title, because the title
+            // is the part that varies in length and would push the change off the end.
+            row.Children.Add(new TextBlock()
+            {
+                Text = change.VersionChange,
+                FontSize = 12,
+                FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
+                TextWrapping = TextWrapping.Wrap,
+                Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["DsTextSecondaryBrush"],
+            });
+
+            rows.Children.Add(row);
+        }
+
+        var dialog = new EasyContentDialog(gameGridPage.XamlRoot)
+        {
+            Title = ResourceHelper.GetString("Update_SeeWhatChanged"),
+            CloseButtonText = ResourceHelper.GetString("General_Okay"),
+            Content = new ScrollViewer()
+            {
+                MaxHeight = 400,
+                Content = rows,
+            },
+        };
+
+        await dialog.ShowAsync();
+    }
+
+    /// <summary>
     /// Names the files that could not be replaced.
     /// </summary>
     /// <remarks>

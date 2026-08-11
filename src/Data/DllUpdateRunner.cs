@@ -35,10 +35,46 @@ internal sealed class DllUpdateProgress
 }
 
 /// <summary>
+/// One dll that was replaced, and what it was replaced with.
+/// </summary>
+/// <remarks>
+/// Recorded as the batch runs, because the version a file was before is only knowable before it is
+/// written over. The done strip could say seven files were updated and nothing at all about what
+/// they became, which is the one thing worth checking before deciding to keep it.
+/// </remarks>
+internal sealed class DllChange
+{
+    public required string GameTitle { get; init; }
+
+    public required string EngineName { get; init; }
+
+    public required string FromVersion { get; init; }
+
+    public required string ToVersion { get; init; }
+
+    /// <summary>Reads as "3.7.20 → 310.7", or just the new version when there was nothing before.</summary>
+    public string VersionChange => string.IsNullOrEmpty(FromVersion)
+        ? ToVersion
+        : ResourceHelper.GetFormattedResourceTemplate("Update_VersionChangeTemplate", FromVersion, ToVersion);
+
+    /// <summary>Reads as "Cyberpunk 2077 — DLSS".</summary>
+    public string Description => $"{GameTitle} — {EngineName}";
+}
+
+/// <summary>
 /// What an update run did.
 /// </summary>
 internal sealed class DllUpdateResult
 {
+    /// <summary>
+    /// What each written file was before and after, in the order it was written.
+    /// </summary>
+    /// <remarks>
+    /// Alongside <see cref="Succeeded"/> rather than derived from it: an item says which dll in
+    /// which game, and by the time anyone reads it the file on disk is already the new one.
+    /// </remarks>
+    public List<DllChange> Changes { get; } = new List<DllChange>();
+
     /// <summary>
     /// Exactly which dlls were written.
     /// </summary>
@@ -123,6 +159,26 @@ internal static class DllUpdateRunner
     }
 
     /// <summary>
+    /// The version of one dll in one game right now, or empty when the game has no such file.
+    /// </summary>
+    /// <remarks>
+    /// A swap refreshes the game's asset list, so calling this before and after a write gives the
+    /// two ends of the change.
+    /// </remarks>
+    static string VersionOf(DllWorkItem item)
+    {
+        foreach (var gameAsset in item.Game.GameAssets)
+        {
+            if (gameAsset.AssetType == item.AssetType)
+            {
+                return gameAsset.Version ?? string.Empty;
+            }
+        }
+
+        return string.Empty;
+    }
+
+    /// <summary>
     /// The dll types in a game that have a backup to go back to.
     /// </summary>
     internal static List<GameAssetType> GetRevertableAssetTypes(Game game)
@@ -186,11 +242,22 @@ internal static class DllUpdateRunner
                 EngineName = DLLManager.Instance.GetAssetTypeName(item.AssetType),
             });
 
+            // Read before the write, because afterwards there is nothing left to read it from.
+            var versionBefore = VersionOf(item);
+
             var outcome = await operation(item, cancellationToken).ConfigureAwait(false);
 
             if (outcome.Done)
             {
                 result.Succeeded.Add(item);
+
+                result.Changes.Add(new DllChange()
+                {
+                    GameTitle = item.Game.Title,
+                    EngineName = DLLManager.Instance.GetAssetTypeName(item.AssetType),
+                    FromVersion = versionBefore,
+                    ToVersion = VersionOf(item),
+                });
             }
 
             // Reported alongside rather than instead of being done: a reset can restore some

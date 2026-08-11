@@ -335,6 +335,13 @@
   <data name="Upscalers_Downloading" xml:space="preserve">
     <value>Downloading</value>
   </data>
+  <data name="Update_SeeWhatChanged" xml:space="preserve">
+    <value>See what changed</value>
+  </data>
+  <data name="Update_VersionChangeTemplate" xml:space="preserve">
+    <value>{0} → {1}</value>
+    <comment>{0} is the version a dll was before it was replaced, {1} is what it is now</comment>
+  </data>
   <data name="Upscalers_ShowGamesUsing" xml:space="preserve">
     <value>Show the games using this</value>
   </data>

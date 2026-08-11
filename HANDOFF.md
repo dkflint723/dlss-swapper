@@ -4,7 +4,7 @@
 x64, unpackaged. Treated as a **personal divergence, not upstream PRs** — aggressive refactoring is
 fine.
 
-**State:** `main`, all pushed and CI-green. 384 tests (273 app, 111 core). Working tree clean except
+**State:** `main`, all pushed and CI-green. 390 tests (279 app, 111 core). Working tree clean except
 `src/Assets/static_manifest.json` and `docs/manifest.json`, which predate the work and have been
 deliberately excluded from every commit — `git add -A` will sweep them in, so stage by path.
 
@@ -13,7 +13,7 @@ deliberately excluded from every commit — `git add -A` will sweep them in, so 
 - `core/DLSS.Swapper.Core` — pure `net10.0`, no WinUI. Swap executor, version ranking, `DllTypes`
   registry.
 - `tests/DLSS.Swapper.Core.Tests` — 111 tests.
-- `tests/DLSS.Swapper.App.Tests` — 273 tests; references the WinUI app directly. Needs
+- `tests/DLSS.Swapper.App.Tests` — 279 tests; references the WinUI app directly. Needs
   `resources.pri` (a build target renames the app's `.pri`) or every string lookup throws.
 - `TemporaryDatabase` fixture gives tests a **real SQLite database** in temp, via
   `Storage.OverrideStoragePath` + `Database.ResetInstanceAsync` (internal, test-only seams). Debug
@@ -52,16 +52,14 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-1. `See what changed` on the done strip is still not built. It needs a history view filtered to one
-   batch, and there is no such view yet.
-2. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
+1. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. **Left for the user to call**,
    not because it is hard: it is taste, and picking quietly is the wrong way to settle it.
-3. The preset dropdowns disable themselves when NVAPI is unsupported and say nothing about why. The
+2. The preset dropdowns disable themselves when NVAPI is unsupported and say nothing about why. The
    error button beside the first one only appears for a permission problem, not for "this is not an
    NVIDIA machine". A disabled control with no reason is the same failure the rest of this work has
    been removing.
-4. `SettingsPage_LibraryEnabled` and `SettingsPage_LibraryDisabled` are no longer used by anything —
+3. `SettingsPage_LibraryEnabled` and `SettingsPage_LibraryDisabled` are no longer used by anything —
    they read "Steam enabled", which the row's title now says. They are still in all nine translation
    files. Prune them together with any other dead keys rather than one at a time.
 
@@ -79,6 +77,12 @@ read than the `.dc.html` mockup.
   dialogs on the games page. `DllUpdateRunner` now works a flat list of `DllWorkItem` and reports
   which file of how many, and a result keeps the items it wrote so `UndoAsync` can put back that
   batch and nothing else. The game page still uses the old dialogs.
+- **`See what changed`** lists what each written file was and what it became. The version a dll was
+  *before* is only knowable before it is written over, so `RunAsync` reads it either side of each
+  write and the result carries the list — no batch id, no schema change, no new view of the history
+  table. It shares the strip's slot with `see what failed`, and the rule keeping them apart lives on
+  the model: a partial batch is both, and failures win. An undo clears it, because the batch it
+  described is no longer on disk.
 - **The upscalers page's shape** (README §8): a column of the nine engines with version counts in
   place of the horizontally scrolling bar, versions as rows rather than cards, and `DllUsage`
   answering how many games have each file in place — the column that says whether it is safe to

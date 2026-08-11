@@ -87,6 +87,28 @@ public partial class UpdateBatchModel : ObservableObject
 
     public string SeeWhatFailedLabel => ResourceHelper.GetString("Update_SeeWhatFailed");
 
+    public string SeeWhatChangedLabel => ResourceHelper.GetString("Update_SeeWhatChanged");
+
+    IReadOnlyList<DllChange> _changes = new List<DllChange>();
+
+    /// <summary>What each file was before and after, for the strip to offer to show.</summary>
+    internal IReadOnlyList<DllChange> Changes => _changes;
+
+    public bool HasChanges => _changes.Count > 0;
+
+    /// <summary>
+    /// Shown only when nothing failed.
+    /// </summary>
+    /// <remarks>
+    /// This and "see what failed" are the same slot on the strip, so the rule that keeps them apart
+    /// has to be here rather than in the two bindings, which would both be true of a partial batch
+    /// and draw one button on top of the other. Failures win: a batch that half worked needs the
+    /// list of what did not before the list of what did.
+    /// </remarks>
+    public Visibility ChangesVisibility => HasChanges && HasFailures == false
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
     internal void Report(DllUpdateProgress progress)
     {
         ProgressText = ResourceHelper.GetFormattedResourceTemplate("Update_ProgressTemplate", progress.CurrentIndex, progress.TotalCount);
@@ -108,6 +130,7 @@ public partial class UpdateBatchModel : ObservableObject
     {
         WrittenItems = result.Succeeded;
         _failures = result.Failures;
+        _changes = result.Changes;
 
         var written = result.Succeeded.Count;
 
@@ -144,6 +167,8 @@ public partial class UpdateBatchModel : ObservableObject
 
         OnPropertyChanged(nameof(HasFailures));
         OnPropertyChanged(nameof(FailuresVisibility));
+        OnPropertyChanged(nameof(HasChanges));
+        OnPropertyChanged(nameof(ChangesVisibility));
     }
 
     /// <summary>
@@ -158,6 +183,11 @@ public partial class UpdateBatchModel : ObservableObject
         WrittenItems = new List<DllWorkItem>();
         _failures = result.Failures;
 
+        // The batch that was there to look at has just been put back, so there is nothing left for
+        // "see what changed" to describe. Its own changes are the reverse of what was undone, which
+        // is not a list anyone asked for.
+        _changes = new List<DllChange>();
+
         DoneGlyph = result.Failures.Count > 0 ? "\uE7BA" : "\uE73E";
         DoneText = ResourceHelper.GetFormattedResourceTemplate("Update_UndoneTemplate", result.Succeeded.Count);
         DoneDetailText = string.Empty;
@@ -166,5 +196,7 @@ public partial class UpdateBatchModel : ObservableObject
 
         OnPropertyChanged(nameof(HasFailures));
         OnPropertyChanged(nameof(FailuresVisibility));
+        OnPropertyChanged(nameof(HasChanges));
+        OnPropertyChanged(nameof(ChangesVisibility));
     }
 }
