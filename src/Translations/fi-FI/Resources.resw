@@ -863,15 +863,6 @@ Tästä syystä suosittelemme varovaisuutta moninpeleille.</value>
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Salli debug-DLL-tiedostot</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDK:t julkaisevat joskus debug-DLL-tiedostoja, jotka mahdollistavat lisätietojen näyttämisen näytöllä.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>DLL-tiedostot tarkistetaan Windows-luotettavuuden suhteen vahvistamalla allekirjoitus ennen pelikansioon vaihtamista. Jos DLL-tiedoston allekirjoituksen vahvistaminen epäonnistuu, sitä tiedostoa ei käytetä. On suositeltavaa pitää tämä pois käytöstä.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Tämä koskee vain DLL-valitsijaa, ei kirjastosivua.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Koontiversiotunniste</value>
   </data>

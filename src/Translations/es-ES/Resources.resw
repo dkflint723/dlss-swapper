@@ -806,15 +806,6 @@ Debido a esto, recomendamos tener precaución con los juegos multijugador.</valu
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Permitir DLLs de Depuración</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>Los SDKs a veces publican DLLs de depuración que permiten mostrar información adicional en pantalla.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>Se comprueba si las DLL son de confianza en Windows validando la firma antes de ser intercambiadas en una carpeta del juego. Si una DLL no pasa la validación de la firma, no se utilizará. Se recomienda mantener esta opción desactivada.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Esto solo se aplica al selector de DLL, no a la página de la biblioteca.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Commit de compilación</value>
   </data>

@@ -833,15 +833,6 @@ Z tohoto důvodu doporučujeme být u multiplayerových her opatrní.</value>
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Povolit ladicí (debug) soubory DLL</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>Sady SDK někdy vydávají ladicí (debug) soubory DLL, které umožňují zobrazení dalších informací na obrazovce.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>DLL soubory se v systému Windows kontrolují, zda jsou důvěryhodné, a to ověřením podpisu před jejich přesunutím do složky hry. Pokud soubor DLL neprojde ověřením podpisu, nebude použit. Doporučuje se tuto funkci ponechat vypnutou.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Toto se týká pouze výběru souboru DLL, nikoli stránky knihovny.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Commit sestavení</value>
   </data>

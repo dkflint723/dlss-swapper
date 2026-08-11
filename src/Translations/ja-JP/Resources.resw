@@ -837,15 +837,6 @@ DLLは信頼できるソースからのみインポートして下さい</value>
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>デバッグDLLの使用を許可する</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDKは、画面上に追加の情報を表示出来るようにするデバッグ用DLLをリリースする事があります</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>DLLは、ゲームフォルダに切り替える前に、Windowsで署名検証を行って信頼性があるかどうかが確認されます。DLLが署名検証に失敗した場合、そのDLLは使用されません。この設定はオフのままにしておく事をお勧めします</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>これはDLL選択ツールにのみ適用され、ライブラリページには適用されません</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>ビルドコミット</value>
   </data>

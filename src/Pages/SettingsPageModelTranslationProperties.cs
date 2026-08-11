@@ -46,10 +46,10 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string BackupNewGamesInfo => ResourceHelper.GetString("SettingsPage_BackupNewGamesInfo");
 
     [TranslationProperty]
-    public string AllowDebugDllsInfo => ResourceHelper.GetString("SettingsPage_AllowDebugDllsInfo");
+    public string AllowDebugDllsInfo => ResourceHelper.GetString("SettingsPage_AllowDebugDlls_Desc");
 
     [TranslationProperty]
-    public string AllowUntrustedInfo => ResourceHelper.GetString("SettingsPage_AllowUntrustedInfo");
+    public string AllowUntrustedInfo => ResourceHelper.GetString("SettingsPage_AllowUntrusted_Desc");
 
     [TranslationProperty]
     public string ApplicationRunsInAdministrativeModeInfo => ResourceHelper.GetString("General_ApplicationRunningAsAdmin");
@@ -167,7 +167,7 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string ShowOnlyDownloadedDllsText => ResourceHelper.GetString("SettingsPage_ShowOnlyDownloadedDlls");
 
     [TranslationProperty]
-    public string ApliesOnlyToDllPickerNotLibraryText => ResourceHelper.GetString("SettingsPage_AppliesOnlyToDllPickerNotLibrary");
+    public string ApliesOnlyToDllPickerNotLibraryText => ResourceHelper.GetString("SettingsPage_ShowOnlyDownloadedDlls_Desc");
 
     [TranslationProperty]
     public string CheckForUpdatesText => ResourceHelper.GetString("SettingsPage_SettingsCheckForUpdates");

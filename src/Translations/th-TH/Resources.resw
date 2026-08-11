@@ -930,15 +930,6 @@
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>อนุญาตให้ใช้ Debug DLLs</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>บางครั้ง SDK จะปล่อยไฟล์ DLLs สำหรับดีบักออกมา ซึ่งจะช่วยให้มีการแสดงข้อมูลบนหน้าจอเพิ่มขึ้นได้</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>ไฟล์ DLLs จะถูกตรวจสอบความน่าเชื่อถือใน Windows โดยการเช็คลายเซ็นดิจิทัลก่อนที่จะถูกนำไปใส่ในโฟลเดอร์เกม หาก DLL ไม่ผ่านการตรวจสอบลายเซ็น มันจะไม่ถูกนำมาใช้งาน แนะนำให้ปิดส่วนนี้ไว้</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>การตั้งค่านี้มีผลเฉพาะกับหน้าเลือก DLL เท่านั้น ไม่รวมถึงหน้าคลังเกม</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>หมายเลข Build Commit</value>
   </data>

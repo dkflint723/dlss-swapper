@@ -746,15 +746,6 @@
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>السماح بـ Debug DLLs</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>أحياناً تصدر مجموعات تطوير البرمجيات (SDKs) Debug DLL للتصحيح والتي تسمح بعرض معلومات إضافية على الشاشة.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>يتم فحص ملفات DLL للتأكد من أنها موثوقة في Windows من خلال التحقق من التوقيع قبل استبدالها في مجلد اللعبة. إذا فشل ملف DLL في التحقق من التوقيع فلن يتم استخدامه. يُنصح بإبقاء هذا الخيار مُعطلاً.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>هذا ينطبق فقط على منتقي DLL، وليس على صفحة المكتبة.</value>
-  </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
     <value>لم يتمكن من فتح ملف السجل الخاص بك مباشرة من DLSS Swapper. يرجى محاولة فتحه يدوياً.</value>
   </data>

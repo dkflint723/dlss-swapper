@@ -632,15 +632,6 @@ Jeśli tak się dzieje, prosimy o zgłoszenie tego w naszym module śledzenia b�
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Zezwalaj na debugowanie bibliotek DLL</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>Zestawy SDK czasami udostępniają biblioteki DLL debugowania, które umożliwiają wyświetlanie dodatkowych informacji na ekranie.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>Biblioteki DLL są sprawdzane pod kątem zaufania w systemie Windows poprzez weryfikację podpisu przed umieszczeniem ich w folderze gry. Jeśli biblioteka DLL nie przejdzie weryfikacji podpisu, nie zostanie użyta. Zaleca się pozostawienie tej opcji wyłączonej.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Dotyczy to tylko selektora DLL, a nie strony biblioteki.</value>
-  </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
     <value>Nie udało się otworzyć pliku z logami bezpośrednio z DLSS Swapper. Spróbuj otworzyć go ręcznie.</value>
   </data>

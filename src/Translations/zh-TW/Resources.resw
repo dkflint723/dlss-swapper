@@ -765,15 +765,6 @@
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>允許偵錯 DLL</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDK 有時候會發佈偵錯用的 DLL，這能讓螢幕上顯示額外的資訊。</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>在將 DLL 檔案取代到遊戲資料夾之前，Windows 會透過驗證簽章來檢查它是否值得信任。如果 DLL 檔案未能通過簽章驗證，則不會被使用，建議保持此功能關閉。</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>在替換 DLL 時，僅顯示已經下載的檔案，而不是所有不同的版本，此選項不影響 DLL 清單。</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>建置提交</value>
   </data>

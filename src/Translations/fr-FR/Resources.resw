@@ -863,15 +863,6 @@ Pour cette raison, nous vous recommandons d'être prudent avec les jeux multijou
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Autoriser les DLL de débogage</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>Les SDK publient parfois des DLL de débogage qui permettent d'afficher des informations supplémentaires à l'écran.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>Les DLL sont vérifiées pour s'assurer qu'elles sont approuvées par Windows en validant la signature avant d'être échangées dans un dossier de jeu. Si une DLL échoue à la validation de la signature, elle ne sera pas utilisée. Il est recommandé de laisser cette option désactivée.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Cela s'applique uniquement au sélecteur de DLL, et non à la page de la bibliothèque.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Commit de build</value>
   </data>

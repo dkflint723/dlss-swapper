@@ -930,15 +930,6 @@
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>اجازه دادن به DLL های دیباگ</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>کیت‌های توسعه نرم‌افزار (SDKها) گاهی اوقات فایل‌های DLL مخصوص عیب‌یابی (Debug DLLs) منتشر می‌کنند که اجازه می‌دهند اطلاعات تکمیلی و اضافی روی صفحه (On-screen) نمایش داده شوند.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>فایل‌های DLL پیش از انتقال به پوشه بازی، با اعتبارسنجی امضای دیجیتال (Signature Validation) بررسی می‌شوند تا مطمئن شویم قابل اعتماد هستند یا خیر. اگر یک DLL در اعتبارسنجی امضا رد شود، استفاده نخواهد شد. توصیه می‌شود این گزینه را غیرفعال (Off) نگه دارید.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>این فقط برای انتخاب‌گر DLL اعمال می‌شود، نه صفحه کتابخانه.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>بیلد کامیت</value>
   </data>

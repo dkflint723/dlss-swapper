@@ -930,15 +930,6 @@
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Разрешить отладку DLL</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>Иногда SDK выпускают отладочные DLL, которые позволяют отображать на экране дополнительную информацию.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>DLL проверяются на предмет доверия в Windows путем проверки подписи перед тем, как быть перемещенными в папку игры. Если DLL не проходит проверку подписи, она не будет использоваться. Рекомендуется отключить эту функцию.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Это применимо только к выбору DLL, а не к странице библиотеки.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Создать коммит</value>
   </data>

@@ -671,15 +671,6 @@ Recomendamos cautela ao usar isso em jogos multiplayer.</value>
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Permitir DLLs de depuração</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDKs às vezes liberam DLLs de depuração que mostram informações adicionais na tela.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>As DLLs são verificadas se são confiáveis no Windows validando a assinatura. Caso falhe, não serão usadas. Recomendado manter desativado.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Isso se aplica apenas ao seletor de DLLs, não à página da biblioteca.</value>
-  </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
     <value>Não foi possível abrir o arquivo de log diretamente pelo DLSS Swapper. Tente abrir manualmente.</value>
   </data>

@@ -752,15 +752,6 @@
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>السماح بملفات DLL الخاصة بالتنقيح (Debug DLLs)</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>تصدر بعض SDKs ملفات DLL خاصة بالتنقيح تعرض معلومات إضافية على الشاشة.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>يتم التحقق من موثوقية ملفات DLL في نظام ويندوز من خلال توقيعها الرقمي قبل استخدامها داخل مجلد اللعبة. إذا فشل التوقيع، فلن يتم استخدامها. يُنصح بترك هذا الخيار مُعطلاً.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>هذا ينطبق فقط على أداة اختيار DLL، وليس على صفحة المكتبة.</value>
-  </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
     <value>تعذّر فتح ملف السجل مباشرة من DLSS Swapper. يُرجى فتحه يدويًا.</value>
   </data>

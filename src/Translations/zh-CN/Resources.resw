@@ -926,15 +926,6 @@
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>允许调试 DLL 文件</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDK 有时会发布调试 DLL 文件，允许文件在屏幕上显示额外的调试信息。</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>在将 DLL 文件替换到游戏文件夹之前，Windows 会通过验证签名来检查其是否受信任，如果 DLL 文件未能通过签名验证，则不会被使用，建议保持此功能关闭。</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>在替换 DLL 时，仅显示已经下载的文件，而不是所有不同版本，此选项不影响 DLL 库。</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>提交当前构建</value>
   </data>

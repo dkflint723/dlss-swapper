@@ -833,15 +833,6 @@ Aus diesem Umstand empfehlen wir besondere Vorsicht im Umgang mit Multiplayer Sp
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Erlaube Debug DLLs</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>Die SDKs erhalten manchmal Debug DLLs welche zusätzliche On-Screen Informationen auf deinem Bildschirm während des spielens anzeigen.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>DLLs werden in Windows auf Vertrauenswürdigkeit geprüft, indem ihre Signatur überprüft wird bevor sie in ein Spiele-Verzeichnis kopiert werden. Wenn eine DLL die Signaturprüfung nicht besteht, wird sie nicht verwendet. Es wird empfohlen, diese Option deaktiviert zu lassen.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Diese Option gilt nur für den DLL Picker, nicht für die Bibliotheksseite.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Build Commit</value>
   </data>

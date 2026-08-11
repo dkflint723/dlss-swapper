@@ -833,15 +833,6 @@
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Дозволити налагоджувальні DLL</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDK іноді випускає налагоджувальні DLL, які дозволяють відображати додаткову інформацію на екрані.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>Перед перенесенням у папку гри DLL перевіряються на довіру до них у Windows шляхом перевірки підпису. Якщо DLL не проходить перевірку підпису, вона не використовуватиметься. Рекомендується вимкнути цю опцію.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Це стосується лише засобу вибору DLL, а не сторінки бібліотеки.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Коміт збірки</value>
   </data>

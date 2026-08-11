@@ -762,15 +762,6 @@ Bu nedenle çok oyunculu oyunlarda dikkatli olmanızı öneririz.</value>
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Hata Ayıklama (Debug) DLL'lerine İzin Ver</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDK'lar bazen ekranda ilave bilgilerin gösterilmesini sağlayan hata ayıklama (debug) DLL'leri yayınlar.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>DLL'ler, bir oyun klasörüne değiştirilmeden önce imzaları doğrulanarak Windows'ta güvenilir olup olmadıkları kontrol edilir. Bir DLL imza doğrulamasında başarısız olursa kullanılmaz. Bu ayarın kapalı tutulması önerilir.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Bu yalnızca DLL seçici için geçerlidir, kütüphane sayfası için değil.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Derleme işlemi</value>
   </data>

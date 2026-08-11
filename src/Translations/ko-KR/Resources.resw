@@ -855,18 +855,6 @@ DLL 버전마다 지원하는 프리셋이 다릅니다.
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>디버그 DLL 허용</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDK 배포 시 가끔 화면에 추가적인 정보를 표시해 주는 디버그용 DLL이 포함될 때가 있습니다.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>DLL을 게임 폴더로 교체하기 전,
-디지털 서명을 검증하여 Windows에서 신뢰할 수 있는 파일인지 확인합니다.
-서명 검증에 실패한 DLL은 사용되지 않습니다.
-이 옵션은 꺼두는 것을 권장합니다.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>이 설정은 DLL 선택기(Picker)에만 적용되며, 라이브러리 페이지에는 적용되지 않습니다.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>빌드 커밋</value>
   </data>

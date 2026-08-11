@@ -192,7 +192,7 @@
     <value>Behaviour</value>
   </data>
   <data name="Settings_Theme_Desc" xml:space="preserve">
-    <value>System follows your Windows light/dark setting</value>
+    <value>Light, dark, or whichever one Windows is currently set to.</value>
   </data>
   <data name="Settings_Accent" xml:space="preserve">
     <value>Accent colour</value>
@@ -1319,14 +1319,11 @@ Because of this we recommend using caution for multiplayer games.</value>
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Allow Debug DLLs</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDKs sometimes release debug DLLs which allow additional on-screen information to be displayed.</value>
+  <data name="SettingsPage_AllowDebugDlls_Desc" xml:space="preserve">
+    <value>Lets debug builds of the DLLs appear in the lists so you can swap one in. They draw extra information over the game while it runs, which helps when working out why something looks wrong.</value>
   </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>DLLs are checked if they are trusted in Windows by validating the signature before being swapped into a game folder. If a DLL fails signature validation then it will not be used. It is recommended to keep this off.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>This only applies to the DLL picker, not the library page.</value>
+  <data name="SettingsPage_AllowUntrusted_Desc" xml:space="preserve">
+    <value>Lets a DLL be swapped in even when Windows cannot verify who signed it. Leave this off unless you know exactly where the file came from.</value>
   </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Build commit</value>
@@ -1476,6 +1473,9 @@ Because of this we recommend using caution for multiplayer games.</value>
   </data>
   <data name="SettingsPage_ShowOnlyDownloadedDlls" xml:space="preserve">
     <value>Only Show Downloaded DLLs</value>
+  </data>
+  <data name="SettingsPage_ShowOnlyDownloadedDlls_Desc" xml:space="preserve">
+    <value>Hides versions you have not downloaded yet when picking a DLL for a game, so the list only offers what you can swap in right now. The upscalers page still lists everything.</value>
   </data>
   <data name="SettingsPage_ThemeDark" xml:space="preserve">
     <value>Dark</value>

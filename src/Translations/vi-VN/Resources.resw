@@ -830,15 +830,6 @@ Vì lý do này, chúng tôi khuyên nghịch cẩn thận với trò chơi nhi�
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Cho Phép DLL Debug</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>SDK đôi khi phát hành DLL debug cho phép hiển thị thông tin bổ sung trên màn hình.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>DLL được kiểm tra xem chúng có được tin cậy trong Windows bằng cách xác thực chữ ký trước khi được hoán đổi vào thư mục trò chơi. Nếu DLL thất bại xác thực chữ ký thì nó sẽ không được sử dụng. Khuyến nghị giữ tắt.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Điều này chỉ áp dụng cho bộ chọn DLL, không phải trang thư viện.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Commit xây dựng</value>
   </data>

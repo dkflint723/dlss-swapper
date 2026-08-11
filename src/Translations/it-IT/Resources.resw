@@ -807,15 +807,6 @@ Per questo motivo, ti consigliamo di usare cautela nelle partite multi-giocatore
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
     <value>Consenti DLL di debug</value>
   </data>
-  <data name="SettingsPage_AllowDebugDllsInfo" xml:space="preserve">
-    <value>A volte alcuni SDK rilasciano DLL di debug che consentono di visualizzare ulteriori informazioni su schermo.</value>
-  </data>
-  <data name="SettingsPage_AllowUntrustedInfo" xml:space="preserve">
-    <value>Le DLL vengono controllate per verificarne l'affidabilità in Windows, convalidandone la firma prima di essere spostate nella cartella di un gioco. Se una DLL non supera la convalida della firma, non verrà utilizzata. Si consiglia di disattivare questa opzione.</value>
-  </data>
-  <data name="SettingsPage_AppliesOnlyToDllPickerNotLibrary" xml:space="preserve">
-    <value>Questo si applica solo al selettore DLL, non alla pagina della libreria.</value>
-  </data>
   <data name="SettingsPage_BuildCommit" xml:space="preserve">
     <value>Commit di compilazione</value>
   </data>
