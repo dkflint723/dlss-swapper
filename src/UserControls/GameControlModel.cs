@@ -113,28 +113,13 @@ public partial class GameControlModel : ObservableObject
     /// dropdown that had greyed itself out. An error icon appeared for exactly one of the three.
     /// A disabled control with no reason reads as broken rather than as unavailable.
     /// </remarks>
-    public string DlssPresetDescription
-    {
-        get
-        {
-            if (NVAPIHelper.Instance.IsSupported == false)
-            {
-                return ResourceHelper.GetString("GamePage_Preset_NoDriver");
-            }
+    public string DlssPresetDescription => PresetAvailability.Describe(
+        NVAPIHelper.Instance.IsSupported,
+        NVAPIHelper.Instance.PermissionIssue,
 
-            if (NVAPIHelper.Instance.PermissionIssue)
-            {
-                return ResourceHelper.GetString("GamePage_Preset_PermissionIssue");
-            }
-
-            if (CanSelectDlssPreset == false && CanSelectDlssDPreset == false && CanSelectDlssGPreset == false)
-            {
-                return ResourceHelper.GetString("GamePage_Preset_NoProfile");
-            }
-
-            return ResourceHelper.GetString("GamePage_Preset_Desc");
-        }
-    }
+        // The driver profile is what CanSelect is set from, a few lines further down the
+        // constructor: it is only ever true once FindGameProfile has returned one.
+        CanSelectDlssPreset || CanSelectDlssDPreset || CanSelectDlssGPreset);
 
     /// <summary>
     /// Hides the buttons that change dlls when the game is locked.
