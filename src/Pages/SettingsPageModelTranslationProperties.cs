@@ -131,6 +131,15 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string DLSSGOptionsGlobalPresetText => ResourceHelper.GetString("SettingsPage_DLSSGOptions_GlobalPreset");
 
     [TranslationProperty]
+    public string DLSSOptionsGlobalPresetDescText => ResourceHelper.GetString("SettingsPage_DLSSOptions_GlobalPreset_Desc");
+
+    [TranslationProperty]
+    public string DLSSDOptionsGlobalPresetDescText => ResourceHelper.GetString("SettingsPage_DLSSDOptions_GlobalPreset_Desc");
+
+    [TranslationProperty]
+    public string DLSSGOptionsGlobalPresetDescText => ResourceHelper.GetString("SettingsPage_DLSSGOptions_GlobalPreset_Desc");
+
+    [TranslationProperty]
     public string DLSSDeveloperOptionsText => ResourceHelper.GetString("SettingsPage_DLSSDeveloperOptions");
 
     [TranslationProperty]

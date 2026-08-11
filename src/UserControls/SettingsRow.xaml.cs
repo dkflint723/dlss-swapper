@@ -23,6 +23,9 @@ public sealed partial class SettingsRow : UserControl
     public static readonly DependencyProperty ControlProperty = DependencyProperty.Register(
         nameof(Control), typeof(object), typeof(SettingsRow), new PropertyMetadata(null, OnVisualsChanged));
 
+    public static readonly DependencyProperty GlyphProperty = DependencyProperty.Register(
+        nameof(Glyph), typeof(string), typeof(SettingsRow), new PropertyMetadata(string.Empty, OnVisualsChanged));
+
     public string Title
     {
         get => (string)GetValue(TitleProperty);
@@ -34,6 +37,16 @@ public sealed partial class SettingsRow : UserControl
     {
         get => (string)GetValue(DescriptionProperty);
         set => SetValue(DescriptionProperty, value);
+    }
+
+    /// <summary>
+    /// A mark before the title, for rows that can be done something to beyond using their control —
+    /// today, the libraries that can be dragged into a different order.
+    /// </summary>
+    public string Glyph
+    {
+        get => (string)GetValue(GlyphProperty);
+        set => SetValue(GlyphProperty, value);
     }
 
     /// <summary>The toggle, dropdown or button that changes it.</summary>
@@ -67,6 +80,9 @@ public sealed partial class SettingsRow : UserControl
         DescriptionText.Visibility = string.IsNullOrEmpty(Description)
             ? Visibility.Collapsed
             : Visibility.Visible;
+
+        LeadingGlyph.Glyph = Glyph;
+        LeadingGlyph.Visibility = string.IsNullOrEmpty(Glyph) ? Visibility.Collapsed : Visibility.Visible;
 
         ControlHost.Content = Control;
     }

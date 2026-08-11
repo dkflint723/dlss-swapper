@@ -288,33 +288,78 @@
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
-                    <StackPanel Orientation="Horizontal"
-                           Margin="0,40,0,0" Spacing="10">
-                        <usercontrols:SectionRule
-                               Margin="0,36,0,4"
-                               Label="{x:Bind ViewModel.TranslationProperties.DLSSOptionsText, Mode=OneWay}" />
-                    </StackPanel>
+                    <usercontrols:SectionRule
+                        Margin="0,36,0,4"
+                        Label="{x:Bind ViewModel.TranslationProperties.DLSSOptionsText, Mode=OneWay}" />
 
-                    <StackPanel Margin="0,10,0,0">
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                            <ComboBox Header="{x:Bind ViewModel.TranslationProperties.DLSSOptionsGlobalPresetText, Mode=OneWay}" IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.DlssPresetOptions, Mode=OneTime}" SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssPreset, Mode=TwoWay}" DisplayMemberPath="Name" />
-                            <Button Visibility="{x:Bind helpers:NVAPIHelper.Instance.PermissionIssue, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{x:Bind ViewModel.NVAPIErrorCommand, Mode=OneTime}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.NVAPIErrorTooltipText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}" VerticalAlignment="Bottom">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource ErrorFontIcon}" />
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
-                    </StackPanel>
+                    <!--
+                        The three headers were above their dropdowns and the only explanation of any
+                        of them was one italic caption below all three, so each control was read
+                        before the thing that made it answerable. Same rows as every other setting
+                        now, and the sentence that used to be the caption is what each row says.
+                    -->
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.DLSSOptionsGlobalPresetText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.DLSSOptionsGlobalPresetDescText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <ComboBox
+                                    MinWidth="180"
+                                    IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneWay}"
+                                    ItemsSource="{x:Bind ViewModel.DlssPresetOptions, Mode=OneTime}"
+                                    SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssPreset, Mode=TwoWay}"
+                                    DisplayMemberPath="Name" />
+                                <Button
+                                    Visibility="{x:Bind helpers:NVAPIHelper.Instance.PermissionIssue, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                                    Command="{x:Bind ViewModel.NVAPIErrorCommand, Mode=OneTime}"
+                                    ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.NVAPIErrorTooltipText, Mode=OneWay}"
+                                    Style="{StaticResource TextBlockButtonStyle}"
+                                    VerticalAlignment="Center">
+                                    <Button.Content>
+                                        <FontIcon Style="{StaticResource ErrorFontIcon}" />
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
 
-                    <StackPanel Margin="0,10,0,0">
-                        <ComboBox Header="{x:Bind ViewModel.TranslationProperties.DLSSDOptionsGlobalPresetText, Mode=OneWay}" IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneTime}" ItemsSource="{x:Bind ViewModel.DlssDPresetOptions, Mode=OneTime}" SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssDPreset, Mode=TwoWay}" DisplayMemberPath="Name" Margin="0,0,0,8" />
-                    </StackPanel>
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.DLSSDOptionsGlobalPresetText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.DLSSDOptionsGlobalPresetDescText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ComboBox
+                                MinWidth="180"
+                                IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneTime}"
+                                ItemsSource="{x:Bind ViewModel.DlssDPresetOptions, Mode=OneTime}"
+                                SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssDPreset, Mode=TwoWay}"
+                                DisplayMemberPath="Name" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
 
-                    <StackPanel Margin="0,10,0,0">
-                        <ComboBox Header="{x:Bind ViewModel.TranslationProperties.DLSSGOptionsGlobalPresetText, Mode=OneWay}" IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneTime}" ItemsSource="{x:Bind ViewModel.DlssGPresetOptions, Mode=OneTime}" SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssGPreset, Mode=TwoWay}" DisplayMemberPath="Name" Margin="0,0,0,8" />
-                    </StackPanel>
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.DLSSGOptionsGlobalPresetText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.DLSSGOptionsGlobalPresetDescText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ComboBox
+                                MinWidth="180"
+                                IsEnabled="{x:Bind helpers:NVAPIHelper.Instance.IsSupported, Mode=OneTime}"
+                                ItemsSource="{x:Bind ViewModel.DlssGPresetOptions, Mode=OneTime}"
+                                SelectedItem="{x:Bind ViewModel.SelectedGlobalDlssGPreset, Mode=TwoWay}"
+                                DisplayMemberPath="Name" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
 
-                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" FontStyle="Italic" Margin="0,8,0,0">
+                    <!--
+                        The one thing true of all three rather than of any one of them, so it stays
+                        under the block. Tertiary and upright rather than an italic caption: it is
+                        the caveat that stops the rows being read as a guarantee.
+                    -->
+                    <TextBlock
+                        FontSize="11"
+                        LineHeight="15"
+                        TextWrapping="Wrap"
+                        Margin="0,12,0,0"
+                        Foreground="{ThemeResource DsTextTertiaryBrush}">
                             <Run Text="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoTooltipText, Mode=OneWay}" /> <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.DLSSPresetInfoCommand}"><Run Text="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoText, Mode=OneWay}" /></Hyperlink>.
                     </TextBlock>
 

@@ -1435,6 +1435,15 @@ Because of this we recommend using caution for multiplayer games.</value>
   <data name="SettingsPage_DLSSOptions_GlobalPreset" xml:space="preserve">
     <value>Global Super Resolution preset</value>
   </data>
+  <data name="SettingsPage_DLSSOptions_GlobalPreset_Desc" xml:space="preserve">
+    <value>The Super Resolution preset every game uses, unless you set one for that game.</value>
+  </data>
+  <data name="SettingsPage_DLSSDOptions_GlobalPreset_Desc" xml:space="preserve">
+    <value>The Ray Reconstruction preset every game uses, unless you set one for that game.</value>
+  </data>
+  <data name="SettingsPage_DLSSGOptions_GlobalPreset_Desc" xml:space="preserve">
+    <value>The Frame Generation preset every game uses, unless you set one for that game.</value>
+  </data>
   <data name="SettingsPage_GameLibraries" xml:space="preserve">
     <value>Game Libraries</value>
   </data>
@@ -1452,6 +1461,12 @@ Because of this we recommend using caution for multiplayer games.</value>
   </data>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Language</value>
+  </data>
+  <data name="SettingsPage_LibraryFound" xml:space="preserve">
+    <value>Found on this PC</value>
+  </data>
+  <data name="SettingsPage_LibraryNotFound" xml:space="preserve">
+    <value>Not found on this PC</value>
   </data>
   <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
     <value>{0} disabled</value>

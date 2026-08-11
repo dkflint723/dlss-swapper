@@ -9,6 +9,10 @@
     xmlns:data="using:DLSS_Swapper.Data"
     mc:Ignorable="d">
 
+    <!--
+        Still a ListView rather than a stack of rows, because dragging these into a different order
+        is what sets the order the games page groups them in. Only the row shape changed.
+    -->
     <ListView
         ItemsSource="{x:Bind ViewModel.GameLibraries, Mode=OneWay}"
         ScrollViewer.VerticalScrollMode="Disabled"
@@ -17,17 +21,44 @@
         AllowDrop="True"
         SelectionMode="None">
 
+        <!--
+            The container's own padding and minimum height would sit inside the row's, which would
+            make these rows a different size from every other settings row on the page.
+        -->
+        <ListView.ItemContainerStyle>
+            <Style TargetType="ListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="MinHeight" Value="0" />
+                <Setter Property="BorderThickness" Value="0" />
+            </Style>
+        </ListView.ItemContainerStyle>
+
         <ListView.ItemTemplate>
             <DataTemplate x:DataType="data:GameLibrarySelector">
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <FontIcon Glyph="&#xE700;" FontSize="12" FontWeight="Bold" />
-                    <ToggleSwitch
-                        IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
-                        OffContent="{x:Bind OffContentLabel, Mode=OneWay}"
-                        OnContent="{x:Bind OnContentLabel, Mode=OneWay}"
-                        Tag="{x:Bind GameLibrary}"
-                        />
-                </StackPanel>
+                <local:SettingsRow
+                    Glyph="&#xE700;"
+                    Title="{x:Bind Name}"
+                    Description="{x:Bind Description, Mode=OneWay}">
+                    <local:SettingsRow.Control>
+                        <!--
+                            Yes and no, like every other toggle on the page. It used to read
+                            "Steam enabled" beside a row that now has Steam as its title.
+                        -->
+                        <!--
+                            A ToggleSwitch reserves 154px by default, which in a 280px column left
+                            the names wrapping to three lines. Wide enough for the longer of the two
+                            words and no wider, so the row does not reflow when it is toggled.
+                        -->
+                        <ToggleSwitch
+                            IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                            OnContent="{x:Bind OnContentLabel, Mode=OneWay}"
+                            OffContent="{x:Bind OffContentLabel, Mode=OneWay}"
+                            MinWidth="90"
+                            Tag="{x:Bind GameLibrary}" />
+                    </local:SettingsRow.Control>
+                </local:SettingsRow>
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>

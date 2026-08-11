@@ -4,7 +4,7 @@
 x64, unpackaged. Treated as a **personal divergence, not upstream PRs** — aggressive refactoring is
 fine.
 
-**State:** `main`, all pushed and CI-green. 373 tests (262 app, 111 core). Working tree clean except
+**State:** `main`, all pushed and CI-green. 378 tests (267 app, 111 core). Working tree clean except
 `src/Assets/static_manifest.json` and `docs/manifest.json`, which predate the work and have been
 deliberately excluded from every commit — `git add -A` will sweep them in, so stage by path.
 
@@ -13,7 +13,7 @@ deliberately excluded from every commit — `git add -A` will sweep them in, so 
 - `core/DLSS.Swapper.Core` — pure `net10.0`, no WinUI. Swap executor, version ranking, `DllTypes`
   registry.
 - `tests/DLSS.Swapper.Core.Tests` — 111 tests.
-- `tests/DLSS.Swapper.App.Tests` — 262 tests; references the WinUI app directly. Needs
+- `tests/DLSS.Swapper.App.Tests` — 267 tests; references the WinUI app directly. Needs
   `resources.pri` (a build target renames the app's `.pri`) or every string lookup throws.
 - `TemporaryDatabase` fixture gives tests a **real SQLite database** in temp, via
   `Storage.OverrideStoragePath` + `Database.ResetInstanceAsync` (internal, test-only seams). Debug
@@ -52,18 +52,22 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-1. Settings still has two blocks in the old shape: `GameLibrarySelectorControl` (its own toggle
-   rows, not `SettingsRow`) and the DLSS preset block. Neither is wrong, they just do not match the
-   rows around them.
-2. **The upscalers page is not finished.** `Show the games using this` is still missing from the row
+1. **The upscalers page is not finished.** `Show the games using this` is still missing from the row
    menu, and clicking a usage count should filter Games to those titles. Both need the same missing
    piece — a way to carry a dll filter across to the games page — so build it once. Whatever it is
    has to make the filter visible and clearable on arrival, or the games page just looks broken.
-3. `See what changed` on the done strip is still not built. It needs a history view filtered to one
+2. `See what changed` on the done strip is still not built. It needs a history view filtered to one
    batch, and there is no such view yet.
-4. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
-   accent rule down its left edge, rather than in a gradient over it. Not yet reasoned about either
-   way.
+3. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
+   accent rule down its left edge, rather than in a gradient over it. **Left for the user to call**,
+   not because it is hard: it is taste, and picking quietly is the wrong way to settle it.
+4. The preset dropdowns disable themselves when NVAPI is unsupported and say nothing about why. The
+   error button beside the first one only appears for a permission problem, not for "this is not an
+   NVIDIA machine". A disabled control with no reason is the same failure the rest of this work has
+   been removing.
+5. `SettingsPage_LibraryEnabled` and `SettingsPage_LibraryDisabled` are no longer used by anything —
+   they read "Steam enabled", which the row's title now says. They are still in all nine translation
+   files. Prune them together with any other dead keys rather than one at a time.
 
 ## Done since
 
@@ -87,7 +91,17 @@ read than the `.dc.html` mockup.
   what it found and what it is on the right, with `SectionRule` between blocks.
 - **`SettingsRow`** — title, one line saying what the setting does, and the control. The page had
   ten copies of a heading, a control and an italic caption *below* it, so a setting could only be
-  understood by reading past the thing you were about to change.
+  understood by reading past the thing you were about to change. **Every block on the page uses it
+  now**, including the last two that did not: the three preset dropdowns, whose only explanation
+  used to be one italic caption under all three; and the game libraries, which are still a
+  reorderable `ListView` because dragging them sets the order the games page groups them in. A row
+  can carry a leading glyph, which exists for those drag handles — inside the row, so the hairline
+  runs its full width.
+- **A library row says whether that library is on the machine.** Turning on a library that is not
+  installed finds nothing, and there was no way to tell that apart from one that is installed and
+  simply has no games with upscalers. `IsInstalled` is asked once per row, in the constructor, since
+  it goes to the registry and the disk. `Manually Added` gets no such line — it is not installed
+  anywhere, so neither answer is about anything.
 - **`NewResourceStringTests`** asserts every resource key this work added resolves. A missing key
   renders as a sentinel string rather than throwing, so nothing else would notice.
 - **The empty states** (README §6 and §7). `GamesEmptyState.For` decides between first run, a
@@ -152,5 +166,8 @@ read than the `.dc.html` mockup.
   the second one is stale. Launching it screenshots an old build and every conclusion drawn from
   that screenshot is wrong. Check the dll's timestamp against the source before believing a
   screenshot that shows a change missing.
+- **A `ToggleSwitch` reserves 154px** whether or not its on/off content needs it. In a 280px column
+  that left every library name wrapping to three lines. Give it a `MinWidth` wide enough for the
+  longer of the two words, so the row also does not reflow when it is toggled.
 - Close the running app before building; it locks the exe.
 - `Start-Process` succeeding is not the same as the app surviving. Wait on the process.
