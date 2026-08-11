@@ -4,7 +4,7 @@
 x64, unpackaged. Treated as a **personal divergence, not upstream PRs** — aggressive refactoring is
 fine.
 
-**State:** `main`, all pushed and CI-green. 444 tests (333 app, 111 core). Working tree clean except
+**State:** `main`, all pushed and CI-green. 449 tests (338 app, 111 core). Working tree clean except
 `src/Assets/static_manifest.json` and `docs/manifest.json`, which predate the work and have been
 deliberately excluded from every commit — `git add -A` will sweep them in, so stage by path.
 
@@ -13,7 +13,7 @@ deliberately excluded from every commit — `git add -A` will sweep them in, so 
 - `core/DLSS.Swapper.Core` — pure `net10.0`, no WinUI. Swap executor, version ranking, `DllTypes`
   registry.
 - `tests/DLSS.Swapper.Core.Tests` — 111 tests.
-- `tests/DLSS.Swapper.App.Tests` — 333 tests; references the WinUI app directly. Needs
+- `tests/DLSS.Swapper.App.Tests` — 338 tests; references the WinUI app directly. Needs
   `resources.pri` (a build target renames the app's `.pri`) or every string lookup throws.
 - `TemporaryDatabase` fixture gives tests a **real SQLite database** in temp, via
   `Storage.OverrideStoragePath` + `Database.ResetInstanceAsync` (internal, test-only seams). Debug
@@ -65,6 +65,11 @@ read than the `.dc.html` mockup.
 - ✅ The preset rows, and with them the old "disabled with no reason" item: a preset that cannot be
   set now names which of the three reasons that is.
 - ✅ **The leak.** `Hide` removes the control from the root grid.
+- ✅ `Update all dlls` runs the preview sheet and the undo strip instead of the old modal
+  confirm-progress-summary. `Reset all` deliberately still uses the prompt: it is a destructive
+  revert, not a review-then-write.
+- ✅ The name's save is a labelled button; the install path is selectable text rather than a
+  disabled `TextBox` pretending to be a field.
 
 **What is left is internal, not user-visible.** The surface now reads correctly; these are about
 what it costs to change it next time.
@@ -77,16 +82,14 @@ what it costs to change it next time.
    per game, do not cache; `SectionForPageTag` should keep the sidebar on Games; add a labelled
    "← All games".
 2. **Split the model.** `GameControlModel` holds a `WeakReference<GameControl>` read from 12 sites
-   *and* reads `NVAPIHelper.Instance` directly — both must go for it to build in a test host. Pass a
-   small host interface and hand it the preset options plus a get/set delegate. `NVAPIHelper` has a
-   private constructor, no reset, and P/Invokes at construction, so it cannot be reached from a test
-   at all; that seam is the whole reason none of this surface's behaviour is covered.
-3. **It still uses the old modal `DllUpdatePrompt`** rather than the preview sheet and undo strip
-   the games page got. Route `Update all dlls` through `PendingDllUpdate.ForGames` and
-   `RunUpdateBatchAsync` instead.
-4. Two smaller things left from the survey: the name field's save is still a bare `E74E` icon (make
-   it a labelled button or save on focus loss), and the install path is a disabled `TextBox`
-   pretending to be a field rather than a line of text.
+   *and* reads `NVAPIHelper.Instance` directly — both must go for it to build in a test host.
+   `NVAPIHelper` has a private constructor, no reset, and P/Invokes at construction, so it cannot be
+   reached from a test at all; that seam is why none of this surface's behaviour is covered.
+   **Started**: `PresetAvailability` takes the three booleans instead of the singleton and is
+   tested. The rest of the NVAPI reads — `GetGameDLSSPreset`, `SetGameDLSSPreset` and their D/G
+   siblings — still go straight to it, and the driver write still happens inside a property setter
+   with a `DispatcherQueue` rollback, which is untestable by construction. Make it a command that
+   reports success or failure.
 
 
 **Also still open, unrelated to the game page:**
