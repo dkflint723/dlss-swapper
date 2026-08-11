@@ -72,9 +72,9 @@ Still to do, in order:
    supported". Move the driver write out of a property setter into a command that can report
    failure.
 3. **Dialog to page.** `FakeContentDialog` exists only because a real `ContentDialog` cannot open
-   over another on the same XamlRoot, and this surface opens six. Its `ShowAsync` adds itself to the
-   window's root grid and `Hide` never removes it, so **every game opened leaks one**. As a page,
-   the workaround and the leak both go, and every child dialog becomes an ordinary
+   over another on the same XamlRoot, and this surface opens six. (**The leak is already fixed** —
+   `Hide` now removes the control from the root grid — so this is no longer urgent, only right.) As
+   a page, the workaround goes and every child dialog becomes an ordinary
    `EasyContentDialog` on `this.XamlRoot`. Follow `MainWindow.ShowGamesUsingDll`; construct fresh
    per game, do not cache; `SectionForPageTag` should keep the sidebar on Games; add a labelled
    "← All games".
