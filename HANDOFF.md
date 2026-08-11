@@ -4,7 +4,7 @@
 x64, unpackaged. Treated as a **personal divergence, not upstream PRs** — aggressive refactoring is
 fine.
 
-**State:** `main`, all pushed and CI-green. 449 tests (338 app, 111 core). Working tree clean except
+**State:** `main`, all pushed and CI-green. 452 tests (341 app, 111 core). Working tree clean except
 `src/Assets/static_manifest.json` and `docs/manifest.json`, which predate the work and have been
 deliberately excluded from every commit — `git add -A` will sweep them in, so stage by path.
 
@@ -13,7 +13,7 @@ deliberately excluded from every commit — `git add -A` will sweep them in, so 
 - `core/DLSS.Swapper.Core` — pure `net10.0`, no WinUI. Swap executor, version ranking, `DllTypes`
   registry.
 - `tests/DLSS.Swapper.Core.Tests` — 111 tests.
-- `tests/DLSS.Swapper.App.Tests` — 338 tests; references the WinUI app directly. Needs
+- `tests/DLSS.Swapper.App.Tests` — 341 tests; references the WinUI app directly. Needs
   `resources.pri` (a build target renames the app's `.pri`) or every string lookup throws.
 - `TemporaryDatabase` fixture gives tests a **real SQLite database** in temp, via
   `Storage.OverrideStoragePath` + `Database.ResetInstanceAsync` (internal, test-only seams). Debug
@@ -74,22 +74,37 @@ read than the `.dc.html` mockup.
 **What is left is internal, not user-visible.** The surface now reads correctly; these are about
 what it costs to change it next time.
 
-1. **Dialog to page.** `FakeContentDialog` exists only because a real `ContentDialog` cannot open
-   over another on the same XamlRoot, and this surface opens six. (**The leak is already fixed** —
-   `Hide` now removes the control from the root grid — so this is no longer urgent, only right.) As
-   a page, the workaround goes and every child dialog becomes an ordinary
-   `EasyContentDialog` on `this.XamlRoot`. Follow `MainWindow.ShowGamesUsingDll`; construct fresh
-   per game, do not cache; `SectionForPageTag` should keep the sidebar on Games; add a labelled
-   "← All games".
+1. **Dialog to page.** The only item left, and the only one that is a structural rewrite rather than
+   an edit. `FakeContentDialog` exists only because a real `ContentDialog` cannot open over another
+   on the same XamlRoot, and this surface opens six. (**The leak is already fixed** — `Hide` now
+   removes the control from the root grid — so this is no longer urgent, only right.) As a page the
+   workaround goes, every child dialog becomes an ordinary `EasyContentDialog` on `this.XamlRoot`,
+   and the `OnApplyTemplate` footer injection disappears entirely.
+
+   **The shape is already mapped**, so this is one pass rather than an exploration.
+   `src/UserControls/GameControl.xaml` is 378 lines and splits cleanly:
+
+   - lines 19–40 and 152–159 — resources to keep verbatim.
+   - lines 41–140 — the left action row, currently wrapped in a `ControlTemplate`. Becomes the page
+     footer's left half. Strip `{TemplateBinding Background}` and the `ContentDialogPadding`.
+   - lines 142–150 — Remove / Close. Close becomes "← All games" in the page header, and keeps its
+     Escape accelerator.
+   - lines 162–376 — the whole content region, moved verbatim into a `ScrollViewer`.
+
+   Then: `GameDetailPage` exposes `ViewModel` and sets `DataContext` to it (the footer uses
+   `{Binding}`, the content uses `{x:Bind ViewModel…}`, and both must keep working); `GameControlModel.Close()`
+   navigates back instead of hiding; `MainWindow` gains a `ShowGame(Game)` following
+   `ShowGamesUsingDll`, constructing fresh per game and **not** caching, with `SectionForPageTag`
+   returning `ShellSection.Games` so the sidebar stays put; `GameGridPage.xaml.cs:153` navigates
+   instead of calling `ShowAsync`. `FakeContentDialog` itself stays — the manual-add dialog still
+   uses it.
 2. **Split the model.** `GameControlModel` holds a `WeakReference<GameControl>` read from 12 sites
    *and* reads `NVAPIHelper.Instance` directly — both must go for it to build in a test host.
    `NVAPIHelper` has a private constructor, no reset, and P/Invokes at construction, so it cannot be
    reached from a test at all; that seam is why none of this surface's behaviour is covered.
-   **Started**: `PresetAvailability` takes the three booleans instead of the singleton and is
-   tested. The rest of the NVAPI reads — `GetGameDLSSPreset`, `SetGameDLSSPreset` and their D/G
-   siblings — still go straight to it, and the driver write still happens inside a property setter
-   with a `DispatcherQueue` rollback, which is untestable by construction. Make it a command that
-   reports success or failure.
+   **Mostly done**: `PresetAvailability` takes booleans instead of the singleton and is tested,
+   and the driver write is one method instead of three copies inside `OnPropertyChanged`. What is
+   left is the `WeakReference<GameControl>`, which the page move above removes the need for.
 
 
 **Also still open, unrelated to the game page:**
