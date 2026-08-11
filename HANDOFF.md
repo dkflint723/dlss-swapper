@@ -52,6 +52,35 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
+**The per-game dialog is the last un-redesigned surface**, and the only one left on the list. It is
+`src/UserControls/GameControl.xaml(.cs)` + `GameControlModel.cs`, opened from
+`GameGridPage.xaml.cs:153`. A full survey of it is in this session's workflow journal; the findings
+that matter:
+
+- **Eight** unlabelled icon buttons in the footer, tooltip-only, no automation names: Launch, Notes,
+  History, Rescan, Favourite, Download all, Reset all, Hide. Plus another nine icon buttons through
+  the body (three preset info, three NVAPI error, multiple-dlls-found, save title, open folder).
+- `Launch` is unconditional and its only failure path is an error dialog, though
+  `GameManager.CanLaunchGame` already knows the answer before the click.
+- `Notes` is the **only** reader or writer of `Game.Notes` in the app; `Favourite` and `Hide` are the
+  only writers of `IsFavourite` / `IsHidden`, which the Favourites section and Hidden tab read.
+- It is a `FakeContentDialog`, which exists only because a real `ContentDialog` cannot open over
+  another on the same XamlRoot — and this surface opens six. `ShowAsync` adds it to the window's
+  root grid and `Hide` never removes it, so **every game opened leaks one**.
+- `GameControlModel` holds a `WeakReference<GameControl>` read from 12 call sites, and reads
+  `NVAPIHelper.Instance` directly. Both are why it cannot be built in a test host.
+- It still uses the old modal `DllUpdatePrompt` rather than the preview sheet and undo strip.
+- `GameAssetPicker.UpdatePresence` re-derives "does this game have this dll", duplicating
+  `GameEngines.Split`.
+- `GamePage_NotPresentTemplate` has no singular form: it renders "1 upscalers not in this game".
+
+Recommended shape: make it a **page**, not a dialog (that alone deletes `FakeContentDialog` for this
+surface and the leak with it); one row per present upscaler in `SettingsRow` shape from a single
+`UpscalerRows.For(game)` that also produces the absent summary; three labelled primary actions
+(Update all dlls, Launch, Open folder) plus a `···` menu for the rest; the model takes data and a
+small host interface instead of its control.
+
+
 1. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. **Left for the user to call**,
    not because it is hard: it is taste, and picking quietly is the wrong way to settle it.
