@@ -29,4 +29,13 @@ public class DLLRecordModelTranslationProperties : LocalizedViewModelBase
 
     [TranslationProperty]
     public string ImportedText => ResourceHelper.GetString("DllRecord_Imported");
+
+    [TranslationProperty]
+    public string FileDetailsText => ResourceHelper.GetString("Upscalers_FileDetails");
+
+    [TranslationProperty]
+    public string CopyHashText => ResourceHelper.GetString("Upscalers_CopyHash");
+
+    [TranslationProperty]
+    public string MoreActionsText => ResourceHelper.GetString("General_MoreActions");
 }

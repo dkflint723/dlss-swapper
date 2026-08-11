@@ -28,6 +28,7 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace DLSS_Swapper.Pages;
 
@@ -1520,6 +1521,48 @@ public partial class LibraryPageModel : ObservableObject
 
         WatchRecords(records);
         RebuildVersionGroups();
+    }
+
+    /// <summary>
+    /// Copies a dll's hash, which is the only way to tell two builds of one version apart.
+    /// </summary>
+    [RelayCommand]
+    void CopyHash(DLLRecord? dllRecord)
+    {
+        if (dllRecord is null || string.IsNullOrEmpty(dllRecord.MD5Hash))
+        {
+            return;
+        }
+
+        var package = new DataPackage();
+        package.SetText(dllRecord.MD5Hash);
+        Clipboard.SetContent(package);
+    }
+
+    /// <summary>
+    /// Shows everything known about one file.
+    /// </summary>
+    /// <remarks>
+    /// Also what clicking the row does. Both routes exist because the row being clickable is not
+    /// discoverable, and a menu item that says what it opens is.
+    /// </remarks>
+    [RelayCommand]
+    async Task ShowRecordInfoAsync(DLLRecord? dllRecord)
+    {
+        if (dllRecord is null)
+        {
+            return;
+        }
+
+        var dialog = new EasyContentDialog(_libraryPage.XamlRoot)
+        {
+            Title = DLLManager.Instance.GetAssetTypeName(dllRecord.AssetType),
+            CloseButtonText = ResourceHelper.GetString("General_Close"),
+            DefaultButton = ContentDialogButton.Close,
+            Content = new DLLRecordInfoControl(dllRecord),
+        };
+
+        await dialog.ShowAsync();
     }
 
     /// <summary>The versions of the selected engine, under one heading per release line.</summary>

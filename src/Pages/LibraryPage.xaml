@@ -257,76 +257,101 @@
                             TextWrapping="NoWrap"
                             Foreground="{ThemeResource DsTextSecondaryBrush}" />
 
-                        <!-- Imported -->
-                        <StackPanel Grid.Column="4" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsLocalConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left">
-                            <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE7B8;" ToolTipService.ToolTip="{x:Bind TranslationProperties.ImportedText, Mode=OneWay}" />
-                        </StackPanel>
+                        <!--
+                            One menu instead of a row of bare icon buttons. The buttons meant the
+                            row's actions changed shape with its state, and there was nowhere to put
+                            the things that apply to every row: what the file is, and its hash.
+                        -->
+                        <Button
+                            Grid.Column="5"
+                            Width="32"
+                            Height="32"
+                            Padding="0"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            CornerRadius="{StaticResource DsCornerRadius}"
+                            ToolTipService.ToolTip="{x:Bind TranslationProperties.MoreActionsText, Mode=OneWay}"
+                            AutomationProperties.Name="{x:Bind TranslationProperties.MoreActionsText, Mode=OneWay}">
+                            <FontIcon Glyph="&#xE712;" FontSize="14" Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem
+                                        Text="{x:Bind TranslationProperties.DownloadText, Mode=OneWay}"
+                                        Visibility="{x:Bind LocalRecord, Converter={StaticResource IsNotFoundConverter}, Mode=OneWay}"
+                                        Command="{Binding ElementName=thisPage, Path=ViewModel.DownloadRecordCommand}"
+                                        CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE896;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
 
-                        <!-- Not downloaded -->
-                        <StackPanel Grid.Column="5" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsNotFoundConverter}, Mode=OneWay}">
+                                    <MenuFlyoutItem
+                                        Text="{x:Bind TranslationProperties.CancelText, Mode=OneWay}"
+                                        Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadingConverter}, Mode=OneWay}"
+                                        Command="{Binding ElementName=thisPage, Path=ViewModel.CancelDownloadRecordCommand}"
+                                        CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE711;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
 
-                            <Button ToolTipService.ToolTip="{x:Bind TranslationProperties.DownloadErrorText, Mode=OneWay}" Visibility="{x:Bind LocalRecord.HasDownloadError, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{Binding ElementName=thisPage, Path=ViewModel.ShowDownloadErrorCommand}" CommandParameter="{x:Bind }">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE783;"/>
-                                </Button.Content>
-                            </Button>
+                                    <MenuFlyoutItem
+                                        Text="{x:Bind TranslationProperties.ExportText, Mode=OneWay}"
+                                        Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadedConverter}, Mode=OneWay}"
+                                        Command="{Binding ElementName=thisPage, Path=ViewModel.ExportRecordCommand}"
+                                        CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xEDE1;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
 
-                            <Button ToolTipService.ToolTip="{x:Bind TranslationProperties.DownloadText, Mode=OneWay}" Command="{Binding ViewModel.DownloadRecordCommand, ElementName=thisPage}" CommandParameter="{x:Bind }">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE896;"/>
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
+                                    <MenuFlyoutItem
+                                        Text="{x:Bind TranslationProperties.DownloadErrorText, Mode=OneWay}"
+                                        Visibility="{x:Bind LocalRecord.HasDownloadError, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                                        Command="{Binding ElementName=thisPage, Path=ViewModel.ShowDownloadErrorCommand}"
+                                        CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE783;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
 
-                        <!-- Downloading -->
-                        <Grid Grid.Column="4" Grid.ColumnSpan="2" VerticalAlignment="Center" ColumnSpacing="8" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadingConverter}, Mode=OneWay}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                                    <MenuFlyoutSeparator />
 
-                            <Grid  Grid.Column="0" VerticalAlignment="Center">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
+                                    <MenuFlyoutItem
+                                        Text="{x:Bind TranslationProperties.FileDetailsText, Mode=OneWay}"
+                                        Command="{Binding ElementName=thisPage, Path=ViewModel.ShowRecordInfoCommand}"
+                                        CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE946;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
 
-                                <ProgressBar Grid.Row="0" Grid.ColumnSpan="2" Minimum="0" Maximum="100" IsIndeterminate="{x:Bind LocalRecord.FileDownloader.IsIndeterminate, Mode=OneWay}" Value="{x:Bind LocalRecord.FileDownloader.Percent, Mode=OneWay}" VerticalAlignment="Top" />
+                                    <MenuFlyoutItem
+                                        Text="{x:Bind TranslationProperties.CopyHashText, Mode=OneWay}"
+                                        Command="{Binding ElementName=thisPage, Path=ViewModel.CopyHashCommand}"
+                                        CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE8C8;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Visibility="{x:Bind LocalRecord.FileDownloader.TotalBytesToDownload, Mode=OneWay, Converter={StaticResource TotalBytesVisbilityConverter}}" Text="{x:Bind system:String.Format('{0:0.0}%', LocalRecord.FileDownloader.Percent), Mode=OneWay}" />
+                                    <!-- Last, and after a separator: it is the only one that removes anything. -->
+                                    <MenuFlyoutSeparator Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadedConverter}, Mode=OneWay}" />
 
-                                <StackPanel Grid.Row="1" Grid.Column="1" Spacing="2" Orientation="Horizontal" Visibility="{x:Bind LocalRecord.FileDownloader.TotalBytesToDownload, Mode=OneWay, Converter={StaticResource TotalBytesVisbilityConverter}}">
-                                    <TextBlock Text="{x:Bind LocalRecord.FileDownloader.DownloadedBytes, Mode=OneWay, Converter={StaticResource BytesToMegaBytesConverter}}" />
-                                    <TextBlock Text="/" />
-                                    <TextBlock Text="{x:Bind LocalRecord.FileDownloader.TotalBytesToDownload, Mode=OneWay, Converter={StaticResource BytesToMegaBytesConverter}}" />
-                                </StackPanel>
+                                    <MenuFlyoutItem
+                                        Text="{x:Bind TranslationProperties.DeleteText, Mode=OneWay}"
+                                        Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadedConverter}, Mode=OneWay}"
+                                        Command="{Binding ElementName=thisPage, Path=ViewModel.DeleteRecordCommand}"
+                                        CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE74D;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
 
-                            </Grid>
-
-                            <Button Grid.Column="1" ToolTipService.ToolTip="{Binding TranslationProperties.CancelText, Mode=OneWay}" Command="{Binding ElementName=thisPage, Path=ViewModel.CancelDownloadRecordCommand}" CommandParameter="{x:Bind }" VerticalAlignment="Center">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE711;"/>
-                                </Button.Content>
-                            </Button>
-                        </Grid>
-
-                        <!-- Downloaded -->
-                        <StackPanel Grid.Column="5" VerticalAlignment="Center" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadedConverter}, Mode=OneWay}" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                            <Button ToolTipService.ToolTip="{x:Bind TranslationProperties.ExportText, Mode=OneWay}" Command="{Binding ElementName=thisPage, Path=ViewModel.ExportRecordCommand}" CommandParameter="{x:Bind }">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xEDE1;"/>
-                                </Button.Content>
-                            </Button>
-                            <Button ToolTipService.ToolTip="{x:Bind TranslationProperties.DeleteText, Mode=OneWay}" Command="{Binding ElementName=thisPage, Path=ViewModel.DeleteRecordCommand}" CommandParameter="{x:Bind }">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE74D;"/>
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
 
                     </Grid>
                 </DataTemplate>

@@ -302,6 +302,15 @@
   <data name="About_FeedbackForkInfo" xml:space="preserve">
     <value>Anything wrong here is most likely a change made in this fork, so report it on this fork's issue tracker rather than the original project's:</value>
   </data>
+  <data name="Upscalers_FileDetails" xml:space="preserve">
+    <value>File details…</value>
+  </data>
+  <data name="Upscalers_CopyHash" xml:space="preserve">
+    <value>Copy hash</value>
+  </data>
+  <data name="General_MoreActions" xml:space="preserve">
+    <value>More actions</value>
+  </data>
   <data name="Upscalers_VersionLineAndOlderTemplate" xml:space="preserve">
     <value>{0} and older</value>
   </data>
