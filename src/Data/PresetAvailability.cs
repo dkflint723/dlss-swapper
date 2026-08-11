@@ -51,4 +51,31 @@ public static class PresetAvailability
     {
         return driverSupportsPresets && hasPermissionIssue == false && hasGameProfile;
     }
+
+    /// <summary>
+    /// Whether a chosen preset is worth writing to the driver.
+    /// </summary>
+    /// <remarks>
+    /// Its own function because the answer was buried in the middle of a property-changed handler,
+    /// written out three times — once per preset kind — with the driver call, the failure check,
+    /// the rollback and the error dialog all in the same block. Three copies of a guard is three
+    /// chances for one of them to be subtly different, and none of it could be run in a test.
+    ///
+    /// A write that is refused rolls the dropdown back, so the guard matters twice: it is also what
+    /// stops the rollback itself being taken for a new choice and written straight back.
+    /// </remarks>
+    public static bool ShouldWrite(bool canSet, uint? chosen, uint? current)
+    {
+        if (canSet == false)
+        {
+            return false;
+        }
+
+        if (chosen is null)
+        {
+            return false;
+        }
+
+        return chosen != current;
+    }
 }

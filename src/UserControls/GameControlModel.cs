@@ -362,57 +362,61 @@ public partial class GameControlModel : ObservableObject
 
         if (e.PropertyName == nameof(SelectedDlssPreset))
         {
-            if (CanSelectDlssPreset == true && SelectedDlssPreset is not null && SelectedDlssPreset.Value != Game.DlssPreset)
-            {
-                var result = NVAPIHelper.Instance.SetGameDLSSPreset(Game, SelectedDlssPreset.Value);
-                if (result.Success == false)
-                {
-                    if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
-                    {
-                        gameControl.DispatcherQueue.TryEnqueue(() =>
-                        {
-                            SelectedDlssPreset = _previousDlssPreset;
-                        });
-                        _ = NVAPIHelper.Instance.DisplayNVAPIErrorAsync(gameControl.XamlRoot);
-                    }
-                }
-            }
+            WritePreset(
+                CanSelectDlssPreset,
+                SelectedDlssPreset,
+                Game.DlssPreset,
+                value => NVAPIHelper.Instance.SetGameDLSSPreset(Game, value).Success,
+                () => SelectedDlssPreset = _previousDlssPreset);
         }
         else if (e.PropertyName == nameof(SelectedDlssDPreset))
         {
-            if (CanSelectDlssDPreset == true && SelectedDlssDPreset is not null && SelectedDlssDPreset.Value != Game.DlssDPreset)
-            {
-                var result = NVAPIHelper.Instance.SetGameDLSSDPreset(Game, SelectedDlssDPreset.Value);
-                if (result.Success == false)
-                {
-                    if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
-                    {
-                        gameControl.DispatcherQueue.TryEnqueue(() =>
-                        {
-                            SelectedDlssDPreset = _previousDlssDPreset;
-                        });
-                        _ = NVAPIHelper.Instance.DisplayNVAPIErrorAsync(gameControl.XamlRoot);
-                    }
-                }
-            }
+            WritePreset(
+                CanSelectDlssDPreset,
+                SelectedDlssDPreset,
+                Game.DlssDPreset,
+                value => NVAPIHelper.Instance.SetGameDLSSDPreset(Game, value).Success,
+                () => SelectedDlssDPreset = _previousDlssDPreset);
         }
         else if (e.PropertyName == nameof(SelectedDlssGPreset))
         {
-            if (CanSelectDlssGPreset == true && SelectedDlssGPreset is not null && SelectedDlssGPreset.Value != Game.DlssGPreset)
-            {
-                var result = NVAPIHelper.Instance.SetGameDLSSGPreset(Game, SelectedDlssGPreset.Value);
-                if (result.Success == false)
-                {
-                    if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
-                    {
-                        gameControl.DispatcherQueue.TryEnqueue(() =>
-                        {
-                            SelectedDlssGPreset = _previousDlssGPreset;
-                        });
-                        _ = NVAPIHelper.Instance.DisplayNVAPIErrorAsync(gameControl.XamlRoot);
-                    }
-                }
-            }
+            WritePreset(
+                CanSelectDlssGPreset,
+                SelectedDlssGPreset,
+                Game.DlssGPreset,
+                value => NVAPIHelper.Instance.SetGameDLSSGPreset(Game, value).Success,
+                () => SelectedDlssGPreset = _previousDlssGPreset);
+        }
+    }
+
+    /// <summary>
+    /// Writes one preset to the driver, and puts the dropdown back if the driver refuses.
+    /// </summary>
+    /// <remarks>
+    /// One copy instead of three. The guard, the call, the failure check, the rollback and the
+    /// error dialog were written out once per preset kind, which is three chances for one of them
+    /// to drift. The guard itself is <see cref="PresetAvailability.ShouldWrite"/>, which is the
+    /// part that can be run in a test — everything left here needs a driver and a window.
+    ///
+    /// The rollback goes through the dispatcher because it is assigning to the property whose
+    /// change notification is currently running.
+    /// </remarks>
+    void WritePreset(bool canSet, PresetOption? selected, uint? currentValue, Func<uint, bool> write, Action rollback)
+    {
+        if (PresetAvailability.ShouldWrite(canSet, selected?.Value, currentValue) == false)
+        {
+            return;
+        }
+
+        if (write(selected!.Value))
+        {
+            return;
+        }
+
+        if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
+        {
+            gameControl.DispatcherQueue.TryEnqueue(() => rollback());
+            _ = NVAPIHelper.Instance.DisplayNVAPIErrorAsync(gameControl.XamlRoot);
         }
     }
 

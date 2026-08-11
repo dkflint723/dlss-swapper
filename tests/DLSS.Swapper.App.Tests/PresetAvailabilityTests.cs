@@ -68,6 +68,34 @@ public class PresetAvailabilityTests
     }
 
     [Fact]
+    public void ChoosingWhatIsAlreadySetWritesNothing()
+    {
+        // The dropdown is assigned during construction to show what the driver already has. Without
+        // this, opening a game would write its own current preset straight back to the driver.
+        Assert.False(PresetAvailability.ShouldWrite(canSet: true, chosen: 3, current: 3));
+        Assert.True(PresetAvailability.ShouldWrite(canSet: true, chosen: 4, current: 3));
+    }
+
+    [Fact]
+    public void ADisabledDropdownNeverWrites()
+    {
+        // When presets cannot be set the dropdown is filled with a single "Not supported" option
+        // and selected, which is a property change like any other.
+        Assert.False(PresetAvailability.ShouldWrite(canSet: false, chosen: 4, current: 3));
+    }
+
+    [Fact]
+    public void NothingChosenWritesNothing()
+    {
+        Assert.False(PresetAvailability.ShouldWrite(canSet: true, chosen: null, current: 3));
+
+        // Including the case where the game has no preset recorded either, which is what a game
+        // that has never had one set looks like.
+        Assert.False(PresetAvailability.ShouldWrite(canSet: true, chosen: null, current: null));
+        Assert.True(PresetAvailability.ShouldWrite(canSet: true, chosen: 0, current: null));
+    }
+
+    [Fact]
     public void TheSentenceAndTheControlAgree()
     {
         // The one that matters: whenever the dropdown is disabled the row says why, and whenever it
