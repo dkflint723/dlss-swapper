@@ -76,6 +76,13 @@ internal partial class GameManager : ObservableObject
             return false;
         }
 
+        // Here rather than in GameFilters, because it is not one of the tabs and must not become a
+        // fifth one: it narrows whichever tab is selected instead of replacing it.
+        if (DllFilter is not null && DllFilter.Matches(game) == false)
+        {
+            return false;
+        }
+
         return string.IsNullOrEmpty(filterText)
             || game.Title.Contains(filterText, StringComparison.OrdinalIgnoreCase);
     }
@@ -128,7 +135,18 @@ internal partial class GameManager : ObservableObject
     public GameFilter ActiveFilter { get; set; } = GameFilter.All;
 
     /// <summary>
-    /// Whether the page is showing a subset of the library, by search or by tab.
+    /// Set when the user has asked which games are using one particular dll, and null the rest of
+    /// the time.
+    /// </summary>
+    /// <remarks>
+    /// Composes with the tab rather than replacing it, so "which of these is behind" is still
+    /// askable while it is on. Session only, like the tab: this arrives by a deliberate click from
+    /// another page and should never be what the app opens on.
+    /// </remarks>
+    public DllFilter? DllFilter { get; set; }
+
+    /// <summary>
+    /// Whether the page is showing a subset of the library, by search, by tab or by dll.
     /// </summary>
     /// <remarks>
     /// Worked out in <see cref="GetGameCollection"/>, which is the one place both are known, and
@@ -289,7 +307,9 @@ internal partial class GameManager : ObservableObject
         // folded and a narrowed one is not. Both ways of narrowing land here: the search text is an
         // argument to this function, and the tab is set on this object immediately before it is
         // called, so nothing can narrow the list without passing through here.
-        IsListNarrowed = string.IsNullOrWhiteSpace(filterText) == false || ActiveFilter != GameFilter.All;
+        IsListNarrowed = string.IsNullOrWhiteSpace(filterText) == false
+            || ActiveFilter != GameFilter.All
+            || DllFilter is not null;
         foreach (var gameGroup in libraryGameGroups.Values)
         {
             gameGroup.IsListNarrowed = IsListNarrowed;

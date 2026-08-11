@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="DLSS_Swapper.Pages.LibraryPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -249,12 +249,37 @@
                             TextWrapping="NoWrap"
                             Foreground="{ThemeResource DsTextTertiaryBrush}" />
 
+                        <!--
+                            The count is the answer to "is this safe to delete", so it is also the
+                            place to ask which games those are. It is a button only when there are
+                            games behind it: "Not used" that looks clickable and does nothing is
+                            worse than plain text.
+                        -->
+                        <Button
+                            Grid.Column="2"
+                            Padding="0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource TextBlockButtonStyle}"
+                            Visibility="{x:Bind data:DllUsage.UsedVisibility(AssetType, MD5Hash, Version)}"
+                            Command="{Binding ElementName=thisPage, Path=ViewModel.ShowGamesUsingCommand}"
+                            CommandParameter="{x:Bind}"
+                            ToolTipService.ToolTip="{x:Bind TranslationProperties.ShowGamesUsingText, Mode=OneWay}">
+                            <TextBlock
+                                Text="{x:Bind data:DllUsage.DescribeUsage(AssetType, MD5Hash, Version)}"
+                                FontSize="12"
+                                TextWrapping="NoWrap"
+                                TextDecorations="Underline"
+                                Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                        </Button>
+
                         <TextBlock
                             Grid.Column="2"
                             Text="{x:Bind data:DllUsage.DescribeUsage(AssetType, MD5Hash, Version)}"
                             FontSize="12"
                             VerticalAlignment="Center"
                             TextWrapping="NoWrap"
+                            Visibility="{x:Bind data:DllUsage.NotUsedVisibility(AssetType, MD5Hash, Version)}"
                             Foreground="{ThemeResource DsTextSecondaryBrush}" />
 
                         <!--
@@ -335,6 +360,21 @@
                                     </MenuFlyoutItem>
 
                                     <MenuFlyoutSeparator />
+
+                                    <!--
+                                        Only when there are games to show. The same click is on the
+                                        count itself, which is where it is discoverable; this is
+                                        where it is findable.
+                                    -->
+                                    <MenuFlyoutItem
+                                        Text="{x:Bind TranslationProperties.ShowGamesUsingText, Mode=OneWay}"
+                                        Visibility="{x:Bind data:DllUsage.UsedVisibility(AssetType, MD5Hash, Version)}"
+                                        Command="{Binding ElementName=thisPage, Path=ViewModel.ShowGamesUsingCommand}"
+                                        CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE7FC;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
 
                                     <MenuFlyoutItem
                                         Text="{x:Bind TranslationProperties.FileDetailsText, Mode=OneWay}"

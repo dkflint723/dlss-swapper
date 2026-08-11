@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Helpers;
+using Microsoft.UI.Xaml;
 
 namespace DLSS_Swapper.Data;
 
@@ -63,6 +64,34 @@ public static class DllUsage
         }
 
         return count;
+    }
+
+    /// <summary>
+    /// Whether any game has this dll in place, which is what decides whether the count is worth
+    /// offering to open.
+    /// </summary>
+    public static bool IsUsedByAny(GameAssetType assetType, string md5Hash, string version)
+    {
+        return CountGamesUsing(assetType, md5Hash, version, GameManager.Instance.GetSynchronisedGamesListCopy()) > 0;
+    }
+
+    /// <summary>
+    /// The same answer, shaped for the row: what is shown when the file is in use, and what is
+    /// shown when it is not.
+    /// </summary>
+    /// <remarks>
+    /// Two functions rather than one plus a converter, because an <c>x:Bind</c> to a function
+    /// ignores <c>Converter</c> entirely and fails the build rather than at runtime. Both sit here
+    /// beside the rule they ask, so neither can drift from the count the row is showing.
+    /// </remarks>
+    public static Visibility UsedVisibility(GameAssetType assetType, string md5Hash, string version)
+    {
+        return IsUsedByAny(assetType, md5Hash, version) ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public static Visibility NotUsedVisibility(GameAssetType assetType, string md5Hash, string version)
+    {
+        return IsUsedByAny(assetType, md5Hash, version) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     /// <summary>

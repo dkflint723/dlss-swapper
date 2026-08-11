@@ -335,6 +335,16 @@
   <data name="Upscalers_Downloading" xml:space="preserve">
     <value>Downloading</value>
   </data>
+  <data name="Upscalers_ShowGamesUsing" xml:space="preserve">
+    <value>Show the games using this</value>
+  </data>
+  <data name="GamesPage_DllFilterTemplate" xml:space="preserve">
+    <value>Only games using {0} {1}</value>
+    <comment>{0} is the upscaler name (eg. DLSS), {1} is the version (eg. v310.7)</comment>
+  </data>
+  <data name="GamesPage_ClearDllFilter" xml:space="preserve">
+    <value>Show all games again</value>
+  </data>
   <data name="Upscalers_InUseNotOnDisk" xml:space="preserve">
     <value>In use, not on disk</value>
   </data>

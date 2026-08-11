@@ -15,7 +15,14 @@
     Loaded="Page_Loaded"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     NavigationCacheMode="Required"
+    KeyboardAcceleratorPlacementMode="Hidden"
     x:Name="RootGameGridPage">
+    <!--
+        Placement hidden because this accelerator belongs to the page rather than to any one
+        control, and WinUI advertises it by floating an "Esc" tip under whatever happens to have
+        focus. Arriving from the upscalers page that was the dismiss button on the filter chip,
+        labelling it with a key that does something else.
+    -->
     <Page.KeyboardAccelerators>
         <KeyboardAccelerator Key="Escape" Invoked="EscapeAccelerator_Invoked" />
     </Page.KeyboardAccelerators>
@@ -452,7 +459,9 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <ItemsControl Grid.Column="0" ItemsSource="{x:Bind ViewModel.FilterTabs, Mode=OneWay}" VerticalAlignment="Stretch">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="20" VerticalAlignment="Stretch">
+
+                <ItemsControl ItemsSource="{x:Bind ViewModel.FilterTabs, Mode=OneWay}" VerticalAlignment="Stretch">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" Spacing="20" />
@@ -493,6 +502,44 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
+                <!--
+                    Says what the page is narrowed to and offers to stop, and appears only while it
+                    is. Arriving here from the upscalers page otherwise means a library of twenty
+                    three games quietly showing three, with nothing on screen saying why, which is
+                    indistinguishable from a broken library. The words carry it; the dismiss is a
+                    labelled button rather than a bare glyph.
+                -->
+                <Border
+                    VerticalAlignment="Center"
+                    Padding="10,0,4,0"
+                    CornerRadius="{StaticResource DsCornerRadius}"
+                    Background="{ThemeResource DsSurf2Brush}"
+                    Visibility="{x:Bind ViewModel.DllFilterVisibility, Mode=OneWay}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock
+                            Text="{x:Bind ViewModel.DllFilterLabel, Mode=OneWay}"
+                            FontSize="12"
+                            VerticalAlignment="Center"
+                            TextWrapping="NoWrap"
+                            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                        <Button
+                            Width="24"
+                            Height="24"
+                            Padding="0"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            CornerRadius="{StaticResource DsCornerRadius}"
+                            Command="{x:Bind ViewModel.ClearDllFilterCommand}"
+                            ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.ClearDllFilterText, Mode=OneWay}"
+                            AutomationProperties.Name="{x:Bind ViewModel.TranslationProperties.ClearDllFilterText, Mode=OneWay}">
+                            <FontIcon Glyph="&#xE711;" FontSize="12" Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                </StackPanel>
 
                 <Button
                     Grid.Column="1"

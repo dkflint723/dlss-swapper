@@ -37,5 +37,8 @@ public class DLLRecordModelTranslationProperties : LocalizedViewModelBase
     public string CopyHashText => ResourceHelper.GetString("Upscalers_CopyHash");
 
     [TranslationProperty]
+    public string ShowGamesUsingText => ResourceHelper.GetString("Upscalers_ShowGamesUsing");
+
+    [TranslationProperty]
     public string MoreActionsText => ResourceHelper.GetString("General_MoreActions");
 }

@@ -1,10 +1,10 @@
-﻿# DLSS Swapper — session handoff
+# DLSS Swapper — session handoff
 
 **Repo:** personal fork (`dkflint723/dlss-swapper`) of `beeradmoore/dlss-swapper`. WinUI 3 / .NET 10,
 x64, unpackaged. Treated as a **personal divergence, not upstream PRs** — aggressive refactoring is
 fine.
 
-**State:** `main`, all pushed and CI-green. 378 tests (267 app, 111 core). Working tree clean except
+**State:** `main`, all pushed and CI-green. 384 tests (273 app, 111 core). Working tree clean except
 `src/Assets/static_manifest.json` and `docs/manifest.json`, which predate the work and have been
 deliberately excluded from every commit — `git add -A` will sweep them in, so stage by path.
 
@@ -13,7 +13,7 @@ deliberately excluded from every commit — `git add -A` will sweep them in, so 
 - `core/DLSS.Swapper.Core` — pure `net10.0`, no WinUI. Swap executor, version ranking, `DllTypes`
   registry.
 - `tests/DLSS.Swapper.Core.Tests` — 111 tests.
-- `tests/DLSS.Swapper.App.Tests` — 267 tests; references the WinUI app directly. Needs
+- `tests/DLSS.Swapper.App.Tests` — 273 tests; references the WinUI app directly. Needs
   `resources.pri` (a build target renames the app's `.pri`) or every string lookup throws.
 - `TemporaryDatabase` fixture gives tests a **real SQLite database** in temp, via
   `Storage.OverrideStoragePath` + `Database.ResetInstanceAsync` (internal, test-only seams). Debug
@@ -52,20 +52,16 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-1. **The upscalers page is not finished.** `Show the games using this` is still missing from the row
-   menu, and clicking a usage count should filter Games to those titles. Both need the same missing
-   piece — a way to carry a dll filter across to the games page — so build it once. Whatever it is
-   has to make the filter visible and clearable on arrival, or the games page just looks broken.
-2. `See what changed` on the done strip is still not built. It needs a history view filtered to one
+1. `See what changed` on the done strip is still not built. It needs a history view filtered to one
    batch, and there is no such view yet.
-3. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
+2. The grid card still diverges from spec §2.6, which puts the caption *below* the art with a 2px
    accent rule down its left edge, rather than in a gradient over it. **Left for the user to call**,
    not because it is hard: it is taste, and picking quietly is the wrong way to settle it.
-4. The preset dropdowns disable themselves when NVAPI is unsupported and say nothing about why. The
+3. The preset dropdowns disable themselves when NVAPI is unsupported and say nothing about why. The
    error button beside the first one only appears for a permission problem, not for "this is not an
    NVIDIA machine". A disabled control with no reason is the same failure the rest of this work has
    been removing.
-5. `SettingsPage_LibraryEnabled` and `SettingsPage_LibraryDisabled` are no longer used by anything —
+4. `SettingsPage_LibraryEnabled` and `SettingsPage_LibraryDisabled` are no longer used by anything —
    they read "Steam enabled", which the row's title now says. They are still in all nine translation
    files. Prune them together with any other dead keys rather than one at a time.
 
@@ -113,6 +109,13 @@ read than the `.dc.html` mockup.
 - **Contrast is measured, not judged.** Every text level is checked against the lightest surface it
   can land on, and the accents are checked as text as well as under ink. `AccentPaletteTests` holds
   both rules. If a token is ever changed, re-measure rather than eyeball it.
+- **"Which twelve games?" is now askable.** `DllFilter` carries a dll from the upscalers page to the
+  games page, from the usage count itself and from the row menu, and both go through
+  `MainWindow.ShowGamesUsingDll` so the page exists before it is filtered. It **narrows the tab
+  rather than becoming a fifth one**, so the counts had to be narrowed too — left out, "All games"
+  would have read 23 and opened onto 3. It lands on "All games" deliberately: arriving into whatever
+  tab was last used, narrowed to one dll, is a page empty for two reasons and the user asked for
+  one. The count is only a button when there are games behind it; "Not used" is plain text.
 - **Where each dll file is**, in words rather than only in which buttons a row shows. A row mid
   download says so, which it did not: it read `Not downloaded` for the whole download, and that is
   the one moment the words were false. The 2px bar runs along the row's own bottom edge, on the
@@ -166,6 +169,12 @@ read than the `.dc.html` mockup.
   the second one is stale. Launching it screenshots an old build and every conclusion drawn from
   that screenshot is wrong. Check the dll's timestamp against the source before believing a
   screenshot that shows a change missing.
+- **An `x:Bind` to a function ignores `Converter` entirely**, and fails the build rather than at
+  runtime: the function's return type has to be the target's type. So a visibility that comes from a
+  computed answer needs a function returning `Visibility`, not a bool plus a converter.
+- **A page-level `KeyboardAccelerator` advertises itself** by floating its key under whatever has
+  focus. On the games page that put a stray "Esc" tip under the filter chip's dismiss button.
+  `KeyboardAcceleratorPlacementMode="Hidden"` goes on the **`UIElement`**, not on the accelerator.
 - **A `ToggleSwitch` reserves 154px** whether or not its on/off content needs it. In a 280px column
   that left every library name wrapping to three lines. Give it a `MinWidth` wide enough for the
   longer of the two words, so the row also does not reflow when it is toggled.

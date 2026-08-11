@@ -40,5 +40,8 @@ public class GameGridPageModelTranslationProperties : LocalizedViewModelBase
     public string PageTitle => ResourceHelper.GetString("GamesPage_Title");
 
     [TranslationProperty]
+    public string ClearDllFilterText => ResourceHelper.GetString("GamesPage_ClearDllFilter");
+
+    [TranslationProperty]
     public string ApplicationRunsInAdministrativeModeInfo => ResourceHelper.GetString("General_ApplicationRunningAsAdmin");
 }

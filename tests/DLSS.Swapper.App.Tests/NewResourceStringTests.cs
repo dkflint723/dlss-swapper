@@ -38,6 +38,8 @@ public class NewResourceStringTests
     [InlineData("Upscalers_UsedByOneGame")]
     [InlineData("Upscalers_UsedByGamesTemplate")]
     [InlineData("Upscalers_Downloading")]
+    [InlineData("Upscalers_ShowGamesUsing")]
+    [InlineData("GamesPage_ClearDllFilter")]
     [InlineData("SettingsPage_LibraryFound")]
     [InlineData("SettingsPage_LibraryNotFound")]
     [InlineData("SettingsPage_DLSSOptions_GlobalPreset_Desc")]

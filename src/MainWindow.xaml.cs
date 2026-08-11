@@ -174,6 +174,19 @@ public sealed partial class MainWindow : Window
         GoToPage(PageTagForSection(section));
     }
 
+    /// <summary>
+    /// Leaves the upscalers page for the games using one dll.
+    /// </summary>
+    /// <remarks>
+    /// Navigating first, so the page exists to be filtered — the same order the backup card uses,
+    /// and for the same reason: on a cold start the games page has not been built yet.
+    /// </remarks>
+    public void ShowGamesUsingDll(DllFilter dllFilter)
+    {
+        GoToPage(GameGridPage.PageTag);
+        gameGridPage?.ViewModel.ShowGamesUsingDll(dllFilter);
+    }
+
     void Sidebar_FixMissingBackupsInvoked(object? sender, EventArgs e)
     {
         // Lands on the games missing a copy, which is what the card offers. Navigating first, so

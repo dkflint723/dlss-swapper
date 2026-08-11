@@ -88,6 +88,14 @@ public partial class GameGridPageModel : ObservableObject
         var games = GameManager.Instance.GetSynchronisedGamesListCopy();
         var active = GameManager.Instance.ActiveFilter;
 
+        // The dll filter narrows every tab, so it has to narrow every count as well. Left out, the
+        // "All games" tab would read 23 and open onto the three games using that file.
+        var dllFilter = GameManager.Instance.DllFilter;
+        if (dllFilter is not null)
+        {
+            games = games.Where(dllFilter.Matches).ToList();
+        }
+
         // Same setting the views apply, so a count cannot include a game the list is hiding.
         var hideNonDLSS = Settings.Instance.HideNonDLSSGames;
 
@@ -130,6 +138,46 @@ public partial class GameGridPageModel : ObservableObject
     public void ShowFilter(GameFilter filter)
     {
         GameManager.Instance.ActiveFilter = filter;
+        ShowGameCollection();
+        RefreshFilterTabs();
+    }
+
+    /// <summary>What the page is showing while a dll filter is on, and empty when there is none.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DllFilterVisibility))]
+    public partial string DllFilterLabel { get; set; } = string.Empty;
+
+    public Visibility DllFilterVisibility => string.IsNullOrEmpty(DllFilterLabel)
+        ? Visibility.Collapsed
+        : Visibility.Visible;
+
+    /// <summary>
+    /// Narrows the page to the games using one dll, arrived at from the upscalers page.
+    /// </summary>
+    /// <remarks>
+    /// Lands on "All games" on purpose. The tab is whatever it was last left on, and arriving into
+    /// "Hidden" narrowed to one dll is a page showing nothing for two reasons at once, only one of
+    /// which the user asked for.
+    /// </remarks>
+    public void ShowGamesUsingDll(DllFilter dllFilter)
+    {
+        GameManager.Instance.DllFilter = dllFilter;
+        DllFilterLabel = dllFilter.Label;
+        ShowFilter(GameFilter.All);
+    }
+
+    /// <summary>
+    /// Puts the whole library back.
+    /// </summary>
+    /// <remarks>
+    /// The reason the filter has a visible label at all: a page quietly showing three of twenty
+    /// three games, with nothing on screen saying why, is indistinguishable from a broken library.
+    /// </remarks>
+    [RelayCommand]
+    void ClearDllFilter()
+    {
+        GameManager.Instance.DllFilter = null;
+        DllFilterLabel = string.Empty;
         ShowGameCollection();
         RefreshFilterTabs();
     }
@@ -183,7 +231,7 @@ public partial class GameGridPageModel : ObservableObject
             visibleCount,
             GameManager.Instance.GetSynchronisedGamesListCopy().Count,
             lastSearchText,
-            GameManager.Instance.ActiveFilter != GameFilter.All);
+            GameManager.Instance.ActiveFilter != GameFilter.All || GameManager.Instance.DllFilter is not null);
 
         EmptyState = state.Kind == GamesEmptyStateKind.None ? null : state;
     }

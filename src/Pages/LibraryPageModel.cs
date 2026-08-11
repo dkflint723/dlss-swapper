@@ -1524,6 +1524,29 @@ public partial class LibraryPageModel : ObservableObject
     }
 
     /// <summary>
+    /// Leaves for the games page, narrowed to the games using this exact file.
+    /// </summary>
+    /// <remarks>
+    /// The page could say twelve games were using a file and that was the end of the sentence. The
+    /// filter carries its own label so the page it lands on can say what it is showing, which is the
+    /// difference between a narrowed library and one that looks broken.
+    /// </remarks>
+    [RelayCommand]
+    void ShowGamesUsing(DLLRecord? dllRecord)
+    {
+        if (dllRecord is null)
+        {
+            return;
+        }
+
+        var label = DllFilter.LabelFor(
+            DLLManager.Instance.GetAssetTypeName(dllRecord.AssetType), dllRecord.DisplayName);
+
+        App.CurrentApp.MainWindow?.ShowGamesUsingDll(
+            new DllFilter(dllRecord.AssetType, dllRecord.MD5Hash, dllRecord.Version, label));
+    }
+
+    /// <summary>
     /// Copies a dll's hash, which is the only way to tell two builds of one version apart.
     /// </summary>
     [RelayCommand]
