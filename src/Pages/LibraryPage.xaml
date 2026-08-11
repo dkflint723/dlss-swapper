@@ -62,7 +62,8 @@
                         <FontIcon Glyph="&#xE8B5;"  />
                     </AppBarButton.Content>
                     <AppBarButton.Flyout>
-                        <MenuFlyout>
+                        <!-- Kept inside the window, and below its button; see GameGridPage's View Type menu. -->
+                        <MenuFlyout ShouldConstrainToRootBounds="True" Placement="Bottom">
                             <MenuFlyoutItem Text="{x:Bind ViewModel.TranslationProperties.ImportFromLocalFilesText, Mode=OneWay}" Command="{x:Bind ViewModel.ImportCommand}" />
                             <MenuFlyoutSubItem Text="NVIDIA">
                                 <MenuFlyoutItem Text="{x:Bind ViewModel.TranslationProperties.ImportFromDriverText, Mode=OneWay}" Command="{x:Bind ViewModel.ImportFromNVIDIADriverCommand}" />
@@ -318,7 +319,13 @@
                             AutomationProperties.Name="{x:Bind TranslationProperties.MoreActionsText, Mode=OneWay}">
                             <FontIcon Glyph="&#xE712;" FontSize="14" Foreground="{ThemeResource DsTextSecondaryBrush}" />
                             <Button.Flyout>
-                                <MenuFlyout>
+                                <!--
+                                    Kept inside the window. This one is at the right edge of the
+                                    row, so unconstrained it opened past the window and the ends of
+                                    its longest items were cut off by the screen rather than by
+                                    anything the app drew.
+                                -->
+                                <MenuFlyout ShouldConstrainToRootBounds="True">
                                     <MenuFlyoutItem
                                         Text="{x:Bind TranslationProperties.DownloadText, Mode=OneWay}"
                                         Visibility="{x:Bind LocalRecord, Converter={StaticResource IsNotFoundConverter}, Mode=OneWay}"

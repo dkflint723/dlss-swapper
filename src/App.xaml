@@ -30,6 +30,17 @@
                             <SolidColorBrush x:Key="DsBgBrush" Color="#151C26" />
                             <SolidColorBrush x:Key="DsSurfBrush" Color="#1F2733" />
                             <SolidColorBrush x:Key="DsSurf2Brush" Color="#26303E" />
+
+                            <!--
+                                Menus are opaque. Their default backdrop is acrylic, which samples
+                                whatever is behind them; once the flyouts were constrained to the
+                                window that became the app's own toolbar, and menu items were being
+                                read through the buttons they were drawn over. Outside the window it
+                                had only the desktop to sample and the problem was invisible.
+                            -->
+                            <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="#26303E" />
+                            <SolidColorBrush x:Key="FlyoutPresenterBackground" Color="#26303E" />
+
                             <SolidColorBrush x:Key="DsLineBrush" Color="#13FFFFFF" />
                             <SolidColorBrush x:Key="DsLine2Brush" Color="#24FFFFFF" />
                             <SolidColorBrush x:Key="DsTextPrimaryBrush" Color="#F2F3F5" />
@@ -75,6 +86,11 @@
                             <SolidColorBrush x:Key="DsBgBrush" Color="#DCE5EF" />
                             <SolidColorBrush x:Key="DsSurfBrush" Color="#CDD9E6" />
                             <SolidColorBrush x:Key="DsSurf2Brush" Color="#BECDDD" />
+
+                            <!-- Opaque for the same reason as the dark theme's. -->
+                            <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="#F3F6FA" />
+                            <SolidColorBrush x:Key="FlyoutPresenterBackground" Color="#F3F6FA" />
+
                             <SolidColorBrush x:Key="DsLineBrush" Color="#1A101215" />
                             <SolidColorBrush x:Key="DsLine2Brush" Color="#2E101215" />
                             <SolidColorBrush x:Key="DsTextPrimaryBrush" Color="#16181B" />

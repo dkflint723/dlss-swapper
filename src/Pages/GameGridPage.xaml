@@ -162,7 +162,8 @@
                               Background="Transparent"
                               Opacity="{x:Bind IsHidden, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}">
                             <Grid.ContextFlyout>
-                                <MenuFlyout>
+                                <!-- Kept inside the window; see the View Type menu below for why. -->
+                                <MenuFlyout ShouldConstrainToRootBounds="True">
                                     <!--
                                         Checked rather than two items, so the row states the setting
                                         rather than only offering to change it.
@@ -431,7 +432,15 @@
                 </AppBarButton>
                 <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.ViewTypeText, Mode=OneWay}" Content="{x:Bind ViewModel.GameGridViewIcon, Mode=OneWay}">
                     <AppBarButton.Flyout>
-                        <MenuFlyout>
+                        <!--
+                            Constrained to the window, and placed below its button. A WinUI 3
+                            desktop flyout is its own top level window and is free to leave the
+                            app's bounds; this one opened upwards past the title bar and rendered on
+                            the desktop above the app, where its items could be read but the app it
+                            belonged to could not be seen. It is a property of the flyout rather
+                            than of the presenter, so it cannot be set once in a Style.
+                        -->
+                        <MenuFlyout ShouldConstrainToRootBounds="True" Placement="Bottom">
                             <MenuFlyoutItem Text="{x:Bind ViewModel.TranslationProperties.GridViewText, Mode=OneWay}" Command="{x:Bind ViewModel.ChangeGameGridViewCommand}" CommandParameter="{x:Bind pages:GameGridViewType.GridView}" />
                             <MenuFlyoutItem Text="{x:Bind ViewModel.TranslationProperties.ListViewText, Mode=OneWay}" Command="{x:Bind ViewModel.ChangeGameGridViewCommand}" CommandParameter="{x:Bind pages:GameGridViewType.ListView}" />
                         </MenuFlyout>
