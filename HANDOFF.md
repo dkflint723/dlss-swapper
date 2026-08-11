@@ -4,7 +4,7 @@
 x64, unpackaged. Treated as a **personal divergence, not upstream PRs** — aggressive refactoring is
 fine.
 
-**State:** `main`, all pushed and CI-green. 390 tests (279 app, 111 core). Working tree clean except
+**State:** `main`, all pushed and CI-green. 439 tests (328 app, 111 core). Working tree clean except
 `src/Assets/static_manifest.json` and `docs/manifest.json`, which predate the work and have been
 deliberately excluded from every commit — `git add -A` will sweep them in, so stage by path.
 
@@ -13,7 +13,7 @@ deliberately excluded from every commit — `git add -A` will sweep them in, so 
 - `core/DLSS.Swapper.Core` — pure `net10.0`, no WinUI. Swap executor, version ranking, `DllTypes`
   registry.
 - `tests/DLSS.Swapper.Core.Tests` — 111 tests.
-- `tests/DLSS.Swapper.App.Tests` — 279 tests; references the WinUI app directly. Needs
+- `tests/DLSS.Swapper.App.Tests` — 328 tests; references the WinUI app directly. Needs
   `resources.pri` (a build target renames the app's `.pri`) or every string lookup throws.
 - `TemporaryDatabase` fixture gives tests a **real SQLite database** in temp, via
   `Storage.OverrideStoragePath` + `Database.ResetInstanceAsync` (internal, test-only seams). Debug
@@ -52,7 +52,37 @@ read than the `.dc.html` mockup.
 
 ## Next, in order
 
-**The per-game dialog is the last un-redesigned surface**, and the only one left on the list. It is
+**The per-game dialog is half rebuilt.** Two of its four stages have landed:
+
+- ✅ `UpscalerRowStatus` / `UpscalerRows.For(game)` — the rule that says what each upscaler in a
+  game is, and produces the rows *and* the "N upscalers not in this game" line from one split.
+  Tested. **Nothing renders it yet.**
+- ✅ The action row: eight unlabelled glyphs became three labelled buttons and a named `···` menu,
+  with Launch and Update all dlls appearing only when they can act, and `Never update this game`
+  reachable from the page it affects for the first time.
+
+Still to do, in order:
+
+1. **The upscaler rows.** Replace `GameAssetPicker` with `SettingsRow`-shaped rows driven by
+   `UpscalerRowStatus`, and delete `GameAssetPicker.UpdatePresence`, which re-derives "does this
+   game have this dll" independently of `GameEngines.Split`.
+2. **The preset rows**, and with them handoff item 2: say *which* reason a preset is unavailable.
+   The three cases are already distinguishable at `GameControlModel` — no NVIDIA driver, no profile
+   for this game, a permission problem — and are currently collapsed into the one word "Not
+   supported". Move the driver write out of a property setter into a command that can report
+   failure.
+3. **Dialog to page.** `FakeContentDialog` exists only because a real `ContentDialog` cannot open
+   over another on the same XamlRoot, and this surface opens six. Its `ShowAsync` adds itself to the
+   window's root grid and `Hide` never removes it, so **every game opened leaks one**. As a page,
+   the workaround and the leak both go, and every child dialog becomes an ordinary
+   `EasyContentDialog` on `this.XamlRoot`. Follow `MainWindow.ShowGamesUsingDll`; construct fresh
+   per game, do not cache; `SectionForPageTag` should keep the sidebar on Games; add a labelled
+   "← All games".
+4. **Split the model.** `GameControlModel` holds a `WeakReference<GameControl>` read from 12 sites
+   *and* reads `NVAPIHelper.Instance` directly — both must go for it to build in a test host. Pass a
+   small host interface and hand it the preset options plus a get/set delegate.
+
+The original survey of this surface: It is
 `src/UserControls/GameControl.xaml(.cs)` + `GameControlModel.cs`, opened from
 `GameGridPage.xaml.cs:153`. A full survey of it is in this session's workflow journal; the findings
 that matter:
