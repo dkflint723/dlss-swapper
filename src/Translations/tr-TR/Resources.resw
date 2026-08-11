@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>İndirme gerekli</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>DLL zip dosyası geçersizdi (içinde DLL bulunamadı).</value>
-  </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
     <value>DLSS Swapper başlatılamadı</value>
   </data>
@@ -230,9 +227,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>"{0}" dosyası bulunamadı.</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL, {0} sürümüne sıfırlandı.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>İndirme başlatılıyor</value>
@@ -322,9 +316,6 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile boş (null)</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Ön ayar değiştirilemedi. Daha fazla detay için hata günlük kayıtlarına göz atın.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Kapak resmi için yalnızca tek bir dosya sürükleyebilirsiniz</value>
   </data>
@@ -336,9 +327,6 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Gruplama</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Değiştirilebilir öğesi olmayan oyunları gizle</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Kapak resmi için yalnızca tek bir dosya sürükleyebilirsiniz</value>
@@ -466,9 +454,6 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
   <data name="General_Failed" xml:space="preserve">
     <value>Başarısız</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Uygulamayı yönetici olarak çalıştırıyorsanız bu özellik desteklenmez.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Filtrele</value>
   </data>
@@ -534,9 +519,6 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Ara</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Üzgünüz</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Başarılı</value>
@@ -849,12 +831,6 @@ Bu nedenle çok oyunculu oyunlarda dikkatli olmanızı öneririz.</value>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Dil</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} devre dışı</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>0} etkin</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Günlük Kaydı</value>
   </data>
@@ -905,9 +881,6 @@ Bu nedenle çok oyunculu oyunlarda dikkatli olmanızı öneririz.</value>
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Mevcut günlük (log) dosyanız:</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Uygulama yönetici olarak çalışırken çeviri aracını kullanamazsınız. Lütfen uygulamayı yeniden başlatın.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Yorum</value>

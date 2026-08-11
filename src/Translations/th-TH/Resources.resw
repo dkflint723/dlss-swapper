@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>จำเป็นต้องดาวน์โหลด</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>ไฟล์ Zip ของ DLL ไม่ถูกต้อง (ไม่พบไฟล์ DLL ข้างในนั้น)</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>NVIDIA แนะนำ</value>
   </data>
@@ -245,9 +242,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>ไม่พบไฟล์ "{0}"</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>รีเซ็ต DLL กลับเป็นเวอร์ชัน {0} เรียบร้อยแล้ว</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>กำลังเริ่มดาวน์โหลด</value>
@@ -349,9 +343,6 @@
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile เป็นค่าว่าง (null)</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>ไม่สามารถเปลี่ยนพรีเซ็ตได้ กรุณาดู error log เพื่อดูข้อมูลเพิ่มเติม</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>คุณสามารถลากไฟล์รูปปกมาวางได้เพียงไฟล์เดียวเท่านั้น</value>
   </data>
@@ -363,9 +354,6 @@
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>การจัดกลุ่ม</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>ซ่อนเกมที่ไม่มีรายการให้สลับ</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>คุณสามารถลากไฟล์รูปปกมาวางได้เพียงไฟล์เดียวเท่านั้น</value>
@@ -498,9 +486,6 @@
   <data name="General_Failed" xml:space="preserve">
     <value>ล้มเหลว</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>ฟีเจอร์นี้ไม่รองรับการใช้งาน หากคุณเปิดโปรแกรมในฐานะ Admin</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>ตัวกรอง</value>
   </data>
@@ -611,9 +596,6 @@
   </data>
   <data name="General_Size" xml:space="preserve">
     <value>ขนาด</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>ขออภัย</value>
   </data>
   <data name="General_Status" xml:space="preserve">
     <value>สถานะ</value>
@@ -1023,12 +1005,6 @@
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>ภาษา</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} ปิดใช้งานอยู่</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} เปิดใช้งานอยู่</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>การบันทึกข้อมูลระบบ</value>
   </data>
@@ -1103,9 +1079,6 @@
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>ไฟล์ Log ปัจจุบันของคุณอยู่ที่</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>คุณไม่สามารถใช้เครื่องมือแปลภาษาได้ในขณะที่เปิดโปรแกรมในฐานะ Admin กรุณารีสตาร์ทโปรแกรม</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>ความคิดเห็น</value>

@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Необхідне завантаження</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>Архів DLL пошкоджено (DLL не знайдено).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>Рекомендовано NVIDIA</value>
   </data>
@@ -245,9 +242,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Не вдалося знайти файл "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL скинуто до {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Початок завантаження</value>
@@ -349,9 +343,6 @@
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>Змінна storageFile має значення null</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Не вдалося змінити пресет. Перегляньте журнал помилок для отримання додаткової інформації.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Можна перетягнути лише один файл для обкладинки</value>
   </data>
@@ -363,9 +354,6 @@
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Групування</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Приховати ігри без елементів, які можна замінити</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Ви можете перетягнути лише один файл для обкладинки</value>
@@ -498,9 +486,6 @@
   <data name="General_Failed" xml:space="preserve">
     <value>Не вдалося</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Ця функція не підтримується, якщо ви запускаєте програму від імені адміністратора.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Фільтр</value>
   </data>
@@ -605,9 +590,6 @@
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Пошук</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Вибачте</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Успіх</value>
@@ -920,12 +902,6 @@
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Мова</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} вимкнено</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} увімкнено</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Ведення журналу</value>
   </data>
@@ -994,9 +970,6 @@
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Ваш поточний файл журналу</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Ви не можете використовувати інструмент перекладу, поки він працює від імені адміністратора. Будь ласка, перезапустіть програму.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Коментар</value>

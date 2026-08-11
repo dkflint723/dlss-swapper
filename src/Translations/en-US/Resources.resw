@@ -123,33 +123,6 @@
   <data name="ApplicationTitle" xml:space="preserve">
     <value>DLSS Swapper</value>
   </data>
-  <data name="DashboardPage_Title" xml:space="preserve">
-    <value>Dashboard</value>
-  </data>
-  <data name="DashboardPage_HeadlineTemplate" xml:space="preserve">
-    <value>{0} of {1} games have updates</value>
-  </data>
-  <data name="DashboardPage_NoGames" xml:space="preserve">
-    <value>No games found yet. Run a scan from the Games page to get started.</value>
-  </data>
-  <data name="DashboardPage_ReviewGames" xml:space="preserve">
-    <value>Review games</value>
-  </data>
-  <data name="DashboardPage_MissingBackupsTemplate" xml:space="preserve">
-    <value>{0} games have a DLL with no backup</value>
-  </data>
-  <data name="DashboardPage_NothingToDo" xml:space="preserve">
-    <value>Nothing needs attention</value>
-  </data>
-  <data name="DashboardPage_UndoneSwaps" xml:space="preserve">
-    <value>Swaps that were undone</value>
-  </data>
-  <data name="DashboardPage_UndoneSwapsHint" xml:space="preserve">
-    <value>A game update replaced the DLL you swapped in, and the backup was removed at the same time.</value>
-  </data>
-  <data name="DashboardPage_UndoneSwapTemplate" xml:space="preserve">
-    <value>{0} replaced by a game update</value>
-  </data>
   <data name="GamesPage_Status_UpToDate" xml:space="preserve">
     <value>Up to date</value>
   </data>
@@ -175,15 +148,6 @@
     <value>{0} upscalers not in this game — {1}</value>
     <comment>One line replacing nine controls that would each have read "Not found".</comment>
   </data>
-  <data name="GamePage_RecentActivity" xml:space="preserve">
-    <value>Recent activity</value>
-  </data>
-  <data name="GamePage_NoActivity" xml:space="preserve">
-    <value>Nothing has changed in this game yet.</value>
-  </data>
-  <data name="GamePage_BackToGames" xml:space="preserve">
-    <value>Games</value>
-  </data>
   <data name="Game_Swap_UpdatesTurnedOff" xml:space="preserve">
     <value>Updates are turned off for this game, so its DLLs are locked. Turn updates back on from the game's right-click menu to change them.</value>
   </data>
@@ -193,9 +157,6 @@
   </data>
   <data name="GamesPage_Action_TurnUpdatesOff" xml:space="preserve">
     <value>Never update this game</value>
-  </data>
-  <data name="GamesPage_Action_TurnUpdatesOn" xml:space="preserve">
-    <value>Allow updates for this game</value>
   </data>
   <data name="GamesPage_Status_Swapping" xml:space="preserve">
     <value>Swapping… keeping a copy of the original first</value>
@@ -352,9 +313,6 @@
   <data name="GamesPage_ClearDllFilter" xml:space="preserve">
     <value>Show all games again</value>
   </data>
-  <data name="Upscalers_InUseNotOnDisk" xml:space="preserve">
-    <value>In use, not on disk</value>
-  </data>
   <data name="Update_StopAfterThisOne" xml:space="preserve">
     <value>Stop after this one</value>
   </data>
@@ -423,9 +381,6 @@
   <data name="Sidebar_Upscalers" xml:space="preserve">
     <value>Upscalers</value>
   </data>
-  <data name="Sidebar_GameCountTemplate" xml:space="preserve">
-    <value>{0} games</value>
-  </data>
   <data name="Sidebar_BackupCoverageLabel" xml:space="preserve">
     <value>Originals kept for</value>
     <comment>First line of the sidebar backup card. The count follows on its own line.</comment>
@@ -438,9 +393,6 @@
   </data>
   <data name="Sidebar_VersionTemplate" xml:space="preserve">
     <value>v{0}</value>
-  </data>
-  <data name="GamesPage_UpdateThisGame" xml:space="preserve">
-    <value>Update to latest</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>Click to copy below details</value>
@@ -475,9 +427,6 @@
   </data>
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Requires download</value>
-  </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>DLL zip was invalid (no DLL found).</value>
   </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>NVIDIA recommended</value>
@@ -526,14 +475,8 @@
   <data name="DllRevert_RevertedTemplate" xml:space="preserve">
     <value>Restored {0} dlls across {1} games.</value>
   </data>
-  <data name="DllUpdate_AllGamesUpToDate" xml:space="preserve">
-    <value>Every game is already using the newest dlls.</value>
-  </data>
   <data name="DllUpdate_Cancelling" xml:space="preserve">
     <value>Finishing the current dll, then stopping...</value>
-  </data>
-  <data name="DllUpdate_ConfirmAllGamesTemplate" xml:space="preserve">
-    <value>Update {0} dlls across {1} games to the newest available version?</value>
   </data>
   <data name="DllUpdate_ConfirmOneGameTemplate" xml:space="preserve">
     <value>Update {0} dlls in {1} to the newest available version?</value>
@@ -657,9 +600,6 @@ If you wish to override this decision please enable 'Allow Untrusted' in setting
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Could not find file "{0}".</value>
   </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL has been reset to {0}.</value>
-  </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Starting download</value>
   </data>
@@ -765,9 +705,6 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile is null</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Unable to change preset. Please see your error log for more information.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>You may only drag over a single file for a cover</value>
   </data>
@@ -779,9 +716,6 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Grouping</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Hide games with no swappable items</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>You may only drag over a single file for a cover</value>
@@ -917,9 +851,6 @@ If you have checked these and your game is still not showing up there may be a b
   <data name="General_Failed" xml:space="preserve">
     <value>Failed</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>This feature is not supported if you are running the application as admin.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Filter</value>
   </data>
@@ -1042,9 +973,6 @@ If you have checked these and your game is still not showing up there may be a b
   </data>
   <data name="General_Size" xml:space="preserve">
     <value>Size</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Sorry</value>
   </data>
   <data name="General_Status" xml:space="preserve">
     <value>Status</value>
@@ -1211,9 +1139,6 @@ If you have checked these and your game is still not showing up there may be a b
   </data>
   <data name="LibraryPage_ImportFromNVIDIADriver" xml:space="preserve">
     <value>Import from NVIDIA driver</value>
-  </data>
-  <data name="LibraryPage_Importing" xml:space="preserve">
-    <value>Importing</value>
   </data>
   <data name="LibraryPage_Importing" xml:space="preserve">
     <value>Importing</value>
@@ -1485,14 +1410,6 @@ Because of this we recommend using caution for multiplayer games.</value>
   <data name="SettingsPage_LibraryNotFound" xml:space="preserve">
     <value>Not found on this PC</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} disabled</value>
-    <comment>{0} is the game library name (eg. Steam, GOG)</comment>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} enabled</value>
-    <comment>{0} is the game library name (eg. Steam, GOG)</comment>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Logging</value>
   </data>
@@ -1568,9 +1485,6 @@ Because of this we recommend using caution for multiplayer games.</value>
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Your current log file is </value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>You can not use the translation tool while it is running as admin. Please restart the application.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Comment</value>

@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>يتطلب التنزيل</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>ملف ZIP الخاص بـ DLL غير صالح (لم يتم العثور على أي ملف DLL)</value>
-  </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
     <value>فشل تشغيل DLSS Swapper</value>
   </data>
@@ -227,9 +224,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>تعذّر العثور على الملف "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>تمت إعادة تعيين ملف DLL إلى {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>تم بدء التنزيل</value>
@@ -321,9 +315,6 @@
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile غير موجود (قيمة فارغة)</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>تعذّر تغيير الإعداد المسبق. يُرجى مراجعة سجل الأخطاء لمزيد من المعلومات.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>يمكنك سحب ملف واحد فقط لإضافته كغلاف</value>
   </data>
@@ -335,9 +326,6 @@
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>التجميع</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>إخفاء الألعاب التي لا تحتوي على عناصر قابلة للتبديل</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>يمكنك سحب ملف واحد فقط لاستخدامه كغلاف.</value>
@@ -467,9 +455,6 @@
   <data name="General_Failed" xml:space="preserve">
     <value>فشل</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>هذه الميزة غير مدعومة إذا كنت تشغّل التطبيق كمسؤول</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>فلتر</value>
   </data>
@@ -532,9 +517,6 @@
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>بحث</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>المعذره</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>تم بنجاح</value>
@@ -833,12 +815,6 @@
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>اللغة</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} معطّل</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} مُفعّل</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>التسجيل</value>
   </data>
@@ -889,9 +865,6 @@
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>ملف السجل الحالي الخاص بك هو</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>لا يمكنك استخدام أداة الترجمة أثناء تشغيل التطبيق كمسؤول. يُرجى إعادة تشغيل التطبيق بدون صلاحيات المسؤول.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>تعليق</value>

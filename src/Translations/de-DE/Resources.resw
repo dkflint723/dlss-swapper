@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Erfordert Download</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>Die DLL Zip Datei ist fehlerhaft (keine DLL gefunden).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>Immer neueste verwenden</value>
   </data>
@@ -245,9 +242,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Die Datei "{0}" konnte nicht gefunden werden.</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>Die DLL wurde auf Version {0} zurückgesetzt.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Starte Download</value>
@@ -349,9 +343,6 @@ Um zu überprüfen welches Preset gerade benutzt wird, aktiviere den DLSS On-Scr
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile ist NULL</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Preset konnte nicht geändert werden. Weitere Infos findest Du in der Log-Datei.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Du kannst nur eine einzige Datei als Titelbild auswählen.</value>
   </data>
@@ -363,9 +354,6 @@ Um zu überprüfen welches Preset gerade benutzt wird, aktiviere den DLSS On-Scr
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Gruppierung</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Verstecke Spiele deren Dateien nicht getauscht werden können</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Du kannst nur eine einzige Datei als Titelbild auswählen.</value>
@@ -498,9 +486,6 @@ Wenn Du alles überprüft hast und dein Spiel taucht immer noch nicht auf, liegt
   <data name="General_Failed" xml:space="preserve">
     <value>Fehlgeschlagen</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Dieses Feature wird nicht unterstützt während die App mit Administrativen Benutzerrechten ausgeführt wird.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Filter</value>
   </data>
@@ -605,9 +590,6 @@ Wenn Du alles überprüft hast und dein Spiel taucht immer noch nicht auf, liegt
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Suchen</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Entschuldige</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Erfolg</value>
@@ -920,12 +902,6 @@ Aus diesem Umstand empfehlen wir besondere Vorsicht im Umgang mit Multiplayer Sp
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Sprache</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} deaktiviert</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} aktiviert</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Logging</value>
   </data>
@@ -994,9 +970,6 @@ Aus diesem Umstand empfehlen wir besondere Vorsicht im Umgang mit Multiplayer Sp
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Die aktuelle Logdatei befindet sich hier: </value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Du kannst das Übersetzungs Tool nicht benutzen während Du die App mit Administrator Benutzerrechten benutzt. Bitte starte die App neu.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Kommentar</value>

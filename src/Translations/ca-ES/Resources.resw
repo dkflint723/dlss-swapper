@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Requereix descàrrega</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>El fitxer zip de la DLL no era vàlid (no s'ha trobat cap DLL).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>Utilitzeu sempre l'última versió</value>
   </data>
@@ -239,9 +236,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>No s'ha pogut trobar el fitxer "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>La DLL s'ha restablert a {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>S'està iniciant la descàrrega</value>
@@ -331,9 +325,6 @@ Per verificar quin perfil s'està utilitzant, activeu l'indicador de DLSS en pan
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>El fitxer d'emmagatzematge és nul</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>No es pot canviar la configuració predefinida. Si us plau, consulteu el registre d'errors per obtenir més informació.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Només podeu arrossegar un sol fitxer per a una portada</value>
   </data>
@@ -345,9 +336,6 @@ Per verificar quin perfil s'està utilitzant, activeu l'indicador de DLSS en pan
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Agrupant</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Amaga els jocs sense elements intercanviables</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Només podeu arrossegar un sol fitxer per a una coberta</value>
@@ -480,9 +468,6 @@ Si heu marcat aquestes opcions i el vostre joc encara no apareix, pot haver-hi u
   <data name="General_Failed" xml:space="preserve">
     <value>Fallat</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Aquesta funció no és compatible si executeu l'aplicació com a administrador.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Filtre</value>
   </data>
@@ -578,9 +563,6 @@ Si heu marcat aquestes opcions i el vostre joc encara no apareix, pot haver-hi u
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Cerca</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Perdó</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Èxit</value>
@@ -893,12 +875,6 @@ Per això, recomanem anar amb compte amb les partides multijugador.</value>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Llengua</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} desactivat</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} activat</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Registre</value>
   </data>
@@ -949,9 +925,6 @@ Per això, recomanem anar amb compte amb les partides multijugador.</value>
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>El vostre fitxer de registre actual és </value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>No podeu utilitzar l'eina de traducció mentre s'executa com a administrador. Reinicieu l'aplicació.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Comentari</value>

@@ -157,9 +157,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>다운로드 필요</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>DLL 압축파일(zip)이 잘못되었습니다 (DLL을 찾을 수 없음).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>NVIDIA 권장</value>
   </data>
@@ -246,9 +243,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>"{0}" 파일을 찾을 수 없습니다.</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL이 {0}(으)로 초기화되었습니다.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>다운로드 시작 중</value>
@@ -356,9 +350,6 @@ DLL 버전마다 지원하는 프리셋이 다릅니다.
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile이 null입니다</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>프리셋을 변경할 수 없습니다. 자세한 내용은 오류 로그를 확인하세요.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>커버 이미지는 파일 하나만 드래그할 수 있습니다</value>
   </data>
@@ -370,9 +361,6 @@ DLL 버전마다 지원하는 프리셋이 다릅니다.
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>그룹화</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>교체 가능한 항목이 없는 게임 숨기기</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>커버 이미지는 파일 하나만 드래그할 수 있습니다</value>
@@ -513,9 +501,6 @@ DLL 버전마다 지원하는 프리셋이 다릅니다.
   <data name="General_Failed" xml:space="preserve">
     <value>실패함</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>이 기능은 앱을 관리자 권한으로 실행 중일 때는 지원되지 않습니다.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>필터</value>
   </data>
@@ -623,9 +608,6 @@ DLL 버전마다 지원하는 프리셋이 다릅니다.
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>검색</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>죄송합니다</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>성공</value>
@@ -945,12 +927,6 @@ DLL 버전마다 지원하는 프리셋이 다릅니다.
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>언어</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} 비활성화됨</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} 활성화됨</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>로깅</value>
   </data>
@@ -1019,9 +995,6 @@ DLL 버전마다 지원하는 프리셋이 다릅니다.
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>현재 로그 파일 위치:</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>앱이 관리자 권한으로 실행 중일 때는 번역 툴을 사용할 수 없습니다. 앱을 다시 시작해 주세요.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>설명</value>

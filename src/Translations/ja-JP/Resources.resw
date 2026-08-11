@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>ダウンロードが必要です</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>DLLファイルが破損しています(DLLファイルが見つかりません)</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>常に最新版を使用</value>
   </data>
@@ -245,9 +242,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>ファイル "{0}" が見つかりませんでした</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL が {0} にリセットされました</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>ダウンロードを開始します</value>
@@ -349,9 +343,6 @@
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFileはnullです</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>プリセットを変更出来ません。詳細については、エラーログをご確認下さい</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>カバーとして使用するには、1つのファイルのみをドラッグ出来ます</value>
   </data>
@@ -363,9 +354,6 @@
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>グループ化</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>交換可能なアイテムがないゲームを非表示にする</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>カバーとして使用するには、1つのファイルのみをドラッグ出来ます</value>
@@ -502,9 +490,6 @@ C:\Program Files\MyGamesFolder\MyFavGame\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;
   <data name="General_Failed" xml:space="preserve">
     <value>失敗しました</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>この機能は、アプリケーションを管理者権限で実行している場合、利用出来ません</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>フィルター</value>
   </data>
@@ -609,9 +594,6 @@ C:\Program Files\MyGamesFolder\MyFavGame\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>検索</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>申し訳ありません</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>成功</value>
@@ -924,12 +906,6 @@ DLLは信頼できるソースからのみインポートして下さい</value>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>言語</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} 無効</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} 有効</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>ログ記録</value>
   </data>
@@ -998,9 +974,6 @@ DLLは信頼できるソースからのみインポートして下さい</value>
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>現在のログファイルは</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>管理者権限で実行中の間は、翻訳ツールを使用出来ません。アプリケーションを再起動して下さい</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>コメント</value>

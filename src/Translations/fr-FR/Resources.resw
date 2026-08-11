@@ -157,9 +157,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Nécessite un téléchargement</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>Le fichier ZIP de la DLL est invalide (aucune DLL trouvée).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>Recommandé par NVIDIA</value>
   </data>
@@ -249,9 +246,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Impossible de trouver le fichier "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>La DLL a été réinitialisée à la version {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Début du téléchargement</value>
@@ -358,9 +352,6 @@ Pour vérifier quel préréglage est utilisé, veuillez activer l'indicateur DLS
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile est null</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Impossible de changer de préréglage. Veuillez consulter votre journal d'erreurs pour plus d'informations.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Vous ne pouvez déposer qu'un seul fichier pour une couverture</value>
   </data>
@@ -372,9 +363,6 @@ Pour vérifier quel préréglage est utilisé, veuillez activer l'indicateur DLS
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Regroupement</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Masquer les jeux sans éléments échangeables</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Vous ne pouvez déposer qu'un seul fichier pour une couverture</value>
@@ -510,9 +498,6 @@ Si vous avez vérifié ces points et que votre jeu n'apparaît toujours pas, il 
   <data name="General_Failed" xml:space="preserve">
     <value>Échec</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Cette fonctionnalité n'est pas prise en charge si vous exécutez l'application en tant qu'administrateur.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Filtre</value>
   </data>
@@ -628,9 +613,6 @@ Si vous avez vérifié ces points et que votre jeu n'apparaît toujours pas, il 
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Rechercher</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Désolé</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Succès</value>
@@ -951,14 +933,6 @@ Pour cette raison, nous vous recommandons d'être prudent avec les jeux multijou
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Langue</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} désactivé</value>
-    <comment>{0} est le nom de la bibliothèque de jeux (par ex. Steam, GOG)</comment>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} activé</value>
-    <comment>{0} est le nom de la bibliothèque de jeux (par ex. Steam, GOG)</comment>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Journalisation</value>
   </data>
@@ -1028,9 +1002,6 @@ Pour cette raison, nous vous recommandons d'être prudent avec les jeux multijou
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Votre fichier de log actuel est </value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Vous ne pouvez pas utiliser l'outil de traduction lorsqu'il est exécuté en tant qu'administrateur. Veuillez redémarrer l'application.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Commentaire</value>

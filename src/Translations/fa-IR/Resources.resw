@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>نیاز به دانلود دارد</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>فایل فشرده DLL نامعتبر بود (هیچ DLL یافت نشد).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>توصیه انویدیا</value>
   </data>
@@ -245,9 +242,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>فایل «{0}» یافت نشد.</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>فایل DLL به {0} بازنشانی شد.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>شروع دانلود</value>
@@ -349,9 +343,6 @@
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>محل ذخیره فایل (storageFile) خالی است</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>خطا در تغییر پریست. لطفا برای اطلاعات بیشتر، لاگ خطای خود را بررسی کنید.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>شما فقط می‌توانید یک فایل را برای جلد بکشید</value>
   </data>
@@ -363,9 +354,6 @@
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>گروه‌بندی</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>مخفی کردن بازی‌هایی که آیتم قابل تعویض ندارند</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>شما فقط می‌توانید یک فایل را برای جلد بکشید</value>
@@ -499,9 +487,6 @@
   <data name="General_Failed" xml:space="preserve">
     <value>ناموفق</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>اگر برنامه را به عنوان مدیر سیستم اجرا می‌کنید، این ویژگی پشتیبانی نمی‌شود.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>فیلتر</value>
   </data>
@@ -612,9 +597,6 @@
   </data>
   <data name="General_Size" xml:space="preserve">
     <value>اندازه</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>متاسفم</value>
   </data>
   <data name="General_Status" xml:space="preserve">
     <value>وضعیت</value>
@@ -1023,12 +1005,6 @@
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>زبان</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} غیرفعال شد</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} فعال شد</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>ثبت گزارش</value>
   </data>
@@ -1103,9 +1079,6 @@
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>فایل گزارش فعلی شما این است</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>هنگامی که برنامه با دسترسی ادمین (Run as admin) در حال اجراست، نمی‌توانید از ابزار ترجمه استفاده کنید. لطفاً برنامه را مجدداً راه‌اندازی (Restart) کنید.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>توضیح</value>

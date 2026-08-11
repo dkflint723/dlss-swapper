@@ -157,9 +157,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Vaatii latauksen</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>DLL-ZIP oli virheellinen (DLL-tiedostoa ei löytynyt).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>NVIDIAn suosittelema</value>
   </data>
@@ -249,9 +246,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Tiedostoa "{0}" ei löytynyt.</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL on palautettu versioon {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Aloitetaan lataus</value>
@@ -358,9 +352,6 @@ Varmista käytetty esiasetus ottamalla käyttöön DLSS-näyttöilmaisin.</value
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile on null</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Ei voitu muuttaa esiasetusta. Katso virhelokista lisätietoja.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Voit vetää vain yhden tiedoston kansikuvaksi</value>
   </data>
@@ -372,9 +363,6 @@ Varmista käytetty esiasetus ottamalla käyttöön DLSS-näyttöilmaisin.</value
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Ryhmittely</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Piilota pelit, joissa ei ole vaihdettavia kohteita</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Voit vetää vain yhden tiedoston kansikuvaksi</value>
@@ -510,9 +498,6 @@ Jos olet tarkistanut nämä ja peliäsi ei silti näy, saattaa se olla ohjelmist
   <data name="General_Failed" xml:space="preserve">
     <value>Epäonnistui</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Tätä ominaisuutta ei tueta, jos käytät sovellusta järjestelmänvalvojana.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Suodatin</value>
   </data>
@@ -628,9 +613,6 @@ Jos olet tarkistanut nämä ja peliäsi ei silti näy, saattaa se olla ohjelmist
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Etsi</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Pahoittelut</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Onnistui</value>
@@ -951,14 +933,6 @@ Tästä syystä suosittelemme varovaisuutta moninpeleille.</value>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Kieli</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} poistettu käytöstä</value>
-    <comment>{0} is the game library name (eg. Steam, GOG)</comment>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} käytössä</value>
-    <comment>{0} is the game library name (eg. Steam, GOG)</comment>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Lokiin kirjaaminen</value>
   </data>
@@ -1028,9 +1002,6 @@ Tästä syystä suosittelemme varovaisuutta moninpeleille.</value>
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Nykyinen lokitiedostosi on </value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Et voi käyttää käännöstyökalua sen ollessa käynnissä järjestelmänvalvojana. Käynnistä sovellus uudelleen.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Kommentti</value>

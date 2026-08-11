@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Yêu cầu tải xuống</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>Tệp zip DLL không hợp lệ (không tìm thấy DLL).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>Luôn sử dụng mới nhất</value>
   </data>
@@ -245,9 +242,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Không thể tìm thấy tệp "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL đã được đặt lại về {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Bắt đầu tải xuống</value>
@@ -349,9 +343,6 @@ Tương tự áp dụng cho preset toàn cục. Nếu bạn chọn preset K như
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile là null</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Không thể thay đổi preset. Vui lòng xem nhật ký lỗi để biết thêm thông tin.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Bạn chỉ có thể kéo một tệp duy nhất cho bìa</value>
   </data>
@@ -363,9 +354,6 @@ Tương tự áp dụng cho preset toàn cục. Nếu bạn chọn preset K như
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Nhóm</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Ẩn trò chơi không có mục có thể hoán đổi</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Bạn chỉ có thể kéo một tệp duy nhất cho bìa</value>
@@ -498,9 +486,6 @@ Nếu bạn đã kiểm tra những điều này và trò chơi của bạn vẫ
   <data name="General_Failed" xml:space="preserve">
     <value>Thất bại</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Tính năng này không được hỗ trợ nếu bạn đang chạy ứng dụng với quyền admin.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Lọc</value>
   </data>
@@ -602,9 +587,6 @@ Nếu bạn đã kiểm tra những điều này và trò chơi của bạn vẫ
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Tìm kiếm</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Xin lỗi</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Thành công</value>
@@ -917,12 +899,6 @@ Vì lý do này, chúng tôi khuyên nghịch cẩn thận với trò chơi nhi�
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Ngôn Ngữ</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} bị tắt</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} được bật</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Ghi Nhật Ký</value>
   </data>
@@ -991,9 +967,6 @@ Vì lý do này, chúng tôi khuyên nghịch cẩn thận với trò chơi nhi�
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Tệp nhật ký hiện tại của bạn là </value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Bạn không thể sử dụng công cụ dịch khi nó đang chạy với quyền admin. Vui lòng khởi động lại ứng dụng.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Bình luận</value>

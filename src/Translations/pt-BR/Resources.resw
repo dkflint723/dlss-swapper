@@ -78,9 +78,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Requer download</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>O arquivo zip da DLL é inválido (nenhuma DLL encontrada).</value>
-  </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
     <value>Falha ao iniciar o DLSS Swapper</value>
   </data>
@@ -149,9 +146,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Arquivo não encontrado: "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL redefinida para a versão {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Iniciando download</value>
@@ -238,9 +232,6 @@ Para verificar qual predefinição está sendo usada, ative o indicador DLSS na 
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile está nulo</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Não foi possível alterar a predefinição. Consulte o seu registro (log) de erros para obter mais informações.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Você só pode arrastar um único arquivo para a capa</value>
   </data>
@@ -252,9 +243,6 @@ Para verificar qual predefinição está sendo usada, ative o indicador DLSS na 
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Agrupamento</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Ocultar jogos sem itens substituíveis</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Você só pode arrastar um único arquivo para a capa</value>
@@ -381,9 +369,6 @@ Se você verificou tudo isso e seu jogo ainda não aparece, pode ser um bug. Agr
   <data name="General_Failed" xml:space="preserve">
     <value>Falhou</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Este recurso não é compatível quando o aplicativo é executado como administrador.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Filtro</value>
   </data>
@@ -446,9 +431,6 @@ Se você verificou tudo isso e seu jogo ainda não aparece, pode ser um bug. Agr
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Buscar</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Desculpe</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Sucesso</value>
@@ -752,12 +734,6 @@ Recomendamos cautela ao usar isso em jogos multiplayer.</value>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Idioma</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} desativado</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} ativado</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Registro (log)</value>
   </data>
@@ -808,9 +784,6 @@ Recomendamos cautela ao usar isso em jogos multiplayer.</value>
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Seu arquivo de log atual é</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Você não pode usar a ferramenta de tradução com o aplicativo sendo executado como administrador. Reinicie o aplicativo.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Comentário</value>

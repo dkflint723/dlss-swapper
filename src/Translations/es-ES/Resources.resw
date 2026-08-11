@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Requiere descarga</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>El zip del DLL no era válido (no se encontró ningún DLL).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>Siempre usar la última versión</value>
   </data>
@@ -239,9 +236,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>No se pudo encontrar el archivo "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>El DLL ha sido restablecido a la versión {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Iniciando descarga</value>
@@ -331,9 +325,6 @@ Para verificar qué perfil se está utilizando, por favor, activa el indicador e
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile es nulo</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>No se puede cambiar la configuración preestablecida. Consulte el registro de errores para obtener más información.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Solo puedes arrastrar un único archivo para una carátula</value>
   </data>
@@ -345,9 +336,6 @@ Para verificar qué perfil se está utilizando, por favor, activa el indicador e
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Agrupación</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Ocultar juegos sin elementos intercambiables</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Solo puedes arrastrar un único archivo para una carátula</value>
@@ -480,9 +468,6 @@ Si has comprobado esto y tu juego sigue sin aparecer, puede que haya un error. A
   <data name="General_Failed" xml:space="preserve">
     <value>Falló</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Esta función no es compatible si estás ejecutando la aplicación como administrador.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Filtro</value>
   </data>
@@ -578,9 +563,6 @@ Si has comprobado esto y tu juego sigue sin aparecer, puede que haya un error. A
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Buscar</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Lo siento</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Éxito</value>
@@ -893,12 +875,6 @@ Debido a esto, recomendamos tener precaución con los juegos multijugador.</valu
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Idioma</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} deshabilitado</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} habilitado</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Registro</value>
   </data>
@@ -949,9 +925,6 @@ Debido a esto, recomendamos tener precaución con los juegos multijugador.</valu
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Su archivo de registro actual es  </value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>No puede utilizar la herramienta de traducción mientras se ejecuta como administrador. Reinicie la aplicación.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Comentario</value>

@@ -59,9 +59,14 @@ read than the `.dc.html` mockup.
    error button beside the first one only appears for a permission problem, not for "this is not an
    NVIDIA machine". A disabled control with no reason is the same failure the rest of this work has
    been removing.
-3. `SettingsPage_LibraryEnabled` and `SettingsPage_LibraryDisabled` are no longer used by anything —
-   they read "Steam enabled", which the row's title now says. They are still in all nine translation
-   files. Prune them together with any other dead keys rather than one at a time.
+3. **Nothing stops dead keys coming back.** The sweep below was a one-off script, not a test. A test
+   cannot easily do it: it would have to read the `.resw` from the source tree, and the test host
+   only has the compiled `resources.pri`, where duplicates have already collapsed. Re-run the sweep
+   by hand after any block of work that deletes a page. The method is in the commit message for the
+   prune, and the four dynamic call sites it has to account for are `AccentPalette.NameResourceKey`,
+   `GameFilterTab`'s label key, `DllTypeDefinition.DisplayNameResourceKey` and
+   `DllUpdatePrompt`'s summary template — all four take literals from a table, so a plain text
+   search over every file type does find them.
 
 ## Done since
 
@@ -102,6 +107,10 @@ read than the `.dc.html` mockup.
   simply has no games with upscalers. `IsInstalled` is asked once per row, in the constructor, since
   it goes to the registry and the disk. `Manually Added` gets no such line — it is not installed
   anywhere, so neither answer is about anything.
+- **27 dead resource keys are gone**, 212 entries across 24 translation files, along with a
+  duplicate `LibraryPage_Importing` in en-US that predated all of this. Most were the deleted
+  dashboard page's. Nine locales were only ever given the older nine of them, which is why the
+  per-file counts differ.
 - **`NewResourceStringTests`** asserts every resource key this work added resolves. A missing key
   renders as a sentinel string rather than throwing, so nothing else would notice.
 - **The empty states** (README §6 and §7). `GamesEmptyState.For` decides between first run, a

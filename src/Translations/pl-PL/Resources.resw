@@ -189,9 +189,6 @@
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Nie można znaleźć pliku "{0}".</value>
   </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>Biblioteka DLL została zresetowana do {0}.</value>
-  </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Rozpoczynanie pobierania</value>
   </data>
@@ -263,9 +260,6 @@
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Grupowanie</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Ukryj gry bez podmienialnych bibliotek DLL</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AnotherNoteTitle" xml:space="preserve">
     <value>Kolejna informacja dotycząca ręcznego dodawania gier</value>
@@ -436,9 +430,6 @@ Jeśli sprawdziłeś te ustawienia, a Twoja gra nadal nie jest wyświetlana, mo�
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Szukaj</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Sorka</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Sukces</value>
@@ -688,12 +679,6 @@ Jeśli tak się dzieje, prosimy o zgłoszenie tego w naszym module śledzenia b�
   </data>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Język</value>
-  </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} wyłączone</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} włączone</value>
   </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Logowanie</value>

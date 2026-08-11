@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>需要下载</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>DLL 压缩包无效（未找到 DLL 文件）</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>NVIDIA 推荐设置</value>
   </data>
@@ -245,9 +242,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>无法找到文件 "{0}"</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL 文件已还原为原始版本：{0}</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>开始下载</value>
@@ -349,9 +343,6 @@
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>存储文件为空</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>无法更改预设，请查看错误日志以获取更多信息。</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>只能拖入单个文件作为封面</value>
   </data>
@@ -363,9 +354,6 @@
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>分组</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>隐藏没有可管理 DLL 的游戏</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>只能拖入单个文件作为封面</value>
@@ -498,9 +486,6 @@
   <data name="General_Failed" xml:space="preserve">
     <value>失败</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>若以管理员身份运行该应用程序，则不支持此功能。</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>筛选</value>
   </data>
@@ -611,9 +596,6 @@
   </data>
   <data name="General_Size" xml:space="preserve">
     <value>大小</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>抱歉</value>
   </data>
   <data name="General_Status" xml:space="preserve">
     <value>状态</value>
@@ -1019,12 +1001,6 @@
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>语言</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} 已禁用</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} 启用</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>日志记录</value>
   </data>
@@ -1099,9 +1075,6 @@
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>当前日志文件：</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>翻译工具以管理员身份运行时无法使用，请重新启动应用程序。</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>说明</value>

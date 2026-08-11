@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Требуется загрузка</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>DLL zip был поврежден (DLL не найден).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>Всегда последняя версия</value>
   </data>
@@ -245,9 +242,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Не удалось найти файл "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL была сброшена до {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Начало загрузки</value>
@@ -349,9 +343,6 @@
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile имеет значение null</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Невозможно изменить пресет. Дополнительную информацию смотри в журнале ошибок.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Вы можете перетащить только один файл для обложки</value>
   </data>
@@ -363,9 +354,6 @@
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Группировка</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Скрыть игры без взаимозаменяемых объектов</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Вы можете перетащить только один файл для обложки</value>
@@ -498,9 +486,6 @@
   <data name="General_Failed" xml:space="preserve">
     <value>Сбой</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Эта функция не поддерживается, если вы запускаете приложение от имени администратора.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Фильтр</value>
   </data>
@@ -611,9 +596,6 @@
   </data>
   <data name="General_Size" xml:space="preserve">
     <value>Размер</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Простите</value>
   </data>
   <data name="General_Status" xml:space="preserve">
     <value>Статус</value>
@@ -1023,12 +1005,6 @@
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Язык</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} отключен</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} включен</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Логирование</value>
   </data>
@@ -1103,9 +1079,6 @@
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Ваш текущий файл лога:</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Вы не можете использовать панель инструментов переводчика, пока она запущена под администратором. Пожалуйста, перезапустите приложение.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Комментарий</value>

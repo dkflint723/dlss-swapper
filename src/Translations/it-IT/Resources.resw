@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Richiede il download</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>La DLL nell'archivio non è valida (nessuna DLL trovata).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>Usa sempre l'ultima versione</value>
   </data>
@@ -239,9 +236,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Impossibile trovare il file "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>La DLL è stata reimpostata su {0}.</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Download avviato</value>
@@ -332,9 +326,6 @@ Per verificare quale preset stia venendo utilizzato, abilita l'overlay di DLSS.<
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile è nullo</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Impossibile modificare il preset. Consulta il registro degli errori per ulteriori informazioni.</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>È possibile trascinare solo un singolo file di copertina</value>
   </data>
@@ -346,9 +337,6 @@ Per verificare quale preset stia venendo utilizzato, abilita l'overlay di DLSS.<
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Raggruppa</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Nascondi i giochi senza elementi sostituibili</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>È possibile trascinare solo un singolo file di copertina</value>
@@ -481,9 +469,6 @@ Se hai verificato queste opzioni e il tuo gioco continua a non essere visualizza
   <data name="General_Failed" xml:space="preserve">
     <value>Fallito</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Questa funzionalità non è supportata se si esegue l'applicazione come amministratore.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Filtro</value>
   </data>
@@ -579,9 +564,6 @@ Se hai verificato queste opzioni e il tuo gioco continua a non essere visualizza
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Cerca</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Spiacenti</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Successo</value>
@@ -894,12 +876,6 @@ Per questo motivo, ti consigliamo di usare cautela nelle partite multi-giocatore
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Lingua</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} disattivato</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} attivato</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Logging</value>
   </data>
@@ -950,9 +926,6 @@ Per questo motivo, ti consigliamo di usare cautela nelle partite multi-giocatore
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Il log corrente è</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Non è possibile utilizzare gli strumenti per la traduzione mentre si è in esecuzione come amministratore. Riavviare l'applicazione.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Commento</value>

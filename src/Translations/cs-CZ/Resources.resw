@@ -156,9 +156,6 @@
   <data name="DllRecord_RequiresDownload" xml:space="preserve">
     <value>Vyžaduje stažení</value>
   </data>
-  <data name="DllZipInvalidNoDllFound" xml:space="preserve">
-    <value>DLL zip archiv byl neplatný (nebyl nalezen soubor DLL).</value>
-  </data>
   <data name="DLSS_Preset_AlwaysUseLatest" xml:space="preserve">
     <value>Vždy použít nejnovější</value>
   </data>
@@ -245,9 +242,6 @@
   </data>
   <data name="GamePage_DllPicker_CouldNotFindFileTemplate" xml:space="preserve">
     <value>Nebylo možné najít soubor "{0}".</value>
-  </data>
-  <data name="GamePage_DllPicker_ResetDllToVersionTemplate" xml:space="preserve">
-    <value>DLL bylo resetováno na "{0}".</value>
   </data>
   <data name="GamePage_DllPicker_StartingDownload" xml:space="preserve">
     <value>Zahájení stahování</value>
@@ -349,9 +343,6 @@ Chcete-li ověřit, který preset se používá, povolte prosím indikátor DLSS
   <data name="GamePage_StorageFileIsNull" xml:space="preserve">
     <value>storageFile je neplatný</value>
   </data>
-  <data name="GamePage_UnableToChangePreset" xml:space="preserve">
-    <value>Nebylo možné změnit preset. Další informace naleznete v chybovém protokolu (log).</value>
-  </data>
   <data name="GamePage_YouMayOnlyDragOneFileCover" xml:space="preserve">
     <value>Pro vytvoření obalu je možné přetáhnout pouze jeden soubor</value>
   </data>
@@ -363,9 +354,6 @@ Chcete-li ověřit, který preset se používá, povolte prosím indikátor DLSS
   </data>
   <data name="GamesPage_Grouping" xml:space="preserve">
     <value>Seskupení</value>
-  </data>
-  <data name="GamesPage_HideGamesWithNoSwappableItems" xml:space="preserve">
-    <value>Skrýt hry bez změnitelných souborů</value>
   </data>
   <data name="GamesPage_ManuallyAdding_AddCoverErrorSingleFile" xml:space="preserve">
     <value>Pro vytvoření obalu je možné přetáhnout pouze jeden soubor</value>
@@ -498,9 +486,6 @@ Pokud jste tyto možnosti zkontrolovali a hra se stále nezobrazuje, může se j
   <data name="General_Failed" xml:space="preserve">
     <value>Selhalo</value>
   </data>
-  <data name="General_FeatureNotSupportedWhenAdmin" xml:space="preserve">
-    <value>Pokud aplikaci spouštíte jako administrátor, není tato funkce podporována.</value>
-  </data>
   <data name="General_Filter" xml:space="preserve">
     <value>Filtr</value>
   </data>
@@ -605,9 +590,6 @@ Pokud jste tyto možnosti zkontrolovali a hra se stále nezobrazuje, může se j
   </data>
   <data name="General_Search" xml:space="preserve">
     <value>Vyhledat</value>
-  </data>
-  <data name="General_Sorry" xml:space="preserve">
-    <value>Omlouvám se</value>
   </data>
   <data name="General_Success" xml:space="preserve">
     <value>Úspěch</value>
@@ -920,12 +902,6 @@ Z tohoto důvodu doporučujeme být u multiplayerových her opatrní.</value>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Jazyk</value>
   </data>
-  <data name="SettingsPage_LibraryDisabled" xml:space="preserve">
-    <value>{0} zakázáno</value>
-  </data>
-  <data name="SettingsPage_LibraryEnabled" xml:space="preserve">
-    <value>{0} povoleno</value>
-  </data>
   <data name="SettingsPage_Logging" xml:space="preserve">
     <value>Protokolování</value>
   </data>
@@ -994,9 +970,6 @@ Z tohoto důvodu doporučujeme být u multiplayerových her opatrní.</value>
   </data>
   <data name="SettingsPage_YourCurrentLogFile" xml:space="preserve">
     <value>Váš aktuální soubor protokolu je</value>
-  </data>
-  <data name="TranslationToolboxPage_AdminError" xml:space="preserve">
-    <value>Překladový nástroj nemůžete používat, pokud je program spuštěn jako administrátor. Proveďte prosím restart programu bez administrátorského oprávnění.</value>
   </data>
   <data name="TranslationToolboxPage_Comment" xml:space="preserve">
     <value>Komentář</value>
