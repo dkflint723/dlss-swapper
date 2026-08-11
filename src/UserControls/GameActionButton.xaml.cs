@@ -116,6 +116,10 @@ public sealed partial class GameActionButton : UserControl
             ActionButton.Background = new SolidColorBrush(Color.FromArgb(0xCC, 0x00, 0x00, 0x00));
 
             ToolTipService.SetToolTip(ActionButton, label);
+
+            // A tooltip is not a name: it never reaches a screen reader and it does not appear on
+            // keyboard focus. Without this, the card's only control announces as "Button".
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(ActionButton, label);
         }
         else
         {

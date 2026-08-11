@@ -47,10 +47,25 @@ public partial class GameGridPageModel : ObservableObject
 
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(GridViewItemHeight))]
+    [NotifyPropertyChangedFor(nameof(GridViewArtHeight))]
+    [NotifyPropertyChangedFor(nameof(GridViewCardHeight))]
     public partial int GridViewItemWidth { get; set; } = Settings.Instance.GridViewItemWidth;
 
-    public int GridViewItemHeight => (int)(GridViewItemWidth * 1.5);
+    /// <summary>The cover art, keeping the 2:3 shape of the 400x600 art the cache holds.</summary>
+    public int GridViewArtHeight => (int)(GridViewItemWidth * 1.5);
+
+    /// <summary>
+    /// The caption below the art: a title line, a status line, and the padding around them.
+    /// </summary>
+    /// <remarks>
+    /// A constant rather than Auto, and deliberately not scaled with the card width. A GridView
+    /// takes one cell size for the whole grid from the first item it measures, so a caption sized
+    /// by its own text would size every card in every section from whichever game happened to be
+    /// measured first. The text does not scale with the zoom either, so the block cannot.
+    /// </remarks>
+    public const int GridViewCaptionHeight = 76;
+
+    public int GridViewCardHeight => GridViewArtHeight + GridViewCaptionHeight;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GameGridViewIcon))]

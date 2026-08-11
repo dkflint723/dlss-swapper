@@ -19,20 +19,33 @@
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="VariantStates">
                 <!--
-                    Only the paint changes between the two, never what is shown or when. The card
-                    draws over cover art, so its ink is white and a shade smaller; the row draws on
-                    the page background and takes the theme's own text tokens.
+                    Nothing differs in the paint any more. The card's caption moved out of the
+                    gradient over the cover and onto a theme surface, so its ink is the theme's ink
+                    and its sizes are the row's sizes. White at 11px existed only because it was
+                    drawn on artwork; on the card surface in the light theme it measures 1.4:1.
+                    The one thing still left to the variant is the busy ring, in the code behind.
                 -->
                 <VisualState x:Name="RowVariant" />
+
+                <!--
+                    The card restacks rather than repaints. A card is 200px wide, so the engine
+                    list sitting beside the sentence left it about 116px and "Updates turned off"
+                    truncated to "Updates turne…" — the sentence is the substance, so the list
+                    that was squeezing it moves under instead. Spec §2.6 puts it on its own line
+                    for the same reason.
+                -->
                 <VisualState x:Name="CardVariant">
                     <VisualState.Setters>
-                        <Setter Target="StatusGlyph.Foreground" Value="White" />
-                        <Setter Target="StatusSentence.Foreground" Value="White" />
-                        <Setter Target="StatusSentence.FontSize" Value="11" />
-                        <Setter Target="StatusEngines.Foreground" Value="White" />
-                        <Setter Target="StatusEngines.FontSize" Value="10" />
-                        <Setter Target="StatusEngines.Opacity" Value="0.7" />
-                        <Setter Target="BusyRing.Foreground" Value="White" />
+                        <Setter Target="StatusEngines.(Grid.Row)" Value="1" />
+                        <Setter Target="StatusEngines.(Grid.Column)" Value="0" />
+                        <Setter Target="StatusEngines.(Grid.ColumnSpan)" Value="3" />
+                        <Setter Target="StatusEngines.HorizontalAlignment" Value="Left" />
+                        <Setter Target="StatusEngines.Margin" Value="0,2,0,0" />
+                        <Setter Target="StatusEngines.Foreground" Value="{ThemeResource DsTextTertiaryBrush}" />
+                        <Setter Target="BusyRing.(Grid.Row)" Value="1" />
+                        <Setter Target="BusyRing.(Grid.Column)" Value="0" />
+                        <Setter Target="BusyRing.HorizontalAlignment" Value="Left" />
+                        <Setter Target="BusyRing.Margin" Value="0,2,0,0" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -43,6 +56,12 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+
+        <!-- The second row is only ever used by the card; a row keeps it at zero height. -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
         <FontIcon
             x:Name="StatusGlyph"

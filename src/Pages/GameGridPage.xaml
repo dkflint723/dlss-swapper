@@ -274,73 +274,107 @@
 
                 <GridView.ItemTemplate>
                     <DataTemplate x:DataType="data:Game">
-                        <Grid 
+                        <!--
+                            Fixed height, and fixed rows inside it. A GridView takes the cell size
+                            for the whole grid from the first item it measures, so a caption sized
+                            by its own text would size every other card from whichever game
+                            happened to come first.
+                        -->
+                        <Grid
                             Width="{Binding ElementName=RootGameGridPage, Path=ViewModel.GridViewItemWidth, Mode=OneWay}"
-                            Height="{Binding ElementName=RootGameGridPage, Path=ViewModel.GridViewItemHeight, Mode=OneWay}"
-                            CornerRadius="{StaticResource DsCornerRadiusLarge}" Opacity="{x:Bind IsHidden, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}" BorderThickness="1" ColumnSpacing="0" RowSpacing="0" Margin="0,0,12,12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                            Height="{Binding ElementName=RootGameGridPage, Path=ViewModel.GridViewCardHeight, Mode=OneWay}"
+                            CornerRadius="{StaticResource DsCornerRadiusLarge}"
+                            Opacity="{x:Bind IsHidden, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
+                            BorderThickness="1"
+                            Margin="0,0,12,12"
+                            Background="{ThemeResource DsSurfBrush}"
+                            BorderBrush="{ThemeResource DsLine2Brush}">
 
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
+                                <RowDefinition Height="76" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="{x:Bind Title, Mode=OneWay}" Margin="20" TextWrapping="WrapWholeWords" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{ThemeResource ButtonForegroundColor}" />
+                            <Border Grid.Row="0" CornerRadius="{StaticResource DsCornerRadiusLargeTop}">
+                                <Grid>
+                                    <!-- What is behind a cover that never arrived. The token existed and nothing used it. -->
+                                    <Border Background="{ThemeResource DsCoverPlaceholderBrush}" />
 
-                            <!-- Weird, but allows image to strecth centered rather than left align -->
-                            <Border BorderThickness="0" FlowDirection="LeftToRight">
-                                <Border.RenderTransform>
-                                    <CompositeTransform ScaleX="1" />
-                                </Border.RenderTransform>
-                                <Border.Background>
-                                    <ImageBrush Stretch="UniformToFill">
-                                        <ImageBrush.ImageSource>
-                                            <BitmapImage CreateOptions="IgnoreImageCache" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
-                                        </ImageBrush.ImageSource>
-                                    </ImageBrush>
-                                </Border.Background>
+                                    <!-- Weird, but allows image to strecth centered rather than left align -->
+                                    <Border BorderThickness="0" FlowDirection="LeftToRight">
+                                        <Border.RenderTransform>
+                                            <CompositeTransform ScaleX="1" />
+                                        </Border.RenderTransform>
+                                        <Border.Background>
+                                            <ImageBrush Stretch="UniformToFill">
+                                                <ImageBrush.ImageSource>
+                                                    <BitmapImage CreateOptions="IgnoreImageCache" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
+                                                </ImageBrush.ImageSource>
+                                            </ImageBrush>
+                                        </Border.Background>
+                                    </Border>
+
+                                    <!--
+                                        Bottom right rather than top right: it acts on what the
+                                        caption directly below it says, and poster art carries its
+                                        own title across the top. Still on the art, so it still
+                                        builds its own scrim.
+                                    -->
+                                    <usercontrols:GameActionButton
+                                        VerticalAlignment="Bottom"
+                                        HorizontalAlignment="Right"
+                                        Margin="8"
+                                        Variant="Card"
+                                        Status="{x:Bind RowStatus, Mode=OneWay}"
+                                        Game="{x:Bind}"
+                                        Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.RowActionCommand}" />
+                                </Grid>
                             </Border>
 
                             <!--
-                                A gradient rather than a flat bar, so the cover fades into the
-                                caption instead of being cut off by a hard edge. The bottom stop is
-                                nearly opaque because white text has to stay readable over a bright
-                                cover, not just a dark one.
+                                The caption, below the art rather than in a gradient over it.
+                                Nothing here is painted white any more, so the theme's own text
+                                tokens carry it and the contrast measured for a list row holds here
+                                too — it used to depend on whatever the publisher shipped as art.
                             -->
-                            <Grid VerticalAlignment="Bottom" Padding="10,20,10,10">
-                                <Grid.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="#00000000" Offset="0.0" />
-                                        <GradientStop Color="#99000000" Offset="0.4" />
-                                        <GradientStop Color="#F2000000" Offset="1.0" />
-                                    </LinearGradientBrush>
-                                </Grid.Background>
+                            <Grid Grid.Row="1" CornerRadius="{StaticResource DsCornerRadiusLargeBottom}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
                                 <!--
-                                    The same status the list rows carry, from the same control,
-                                    rather than a hardcoded "DLSS" label, a version number and
-                                    vendor coloured badges. The card had been claiming every game
-                                    was about DLSS regardless of what it actually ships.
+                                    Spec 2.6's rule. Always drawn, never only when a game is
+                                    behind: a mark that comes and goes is a colour carrying a
+                                    state, and the sentence beside it already says what is true.
                                 -->
-                                <usercontrols:GameStatusView
-                                    Variant="Card"
-                                    Status="{x:Bind RowStatus, Mode=OneWay}" />
-                            </Grid>
+                                <Border Grid.Column="0" Background="{ThemeResource DsAccentBrush}" />
 
-                            <!--
-                                The row's action, over the cover where it is visible while scanning
-                                the grid. A glyph rather than a colour, so it is still readable to
-                                anyone who cannot separate the vendor colours.
-                            -->
-                            <usercontrols:GameActionButton
-                                VerticalAlignment="Top"
-                                HorizontalAlignment="Right"
-                                Margin="8"
-                                Variant="Card"
-                                Status="{x:Bind RowStatus, Mode=OneWay}"
-                                Game="{x:Bind}"
-                                Command="{Binding ElementName=RootGameGridPage, Path=ViewModel.RowActionCommand}" />
+                                <StackPanel Grid.Column="1" Margin="10,8,10,10" Spacing="4">
+                                    <!--
+                                        The card has never shown a title while its cover loaded,
+                                        only when one failed to. It is also the first thing that
+                                        gives the card an automation name worth reading.
+                                    -->
+                                    <TextBlock
+                                        Text="{x:Bind Title, Mode=OneWay}"
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        TextWrapping="NoWrap"
+                                        TextTrimming="CharacterEllipsis"
+                                        Foreground="{ThemeResource DsTextPrimaryBrush}" />
+
+                                    <!--
+                                        The same status the list rows carry, from the same control,
+                                        rather than a hardcoded "DLSS" label, a version number and
+                                        vendor coloured badges. The card had been claiming every
+                                        game was about DLSS regardless of what it actually ships.
+                                    -->
+                                    <usercontrols:GameStatusView
+                                        Variant="Card"
+                                        Status="{x:Bind RowStatus, Mode=OneWay}" />
+                                </StackPanel>
+                            </Grid>
                         </Grid>
                     </DataTemplate>
 

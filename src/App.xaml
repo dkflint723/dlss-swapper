@@ -136,6 +136,13 @@
             <CornerRadius x:Key="DsCornerRadius">6</CornerRadius>
             <CornerRadius x:Key="DsCornerRadiusLarge">8</CornerRadius>
 
+        <!--
+            Halves of the card radius. A panel's CornerRadius does not clip its children, so the
+            art and the caption below it have to round their own outer corners.
+        -->
+        <CornerRadius x:Key="DsCornerRadiusLargeTop">8,8,0,0</CornerRadius>
+        <CornerRadius x:Key="DsCornerRadiusLargeBottom">0,0,8,8</CornerRadius>
+
             <!--
                 The accent is chosen at runtime, so it cannot live in a theme dictionary. These are
                 declared once with the default brand green and have their colour replaced by
