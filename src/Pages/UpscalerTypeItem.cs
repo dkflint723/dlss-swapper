@@ -36,13 +36,28 @@ public partial class UpscalerTypeItem : ObservableObject
 
     public FontWeight LabelWeight => IsSelected ? FontWeights.SemiBold : FontWeights.Normal;
 
-    public void Refresh()
+    /// <summary>
+    /// The number beside this engine's name, counting what its list would actually show.
+    /// </summary>
+    /// <remarks>
+    /// Through the same predicate the list uses, which it was not before: this counted the raw
+    /// collection while the list hid debug files, so DLSS read 107 over a list of 88.
+    ///
+    /// It follows the search too. The number is printed on the button that opens the list, so a
+    /// column reading "XeSS 15" that opens onto nothing is the count disagreeing with its own list;
+    /// and a search across nine engines is only usable if the column says which ones have matches.
+    /// </remarks>
+    public void Refresh(string? searchText = null)
     {
         Name = DLLManager.Instance.GetAssetTypeName(AssetType);
 
         var records = DLLManager.Instance.GetRecords(AssetType);
-        CountText = records is null || records.Count == 0
+        var count = DllSearch.Count(records, searchText, Settings.Instance.AllowDebugDlls);
+
+        // Blank when the engine has nothing at all, but an explicit zero while a search is on: an
+        // empty count there reads as a number that failed to arrive rather than as "none".
+        CountText = (records is null || records.Count == 0) && string.IsNullOrWhiteSpace(searchText)
             ? string.Empty
-            : records.Count.ToString(System.Globalization.CultureInfo.CurrentCulture);
+            : count.ToString(System.Globalization.CultureInfo.CurrentCulture);
     }
 }

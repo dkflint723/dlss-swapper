@@ -38,6 +38,16 @@ public class LibraryPageModelTranslationProperties : LocalizedViewModelBase
     public string PageTitle => ResourceHelper.GetString("Sidebar_Upscalers");
 
     [TranslationProperty]
+    public string SearchText => ResourceHelper.GetString("Upscalers_Search");
+
+    /// <summary>Names what is searched, for the screen reader and for anyone who wonders.</summary>
+    [TranslationProperty]
+    public string SearchHintText => ResourceHelper.GetString("Upscalers_SearchHint");
+
+    [TranslationProperty]
+    public string ClearSearchText => ResourceHelper.GetString("Upscalers_ClearSearch");
+
+    [TranslationProperty]
     public string ImportFromLocalFilesText => ResourceHelper.GetString("LibraryPage_ImportFrom_LocalFiles");
 
     [TranslationProperty]

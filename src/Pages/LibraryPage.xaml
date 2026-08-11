@@ -102,6 +102,51 @@
 
 
         <!--
+            Above both columns because it narrows both. The counts beside each engine move with it,
+            so a count and the list it opens still come from one rule, and a search across nine
+            engines stays usable: the column says which ones have matches instead of making you
+            click all nine to find out.
+        -->
+        <Grid Grid.Row="2" Height="40" Margin="30,8,16,0" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox
+                Grid.Column="0"
+                x:Name="SearchBox"
+                Height="32"
+                VerticalAlignment="Center"
+                PlaceholderText="{x:Bind ViewModel.TranslationProperties.SearchText, Mode=OneWay}"
+                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                AutomationProperties.Name="{x:Bind ViewModel.TranslationProperties.SearchHintText, Mode=OneWay}" />
+
+            <!-- The sentence that stops the narrowed counts reading as versions gone missing. -->
+            <TextBlock
+                Grid.Column="1"
+                Text="{x:Bind ViewModel.SearchSummary, Mode=OneWay}"
+                FontSize="12"
+                VerticalAlignment="Center"
+                TextWrapping="NoWrap"
+                TextTrimming="CharacterEllipsis"
+                Visibility="{x:Bind ViewModel.SearchActiveVisibility, Mode=OneWay}"
+                Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+            <!-- Words, and it says what you get back rather than what it takes away. -->
+            <Button
+                Grid.Column="2"
+                Height="32"
+                Padding="14,0"
+                VerticalAlignment="Center"
+                CornerRadius="{StaticResource DsCornerRadius}"
+                Content="{x:Bind ViewModel.TranslationProperties.ClearSearchText, Mode=OneWay}"
+                Visibility="{x:Bind ViewModel.SearchActiveVisibility, Mode=OneWay}"
+                Command="{x:Bind ViewModel.ClearSearchCommand}" />
+        </Grid>
+
+        <!--
             The engines down the left, with how many versions of each are known. The bar this
             replaces scrolled horizontally, so the engines past the right edge were reachable only
             by dragging a strip that did not look draggable, and it carried no counts at all.
@@ -423,6 +468,43 @@
 
                 </ListView.ItemTemplate>
             </ListView>
+
+            <!--
+                Over the list only, never the engine column — the opposite of the games page, and
+                deliberately: when a search matches nothing here, the counts beside the other
+                engines are the answer, so covering them would hide it.
+            -->
+            <Grid
+                Grid.Column="1"
+                Margin="16,0,0,0"
+                Padding="16,0"
+                Visibility="{x:Bind ViewModel.EmptyStateVisibility, Mode=OneWay}"
+                Background="{ThemeResource DsBgBrush}">
+                <StackPanel MaxWidth="460" VerticalAlignment="Center" HorizontalAlignment="Left" Spacing="12">
+                    <TextBlock
+                        Text="{x:Bind ViewModel.EmptyState.Title, Mode=OneWay}"
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        TextWrapping="Wrap"
+                        Foreground="{ThemeResource DsTextPrimaryBrush}" />
+
+                    <TextBlock
+                        Text="{x:Bind ViewModel.EmptyState.Body, Mode=OneWay}"
+                        FontSize="13"
+                        LineHeight="20"
+                        TextWrapping="Wrap"
+                        Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+                    <Button
+                        Height="34"
+                        Padding="18,0"
+                        Margin="0,4,0,0"
+                        CornerRadius="{StaticResource DsCornerRadius}"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Content="{x:Bind ViewModel.EmptyState.PrimaryLabel, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.EmptyStatePrimaryCommand}" />
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

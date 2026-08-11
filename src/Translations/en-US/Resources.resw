@@ -303,6 +303,44 @@
     <value>{0} → {1}</value>
     <comment>{0} is the version a dll was before it was replaced, {1} is what it is now</comment>
   </data>
+  <data name="Upscalers_Search" xml:space="preserve">
+    <value>Search versions</value>
+  </data>
+  <data name="Upscalers_SearchHint" xml:space="preserve">
+    <value>Search by version, label or file hash</value>
+  </data>
+  <data name="Upscalers_ClearSearch" xml:space="preserve">
+    <value>Show all versions</value>
+  </data>
+  <data name="Upscalers_SearchSummaryTemplate" xml:space="preserve">
+    <value>{0} of {1} {2} versions match</value>
+    <comment>{0} is how many matched, {1} the engine's total, {2} the engine name (eg. DLSS)</comment>
+  </data>
+  <data name="Upscalers_NoSearchResultsTemplate" xml:space="preserve">
+    <value>No {0} versions match “{1}”</value>
+    <comment>{0} is the engine name (eg. DLSS), {1} is what was typed</comment>
+  </data>
+  <data name="Upscalers_SearchElsewhereTemplate" xml:space="preserve">
+    <value>{0} versions under the other upscalers match. Their counts are beside each name on the left.</value>
+    <comment>{0} is how many versions matched under the other upscalers</comment>
+  </data>
+  <data name="Upscalers_SearchNowhere" xml:space="preserve">
+    <value>Nothing in the library matches. Versions, labels and file hashes are searched.</value>
+  </data>
+  <data name="Upscalers_ShowAllTemplate" xml:space="preserve">
+    <value>Show all {0} {1} versions</value>
+    <comment>{0} is how many the engine has, {1} is the engine name (eg. DLSS)</comment>
+  </data>
+  <data name="Upscalers_NoVersionsTemplate" xml:space="preserve">
+    <value>No {0} versions yet</value>
+    <comment>{0} is the engine name (eg. DLSS)</comment>
+  </data>
+  <data name="Upscalers_NoVersionsBody" xml:space="preserve">
+    <value>The list of available versions has not been downloaded yet.</value>
+  </data>
+  <data name="Upscalers_RefreshList" xml:space="preserve">
+    <value>Refresh the list</value>
+  </data>
   <data name="Upscalers_ShowGamesUsing" xml:space="preserve">
     <value>Show the games using this</value>
   </data>

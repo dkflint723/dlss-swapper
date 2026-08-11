@@ -112,12 +112,77 @@ public partial class LibraryPageModel : ObservableObject
         SelectLibrary(item.AssetType);
     }
 
+    /// <summary>
+    /// Recounts every engine against what is currently being searched for.
+    /// </summary>
+    /// <remarks>
+    /// Every path that recounts goes through here — construction, a language change, a refresh, and
+    /// the debug-dll setting changing — so none of them can quietly revert the column to counting
+    /// the whole library while a search is on.
+    /// </remarks>
     void RefreshUpscalerTypes()
     {
         foreach (var upscalerType in UpscalerTypes)
         {
-            upscalerType.Refresh();
+            upscalerType.Refresh(SearchText);
         }
+    }
+
+    /// <summary>What is typed in the page's search box.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SearchActiveVisibility))]
+    public partial string SearchText { get; set; } = string.Empty;
+
+    public Visibility SearchActiveVisibility => string.IsNullOrWhiteSpace(SearchText)
+        ? Visibility.Collapsed
+        : Visibility.Visible;
+
+    /// <summary>Reads as "12 of 108 DLSS versions match".</summary>
+    [ObservableProperty]
+    public partial string SearchSummary { get; set; } = string.Empty;
+
+    partial void OnSearchTextChanged(string value)
+    {
+        ApplySearch();
+    }
+
+    /// <summary>
+    /// Narrows the list, the engine counts and the release-line headings together.
+    /// </summary>
+    /// <remarks>
+    /// The filter is applied to the collection the groups are built FROM, not to the groups. The
+    /// headings are derived from whatever list <see cref="DllVersionGroup.Build"/> is handed —
+    /// which lines exist, which three stand alone, and what the rolled-up tail is called — so
+    /// filtering downstream would leave "DLSS 3.6 and older" sitting over rows from another line
+    /// entirely, and no amount of hiding empty groups would correct a wrong label.
+    /// </remarks>
+    void ApplySearch()
+    {
+        ApplyRecordFilter();
+        RefreshUpscalerTypes();
+        RebuildVersionGroups();
+    }
+
+    void ApplyRecordFilter()
+    {
+        if (SelectedLibraryList is null)
+        {
+            return;
+        }
+
+        // Assigned rather than mutated: an AdvancedCollectionView only refreshes when its Filter is
+        // set, so the same predicate object put back would change nothing.
+        var query = SearchText;
+        var allowDebugDlls = Settings.Instance.AllowDebugDlls;
+
+        SelectedLibraryList.Filter = x => x is DLLRecord record && DllSearch.Passes(record, query, allowDebugDlls);
+    }
+
+    /// <summary>Puts the whole engine back, and says so in words rather than with a glyph.</summary>
+    [RelayCommand]
+    void ClearSearch()
+    {
+        SearchText = string.Empty;
     }
 
     void OnLanguageChanged()
@@ -1506,18 +1571,17 @@ public partial class LibraryPageModel : ObservableObject
         if (records is not null)
         {
             newList = new AdvancedCollectionView(records, true);
-
-            // Debug dlls are opt in. The dll picker has always respected this setting, the library
-            // page never did, so they showed up here regardless.
-            if (Settings.Instance.AllowDebugDlls == false)
-            {
-                newList.Filter = x => x is DLLRecord dllRecord && dllRecord.IsDevFile == false;
-            }
         }
 
         SelectedLibraryList = null;
         SelectedLibraryList = newList;
         OnPropertyChanged(nameof(SelectedLibraryList));
+
+        // Switching engine builds a brand new view, so the filter has to be put back or the search
+        // silently stops applying while the box still shows the query. Debug dlls are opt in and
+        // that rule now lives in the same predicate — the dll picker always respected the setting
+        // and this page never did, so they used to show up here regardless.
+        ApplyRecordFilter();
 
         WatchRecords(records);
         RebuildVersionGroups();
@@ -1632,6 +1696,7 @@ public partial class LibraryPageModel : ObservableObject
 
         if (SelectedLibraryList is null)
         {
+            RefreshSearchState(0);
             return;
         }
 
@@ -1644,6 +1709,67 @@ public partial class LibraryPageModel : ObservableObject
         {
             VersionGroups.Add(group);
         }
+
+        RefreshSearchState(records.Count);
+    }
+
+    /// <summary>What the page says about a search, and what it says when nothing survived one.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EmptyStateVisibility))]
+    public partial UpscalersEmptyState? EmptyState { get; set; }
+
+    public Visibility EmptyStateVisibility => EmptyState is null ? Visibility.Collapsed : Visibility.Visible;
+
+    /// <summary>
+    /// Counted off the rows the page is actually showing, rather than worked out from the filter
+    /// again, so the sentence and the emptiness it describes cannot disagree.
+    /// </summary>
+    void RefreshSearchState(int visibleCount)
+    {
+        var engineName = DLLManager.Instance.GetAssetTypeName(SelectedAssetType);
+        var allRecords = DLLManager.Instance.GetRecords(SelectedAssetType);
+
+        // The engine's own total ignores the search but keeps the debug rule, because that is what
+        // "show all versions" would put back.
+        var engineTotal = DllSearch.Count(allRecords, null, Settings.Instance.AllowDebugDlls);
+
+        SearchSummary = string.IsNullOrWhiteSpace(SearchText)
+            ? string.Empty
+            : ResourceHelper.GetFormattedResourceTemplate(
+                "Upscalers_SearchSummaryTemplate", visibleCount, engineTotal, engineName);
+
+        var matchesElsewhere = 0;
+        if (string.IsNullOrWhiteSpace(SearchText) == false)
+        {
+            foreach (var dllTypeDefinition in DllTypes.All)
+            {
+                if (dllTypeDefinition.AssetType == SelectedAssetType)
+                {
+                    continue;
+                }
+
+                matchesElsewhere += DllSearch.Count(
+                    DLLManager.Instance.GetRecords(dllTypeDefinition.AssetType),
+                    SearchText,
+                    Settings.Instance.AllowDebugDlls);
+            }
+        }
+
+        var state = UpscalersEmptyState.For(visibleCount, engineTotal, engineName, SearchText, matchesElsewhere);
+        EmptyState = state.Kind == UpscalersEmptyStateKind.None ? null : state;
+    }
+
+    /// <summary>Runs whatever the empty state offered to do.</summary>
+    [RelayCommand]
+    async Task EmptyStatePrimaryAsync()
+    {
+        if (EmptyState?.Kind == UpscalersEmptyStateKind.NoSearchResults)
+        {
+            SearchText = string.Empty;
+            return;
+        }
+
+        await RefreshAsync();
     }
 
     [RelayCommand]

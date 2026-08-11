@@ -74,12 +74,24 @@ public partial class ShellSidebarModel : ObservableObject
         Refresh();
     }
 
+    /// <summary>
+    /// How many dll versions the upscalers page would list, added up across every engine.
+    /// </summary>
+    /// <remarks>
+    /// Through the same predicate that page uses, because this number sits directly above that
+    /// page's own column of counts and has to add up to it. Counting the raw records instead made
+    /// the sidebar read 213 over a column summing to 186, the difference being the debug files
+    /// nobody had opted into seeing.
+    /// </remarks>
     static int CountKnownDlls()
     {
         var count = 0;
+        var allowDebugDlls = Settings.Instance.AllowDebugDlls;
+
         foreach (var dllTypeDefinition in Dlls.DllTypes.All)
         {
-            count += DLLManager.Instance.GetRecords(dllTypeDefinition.AssetType)?.Count ?? 0;
+            count += DllSearch.Count(
+                DLLManager.Instance.GetRecords(dllTypeDefinition.AssetType), null, allowDebugDlls);
         }
 
         return count;
