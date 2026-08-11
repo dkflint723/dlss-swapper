@@ -13,9 +13,11 @@
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=usercontrols:GameControlModel, IsDesignTimeCreatable=True}"
     HorizontalAlignment="Stretch"
-    VerticalAlignment="Stretch">
+    VerticalAlignment="Stretch"
+    x:Name="RootGameControl">
 
     <usercontrols:FakeContentDialog.Resources>
+        <ct_converters:StringVisibilityConverter x:Key="StringVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
         <ct_converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"  />
         <ct_converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
         <ct_converters:BoolNegationConverter x:Key="BoolNegationConverter"  />
@@ -231,179 +233,123 @@
                         </Button>
                     </Grid>
 
-                    <Grid HorizontalAlignment="Stretch" ColumnSpacing="16" RowSpacing="4" Padding="0,8,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                    <!--
+                        One row per upscaler this game actually has, in the shape the settings page
+                        uses. It was nine hardcoded controls, one per upscaler, each a bold name
+                        over a dropdown — and each deciding for itself whether the game had that
+                        dll, which is GameEngines' question asked a second time. Everything else
+                        about an upscaler lived in icon buttons beside it, or nowhere: the version
+                        available, whether an original was kept, whether the dll was found twice.
+                    -->
+                    <ItemsControl Margin="0,12,0,0" ItemsSource="{x:Bind ViewModel.UpscalerRowList, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="data:UpscalerRowStatus">
+                                <Grid
+                                    Padding="0,14"
+                                    ColumnSpacing="16"
+                                    BorderThickness="0,0,0,1"
+                                    BorderBrush="{ThemeResource DsLineBrush}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="0" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="0" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                                    <FontIcon
+                                        Grid.Column="0"
+                                        FontSize="12"
+                                        VerticalAlignment="Center"
+                                        Glyph="{x:Bind Glyph}"
+                                        Foreground="{ThemeResource DsTextSecondaryBrush}"
+                                        Visibility="{x:Bind Glyph, Converter={StaticResource StringVisibilityConverter}}" />
 
-                        <usercontrols:GameAssetPicker Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top"
-                                                      ViewModel="{x:Bind ViewModel}" AssetType="DLSS" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <TextBlock
+                                            Text="{x:Bind Title}"
+                                            FontSize="13"
+                                            TextWrapping="Wrap"
+                                            Foreground="{ThemeResource DsTextPrimaryBrush}" />
 
-                        <StackPanel Grid.Column="1" Grid.Row="0" Spacing="6" Orientation="Horizontal" Visibility="{x:Bind ViewModel.DlssPresetVisibility, Mode=OneWay}">
-                            <TextBlock Text="{x:Bind ViewModel.TranslationProperties.DLSSPresetText, Mode=OneWay}" FontWeight="Bold"/>
-                            <Button Style="{StaticResource TextBlockButtonStyle}" Visibility="{x:Bind ViewModel.CanSelectDlssPreset, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{Binding DLSSPresetInfoCommand}" Padding="0" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoTooltipText, Mode=OneWay}">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource InformationalFontIcon}" />
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
+                                        <TextBlock
+                                            Text="{x:Bind Sentence}"
+                                            FontSize="11"
+                                            LineHeight="15"
+                                            TextWrapping="Wrap"
+                                            Foreground="{ThemeResource DsTextTertiaryBrush}" />
+                                    </StackPanel>
 
-                        <Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.DlssPresetVisibility, Mode=OneWay}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            
+                                    <!--
+                                        Carries its own command rather than reaching back through
+                                        the page: an ElementName binding does not resolve from
+                                        inside a template placed in a content property.
+                                    -->
+                                    <Button
+                                        Grid.Column="2"
+                                        MinWidth="150"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Left"
+                                        Content="{x:Bind ActionLabel}"
+                                        IsEnabled="{x:Bind IsLocked, Converter={StaticResource BoolNegationConverter}}"
+                                        Command="{Binding ElementName=RootGameControl, Path=ViewModel.ChangeRecordCommand}"
+                                        CommandParameter="{x:Bind AssetType}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!--
+                        The presets, in the same row shape, under their own heading rather than
+                        interleaved beside the upscaler they belong to. Each says what it does, and
+                        when it cannot be set it says which of the three reasons that is, instead of
+                        a disabled dropdown beside an error icon that only appeared for one of them.
+                    -->
+                    <usercontrols:SectionRule
+                        Margin="0,28,0,4"
+                        Visibility="{x:Bind ViewModel.AnyPresetVisibility, Mode=OneWay}"
+                        Label="{x:Bind ViewModel.TranslationProperties.PresetsSectionText, Mode=OneWay}" />
+
+                    <usercontrols:SettingsRow
+                        Visibility="{x:Bind ViewModel.DlssPresetVisibility, Mode=OneWay}"
+                        Title="{x:Bind ViewModel.TranslationProperties.DLSSPresetText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.DlssPresetDescription, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
                             <ComboBox
-                                Grid.Column="0"
-                                HorizontalAlignment="Stretch"
+                                MinWidth="180"
                                 SelectedItem="{x:Bind ViewModel.SelectedDlssPreset, Mode=TwoWay}"
                                 ItemsSource="{x:Bind ViewModel.DlssPresetOptions}"
                                 DisplayMemberPath="Name"
                                 IsEnabled="{x:Bind ViewModel.CanSelectDlssPreset, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
 
-                            <Button Grid.Column="1" Padding="12,0,0,0" Visibility="{x:Bind helpers:NVAPIHelper.Instance.PermissionIssue, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{x:Bind ViewModel.NVAPIErrorCommand, Mode=OneTime}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.NVAPIErrorTooltipText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource ErrorFontIcon}" />
-                                </Button.Content>
-                            </Button>
-                        </Grid>
-
-
-                        <usercontrols:GameAssetPicker Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" VerticalAlignment="Top"
-                                                      ViewModel="{x:Bind ViewModel}" AssetType="DLSS_D" />
-
-                        <StackPanel Grid.Column="1" Grid.Row="3" Spacing="6" Orientation="Horizontal" Visibility="{x:Bind ViewModel.DlssDPresetVisibility, Mode=OneWay}">
-                            <TextBlock Text="{x:Bind ViewModel.TranslationProperties.DLSSDPresetText, Mode=OneWay}" FontWeight="Bold"/>
-                            <Button Style="{StaticResource TextBlockButtonStyle}" Visibility="{x:Bind ViewModel.CanSelectDlssDPreset, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{Binding DLSSPresetInfoCommand}" Padding="0" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoTooltipText, Mode=OneWay}">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource InformationalFontIcon}" />
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
-
-
-
-                        <Grid Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.DlssDPresetVisibility, Mode=OneWay}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            
-                            <ComboBox Grid.Column="0"
-                                HorizontalAlignment="Stretch"
+                    <usercontrols:SettingsRow
+                        Visibility="{x:Bind ViewModel.DlssDPresetVisibility, Mode=OneWay}"
+                        Title="{x:Bind ViewModel.TranslationProperties.DLSSDPresetText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.DlssPresetDescription, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ComboBox
+                                MinWidth="180"
                                 SelectedItem="{x:Bind ViewModel.SelectedDlssDPreset, Mode=TwoWay}"
                                 ItemsSource="{x:Bind ViewModel.DlssDPresetOptions}"
                                 DisplayMemberPath="Name"
                                 IsEnabled="{x:Bind ViewModel.CanSelectDlssDPreset, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
 
-                            <Button Grid.Column="1" Padding="12,0,0,0" Visibility="{x:Bind helpers:NVAPIHelper.Instance.PermissionIssue, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{x:Bind ViewModel.NVAPIErrorCommand, Mode=OneTime}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.NVAPIErrorTooltipText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource ErrorFontIcon}" />
-                                </Button.Content>
-                            </Button>
-                        </Grid>
-
-
-
-
-                        <usercontrols:GameAssetPicker Grid.Column="0" Grid.Row="6" Grid.RowSpan="2" VerticalAlignment="Top"
-                                                      ViewModel="{x:Bind ViewModel}" AssetType="DLSS_G" />
-
-
-                        <StackPanel Grid.Column="1" Grid.Row="6" Spacing="6" Orientation="Horizontal" Visibility="{x:Bind ViewModel.DlssGPresetVisibility, Mode=OneWay}">
-                            <TextBlock Text="{x:Bind ViewModel.TranslationProperties.DLSSGPresetText, Mode=OneWay}" FontWeight="Bold"/>
-                            <Button Style="{StaticResource TextBlockButtonStyle}" Visibility="{x:Bind ViewModel.CanSelectDlssGPreset, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{Binding DLSSPresetInfoCommand}" Padding="0" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.DLSSPresetInfoTooltipText, Mode=OneWay}">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource InformationalFontIcon}" />
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
-
-
-                        <Grid Grid.Column="1" Grid.Row="7" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.DlssGPresetVisibility, Mode=OneWay}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <ComboBox Grid.Column="0"
-                                 HorizontalAlignment="Stretch"
-                                 SelectedItem="{x:Bind ViewModel.SelectedDlssGPreset, Mode=TwoWay}"
-                                 ItemsSource="{x:Bind ViewModel.DlssGPresetOptions}"
-                                 DisplayMemberPath="Name"
-                                 IsEnabled="{x:Bind ViewModel.CanSelectDlssGPreset, Mode=OneWay}" />
-
-                            <Button Grid.Column="1" Padding="12,0,0,0" Visibility="{x:Bind helpers:NVAPIHelper.Instance.PermissionIssue, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Command="{x:Bind ViewModel.NVAPIErrorCommand, Mode=OneTime}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.NVAPIErrorTooltipText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                <Button.Content>
-                                    <FontIcon Style="{StaticResource ErrorFontIcon}" />
-                                </Button.Content>
-                            </Button>
-                        </Grid>
-
-
-
-
-                    </Grid>
-
-
-                    <Grid HorizontalAlignment="Stretch" ColumnSpacing="16" RowSpacing="4" Padding="0,20,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <usercontrols:GameAssetPicker Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top"
-                                                      ViewModel="{x:Bind ViewModel}" AssetType="FSR_31_DX12" />
-
-                        <usercontrols:GameAssetPicker Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top"
-                                                      ViewModel="{x:Bind ViewModel}" AssetType="FSR_31_VK" />
-                    </Grid>
-
-
-                    <Grid HorizontalAlignment="Stretch" ColumnSpacing="16" RowSpacing="4" Padding="0,20,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="0" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <usercontrols:GameAssetPicker Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top"
-                                                      ViewModel="{x:Bind ViewModel}" AssetType="XeSS" />
-
-                        <usercontrols:GameAssetPicker Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top"
-                                                      ViewModel="{x:Bind ViewModel}" AssetType="XeSS_FG" />
-
-                        <usercontrols:GameAssetPicker Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" VerticalAlignment="Top"
-                                                      ViewModel="{x:Bind ViewModel}" AssetType="XeSS_DX11" />
-
-                        <usercontrols:GameAssetPicker Grid.Column="1" Grid.Row="3" Grid.RowSpan="2" VerticalAlignment="Top"
-                                                      ViewModel="{x:Bind ViewModel}" AssetType="XeLL" />
-                    </Grid>
+                    <usercontrols:SettingsRow
+                        Visibility="{x:Bind ViewModel.DlssGPresetVisibility, Mode=OneWay}"
+                        Title="{x:Bind ViewModel.TranslationProperties.DLSSGPresetText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.DlssPresetDescription, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ComboBox
+                                MinWidth="180"
+                                SelectedItem="{x:Bind ViewModel.SelectedDlssGPreset, Mode=TwoWay}"
+                                ItemsSource="{x:Bind ViewModel.DlssGPresetOptions}"
+                                DisplayMemberPath="Name"
+                                IsEnabled="{x:Bind ViewModel.CanSelectDlssGPreset, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
 
                     <!--
                         The pickers for upscalers this game does not have are hidden rather than

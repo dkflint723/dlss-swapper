@@ -10,6 +10,7 @@ using System.IO;
 using Windows.System;
 using DLSS_Swapper.Helpers;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DLSS_Swapper.Data.DLSS;
 using System.ComponentModel;
@@ -96,6 +97,45 @@ public partial class GameControlModel : ObservableObject
         return engines.Present.Contains(assetType) ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    /// <summary>Whether the presets section has any row in it at all.</summary>
+    public Visibility AnyPresetVisibility => DlssPresetVisibility == Visibility.Visible
+        || DlssDPresetVisibility == Visibility.Visible
+        || DlssGPresetVisibility == Visibility.Visible
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
+    /// <summary>
+    /// What a preset is, or which of the three reasons it cannot be set.
+    /// </summary>
+    /// <remarks>
+    /// The three were distinguishable all along — no NVIDIA driver, no driver profile for this
+    /// game, a permission problem — and were collapsed into one word, "Not supported", beside a
+    /// dropdown that had greyed itself out. An error icon appeared for exactly one of the three.
+    /// A disabled control with no reason reads as broken rather than as unavailable.
+    /// </remarks>
+    public string DlssPresetDescription
+    {
+        get
+        {
+            if (NVAPIHelper.Instance.IsSupported == false)
+            {
+                return ResourceHelper.GetString("GamePage_Preset_NoDriver");
+            }
+
+            if (NVAPIHelper.Instance.PermissionIssue)
+            {
+                return ResourceHelper.GetString("GamePage_Preset_PermissionIssue");
+            }
+
+            if (CanSelectDlssPreset == false && CanSelectDlssDPreset == false && CanSelectDlssGPreset == false)
+            {
+                return ResourceHelper.GetString("GamePage_Preset_NoProfile");
+            }
+
+            return ResourceHelper.GetString("GamePage_Preset_Desc");
+        }
+    }
+
     /// <summary>
     /// Hides the buttons that change dlls when the game is locked.
     /// </summary>
@@ -152,6 +192,9 @@ public partial class GameControlModel : ObservableObject
         OnPropertyChanged(nameof(SkipUpdates));
         OnPropertyChanged(nameof(HasUpdatesVisibility));
 
+        // Every row's sentence says whether the game is behind, and a locked game is not.
+        RefreshUpscalerRows();
+
         // The Hidden and "Have an update" counts are taken from the library, and this changes what
         // one of them contains.
         App.CurrentApp.MainWindow?.GameGridPage?.ViewModel.RefreshFilterTabs();
@@ -163,6 +206,44 @@ public partial class GameControlModel : ObservableObject
 
     [ObservableProperty]
     public partial Visibility NotPresentSummaryVisibility { get; set; } = Visibility.Collapsed;
+
+    /// <summary>
+    /// One row per upscaler this game actually has.
+    /// </summary>
+    /// <remarks>
+    /// Nine hardcoded controls before this, each deciding for itself whether the game had its dll,
+    /// which is <see cref="GameEngines.Split"/>'s question asked a second time. These come from
+    /// <see cref="UpscalerRows.For"/>, which produces the rows and the "not in this game" line from
+    /// one answer.
+    /// </remarks>
+    public ObservableCollection<UpscalerRowStatus> UpscalerRowList { get; } = new ObservableCollection<UpscalerRowStatus>();
+
+    /// <summary>
+    /// Rebuilds the rows and the line naming what is missing.
+    /// </summary>
+    /// <remarks>
+    /// Called whenever something has written to the game, because every row's sentence is about
+    /// what is on disk right now — which version, whether an original was kept, whether there are
+    /// two copies. A row built once at construction goes stale the first time a swap succeeds.
+    /// </remarks>
+    void RefreshUpscalerRows()
+    {
+        var rows = UpscalerRows.For(Game);
+
+        UpscalerRowList.Clear();
+        foreach (var row in rows.Rows)
+        {
+            UpscalerRowList.Add(row);
+        }
+
+        NotPresentSummary = rows.AbsentSummary;
+
+        // A game with no upscalers at all would otherwise get a line listing all nine, which is
+        // just a long way of saying the app has nothing to do here.
+        NotPresentSummaryVisibility = string.IsNullOrEmpty(rows.AbsentSummary) == false && rows.Rows.Count > 0
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
 
     public GameControlModel(GameControl gameControl, Game game) : base()
     {
@@ -178,13 +259,7 @@ public partial class GameControlModel : ObservableObject
         DlssDPresetVisibility = VisibleIfPresent(engines, GameAssetType.DLSS_D);
         DlssGPresetVisibility = VisibleIfPresent(engines, GameAssetType.DLSS_G);
 
-        NotPresentSummary = engines.AbsentSummary;
-        NotPresentSummaryVisibility = engines.Absent.Count > 0 && engines.Present.Count > 0
-            ? Visibility.Visible
-
-            // A game with no upscalers at all would otherwise get a line listing all nine, which is
-            // just a long way of saying the app has nothing to do here.
-            : Visibility.Collapsed;
+        RefreshUpscalerRows();
 
 
         // Make sure NVAPIHelper is supported and the game has DLSS.

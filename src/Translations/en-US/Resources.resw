@@ -173,6 +173,21 @@
   <data name="GamePage_Row_NoSavedOriginal" xml:space="preserve">
     <value>no saved original</value>
   </data>
+  <data name="GamePage_PresetsSection" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="GamePage_Preset_Desc" xml:space="preserve">
+    <value>Which tuning NVIDIA's driver uses for this game. Setting one does not guarantee the game asks for it.</value>
+  </data>
+  <data name="GamePage_Preset_NoDriver" xml:space="preserve">
+    <value>Presets need an NVIDIA driver, and this PC does not have one.</value>
+  </data>
+  <data name="GamePage_Preset_NoProfile" xml:space="preserve">
+    <value>The NVIDIA driver has no profile for this game, so there is nothing to set a preset on.</value>
+  </data>
+  <data name="GamePage_Preset_PermissionIssue" xml:space="preserve">
+    <value>The NVIDIA driver refused access to this game's profile. Running this app as administrator usually fixes it.</value>
+  </data>
   <data name="GamePage_Favourite" xml:space="preserve">
     <value>Favourite</value>
     <comment>A checked menu item stating the setting, replacing a star icon that only implied it.</comment>

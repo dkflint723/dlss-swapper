@@ -65,6 +65,9 @@ public class GameControlModelTranslationProperties : LocalizedViewModelBase
     public string MoreActionsText => ResourceHelper.GetString("General_MoreActions");
 
     [TranslationProperty]
+    public string PresetsSectionText => ResourceHelper.GetString("GamePage_PresetsSection");
+
+    [TranslationProperty]
     public string DLSSPresetInfoTooltipText => ResourceHelper.GetString("GamePage_DLSSPresetInfo_Tooltip");
 
     [TranslationProperty]
