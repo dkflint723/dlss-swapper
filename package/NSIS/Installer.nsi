@@ -10,7 +10,9 @@
 ; define name of installer
 OutFile "installer.exe"
 
-!define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\DLSS Swapper"
+; Its own key, so this fork appears in Apps & features as its own entry and cannot take over the
+; original's. Installing this must never uninstall a copy of the app somebody else built.
+!define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\DLSS Swapper (dkflint723)"
 
 !define UninstLog "uninstall.log"
 Var UninstLog
@@ -19,9 +21,9 @@ Var DEFAULT_INSTALL_PATH
 
 Function .onInit
   ; Set default install location
-  StrCpy $INSTDIR "$PROGRAMFILES64\DLSS Swapper\"
+  StrCpy $INSTDIR "$PROGRAMFILES64\DLSS Swapper (dkflint723)\"
   ; The missing \ is intentional
-  StrCpy $DEFAULT_INSTALL_PATH "$PROGRAMFILES64\DLSS Swapper"
+  StrCpy $DEFAULT_INSTALL_PATH "$PROGRAMFILES64\DLSS Swapper (dkflint723)"
   ClearErrors
   ReadRegStr $0 SHCTX "${UNINST_KEY}" "InstallLocation"
   ${If} ${Errors}
@@ -47,7 +49,9 @@ Function un.onInit
     Quit
   NotRunning:
 
-  MessageBox MB_YESNO "Are you sure you want to uninstall $(^Name)?$\r$\n$\r$\nThis will also remove downloaded and imported files. Changes to your games will remain as they are." /SD IDYES IDYES NoAbort
+  ; The wording follows what the uninstaller actually does now: it no longer deletes the dll
+  ; library, because that folder is shared with the original app if both are installed.
+  MessageBox MB_YESNO "Are you sure you want to uninstall $(^Name)?$\r$\n$\r$\nDownloaded and imported dlls are kept, since the original DLSS Swapper uses the same folder. Changes to your games will remain as they are." /SD IDYES IDYES NoAbort
     Abort
   NoAbort:
 FunctionEnd
@@ -60,7 +64,7 @@ Function .onVerifyInstDir
   StrCmp $0 "" badPath
     Goto done
   badPath:
-    StrCpy $INSTDIR "$INSTDIR\DLSS Swapper\"
+    StrCpy $INSTDIR "$INSTDIR\DLSS Swapper (dkflint723)\"
   done:
 FunctionEnd
 
@@ -73,7 +77,7 @@ Function OnInstFilesPre
   StrCmp $0 "" badPath
     Goto done
   badPath:
-    StrCpy $INSTDIR "$INSTDIR\DLSS Swapper\"
+    StrCpy $INSTDIR "$INSTDIR\DLSS Swapper (dkflint723)\"
     MessageBox MB_OK "Install path updated to $INSTDIR"
   done:
 FunctionEnd
@@ -82,7 +86,7 @@ FunctionEnd
 ; This is disabled until I can figure out how to make it launch as admin
 ; Used to launch DLSS Swapper after install is complete.
 ;Function LaunchLink
-;  ExecShell "" "$SMPROGRAMS\DLSS Swapper.lnk"
+;  ExecShell "" "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk"
 ;FunctionEnd
 
 
@@ -91,16 +95,20 @@ FunctionEnd
 RequestExecutionLevel highest
 
 
-; App version information
-Name "DLSS Swapper"
+; App version information. Named and versioned as this fork throughout, so nothing the installer
+; shows — its title, its file properties, the entry it writes — claims to be the original or a
+; release the original made. The fourth version part is this fork's own count.
+Name "DLSS Swapper (dkflint723)"
 !define MUI_ICON "..\..\src\Assets\icon.ico"
-!define MUI_VERSION "1.2.5.0"
-!define MUI_PRODUCT "DLSS Swapper"
-VIProductVersion "1.2.5.0"
-VIAddVersionKey "ProductName" "DLSS Swapper"
-VIAddVersionKey "ProductVersion" "1.2.5.0"
-VIAddVersionKey "FileDescription" "DLSS Swapper installer"
-VIAddVersionKey "FileVersion" "1.2.5.0"
+!define MUI_VERSION "1.2.5.1"
+!define MUI_PRODUCT "DLSS Swapper (dkflint723)"
+VIProductVersion "1.2.5.1"
+VIAddVersionKey "ProductName" "DLSS Swapper (dkflint723 fork)"
+VIAddVersionKey "ProductVersion" "1.2.5.1"
+VIAddVersionKey "FileDescription" "DLSS Swapper (dkflint723 fork) installer"
+VIAddVersionKey "FileVersion" "1.2.5.1"
+VIAddVersionKey "CompanyName" "dkflint723"
+VIAddVersionKey "LegalCopyright" "Fork of beeradmoore/dlss-swapper"
 
 ; Pages
 !insertmacro MUI_PAGE_WELCOME
@@ -198,11 +206,14 @@ Section
   
   # create a shortcut named "new shortcut" in the start menu programs directory
   # point the new shortcut at the program uninstaller
-  CreateShortcut "$SMPROGRAMS\DLSS Swapper.lnk" "$INSTDIR\DLSS Swapper.exe"
+  CreateShortcut "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk" "$INSTDIR\DLSS Swapper.exe"
 
-  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayName" "DLSS Swapper"
-  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayVersion" "1.2.5.0"
-  WriteRegStr SHCTX "${UNINST_KEY}" "Publisher" "beeradmoore"
+  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayName" "DLSS Swapper (dkflint723 fork)"
+  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayVersion" "1.2.5.1"
+
+  ; Named for whoever built it, with what it was forked from, because this build is not the
+  ; original author's work and Apps & features is where someone checks who to hold responsible.
+  WriteRegStr SHCTX "${UNINST_KEY}" "Publisher" "dkflint723 (fork of beeradmoore/dlss-swapper)"
   WriteRegStr SHCTX "${UNINST_KEY}" "DisplayIcon" "$\"$INSTDIR\DLSS Swapper.exe$\""
   WriteRegStr SHCTX "${UNINST_KEY}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
   WriteRegStr SHCTX "${UNINST_KEY}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
@@ -263,13 +274,21 @@ Section "Uninstall"
   Pop $R1
   Pop $R0
 
-  ; Remove downloaded and imported DLSS dlls.
-  RMDir /r "$LOCALAPPDATA\DLSS Swapper\"
-  
+  ; Downloaded and imported dlls are deliberately LEFT ALONE by this fork's uninstaller.
+  ;
+  ; The original writes them to LOCALAPPDATA\DLSS Swapper and so does this build, which means the
+  ; two installs share one library, one database and one set of settings. Deleting that folder
+  ; here would take the original's dlls with it — uninstalling the fork would quietly gut an app
+  ; the user never asked to touch.
+  ;
+  ; The cost is that removing this leaves the folder behind if it is the only copy installed. That
+  ; is the safe direction to be wrong in: files left on disk can be deleted, files deleted from
+  ; under another program cannot be got back.
+
   ; Remove registry keys
   DeleteRegKey SHCTX "${UNINST_KEY}"
 
   ; Remove start menu shortcut.
-  Delete "$SMPROGRAMS\DLSS Swapper.lnk"
+  Delete "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk"
 
 SectionEnd

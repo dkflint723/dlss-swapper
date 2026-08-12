@@ -16,7 +16,12 @@
     <PackageIcon>Assets\icon_256.png</PackageIcon>
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-    <Version>1.2.5.0</Version>
+    <!--
+      Forked from upstream 1.2.5. The fourth part is this fork's own count, so a build from here
+      never claims to be a release the original made — the app reports it, the installer stamps it,
+      and the updater compares against it.
+    -->
+    <Version>1.2.5.1</Version>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <PublishSingleFile>false</PublishSingleFile>
