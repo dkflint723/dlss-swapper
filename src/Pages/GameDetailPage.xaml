@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<usercontrols:FakeContentDialog
-    x:Class="DLSS_Swapper.UserControls.GameControl"
+<Page
+    x:Class="DLSS_Swapper.Pages.GameDetailPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:usercontrols="using:DLSS_Swapper.UserControls"
@@ -11,12 +11,18 @@
     xmlns:ct_converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:data="using:DLSS_Swapper.Data"
     mc:Ignorable="d"
-    d:DataContext="{d:DesignInstance Type=usercontrols:GameControlModel, IsDesignTimeCreatable=True}"
-    HorizontalAlignment="Stretch"
-    VerticalAlignment="Stretch"
+    KeyboardAcceleratorPlacementMode="Hidden"
     x:Name="RootGameControl">
 
-    <usercontrols:FakeContentDialog.Resources>
+    <!--
+        Escape leaves, the way Close did when this was a dialog. Placement hidden for the same
+        reason the games page hides its own: the tip floats under whatever has focus.
+    -->
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Escape" Invoked="EscapeAccelerator_Invoked" />
+    </Page.KeyboardAccelerators>
+
+    <Page.Resources>
         <ct_converters:StringVisibilityConverter x:Key="StringVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
         <ct_converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"  />
         <ct_converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
@@ -38,117 +44,6 @@
         <converters:NullToInverseVisibilityConverter x:Key="NullToInverseVisibilityConverter" />
         
 
-        <ControlTemplate x:Key="LeftButtonsControlTemplate" TargetType="ContentControl">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" XYFocusKeyboardNavigation="Enabled" Padding="{ThemeResource ContentDialogPadding}" Background="{TemplateBinding Background}" Spacing="8">
-
-
-                <!--
-                    Eight unlabelled glyphs became three labelled actions and one named menu.
-                    Every one of the eight was a tooltip away from being unreadable, and a tooltip
-                    is not a name: it never reaches a screen reader and does not appear on keyboard
-                    focus. Two of them could also only ever refuse — Launch on a library that
-                    cannot be launched from, and Update all on a game with nothing to update — so
-                    both now appear only when they can act.
-                -->
-                <Button
-                    Style="{ThemeResource AccentButtonStyle}"
-                    Content="{Binding TranslationProperties.UpdateAllDllsText, Mode=OneWay}"
-                    Command="{Binding UpdateAllDllsCommand}"
-                    Visibility="{Binding HasUpdatesVisibility}" />
-
-                <Button
-                    Content="{Binding TranslationProperties.LaunchText, Mode=OneWay}"
-                    Command="{Binding LaunchCommand}"
-                    Visibility="{Binding CanLaunchVisibility}" />
-
-                <Button
-                    Content="{Binding TranslationProperties.OpenFolderText, Mode=OneWay}"
-                    Command="{Binding OpenInstallPathCommand}" />
-
-                <Button
-                    Width="32"
-                    Padding="0"
-                    ToolTipService.ToolTip="{Binding TranslationProperties.MoreActionsText, Mode=OneWay}"
-                    AutomationProperties.Name="{Binding TranslationProperties.MoreActionsText, Mode=OneWay}">
-                    <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE712;" />
-                    <Button.Flyout>
-                        <MenuFlyout ShouldConstrainToRootBounds="True">
-                            <!--
-                                Checked rather than two items, so the menu states the setting rather
-                                than only offering to change it. This is the one that greys out
-                                every row on this page, and until now it could only be set by
-                                right-clicking the game on another page — which the lock's own
-                                tooltip had to tell people to go and do.
-                            -->
-                            <ToggleMenuFlyoutItem
-                                Text="{Binding TranslationProperties.NeverUpdateThisGameText, Mode=OneWay}"
-                                IsChecked="{Binding SkipUpdates, Mode=OneWay}"
-                                Command="{Binding ToggleSkipUpdatesCommand}" />
-
-                            <ToggleMenuFlyoutItem
-                                Text="{Binding TranslationProperties.FavouriteText, Mode=OneWay}"
-                                IsChecked="{Binding Game.IsFavourite, Mode=OneWay}"
-                                Command="{Binding FavouriteCommand}" />
-
-                            <ToggleMenuFlyoutItem
-                                Text="{Binding TranslationProperties.HideThisGameText, Mode=OneWay}"
-                                IsChecked="{Binding Game.IsHidden, Mode=OneWay}"
-                                Command="{Binding ShowHideGameCommand}" />
-
-                            <MenuFlyoutSeparator />
-
-                            <MenuFlyoutItem
-                                Text="{Binding TranslationProperties.NotesText, Mode=OneWay}"
-                                Command="{Binding EditNotesCommand}">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE70B;" />
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-
-                            <MenuFlyoutItem
-                                Text="{Binding TranslationProperties.HistoryText, Mode=OneWay}"
-                                Command="{Binding ViewHistoryCommand}">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE81C;" />
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-
-                            <MenuFlyoutItem
-                                Text="{Binding TranslationProperties.ReloadText, Mode=OneWay}"
-                                Command="{Binding ReloadGameCommand}">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE72C;" />
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-
-                            <!-- Last, and behind a separator: the only one that undoes anything. -->
-                            <MenuFlyoutSeparator Visibility="{Binding CanChangeDllsVisibility}" />
-
-                            <MenuFlyoutItem
-                                Text="{Binding TranslationProperties.ResetAllText, Mode=OneWay}"
-                                Visibility="{Binding CanChangeDllsVisibility}"
-                                Command="{Binding ResetAllCommand}">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xED62;" />
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
-
-            </StackPanel>
-        </ControlTemplate>
-
-        <ControlTemplate x:Key="RightButtonsControlTemplate" TargetType="ContentControl">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" XYFocusKeyboardNavigation="Enabled" Padding="{ThemeResource ContentDialogPadding}" Background="{TemplateBinding Background}" Spacing="8">
-                <Button Content="{Binding TranslationProperties.RemoveText, Mode=OneWay}" Visibility="{Binding IsManuallyAdded, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding RemoveCommand}" />
-                <Button x:Name="CloseButton" IsTabStop="False" Content="{Binding TranslationProperties.CloseText, Mode=OneWay}" Style="{ThemeResource DefaultButtonStyle}" ElementSoundMode="FocusOnly" Command="{Binding CloseCommand}" KeyboardAcceleratorPlacementMode="Hidden">
-                    <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Escape" Modifiers="None" />
-                    </Button.KeyboardAccelerators>
-                </Button>
-            </StackPanel>
-        </ControlTemplate>
 
         <Style x:Key="InformationalFontIcon" TargetType="FontIcon">
             <Setter Property="Glyph" Value="&#xE946;" />
@@ -157,10 +52,35 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
-    </usercontrols:FakeContentDialog.Resources>
+    </Page.Resources>
 
-    <usercontrols:FakeContentDialog.Content>
-        <Grid Grid.Row="0" ColumnSpacing="20" HorizontalAlignment="Stretch">
+    <Grid Padding="32,16,32,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--
+            A page header, which this surface never had: nothing set the dialog's Title, so the game
+            you were looking at was named only by a text field halfway down it.
+        -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="16" Margin="0,0,0,12">
+            <Button
+                VerticalAlignment="Center"
+                Content="{x:Bind ViewModel.TranslationProperties.BackToGamesText, Mode=OneWay}"
+                Command="{x:Bind ViewModel.CloseCommand}" />
+
+            <TextBlock
+                Text="{x:Bind ViewModel.Game.Title, Mode=OneWay}"
+                Style="{StaticResource TitleTextBlockStyle}"
+                TextWrapping="NoWrap"
+                TextTrimming="CharacterEllipsis"
+                VerticalAlignment="Center" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,16,0">
+            <Grid ColumnSpacing="20" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="*" />
@@ -374,5 +294,129 @@
                 </StackPanel>
             </Grid>
         </Grid>
-    </usercontrols:FakeContentDialog.Content>
-</usercontrols:FakeContentDialog>
+        </ScrollViewer>
+
+        <!--
+            The action row, which used to be two ControlTemplates injected into the dialog's own
+            template at OnApplyTemplate. A page just has a row.
+        -->
+        <Grid Grid.Row="2" Padding="0,12" BorderThickness="0,1,0,0" BorderBrush="{ThemeResource DsLineBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" XYFocusKeyboardNavigation="Enabled" Padding="0"  Spacing="8">
+
+
+                <!--
+                    Eight unlabelled glyphs became three labelled actions and one named menu.
+                    Every one of the eight was a tooltip away from being unreadable, and a tooltip
+                    is not a name: it never reaches a screen reader and does not appear on keyboard
+                    focus. Two of them could also only ever refuse — Launch on a library that
+                    cannot be launched from, and Update all on a game with nothing to update — so
+                    both now appear only when they can act.
+                -->
+                <Button
+                    Style="{ThemeResource AccentButtonStyle}"
+                    Content="{Binding TranslationProperties.UpdateAllDllsText, Mode=OneWay}"
+                    Command="{Binding UpdateAllDllsCommand}"
+                    Visibility="{Binding HasUpdatesVisibility}" />
+
+                <Button
+                    Content="{Binding TranslationProperties.LaunchText, Mode=OneWay}"
+                    Command="{Binding LaunchCommand}"
+                    Visibility="{Binding CanLaunchVisibility}" />
+
+                <Button
+                    Content="{Binding TranslationProperties.OpenFolderText, Mode=OneWay}"
+                    Command="{Binding OpenInstallPathCommand}" />
+
+                <Button
+                    Width="32"
+                    Padding="0"
+                    ToolTipService.ToolTip="{Binding TranslationProperties.MoreActionsText, Mode=OneWay}"
+                    AutomationProperties.Name="{Binding TranslationProperties.MoreActionsText, Mode=OneWay}">
+                    <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE712;" />
+                    <Button.Flyout>
+                        <MenuFlyout ShouldConstrainToRootBounds="True">
+                            <!--
+                                Checked rather than two items, so the menu states the setting rather
+                                than only offering to change it. This is the one that greys out
+                                every row on this page, and until now it could only be set by
+                                right-clicking the game on another page — which the lock's own
+                                tooltip had to tell people to go and do.
+                            -->
+                            <ToggleMenuFlyoutItem
+                                Text="{Binding TranslationProperties.NeverUpdateThisGameText, Mode=OneWay}"
+                                IsChecked="{Binding SkipUpdates, Mode=OneWay}"
+                                Command="{Binding ToggleSkipUpdatesCommand}" />
+
+                            <ToggleMenuFlyoutItem
+                                Text="{Binding TranslationProperties.FavouriteText, Mode=OneWay}"
+                                IsChecked="{Binding Game.IsFavourite, Mode=OneWay}"
+                                Command="{Binding FavouriteCommand}" />
+
+                            <ToggleMenuFlyoutItem
+                                Text="{Binding TranslationProperties.HideThisGameText, Mode=OneWay}"
+                                IsChecked="{Binding Game.IsHidden, Mode=OneWay}"
+                                Command="{Binding ShowHideGameCommand}" />
+
+                            <MenuFlyoutSeparator />
+
+                            <MenuFlyoutItem
+                                Text="{Binding TranslationProperties.NotesText, Mode=OneWay}"
+                                Command="{Binding EditNotesCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE70B;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem
+                                Text="{Binding TranslationProperties.HistoryText, Mode=OneWay}"
+                                Command="{Binding ViewHistoryCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE81C;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem
+                                Text="{Binding TranslationProperties.ReloadText, Mode=OneWay}"
+                                Command="{Binding ReloadGameCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE72C;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <!-- Last, and behind a separator: the only one that undoes anything. -->
+                            <MenuFlyoutSeparator Visibility="{Binding CanChangeDllsVisibility}" />
+
+                            <MenuFlyoutItem
+                                Text="{Binding TranslationProperties.ResetAllText, Mode=OneWay}"
+                                Visibility="{Binding CanChangeDllsVisibility}"
+                                Command="{Binding ResetAllCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xED62;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+            </StackPanel>
+
+            <!--
+                Close is gone: a dialog needs dismissing, a page needs somewhere to go, and the
+                header's "← All games" is that. Two controls doing one thing, one of them named
+                after the old shape, is worse than either alone. Escape still works — it is on the
+                page now rather than on this button.
+
+                Remove stays here, apart from the actions on the left, because it is the only one
+                that deletes anything.
+            -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" XYFocusKeyboardNavigation="Enabled" Padding="0"  Spacing="8">
+                <Button Content="{Binding TranslationProperties.RemoveText, Mode=OneWay}" Visibility="{Binding IsManuallyAdded, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding RemoveCommand}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

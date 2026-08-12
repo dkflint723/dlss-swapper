@@ -150,8 +150,9 @@ public sealed partial class GameGridPage : Page
                 return;
             }
 
-            var gameControl = new GameControl(selectedGame);
-            _ = gameControl.ShowAsync();
+            // A page now, not a dialog over this one. This page stays cached underneath, so coming
+            // back lands on the same scroll position and the same tab.
+            App.CurrentApp.MainWindow?.ShowGame(selectedGame);
         }
     }
 

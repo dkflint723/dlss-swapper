@@ -19,7 +19,7 @@ namespace DLSS_Swapper.UserControls;
 
 public partial class GameControlModel : ObservableObject
 {
-    WeakReference<GameControl> gameControlWeakReference;
+    WeakReference<Pages.GameDetailPage> gameControlWeakReference;
 
     public Game Game { get; init; }
 
@@ -230,9 +230,9 @@ public partial class GameControlModel : ObservableObject
             : Visibility.Collapsed;
     }
 
-    public GameControlModel(GameControl gameControl, Game game) : base()
+    public GameControlModel(Pages.GameDetailPage gameControl, Game game) : base()
     {
-        gameControlWeakReference = new WeakReference<GameControl>(gameControl);
+        gameControlWeakReference = new WeakReference<Pages.GameDetailPage>(gameControl);
         Game = game;
         GameTitle = game.Title;
 
@@ -413,7 +413,7 @@ public partial class GameControlModel : ObservableObject
             return;
         }
 
-        if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
+        if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl))
         {
             gameControl.DispatcherQueue.TryEnqueue(() => rollback());
             _ = NVAPIHelper.Instance.DisplayNVAPIErrorAsync(gameControl.XamlRoot);
@@ -438,7 +438,7 @@ public partial class GameControlModel : ObservableObject
         {
             Logger.Error(err);
 
-            if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
+            if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl))
             {
                 var dialog = new EasyContentDialog(gameControl.XamlRoot)
                 {
@@ -460,7 +460,7 @@ public partial class GameControlModel : ObservableObject
         }
         else
         {
-            if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
+            if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl))
             {
                 var dialog = new EasyContentDialog(gameControl.XamlRoot)
                 {
@@ -477,7 +477,7 @@ public partial class GameControlModel : ObservableObject
     [RelayCommand]
     async Task EditNotesAsync()
     {
-        if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
+        if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl))
         {
             var textBox = new TextBox()
             {
@@ -536,19 +536,24 @@ public partial class GameControlModel : ObservableObject
         Game.PromptToBrowseCustomCover();
     }
 
+    /// <summary>
+    /// Goes back to the games list.
+    /// </summary>
+    /// <remarks>
+    /// This used to hide a dialog. As a page there is nothing to hide, so it navigates — which is
+    /// also why the games page is cached: coming back lands where you left, with the same scroll
+    /// position and the same tab.
+    /// </remarks>
     [RelayCommand]
     void Close()
     {
-        if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
-        {
-            gameControl.Hide();
-        }
+        App.CurrentApp.MainWindow?.GoToGames();
     }
 
     [RelayCommand]
     async Task RemoveAsync()
     {
-        if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
+        if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl))
         {
             // This should never happen
             if (IsManuallyAdded == false)
@@ -580,7 +585,7 @@ public partial class GameControlModel : ObservableObject
             {
                 await Game.DeleteAsync();
                 GameManager.Instance.RemoveGame(Game);
-                gameControl.Hide();
+                App.CurrentApp.MainWindow?.GoToGames();
             }
         }
     }
@@ -595,7 +600,7 @@ public partial class GameControlModel : ObservableObject
     [RelayCommand]
     async Task ChangeRecordAsync(GameAssetType gameAssetType)
     {
-        if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
+        if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl))
         {
             var dialog = new EasyContentDialog(gameControl.XamlRoot)
             {
@@ -606,7 +611,7 @@ public partial class GameControlModel : ObservableObject
                 DefaultButton = ContentDialogButton.Primary,
             };
 
-            var dllPickerControl = new DLLPickerControl(gameControl, dialog, Game, gameAssetType);
+            var dllPickerControl = new DLLPickerControl(dialog, Game, gameAssetType);
             dialog.Content = dllPickerControl;
             await dialog.ShowAsync();
         }
@@ -669,7 +674,7 @@ public partial class GameControlModel : ObservableObject
     [RelayCommand]
     async Task MultipleDLLsFoundAsync(GameAssetType gameAssetType)
     {
-        if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
+        if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl))
         {
             var dialog = new EasyContentDialog(gameControl.XamlRoot)
             {
@@ -692,7 +697,7 @@ public partial class GameControlModel : ObservableObject
     [RelayCommand]
     async Task DLSSPresetInfoAsync()
     {
-        if (gameControlWeakReference.TryGetTarget(out GameControl? gameControl))
+        if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl))
         {
             var dialog = new EasyContentDialog(gameControl.XamlRoot)
             {
@@ -769,11 +774,11 @@ public partial class GameControlModel : ObservableObject
                     return;
                 }
 
-                // Game finished reloading so re-launch the GameControl.
+                // Game finished reloading, so open it again — a fresh page rather than this one,
+                // because everything it shows was rebuilt from what the rescan found.
                 _reloadGameTaskCompletionSource = null;
                 dialog.Hide();
-                var gameControl = new GameControl(Game);
-                _ = gameControl.ShowAsync();
+                App.CurrentApp.MainWindow?.ShowGame(Game);
             }
         }
     }

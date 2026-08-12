@@ -67,6 +67,10 @@ public class GameControlModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string PresetsSectionText => ResourceHelper.GetString("GamePage_PresetsSection");
 
+    /// <summary>The way back, which a dialog got for free and a page has to provide.</summary>
+    [TranslationProperty]
+    public string BackToGamesText => ResourceHelper.GetString("GamePage_BackToGames");
+
     [TranslationProperty]
     public string DLSSPresetInfoTooltipText => ResourceHelper.GetString("GamePage_DLSSPresetInfo_Tooltip");
 

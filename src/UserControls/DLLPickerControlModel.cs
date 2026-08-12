@@ -19,7 +19,6 @@ namespace DLSS_Swapper.UserControls;
 
 public partial class DLLPickerControlModel : ObservableObject
 {
-    WeakReference<GameControl> _gameControlWeakReference;
     WeakReference<EasyContentDialog> _parentDialogWeakReference;
     WeakReference<DLLPickerControl> _dllPickerControlWeakReference;
 
@@ -47,9 +46,8 @@ public partial class DLLPickerControlModel : ObservableObject
 
     public DLLPickerControlModelTranslationProperties TranslationProperties { get; } = new DLLPickerControlModelTranslationProperties();
 
-    public DLLPickerControlModel(GameControl gameControl, EasyContentDialog parentDialog, DLLPickerControl dllPickerControl, Game game, GameAssetType gameAssetType) : base()
+    public DLLPickerControlModel(EasyContentDialog parentDialog, DLLPickerControl dllPickerControl, Game game, GameAssetType gameAssetType) : base()
     {
-        _gameControlWeakReference = new WeakReference<GameControl>(gameControl);
         _parentDialogWeakReference = new WeakReference<EasyContentDialog>(parentDialog);
         _dllPickerControlWeakReference = new WeakReference<DLLPickerControl>(dllPickerControl);
 

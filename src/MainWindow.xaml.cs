@@ -187,6 +187,30 @@ public sealed partial class MainWindow : Window
         gameGridPage?.ViewModel.ShowGamesUsingDll(dllFilter);
     }
 
+    /// <summary>
+    /// Opens one game's page.
+    /// </summary>
+    /// <remarks>
+    /// Built fresh every time and deliberately not cached: the page is about one game, and a cached
+    /// instance would be about whichever game was opened first. The games page it came from *is*
+    /// cached, so going back lands where you left.
+    /// </remarks>
+    public void ShowGame(Game game)
+    {
+        ViewModel.AcknowledgementsVisibility = Visibility.Collapsed;
+        ContentFrame.Content = new GameDetailPage(game);
+
+        // The sidebar stays on Games. A game's page is somewhere you go from that list and come
+        // back to it, not a fourth section of the app.
+        Sidebar.ViewModel.ActiveSection = ShellSection.Games;
+    }
+
+    /// <summary>Back to the games list, from a game's own page.</summary>
+    public void GoToGames()
+    {
+        GoToPage(GameGridPage.PageTag);
+    }
+
     void Sidebar_FixMissingBackupsInvoked(object? sender, EventArgs e)
     {
         // Lands on the games missing a copy, which is what the card offers. Navigating first, so

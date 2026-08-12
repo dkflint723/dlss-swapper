@@ -1,75 +1,49 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Helpers;
+using DLSS_Swapper.UserControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+namespace DLSS_Swapper.Pages;
 
-namespace DLSS_Swapper.UserControls;
-
-public sealed partial class GameControl : FakeContentDialog
+/// <summary>
+/// One game, as a page.
+/// </summary>
+/// <remarks>
+/// It was a FakeContentDialog, which exists only because a real ContentDialog cannot be open while
+/// another is open on the same XamlRoot — and this surface opens six of them over itself. A page
+/// has no such problem, so every one of those is now an ordinary dialog on this page's XamlRoot,
+/// and the two footer ControlTemplates that used to be injected into the dialog's own template at
+/// OnApplyTemplate are just a row.
+///
+/// Constructed fresh per game and deliberately not cached: it is about one game, and a cached
+/// instance would be about whichever game was opened first.
+/// </remarks>
+public sealed partial class GameDetailPage : Page
 {
+    public const string PageTag = "GameDetail";
+
     public GameControlModel ViewModel { get; private set; }
 
-    public GameControl(Game game)
+    public GameDetailPage(Game game)
     {
         this.InitializeComponent();
-
-        // This only works if the grid background has focus.
-        /*
-        KeyUp += (object sender, KeyRoutedEventArgs e) => {
-            if (e.Key == Windows.System.VirtualKey.Escape)
-            {
-                if (DataContext is GameControlModel gameControlModel && gameControlModel.CloseCommand.CanExecute(null))
-                {
-                    gameControlModel.CloseCommand.Execute(null);
-                }
-            }
-        };
-        */
-
-        Resources["ContentDialogMinWidth"] = 700;
 
         ViewModel = new GameControlModel(this, game);
         DataContext = ViewModel;
     }
 
-    protected override void OnApplyTemplate()
+    void EscapeAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
-        base.OnApplyTemplate();
-
-        var dialogSpace = this.GetTemplateChild("DialogSpace") as Grid;
-
-        if (dialogSpace is not null)
-        {
-            var leftButtons = new ContentControl()
-            {
-                Template = Resources["LeftButtonsControlTemplate"] as ControlTemplate,
-            };
-            leftButtons.DataContext = DataContext;
-            Grid.SetRow(leftButtons, 1);
-            dialogSpace.Children.Add(leftButtons);
-
-
-            var rightButtons = new ContentControl()
-            {
-                Template = Resources["RightButtonsControlTemplate"] as ControlTemplate,
-            };
-            rightButtons.DataContext = DataContext;
-            Grid.SetRow(rightButtons, 1);
-            dialogSpace.Children.Add(rightButtons);
-        }
+        ViewModel.CloseCommand.Execute(null);
+        args.Handled = true;
     }
-
-
     string[] customCoverValidFileTypes = new string[]
     {
             ".png",
@@ -163,8 +137,5 @@ public sealed partial class GameControl : FakeContentDialog
         }
     }
 
-    private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-    {
-        Debugger.Break();
-    }
 }
+

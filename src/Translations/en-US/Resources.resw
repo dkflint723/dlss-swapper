@@ -173,6 +173,10 @@
   <data name="GamePage_Row_NoSavedOriginal" xml:space="preserve">
     <value>no saved original</value>
   </data>
+  <data name="GamePage_BackToGames" xml:space="preserve">
+    <value>← All games</value>
+    <comment>Leaves a game's page. A dialog had a Close button; a page needs somewhere to go.</comment>
+  </data>
   <data name="GamePage_PresetsSection" xml:space="preserve">
     <value>Presets</value>
   </data>
