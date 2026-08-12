@@ -70,6 +70,17 @@ Each of these was a count disagreeing with the list it described.
 - **"1 upscalers not in this game"** had no singular form.
 - A duplicate resource key and 30 dead ones removed, 300-odd entries across 24 translation files.
 
+Three more were found by running a real swap on a real game, and all three were introduced by the
+work above rather than inherited — they are listed because the first is exactly the kind of thing
+this redesign exists to prevent, and it survived until something actually wrote to a disk.
+
+- **A game's rows went stale the moment a swap succeeded.** The file on disk changed and the row
+  kept describing the version it had before, until the page was reopened.
+- **"Update all dlls" on a game's page opened nothing.** It navigated back and then raised the
+  preview sheet, but the sheet lives on the page it had just left.
+- **"See what changed" and the sheet that offered the change disagreed on format** — `310.6.0.0 →
+  310.7.0.0` against `310.6 → 310.7`. One fact in two shapes reads as two facts.
+
 ### Shape
 
 - **Three sections in a sidebar**: Games, Upscalers, Settings, each with a count.
@@ -92,6 +103,10 @@ Each of these was a count disagreeing with the list it described.
 - **452 tests** across the two suites, run in CI on every push. The rules that decide what a page
   shows are tested rather than the pages themselves — counts and the lists they describe come from
   one function, and a test asserts they cannot diverge.
+- **The write path has been run end to end on a real game**, not only against forced state: swap
+  down to an older version, watch the row and the games list both notice, update back through the
+  preview sheet, and confirm the file on disk at each step. That run is what found the three bugs
+  above. Tests over forced state had all passed.
 - Contrast is **measured** against the lightest surface each text level can land on, including the
   accents used as text. Several tokens are well above the values the design specified because those
   values did not pass.
