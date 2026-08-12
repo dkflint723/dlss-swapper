@@ -5,8 +5,17 @@
  <p align="center">DLSS Swapper is a tool that allows you to conveniently download, manage, and swap <strong>DLSS</strong>, <strong>FSR</strong> and <strong>XeSS</strong> dlls allowing you to upgrade or downgrade DLSS, FSR and XeSS version in a game without the game needing an update.</p>
 </p>
 
+> [!IMPORTANT]
+> **This is a personal fork of [beeradmoore/dlss-swapper](https://github.com/beeradmoore/dlss-swapper), not the original.**
+> It carries a substantial interface redesign that has not been offered upstream — see
+> [What is different in this fork](#what-is-different-in-this-fork) and [CHANGELOG.md](CHANGELOG.md).
+> There are no releases here: build it from source, or get the real thing from
+> [the original project](https://github.com/beeradmoore/dlss-swapper/releases).
+> Report anything wrong with the interface [on this fork](https://github.com/dkflint723/dlss-swapper/issues);
+> anything else belongs upstream.
+
 > [!WARNING]
-> Please be aware of malicious sites claiming to be DLSS Swapper. This is the only place you will find official downloads. See our [official links](#official-links) for accounts/sites affiliated with DLSS Swapper.
+> Please be aware of malicious sites claiming to be DLSS Swapper. See the original project's [official links](#official-links) for accounts and sites affiliated with DLSS Swapper. This fork is not one of them and publishes no downloads.
 
 <p align="center">
     <a href="https://github.com/beeradmoore/dlss-swapper/releases"><img alt="Github Release" src="https://img.shields.io/github/v/release/beeradmoore/dlss-swapper" /></a>
@@ -45,6 +54,28 @@
     <img src="https://beeradmoore.github.io/dlss-swapper/images/usage/usage_4.gif" />
 </p>
 
+## What is different in this fork
+
+The app does the same job; it explains itself while doing it. Everything below replaced something
+that worked but could only be read by someone who already knew what it meant. [CHANGELOG.md](CHANGELOG.md)
+has the full list.
+
+- **State is words, never colour.** Vendor-coloured badges are gone. Every game and every dll says
+  what it is in a sentence, with a glyph beside it — the app is usable by someone who cannot tell
+  red from green, which the badges assumed you could.
+- **Nothing writes to a game without showing you what it will write.** Updating opens a sheet
+  listing each file, and the strip that follows keeps what it wrote so it can put that batch back.
+- **A game has its own page**, one row per upscaler, each saying which version is installed, whether
+  anything newer exists, whether the original was kept, and whether the dll was found twice. It was
+  nine dropdowns and eight unlabelled icon buttons.
+- **The upscalers list is searchable**, grouped by release line, and says how many games use each
+  file — the one question worth answering before deleting one, and you can click the number to see
+  which games.
+- **Counts agree with the lists they describe.** Several did not: "All games" counted hidden games it
+  would not show, and the engine counts included debug files the list was hiding.
+- **Every setting says what it does**, contrast is measured against the surface it lands on rather
+  than eyeballed, and menus stay inside the window.
+
 ## What game libraries are supported?
 
 - [Steam](https://store.steampowered.com/)
@@ -79,13 +110,16 @@ Please, come and share your DLSS experience over in [r/DLSS_Swapper](https://www
 
 ## How do I get it?
 
-You can get the latest builds from our [GitHub releases](https://github.com/beeradmoore/dlss-swapper/releases) page.
+**This fork publishes no builds.** Clone it and build with the .NET 10 SDK:
 
-You can also install with winget.
+> dotnet build "src\DLSS Swapper.csproj" -c Release -p:Platform=x64
+
+**The original** has proper releases, signed, on its [GitHub releases](https://github.com/beeradmoore/dlss-swapper/releases) page, or:
 
 > winget install --id=beeradmoore.dlss-swapper -e
 
-These are the only official places to get DLSS Swapper.
+That winget package is the original project, not this fork. Those are the only official places to get
+DLSS Swapper.
 
 ## It would be cool if DLSS Swapper could...
 
@@ -103,6 +137,8 @@ More info on this soon.
 | GPU         | Any                                   |
 
 ## Official links
+
+Of the original project, which is where everything except this fork's interface work belongs:
 
 - GitHub: https://github.com/beeradmoore/dlss-swapper/
 - Twitter: https://twitter.com/dlss_swapper
