@@ -171,7 +171,10 @@ internal static class DllUpdateRunner
         {
             if (gameAsset.AssetType == item.AssetType)
             {
-                return gameAsset.Version ?? string.Empty;
+                // The display form, so "see what changed" says 310.7 like the sheet that offered
+                // the change did, rather than 310.7.0.0. Two views of one fact, formatted two
+                // ways, reads as two facts.
+                return gameAsset.DisplayVersion ?? string.Empty;
             }
         }
 

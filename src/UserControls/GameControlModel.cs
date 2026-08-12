@@ -614,6 +614,12 @@ public partial class GameControlModel : ObservableObject
             var dllPickerControl = new DLLPickerControl(dialog, Game, gameAssetType);
             dialog.Content = dllPickerControl;
             await dialog.ShowAsync();
+
+            // The rows say what is on disk, and something just wrote to it. Without this the row
+            // kept claiming the version it had before the swap — the file changed and the sentence
+            // describing it did not, which is the exact failure this rebuild set out to remove.
+            RefreshUpscalerRows();
+            OnPropertyChanged(nameof(HasUpdatesVisibility));
         }
     }
 
@@ -646,8 +652,11 @@ public partial class GameControlModel : ObservableObject
             return;
         }
 
-        Close();
+        // The sheet is put up before navigating, not after. Setting it after the frame's content
+        // changes left the games page showing nothing: the sheet exists on that page, and it has to
+        // be there to be found when the page comes back.
         gameGridPageModel.ShowUpdatePreviewFor(Game);
+        Close();
     }
 
     [RelayCommand]
@@ -669,6 +678,10 @@ public partial class GameControlModel : ObservableObject
             ResourceHelper.GetString("DllRevert_NothingToRevert"),
             (games, progress, cancellationToken) => DllUpdateRunner.RevertGamesAsync(games, progress, cancellationToken),
             "DllRevert_RevertedTemplate");
+
+        // Same reason as the picker: this one has just put every dll back.
+        RefreshUpscalerRows();
+        OnPropertyChanged(nameof(HasUpdatesVisibility));
     }
 
     [RelayCommand]
