@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -215,10 +216,7 @@ public class DllTypesTests
     [Fact]
     public void EveryManifestKey_ExistsInTheShippedManifest()
     {
-        var manifestPath = Path.Combine(AppContext.BaseDirectory, "static_manifest.json");
-        Assert.True(File.Exists(manifestPath), $"Expected the shipped manifest at {manifestPath}.");
-
-        using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+        using var document = ReadShippedManifest();
 
         var manifestKeys = document.RootElement
             .EnumerateObject()
@@ -232,4 +230,94 @@ public class DllTypesTests
 
         Assert.Empty(missing);
     }
+
+    /// <summary>
+    /// The other direction, and the one that matters when upstream moves first: a key the manifest
+    /// carries entries under that the registry has never heard of.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Nothing else reports this. <see cref="DllKeyedRecordsJson.ReadProperty"/> deliberately keeps
+    /// an unrecognised key verbatim so that saving a user's imported manifest cannot corrupt it,
+    /// which means a new upscaler arriving from the builder repository is carried silently and
+    /// offered to nobody. It does not throw, it does not log, and the app looks exactly as it did.
+    /// </para>
+    /// <para>
+    /// A key with nothing under it is upstream reserving a name it has not shipped for yet, so an
+    /// empty list is not a failure — <c>directstorage</c> and <c>directstorage_core</c> have both
+    /// sat empty since before this fork. The first entry to appear under one is the failure, and it
+    /// is the moment a <see cref="DllTypes.All"/> row and its display name resource are needed.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void EveryPopulatedManifestKey_IsHandledByTheRegistry()
+    {
+        using var document = ReadShippedManifest();
+
+        var unhandled = PopulatedDllKeys(document.RootElement)
+            .Where(x => DllTypes.ForManifestKey(x) is null)
+            .ToList();
+
+        Assert.True(
+            unhandled.Count == 0,
+            $"The shipped manifest has entries under {string.Join(", ", unhandled)}, which DllTypes.All has no row for. " +
+            "Everything under those keys is invisible in the app until one is added.");
+    }
+
+    /// <summary>
+    /// Every manifest key that has something under it, from the records at the top level and from
+    /// the known dll hashes, which are keyed the same way.
+    /// </summary>
+    /// <remarks>
+    /// Both are read, because a type can appear in one before the other: the hashes of a dll games
+    /// ship with are knowable before there is anything to download.
+    /// </remarks>
+    static IEnumerable<string> PopulatedDllKeys(JsonElement manifest)
+    {
+        foreach (var property in manifest.EnumerateObject())
+        {
+            if (property.NameEquals(KnownDllsKey))
+            {
+                if (property.Value.ValueKind != JsonValueKind.Object)
+                {
+                    continue;
+                }
+
+                foreach (var knownDll in property.Value.EnumerateObject())
+                {
+                    if (HasEntries(knownDll.Value))
+                    {
+                        yield return knownDll.Name;
+                    }
+                }
+
+                continue;
+            }
+
+            if (HasEntries(property.Value))
+            {
+                yield return property.Name;
+            }
+        }
+    }
+
+    static bool HasEntries(JsonElement value)
+    {
+        return value.ValueKind == JsonValueKind.Array && value.GetArrayLength() > 0;
+    }
+
+    /// <summary>
+    /// The manifest the app ships, linked into this project's output by the csproj. Both manifest
+    /// backed tests read it, so where it comes from is stated once.
+    /// </summary>
+    static JsonDocument ReadShippedManifest()
+    {
+        var manifestPath = Path.Combine(AppContext.BaseDirectory, "static_manifest.json");
+        Assert.True(File.Exists(manifestPath), $"Expected the shipped manifest at {manifestPath}.");
+
+        return JsonDocument.Parse(File.ReadAllText(manifestPath));
+    }
+
+    /// <summary>The manifest's one property that is not a dll type.</summary>
+    const string KnownDllsKey = "known_dlls";
 }
