@@ -59,15 +59,29 @@ jobs:
           echo "The manifest matches the copy already committed. Nothing to do."
         fi
 
+    - name: Build the core tests
+      if: steps.changed.outputs.changed == 'true'
+      run: dotnet build "tests/DLSS.Swapper.Core.Tests/DLSS.Swapper.Core.Tests.csproj" -c Debug
+
     # The authoritative answer to "did a new dll type arrive", using the real registry rather than
-    # the script's regex over it. Allowed to fail so that the pull request still gets opened when it
-    # does — the failure is the thing worth seeing, and seeing it needs the branch to exist. The job
-    # is failed at the end instead.
-    - name: Run core tests against the new manifest
+    # the script's regex over it. Run on its own, because the whole suite's outcome cannot tell a new
+    # dll type apart from any unrelated red test — it once reported an off-Windows path bug in the
+    # test double as a new dll type, with the title and body to match. Allowed to fail so that the
+    # pull request still gets opened when it does — the failure is the thing worth seeing, and seeing
+    # it needs the branch to exist. The job is failed at the end instead.
+    - name: Check the registry covers the new manifest
+      id: registry
+      if: steps.changed.outputs.changed == 'true'
+      continue-on-error: true
+      run: dotnet test "tests/DLSS.Swapper.Core.Tests/DLSS.Swapper.Core.Tests.csproj" -c Debug --no-build --filter "FullyQualifiedName~EveryPopulatedManifestKey_IsHandledByTheRegistry" --logger "console;verbosity=normal"
+
+    # The rest of the suite, so a real regression on the branch is still caught. Kept separate from
+    # the check above, and reported separately, so the two can never be confused for one another.
+    - name: Run the rest of the core tests
       id: tests
       if: steps.changed.outputs.changed == 'true'
       continue-on-error: true
-      run: dotnet test "tests/DLSS.Swapper.Core.Tests/DLSS.Swapper.Core.Tests.csproj" -c Debug --logger "console;verbosity=normal"
+      run: dotnet test "tests/DLSS.Swapper.Core.Tests/DLSS.Swapper.Core.Tests.csproj" -c Debug --no-build --filter "FullyQualifiedName!~EveryPopulatedManifestKey_IsHandledByTheRegistry" --logger "console;verbosity=normal"
 
     - name: Open or update the pull request
       if: steps.changed.outputs.changed == 'true'
@@ -85,7 +99,7 @@ jobs:
 
         SUMMARY_PATH="${{ runner.temp }}/manifest-summary.md"
 
-        if [ "${{ steps.tests.outcome }}" = "failure" ]; then
+        if [ "${{ steps.registry.outcome }}" = "failure" ]; then
           HEADLINE="A new dll type arrived and the app has no row for it"
         else
           HEADLINE="New dll versions"
@@ -103,14 +117,23 @@ jobs:
           echo
           cat "$SUMMARY_PATH"
           echo
-          if [ "${{ steps.tests.outcome }}" = "failure" ]; then
-            echo "### The core tests are red on this branch"
+          if [ "${{ steps.registry.outcome }}" = "failure" ]; then
+            echo "### A new dll type arrived"
             echo
             echo "\`DllTypesTests.EveryPopulatedManifestKey_IsHandledByTheRegistry\` failed, which is this"
             echo "workflow working as intended: the manifest carries something the app cannot show."
             echo "Add the \`DllTypeDefinition\` before merging, or merge the data and track the type separately."
           else
-            echo "The core tests pass on this branch, so everything that arrived is a version of a dll type the app already handles."
+            echo "Every dll type in this manifest already has a row in \`DllTypes.All\`, so what arrived is new versions of dll types the app already handles."
+          fi
+
+          if [ "${{ steps.tests.outcome }}" = "failure" ]; then
+            echo
+            echo "### Unrelated core tests are red"
+            echo
+            echo "Core tests other than the registry check are failing on this branch. That is a broken"
+            echo "test or a regression, not a statement about the manifest — read it separately from the"
+            echo "line above."
           fi
         } > "$BODY_PATH"
 
@@ -123,10 +146,15 @@ jobs:
           gh pr create --base "${{ github.event.repository.default_branch }}" --head "${SYNC_BRANCH}" --title "$HEADLINE" --body-file "$BODY_PATH"
         fi
 
-    # Last, so the pull request above exists to look at. A red run here means the manifest carries a
-    # dll type the app has no row for.
+    # Last, so the pull request above exists to look at. Each cause is reported on its own: a red
+    # registry check means the manifest needs code, anything else red is an ordinary broken test.
     - name: Fail the run if the manifest needs code
-      if: steps.changed.outputs.changed == 'true' && steps.tests.outcome == 'failure'
+      if: steps.changed.outputs.changed == 'true' && (steps.registry.outcome == 'failure' || steps.tests.outcome == 'failure')
       run: |
-        echo "::error::The manifest carries a dll type DllTypes.All has no row for. See the pull request on ${SYNC_BRANCH}."
+        if [ "${{ steps.registry.outcome }}" = "failure" ]; then
+          echo "::error::The manifest carries a dll type DllTypes.All has no row for. See the pull request on ${SYNC_BRANCH}."
+        fi
+        if [ "${{ steps.tests.outcome }}" = "failure" ]; then
+          echo "::error::Core tests unrelated to the registry are failing on ${SYNC_BRANCH}. This is a broken test, not a new dll type."
+        fi
         exit 1
