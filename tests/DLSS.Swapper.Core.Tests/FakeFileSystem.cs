@@ -121,11 +121,23 @@ internal sealed class FakeFileSystem : IFileSystem
             throw SharingViolation(path);
         }
 
-        var directoryPath = Path.GetDirectoryName(path);
+        var directoryPath = DirectoryNameOf(path);
         if (directoryPath is not null && _readOnlyDirectoryPaths.Contains(directoryPath))
         {
             throw new UnauthorizedAccessException($"Access to the path '{path}' is denied.");
         }
+    }
+
+    /// <summary>
+    /// The directory part of <paramref name="path"/>, split on either separator rather than the
+    /// host's. Every fixture here is a Windows path, and <see cref="Path.GetDirectoryName(string)"/>
+    /// does not count a backslash as a separator off Windows, so on the Linux runner this returned
+    /// empty and <see cref="DenyWritesTo"/> quietly stopped matching anything.
+    /// </summary>
+    static string? DirectoryNameOf(string path)
+    {
+        var separatorIndex = path.LastIndexOfAny(new[] { '\\', '/' });
+        return separatorIndex < 0 ? null : path.Substring(0, separatorIndex);
     }
 
     static IOException SharingViolation(string path)
