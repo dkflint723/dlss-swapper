@@ -9,13 +9,14 @@
 > **This is a personal fork of [beeradmoore/dlss-swapper](https://github.com/beeradmoore/dlss-swapper), not the original.**
 > It carries a substantial interface redesign that has not been offered upstream — see
 > [What is different in this fork](#what-is-different-in-this-fork) and [CHANGELOG.md](CHANGELOG.md).
-> There are no releases here: build it from source, or get the real thing from
-> [the original project](https://github.com/beeradmoore/dlss-swapper/releases).
+> Builds here are **unsigned**, so Windows will warn before running one — this fork has no code
+> signing certificate and does not claim to be the official DLSS Swapper. The signed, official
+> build is [the original project's](https://github.com/beeradmoore/dlss-swapper/releases).
 > Report anything wrong with the interface [on this fork](https://github.com/dkflint723/dlss-swapper/issues);
 > anything else belongs upstream.
 
 > [!WARNING]
-> Please be aware of malicious sites claiming to be DLSS Swapper. See the original project's [official links](#official-links) for accounts and sites affiliated with DLSS Swapper. This fork is not one of them and publishes no downloads.
+> Please be aware of malicious sites claiming to be DLSS Swapper. See the original project's [official links](#official-links) for accounts and sites affiliated with DLSS Swapper. **This fork is not one of them.** It publishes unsigned builds from this repository only — nowhere else, and never as the official DLSS Swapper.
 
 <p align="center">
     <a href="https://github.com/dkflint723/dlss-swapper/issues"><img alt="Issues on this fork" src="https://img.shields.io/github/issues/dkflint723/dlss-swapper?color=0088ff&label=fork%20issues" /></a>
@@ -109,7 +110,12 @@ Please, come and share your DLSS experience over in [r/DLSS_Swapper](https://www
 
 ## How do I get it?
 
-**This fork publishes no builds.** Clone it and build with the .NET 10 SDK:
+**This fork publishes unsigned builds** on its [releases page](https://github.com/dkflint723/dlss-swapper/releases)
+— an installer and a portable zip. They carry no certificate, so SmartScreen will warn on first run
+and you will have to click through it. That is the cost of a fork without code signing, and it is a
+good reason to prefer the original unless you specifically want this interface.
+
+Or build it yourself with the .NET 10 SDK:
 
 > dotnet build "src\DLSS Swapper.csproj" -c Release -p:Platform=x64
 
@@ -154,7 +160,7 @@ If you have found an other accounts or sites claiming to be DLSS Swapper, please
             <img src="docs/images/sponsors/signpath.png" width="50" height="50" alt="SignPath">
         </td>
         <td>
-            <strong>Of the original project.</strong> Free code signing on Windows provided by <a href="https://signpath.io/">SignPath.io</a>, certificate by <a href="https://www.signpath.com/solutions/for-open-source-community-foundation">SignPath Foundation</a>. Builds from this fork are <strong>not</strong> signed — it publishes none, and its binaries carry no certificate.
+            <strong>Of the original project.</strong> Free code signing on Windows provided by <a href="https://signpath.io/">SignPath.io</a>, certificate by <a href="https://www.signpath.com/solutions/for-open-source-community-foundation">SignPath Foundation</a>. Builds from this fork are <strong>not</strong> signed and carry no certificate.
         </td>
     </tr>
 </table>

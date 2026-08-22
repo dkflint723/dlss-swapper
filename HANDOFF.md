@@ -215,7 +215,13 @@ what it costs to change it next time.
   content area answered identically. An empty *filter tab* is deliberately left blank, since
   "no games with upscalers" would be a lie there and the tab already carries its own count.
 - **About names both repositories**, this fork for the code and reports, the original for credit.
-  The updater points at this fork, and is inert until the fork publishes a release.
+  The updater points at this fork, so it will offer this fork's releases and not the original's.
+  **The fork now publishes unsigned releases.** `SHOULD_SIGN` in the distribute workflow requires
+  `secrets.SIGNPATH_API_TOKEN` to be set as well as a tag, so a tag here takes the unsigned path
+  that already existed for untagged builds, and upstream is unaffected. Signing properly is not
+  simply a matter of applying to SignPath: the Foundation requires a project to already be released
+  and documented, and a second signed binary called DLSS Swapper from a different certificate would
+  be worse for users than an unsigned one.
 - **Contrast is measured, not judged.** Every text level is checked against the lightest surface it
   can land on, and the accents are checked as text as well as under ink. `AccentPaletteTests` holds
   both rules. If a token is ever changed, re-measure rather than eyeball it.

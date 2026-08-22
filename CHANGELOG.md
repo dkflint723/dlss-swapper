@@ -4,8 +4,9 @@ Changes made in [dkflint723/dlss-swapper](https://github.com/dkflint723/dlss-swa
 fork of [beeradmoore/dlss-swapper](https://github.com/beeradmoore/dlss-swapper). Entries describe
 what changed for someone using the app, and why — the reasoning in full is in the commit messages.
 
-Nothing here has been offered upstream. The fork has published no releases, so there are no version
-numbers yet; the sections below are the redesign as it landed.
+Nothing here has been offered upstream. Builds from this fork are **unsigned**; the original
+project is the signed, official one. Versions here carry a fourth part that is this fork's own
+count, so 1.2.5.1 is the first build from this repository on top of upstream's 1.2.5.
 
 ## Unreleased — interface redesign
 
@@ -138,6 +139,7 @@ this redesign exists to prevent, and it survived until something actually wrote 
 
 ### Not carried over
 
-- **The updater points at this fork** and is inert, because this fork publishes no releases.
+- **The updater points at this fork**, so it offers this fork's releases rather than the original's
+  — which would otherwise replace this build with one that does not have any of these changes.
 - **About names both repositories** — this fork for the code and for interface reports, the original
   for everything else and for credit.
