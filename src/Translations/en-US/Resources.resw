@@ -448,6 +448,153 @@
   <data name="Update_Dismiss" xml:space="preserve">
     <value>Dismiss</value>
   </data>
+  <data name="CoverArt_FindCover" xml:space="preserve">
+    <value>Find cover art</value>
+  </data>
+  <data name="CoverArt_Title" xml:space="preserve">
+    <value>Find cover art</value>
+  </data>
+  <data name="CoverArt_SearchLabel" xml:space="preserve">
+    <value>Search by name</value>
+  </data>
+  <data name="CoverArt_Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="CoverArt_Searching" xml:space="preserve">
+    <value>Searching…</value>
+  </data>
+  <data name="CoverArt_PickGame" xml:space="preserve">
+    <value>Which game is it?</value>
+  </data>
+  <data name="CoverArt_NoGames" xml:space="preserve">
+    <value>No games matched that name. Your current cover is unchanged — try a shorter name, drop the subtitle, or choose a file instead.</value>
+  </data>
+  <data name="CoverArt_LoadingArt" xml:space="preserve">
+    <value>Loading covers…</value>
+  </data>
+  <data name="CoverArt_PickArt" xml:space="preserve">
+    <value>Pick a cover</value>
+  </data>
+  <data name="CoverArt_NoArt" xml:space="preserve">
+    <value>That game has no portrait covers on SteamGridDB — its art may all be the wide shape this app has nowhere to put. Your current cover is unchanged.</value>
+  </data>
+  <data name="CoverArt_Apply" xml:space="preserve">
+    <value>Use this cover</value>
+  </data>
+  <data name="CoverArt_ByTemplate" xml:space="preserve">
+    <value>by {0}</value>
+  </data>
+  <data name="CoverArt_Verified" xml:space="preserve">
+    <value>Verified</value>
+  </data>
+  <data name="CoverArt_NoApiKey" xml:space="preserve">
+    <value>Add your SteamGridDB key in Settings before searching for cover art.</value>
+  </data>
+  <data name="CoverArt_KeyRejected" xml:space="preserve">
+    <value>SteamGridDB did not accept that key. Check it in Settings.</value>
+  </data>
+  <data name="CoverArt_Applied" xml:space="preserve">
+    <value>Cover updated.</value>
+  </data>
+  <data name="CoverArt_ChooseFile" xml:space="preserve">
+    <value>Choose a file instead</value>
+  </data>
+  <data name="CoverArt_Back" xml:space="preserve">
+    <value>Back to results</value>
+  </data>
+  <data name="CoverArt_CoversForTemplate" xml:space="preserve">
+    <value>Covers for {0}</value>
+  </data>
+  <data name="GamesPage_FindCovers" xml:space="preserve">
+    <value>Find covers</value>
+  </data>
+  <data name="CoverScan_Title" xml:space="preserve">
+    <value>Find covers for every game</value>
+  </data>
+  <data name="CoverScan_Intro" xml:space="preserve">
+    <value>Searches SteamGridDB for every game in your library. It only proposes a cover where the name matches beyond doubt; anything less certain is listed for you to pick by hand, and nothing is written until you say so.</value>
+  </data>
+  <data name="CoverScan_Scan" xml:space="preserve">
+    <value>Scan library</value>
+  </data>
+  <data name="CoverScan_ScanningTemplate" xml:space="preserve">
+    <value>Checking {0} of {1}</value>
+  </data>
+  <data name="CoverScan_ReadyHeaderTemplate" xml:space="preserve">
+    <value>{0} covers ready to apply</value>
+  </data>
+  <data name="CoverScan_ReadyHeaderOne" xml:space="preserve">
+    <value>1 cover ready to apply</value>
+  </data>
+  <data name="CoverScan_NothingReady" xml:space="preserve">
+    <value>Nothing matched certainly enough to apply on its own.</value>
+  </data>
+  <data name="CoverScan_NeedsYouHeader" xml:space="preserve">
+    <value>These need picking by hand</value>
+  </data>
+  <data name="CoverScan_NeedsYouHint" xml:space="preserve">
+    <value>Open a game and use Find cover art to choose one of these yourself.</value>
+  </data>
+  <data name="CoverScan_MatchedTemplate" xml:space="preserve">
+    <value>matched {0}</value>
+  </data>
+  <data name="CoverScan_ApplyTemplate" xml:space="preserve">
+    <value>Apply {0} covers</value>
+  </data>
+  <data name="CoverScan_ApplyOne" xml:space="preserve">
+    <value>Apply 1 cover</value>
+  </data>
+  <data name="CoverScan_AppliedTemplate" xml:space="preserve">
+    <value>Applied {0} covers.</value>
+  </data>
+  <data name="CoverScan_AppliedOne" xml:space="preserve">
+    <value>Applied 1 cover.</value>
+  </data>
+  <data name="CoverScan_ApplyingTemplate" xml:space="preserve">
+    <value>Writing {0} of {1}</value>
+  </data>
+  <data name="CoverScan_Undo" xml:space="preserve">
+    <value>Put them back</value>
+  </data>
+  <data name="CoverScan_Undone" xml:space="preserve">
+    <value>Put back.</value>
+  </data>
+  <data name="CoverScan_Reason_NotConfident" xml:space="preserve">
+    <value>no certain match — closest was {0}</value>
+  </data>
+  <data name="CoverScan_Reason_NoMatches" xml:space="preserve">
+    <value>nothing matched that name</value>
+  </data>
+  <data name="CoverScan_Reason_NoArt" xml:space="preserve">
+    <value>found it, but it has no portrait art</value>
+  </data>
+  <data name="CoverScan_Reason_Failed" xml:space="preserve">
+    <value>the search failed</value>
+  </data>
+  <data name="CoverScan_CoverSet" xml:space="preserve">
+    <value>cover set</value>
+  </data>
+  <data name="CoverScan_BackToList" xml:space="preserve">
+    <value>Back to the list</value>
+  </data>
+  <data name="CoverScan_PickForTemplate" xml:space="preserve">
+    <value>Pick a cover for {0}</value>
+  </data>
+  <data name="SettingsPage_SteamGridDbKey" xml:space="preserve">
+    <value>SteamGridDB API key</value>
+  </data>
+  <data name="SettingsPage_SteamGridDbKeyInfo" xml:space="preserve">
+    <value>Lets a game's page search SteamGridDB for a replacement cover. Without a key the search is unavailable; nothing else in the app changes.</value>
+  </data>
+  <data name="SettingsPage_SteamGridDbKeyHowTo" xml:space="preserve">
+    <value>Sign in at steamgriddb.com, open your profile's Preferences, then the API tab, and generate a key. It is free, and it only ever reads public art.</value>
+  </data>
+  <data name="SettingsPage_SteamGridDbGetKey" xml:space="preserve">
+    <value>Open the API key page</value>
+  </data>
+  <data name="SettingsPage_SteamGridDbKeyPlaceholder" xml:space="preserve">
+    <value>Paste your key</value>
+  </data>
   <data name="Preview_Body" xml:space="preserve">
     <value>Every file below is replaced with a newer version. A copy of each original is saved first, so you can put any of them back from this list or from the game's page.</value>
   </data>

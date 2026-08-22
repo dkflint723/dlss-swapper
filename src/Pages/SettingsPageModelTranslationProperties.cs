@@ -1,4 +1,4 @@
-using DLSS_Swapper.Attributes;
+﻿using DLSS_Swapper.Attributes;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
 
@@ -226,4 +226,22 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
 
     [TranslationProperty]
     public string ProxySettingsText => ResourceHelper.GetString("SettingsPage_ProxySettings");
+
+    [TranslationProperty]
+    public string SteamGridDbKeyText => ResourceHelper.GetString("SettingsPage_SteamGridDbKey");
+
+    /// <summary>
+    /// What it does, then how to get one. Joined rather than kept apart because the instructions
+    /// are the whole point of the row for anybody who does not already have a key, and a link on
+    /// its own does not say what to do when the page opens.
+    /// </summary>
+    [TranslationProperty]
+    public string SteamGridDbKeyInfo =>
+        $"{ResourceHelper.GetString("SettingsPage_SteamGridDbKeyInfo")} {ResourceHelper.GetString("SettingsPage_SteamGridDbKeyHowTo")}";
+
+    [TranslationProperty]
+    public string SteamGridDbGetKeyText => ResourceHelper.GetString("SettingsPage_SteamGridDbGetKey");
+
+    [TranslationProperty]
+    public string SteamGridDbKeyPlaceholderText => ResourceHelper.GetString("SettingsPage_SteamGridDbKeyPlaceholder");
 }

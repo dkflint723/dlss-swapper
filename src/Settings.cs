@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Interfaces;
 using DLSS_Swapper.Pages;
@@ -384,6 +384,33 @@ public class Settings
             if (_language != value)
             {
                 _language = value;
+                if (_autoSave)
+                {
+                    SaveJson();
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// The user's own SteamGridDB key, used to search for cover art.
+    /// </summary>
+    /// <remarks>
+    /// Empty until someone chooses to set one, and the feature stays out of the way while it is.
+    /// It is per user by necessity rather than by preference: a key shipped inside an open source
+    /// client is a key anybody can read out of it, and SteamGridDB issues them to people rather
+    /// than to applications. It sits in settings.json in plain text, which is what it is - the key
+    /// only reads a public art database, and the file is already the user's own.
+    /// </remarks>
+    string _steamGridDbApiKey = string.Empty;
+    public string SteamGridDbApiKey
+    {
+        get { return _steamGridDbApiKey; }
+        set
+        {
+            if (_steamGridDbApiKey != value)
+            {
+                _steamGridDbApiKey = value;
                 if (_autoSave)
                 {
                     SaveJson();

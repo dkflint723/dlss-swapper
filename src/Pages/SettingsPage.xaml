@@ -224,6 +224,29 @@
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
+                    <!--
+                        The key is the user's own and there is no way around that: SteamGridDB issues
+                        them to people, and one shipped inside an open source client is one anybody
+                        can read back out of it. So the row has to carry the instructions for getting
+                        one, not just a box to paste it into. The link goes straight to the page that
+                        generates it rather than to the site's front door.
+                    -->
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.SteamGridDbKeyText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.SteamGridDbKeyInfo, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <StackPanel Spacing="4" MinWidth="240">
+                                <TextBox
+                                    Text="{x:Bind ViewModel.SteamGridDbApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    PlaceholderText="{x:Bind ViewModel.TranslationProperties.SteamGridDbKeyPlaceholderText, Mode=OneWay}" />
+                                <HyperlinkButton
+                                    Padding="0"
+                                    NavigateUri="https://www.steamgriddb.com/profile/preferences/api"
+                                    Content="{x:Bind ViewModel.TranslationProperties.SteamGridDbGetKeyText, Mode=OneWay}" />
+                            </StackPanel>
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
 
                     <usercontrols:SettingsRow
                         Title="{x:Bind ViewModel.TranslationProperties.HideNonDLSSGamesText, Mode=OneWay}"

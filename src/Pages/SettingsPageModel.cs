@@ -91,6 +91,12 @@ public partial class SettingsPageModel : ObservableObject
     [ObservableProperty]
     public partial bool AllowDebugDlls { get; set; } = false;
 
+    /// <summary>
+    /// The user's own SteamGridDB key. Empty until they choose to set one.
+    /// </summary>
+    [ObservableProperty]
+    public partial string SteamGridDbApiKey { get; set; } = string.Empty;
+
     [ObservableProperty]
     public partial bool OnlyShowDownloadedDlls { get; set; } = false;
 
@@ -273,6 +279,7 @@ public partial class SettingsPageModel : ObservableObject
         HideNonDLSSGames = Settings.Instance.HideNonDLSSGames;
         BackupNewGamesAutomatically = Settings.Instance.BackupNewGamesAutomatically;
         AllowDebugDlls = Settings.Instance.AllowDebugDlls;
+        SteamGridDbApiKey = Settings.Instance.SteamGridDbApiKey;
         OnlyShowDownloadedDlls = Settings.Instance.OnlyShowDownloadedDlls;
 
 
@@ -434,6 +441,12 @@ public partial class SettingsPageModel : ObservableObject
         else if (e.PropertyName == nameof(BackupNewGamesAutomatically))
         {
             Settings.Instance.BackupNewGamesAutomatically = BackupNewGamesAutomatically;
+        }
+        else if (e.PropertyName == nameof(SteamGridDbApiKey))
+        {
+            // Trimmed on the way in, because a key is pasted and a trailing space or newline comes
+            // with it more often than not - and the failure it causes reads as a rejected key.
+            Settings.Instance.SteamGridDbApiKey = SteamGridDbApiKey?.Trim() ?? string.Empty;
         }
         else if (e.PropertyName == nameof(AllowDebugDlls))
         {

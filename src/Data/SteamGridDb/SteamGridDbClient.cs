@@ -1,0 +1,134 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
+using DLSS_Swapper.CoverArt;
+using DLSS_Swapper.Helpers;
+
+namespace DLSS_Swapper.Data.SteamGridDb;
+
+/// <summary>
+/// Something SteamGridDB refused to do, carrying the wording it used.
+/// </summary>
+internal sealed class SteamGridDbException : Exception
+{
+    internal SteamGridDbException(string message) : base(message)
+    {
+    }
+}
+
+/// <summary>
+/// Searches SteamGridDB for cover art.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Only the two calls the picker makes, and only portraits. See <see cref="CoverArtQuery"/> for why
+/// the horizontal capsules, heroes, logos and icons are never asked for: there is one 400x600 slot
+/// in this app and nothing else has anywhere to go.
+/// </para>
+/// <para>
+/// The key goes on each request rather than onto the shared client's default headers. That client
+/// is the app's one <see cref="HttpClient"/> and it is used for dll downloads and the manifest too,
+/// none of which should be sending someone's api key to beeradmoore.github.io.
+/// </para>
+/// </remarks>
+internal static class SteamGridDbClient
+{
+    const string BaseUrl = "https://www.steamgriddb.com/api/v2";
+
+    /// <summary>Whether a key has been set. The feature stays out of the way until one is.</summary>
+    internal static bool HasApiKey => string.IsNullOrWhiteSpace(Settings.Instance.SteamGridDbApiKey) == false;
+
+    /// <summary>The games matching a title, for the user to pick the right one out of.</summary>
+    internal static async Task<IReadOnlyList<CoverArtGame>> SearchAsync(string term, CancellationToken cancellationToken = default)
+    {
+        var searchTerm = CoverArtQuery.SearchTermFor(term);
+
+        if (string.IsNullOrEmpty(searchTerm))
+        {
+            return Array.Empty<CoverArtGame>();
+        }
+
+        var body = await GetAsync($"{BaseUrl}/search/autocomplete/{Uri.EscapeDataString(searchTerm)}", cancellationToken).ConfigureAwait(false);
+
+        return CoverArtJson.ReadGames(body);
+    }
+
+    /// <summary>
+    /// The portrait art for one game.
+    /// </summary>
+    /// <remarks>
+    /// What is asked for, and why, is <see cref="CoverArtQuery.PortraitQuery"/>'s to say - it is
+    /// tested, and this is not. The commas in the dimensions list are left unescaped deliberately:
+    /// they are legal in a query value and SteamGridDB matches on them literally.
+    /// </remarks>
+    internal static async Task<IReadOnlyList<CoverArtImage>> GetPortraitsAsync(int gameId, CancellationToken cancellationToken = default)
+    {
+        var body = await GetAsync($"{BaseUrl}/grids/game/{gameId}?{CoverArtQuery.PortraitQuery()}", cancellationToken).ConfigureAwait(false);
+
+        return CoverArtJson.ReadImages(body);
+    }
+
+    /// <summary>
+    /// Fetches the chosen image, ready to hand to <c>Game.AddCustomCover</c>.
+    /// </summary>
+    /// <remarks>
+    /// Read into memory rather than streamed straight in, because the resize reads the stream more
+    /// than once and a network stream cannot be rewound. Covers are a few hundred kilobytes.
+    /// </remarks>
+    internal static async Task<Stream> DownloadAsync(string url, CancellationToken cancellationToken = default)
+    {
+        // The cdn is public and takes no key. Sending one would hand it to a host that has no use
+        // for it.
+        using var response = await App.CurrentApp.HttpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+
+        if (response.IsSuccessStatusCode == false)
+        {
+            throw new SteamGridDbException($"The image could not be downloaded ({(int)response.StatusCode}).");
+        }
+
+        var memoryStream = new MemoryStream();
+        await response.Content.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
+        memoryStream.Position = 0;
+
+        return memoryStream;
+    }
+
+    static async Task<string> GetAsync(string url, CancellationToken cancellationToken)
+    {
+        var apiKey = Settings.Instance.SteamGridDbApiKey?.Trim() ?? string.Empty;
+
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            throw new SteamGridDbException(ResourceHelper.GetString("CoverArt_NoApiKey"));
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+        using var response = await App.CurrentApp.HttpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+        var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+        // Read the body's own error before the status code, because that is where the api says
+        // which of the two key problems it is - malformed, or not recognised.
+        var error = CoverArtJson.ReadError(body);
+        if (error is not null)
+        {
+            throw new SteamGridDbException(error);
+        }
+
+        if (response.IsSuccessStatusCode == false)
+        {
+            throw new SteamGridDbException(response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden
+                ? ResourceHelper.GetString("CoverArt_KeyRejected")
+                : $"SteamGridDB returned {(int)response.StatusCode}.");
+        }
+
+        return body;
+    }
+}
