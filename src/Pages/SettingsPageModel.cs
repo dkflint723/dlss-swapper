@@ -417,7 +417,12 @@ public partial class SettingsPageModel : ObservableObject
         else if (e.PropertyName == nameof(AllowUntrusted))
         {
             Settings.Instance.AllowUntrusted = AllowUntrusted;
-            App.CurrentApp.MainWindow.FilterDLLRecords();
+
+            // The upscalers page reads this while it builds its list, so the change lands the next
+            // time that page is built rather than the moment it is toggled. This used to call
+            // MainWindow.FilterDLLRecords, which had been an empty body behind a TODO for long
+            // enough that removing it changes nothing. Refreshing in place needs a handle on
+            // LibraryPage to reach ApplyRecordFilter, and MainWindow exposes only GameGridPage.
         }
         else if (e.PropertyName == nameof(HideNonDLSSGames))
         {
@@ -433,7 +438,8 @@ public partial class SettingsPageModel : ObservableObject
         else if (e.PropertyName == nameof(AllowDebugDlls))
         {
             Settings.Instance.AllowDebugDlls = AllowDebugDlls;
-            App.CurrentApp.MainWindow.FilterDLLRecords();
+
+            // Lands when the upscalers page is next built, for the reason given on AllowUntrusted.
         }
         else if (e.PropertyName == nameof(OnlyShowDownloadedDlls))
         {

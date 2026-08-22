@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -790,7 +790,12 @@ public partial class LibraryPageModel : ObservableObject
         if (importResults.Any(x => x.Success == true))
         {
             await DLLManager.Instance.SaveImportedManifestJsonAsync();
-            App.CurrentApp.MainWindow.FilterDLLRecords();
+
+            // An imported dll can be newer than anything a game has, so which games are behind has
+            // to be worked out again. Nothing else does it: ImportDll puts the record straight into
+            // the list the upscalers page shows, while the games page only recounts when
+            // GamesChanged fires, and importing never raised it.
+            GameManager.Instance.RefreshUpdateAvailable();
         }
 
         loadingDialog.Hide();
@@ -1001,6 +1006,9 @@ public partial class LibraryPageModel : ObservableObject
             });
 
             await DLLManager.Instance.SaveImportedManifestJsonAsync();
+
+            // As in ImportAsync: the games page has to be told the newly imported versions exist.
+            GameManager.Instance.RefreshUpdateAvailable();
 
             importingDialog.Hide();
 
@@ -1364,6 +1372,9 @@ public partial class LibraryPageModel : ObservableObject
         {
             await DLLManager.Instance.SaveImportedManifestJsonAsync();
 
+            // As in ImportAsync: the games page has to be told the newly imported versions exist.
+            GameManager.Instance.RefreshUpdateAvailable();
+
             downloadingDialog.Hide();
 
             var completeDialog = new EasyContentDialog(_libraryPage.XamlRoot)
@@ -1412,7 +1423,10 @@ public partial class LibraryPageModel : ObservableObject
                     // TODO: What to do here?
                     DLLManager.Instance.DeleteImportedDllRecord(record);
                     await DLLManager.Instance.SaveImportedManifestJsonAsync();
-                    App.CurrentApp.MainWindow.FilterDLLRecords();
+
+                    // Removing a version changes what is available just as importing one does, so a
+                    // game counted as behind this file may not be any more.
+                    GameManager.Instance.RefreshUpdateAvailable();
                 }
                 else
                 {

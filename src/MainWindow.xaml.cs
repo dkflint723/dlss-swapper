@@ -1,4 +1,4 @@
-using DLSS_Swapper.Data;
+﻿using DLSS_Swapper.Data;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Pages;
 using DLSS_Swapper.UserControls;
@@ -406,8 +406,6 @@ public sealed partial class MainWindow : Window
             await dialog.ShowAsync();
         }
 
-        //FilterDLLRecords();
-
         // Yeet this into the void and let it load in the background.
         _ = DLLManager.Instance.UpdateManifestAsync();
 
@@ -447,32 +445,6 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    /// <summary>
-    ///
-    /// </summary>
-    // Previously: FilterDLSSRecords
-    internal void FilterDLLRecords()
-    {
-        // TODO: Reimplement
-        /*
-        var newDlssRecordsList = new List<DLLRecord>();
-        if (Settings.Instance.AllowUntrusted)
-        {
-            newDlssRecordsList.AddRange(App.CurrentApp.Manifest.DLSS);
-            newDlssRecordsList.AddRange(App.CurrentApp.ImportedManifest.DLSS);
-        }
-        else
-        {
-            newDlssRecordsList.AddRange(App.CurrentApp.Manifest.DLSS.Where(x => x.IsSignatureValid == true));
-            newDlssRecordsList.AddRange(App.CurrentApp.ImportedManifest.DLSS.Where(x => x.IsSignatureValid == true));
-        }
-
-        newDlssRecordsList.Sort();
-        CurrentDLSSRecords.Clear();
-        CurrentDLSSRecords.AddRange(newDlssRecordsList);
-        */
-
-    }
 }
 
 
