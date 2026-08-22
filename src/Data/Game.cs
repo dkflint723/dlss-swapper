@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
@@ -1421,7 +1421,20 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         }
     }
 
-    public void PromptToBrowseCustomCover()
+    /// <summary>
+    /// Asks for an image file and makes it this game's cover.
+    /// </summary>
+    /// <returns>
+    /// Whether a cover was actually written. False covers both a cancelled file picker and a file
+    /// that could not be read, and in either case the cover already in place is untouched.
+    /// </returns>
+    /// <remarks>
+    /// The result exists for the cover art picker, which offers this as the way out when a game
+    /// cannot be found online: it has to leave its search on screen when the file picker was
+    /// cancelled, and close when it was not. Comparing CoverImage either side cannot answer that,
+    /// because a game that already had a custom cover has the same path before and after.
+    /// </remarks>
+    public bool PromptToBrowseCustomCover()
     {
         try
         {
@@ -1439,14 +1452,18 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
             if (string.IsNullOrWhiteSpace(coverImageFile))
             {
-                return;
+                return false;
             }
 
             AddCustomCover(coverImageFile);
+
+            return true;
         }
         catch (Exception err)
         {
             Logger.Error(err);
+
+            return false;
         }
     }
 

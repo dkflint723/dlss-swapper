@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="DLSS_Swapper.Pages.GameDetailPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -108,6 +108,7 @@
                     <Button HorizontalAlignment="Stretch" Background="Transparent" VerticalAlignment="Stretch" Command="{x:Bind ViewModel.AddCoverImageCommand}" AllowDrop="True" DragEnter="CoverButton_DragEnter" DragOver="CoverButton_DragOver" Drop="CoverButton_Drop" />
                 </Grid>
                 <Button Content="{x:Bind ViewModel.TranslationProperties.AddCustomCoverText, Mode=OneWay}" HorizontalAlignment="Stretch" Command="{x:Bind ViewModel.AddCoverImageCommand}" />
+                <Button Content="{x:Bind ViewModel.TranslationProperties.FindCoverArtText, Mode=OneWay}" HorizontalAlignment="Stretch" Command="{x:Bind ViewModel.FindCoverArtCommand}" />
             </StackPanel>
 
             <Grid Grid.Column="1" >

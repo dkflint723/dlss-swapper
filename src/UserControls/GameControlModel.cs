@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using DLSS_Swapper.Data.DLSS;
+using DLSS_Swapper.Data.SteamGridDb;
 using System.ComponentModel;
 
 namespace DLSS_Swapper.UserControls;
@@ -534,6 +535,66 @@ public partial class GameControlModel : ObservableObject
         }
 
         Game.PromptToBrowseCustomCover();
+    }
+
+    /// <summary>
+    /// Searches SteamGridDB for a replacement cover.
+    /// </summary>
+    /// <remarks>
+    /// A second door onto the cover the existing button already sets, for the case that button
+    /// cannot help with: wanting a better cover without already having the file. Nothing is written
+    /// until something is picked, so backing out of this leaves the current cover alone.
+    /// </remarks>
+    [RelayCommand]
+    async Task FindCoverArtAsync()
+    {
+        if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl) == false)
+        {
+            return;
+        }
+
+        // Said here rather than inside the picker, because an empty search box with an error under
+        // it reads as a broken feature rather than one that has not been set up.
+        if (SteamGridDbClient.HasApiKey == false)
+        {
+            var noKeyDialog = new EasyContentDialog(gameControl.XamlRoot)
+            {
+                Title = ResourceHelper.GetString("CoverArt_Title"),
+                Content = ResourceHelper.GetString("CoverArt_NoApiKey"),
+                CloseButtonText = ResourceHelper.GetString("General_Close"),
+            };
+
+            await noKeyDialog.ShowAsync();
+            return;
+        }
+
+        var picker = new CoverArtPicker(Game);
+
+        var dialog = new EasyContentDialog(gameControl.XamlRoot)
+        {
+            Title = ResourceHelper.GetString("CoverArt_Title"),
+            Content = picker,
+            CloseButtonText = ResourceHelper.GetString("General_Cancel"),
+        };
+
+        // A ContentDialog is 548x756 whatever its content asks for, and it clips rather than
+        // scrolls. Both caps were hit: at 548 wide the picker lost the two controls furthest right,
+        // Search and the button that applies the cover, so it rendered as a search box that could
+        // not search; at 756 tall the grid of covers pushed that same button row off the bottom.
+        // Raised on this dialog's own resources, so only this one is affected.
+        dialog.Resources["ContentDialogMaxWidth"] = 760d;
+        dialog.Resources["ContentDialogMaxHeight"] = 960d;
+
+        // The model closes the dialog once it has written, rather than the dialog cancelling its own
+        // close and waiting on a command to let it through - which is what the dll picker does, and
+        // why that one carries a comment wondering whether it is already closing.
+        picker.ViewModel.Finished += (sender, args) => dialog.Hide();
+
+        _ = await dialog.ShowAsync();
+
+        // Closing the dialog has to stop whatever it had in flight, or a search that comes back
+        // afterwards writes into a model nothing is showing any more.
+        picker.ViewModel.Cancel();
     }
 
     /// <summary>

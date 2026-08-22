@@ -1,4 +1,4 @@
-using DLSS_Swapper.Attributes;
+﻿using DLSS_Swapper.Attributes;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
 
@@ -11,6 +11,9 @@ public class GameControlModelTranslationProperties : LocalizedViewModelBase
 
     [TranslationProperty]
     public string AddCustomCoverText => ResourceHelper.GetString("GamePage_AddCustomCover");
+
+    [TranslationProperty]
+    public string FindCoverArtText => ResourceHelper.GetString("CoverArt_FindCover");
 
     [TranslationProperty]
     public string GameNotReadyToPlayStateText => ResourceHelper.GetString("GamePage_NotReadyToPlayState");
