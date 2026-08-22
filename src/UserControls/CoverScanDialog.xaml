@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DLSS_Swapper.UserControls.CoverScanDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:usercontrols="using:DLSS_Swapper.UserControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Width="640" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Says what it will and will not do before it does any of it. -->
+        <StackPanel Grid.Row="0" Spacing="12" Visibility="{x:Bind ViewModel.IntroVisibility, Mode=OneWay}">
+            <TextBlock
+                TextWrapping="Wrap"
+                Text="{x:Bind ViewModel.TranslationProperties.IntroText, Mode=OneWay}"
+                Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+            <Button
+                HorizontalAlignment="Left"
+                Height="32"
+                Padding="16,0"
+                Style="{StaticResource AccentButtonStyle}"
+                CornerRadius="{StaticResource DsCornerRadius}"
+                Content="{x:Bind ViewModel.TranslationProperties.ScanText, Mode=OneWay}"
+                Command="{x:Bind ViewModel.ScanCommand}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Spacing="6" Visibility="{x:Bind ViewModel.ProgressVisibility, Mode=OneWay}">
+            <ProgressBar IsIndeterminate="True" />
+            <TextBlock
+                FontSize="12"
+                Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}"
+                Foreground="{ThemeResource DsTextSecondaryBrush}" />
+        </StackPanel>
+
+        <TextBlock
+            Grid.Row="2"
+            TextWrapping="Wrap"
+            Visibility="{x:Bind ViewModel.StatusVisibility, Mode=OneWay}"
+            Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+
+        <!-- What it is sure of. Ticked, because certainty is the only way onto this list. -->
+        <StackPanel Grid.Row="3" Spacing="6" Visibility="{x:Bind ViewModel.ReadyVisibility, Mode=OneWay}">
+            <TextBlock Text="{x:Bind ViewModel.ReadyHeading, Mode=OneWay}" />
+
+            <ListView
+                MaxHeight="240"
+                SelectionMode="None"
+                ItemsSource="{x:Bind ViewModel.Ready, Mode=OneWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="usercontrols:CoverScanReadyItem">
+                        <Grid ColumnSpacing="10" Padding="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <CheckBox Grid.Column="0" MinWidth="0" IsChecked="{x:Bind IsSelected, Mode=TwoWay}" />
+
+                            <Image Grid.Column="1" Width="32" Height="48" Stretch="UniformToFill">
+                                <Image.Source>
+                                    <BitmapImage UriSource="{x:Bind ThumbnailUri}" DecodePixelWidth="32" />
+                                </Image.Source>
+                            </Image>
+
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind Title}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                <TextBlock
+                                    Text="{x:Bind MatchedName}"
+                                    FontSize="12"
+                                    TextWrapping="NoWrap"
+                                    TextTrimming="CharacterEllipsis"
+                                    Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <!--
+            The games it will not touch, named with a reason each. A count would not be actionable;
+            a list of titles is something you can work through with the per-game picker.
+        -->
+        <StackPanel Grid.Row="4" Spacing="6" Visibility="{x:Bind ViewModel.NeedsYouVisibility, Mode=OneWay}">
+            <TextBlock Text="{x:Bind ViewModel.TranslationProperties.NeedsYouHeaderText, Mode=OneWay}" />
+            <TextBlock
+                FontSize="12"
+                TextWrapping="Wrap"
+                Text="{x:Bind ViewModel.TranslationProperties.NeedsYouHintText, Mode=OneWay}"
+                Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+            <ListView
+                MaxHeight="180"
+                SelectionMode="Single"
+                SelectedItem="{x:Bind ViewModel.SelectedNeedsYou, Mode=TwoWay}"
+                ItemsSource="{x:Bind ViewModel.NeedsYou, Mode=OneWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="usercontrols:CoverScanNeedsYouItem">
+                        <StackPanel Padding="0,4">
+                            <TextBlock Text="{x:Bind Title}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                            <!--
+                                OneWay, not the x:Bind default. This line is rewritten to say the
+                                cover has been set once one is picked, and a OneTime binding read it
+                                when the row was built and never again - so the row went on claiming
+                                no certain match while the cover behind the dialog had already changed.
+                            -->
+                            <TextBlock
+                                Text="{x:Bind Reason, Mode=OneWay}"
+                                FontSize="12"
+                                TextWrapping="Wrap"
+                                Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <!--
+            Picking for one of the uncertain games, without leaving the scan. The control below is
+            the same one the game page opens, driven by a model this dialog owns - so the two can
+            never drift, and finishing here comes straight back to the list to do the next one.
+        -->
+        <StackPanel Grid.Row="6" Spacing="8" Visibility="{x:Bind ViewModel.PickerVisibility, Mode=OneWay}">
+            <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    Grid.Column="0"
+                    Height="28"
+                    Padding="10,0"
+                    CornerRadius="{StaticResource DsCornerRadius}"
+                    Content="{x:Bind ViewModel.TranslationProperties.BackToListText, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.BackToListCommand}" />
+
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    TextWrapping="NoWrap"
+                    TextTrimming="CharacterEllipsis"
+                    Text="{x:Bind ViewModel.PickerHeading, Mode=OneWay}"
+                    Foreground="{ThemeResource DsTextSecondaryBrush}" />
+            </Grid>
+
+            <ContentControl x:Name="PickerHost" HorizontalContentAlignment="Stretch" />
+        </StackPanel>
+
+        <StackPanel
+            Grid.Row="5"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            Spacing="8"
+            Visibility="{x:Bind ViewModel.ResultsVisibility, Mode=OneWay}">
+
+            <Button
+                Height="32"
+                Padding="16,0"
+                CornerRadius="{StaticResource DsCornerRadius}"
+                Visibility="{x:Bind ViewModel.UndoVisibility, Mode=OneWay}"
+                Content="{x:Bind ViewModel.TranslationProperties.UndoText, Mode=OneWay}"
+                Command="{x:Bind ViewModel.UndoCommand}" />
+
+            <Button
+                Height="32"
+                Padding="16,0"
+                Style="{StaticResource AccentButtonStyle}"
+                CornerRadius="{StaticResource DsCornerRadius}"
+                Content="{x:Bind ViewModel.ApplyLabel, Mode=OneWay}"
+                Command="{x:Bind ViewModel.ApplyCommand}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

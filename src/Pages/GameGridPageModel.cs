@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DLSS_Swapper.Builders;
 using DLSS_Swapper.Data;
+using DLSS_Swapper.Data.SteamGridDb;
 using DLSS_Swapper.Helpers;
 using CommunityToolkit.Mvvm.Messaging;
 using DLSS_Swapper.Messages;
@@ -678,6 +679,65 @@ public partial class GameGridPageModel : ObservableObject
     public partial UpdatePreviewModel? UpdatePreview { get; set; }
 
     public Visibility UpdatePreviewVisibility => UpdatePreview is null ? Visibility.Collapsed : Visibility.Visible;
+
+    /// <summary>
+    /// Looks for a cover for every game on the page at once.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Reads <see cref="GamesOnThePage"/> like everything else that acts on "the games", so with a
+    /// filter on it means the games shown - the same rule Update all games follows, and for the
+    /// same reason.
+    /// </para>
+    /// <para>
+    /// The scan proposes only what it is certain of and names the rest; see
+    /// <see cref="CoverScanModel"/> for why that is the only safe shape for doing this in bulk.
+    /// </para>
+    /// </remarks>
+    [RelayCommand]
+    async Task FindCoversAsync()
+    {
+        // Said here rather than inside the dialog, so an empty scan screen never stands in for a
+        // feature that simply has not been set up.
+        if (SteamGridDbClient.HasApiKey == false)
+        {
+            var noKeyDialog = new EasyContentDialog(gameGridPage.XamlRoot)
+            {
+                Title = ResourceHelper.GetString("CoverScan_Title"),
+                Content = ResourceHelper.GetString("CoverArt_NoApiKey"),
+                CloseButtonText = ResourceHelper.GetString("General_Close"),
+            };
+
+            await noKeyDialog.ShowAsync();
+            return;
+        }
+
+        var games = GamesOnThePage();
+        if (games.Count == 0)
+        {
+            return;
+        }
+
+        var scan = new CoverScanDialog(games);
+
+        var dialog = new EasyContentDialog(gameGridPage.XamlRoot)
+        {
+            Title = ResourceHelper.GetString("CoverScan_Title"),
+            Content = scan,
+            CloseButtonText = ResourceHelper.GetString("General_Close"),
+        };
+
+        // Same caps as the per-game picker, and for the same reason: a ContentDialog is 548x756
+        // whatever its content asks for, and it clips rather than scrolls.
+        dialog.Resources["ContentDialogMaxWidth"] = 760d;
+        dialog.Resources["ContentDialogMaxHeight"] = 960d;
+
+        _ = await dialog.ShowAsync();
+
+        // Stops anything still running and drops the undo copies, which nothing can reach once the
+        // dialog carrying the undo button has gone.
+        scan.ViewModel.Close();
+    }
 
     /// <summary>
     /// Opens the preview sheet rather than starting to write.

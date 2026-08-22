@@ -449,6 +449,11 @@
                         <FontIcon Glyph="&#xE710;" />
                     </AppBarButton.Content>
                 </AppBarButton>
+                <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.FindCoversText, Mode=OneWay}" Command="{x:Bind ViewModel.FindCoversCommand}" IsEnabled="{x:Bind ViewModel.IsGameListLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
+                    <AppBarButton.Content>
+                        <FontIcon Glyph="&#xEB9F;" />
+                    </AppBarButton.Content>
+                </AppBarButton>
                 <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.RefreshText, Mode=OneWay}" Command="{x:Bind ViewModel.RefreshGamesButtonCommand}" IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
                     <AppBarButton.Content>
                         <FontIcon Glyph="&#xE72C;" />

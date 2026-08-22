@@ -1,4 +1,4 @@
-using DLSS_Swapper.Attributes;
+﻿using DLSS_Swapper.Attributes;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
 
@@ -43,4 +43,7 @@ public class GameGridPageModelTranslationProperties : LocalizedViewModelBase
 
     [TranslationProperty]
     public string ApplicationRunsInAdministrativeModeInfo => ResourceHelper.GetString("General_ApplicationRunningAsAdmin");
+
+    [TranslationProperty]
+    public string FindCoversText => ResourceHelper.GetString("GamesPage_FindCovers");
 }
