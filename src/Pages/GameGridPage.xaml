@@ -1,4 +1,4 @@
-<Page
+﻿<Page
     x:Class="DLSS_Swapper.Pages.GameGridPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -819,18 +819,22 @@
                         Content="{x:Bind ViewModel.UpdateBatch.UndoLabel, Mode=OneWay}"
                         Command="{x:Bind ViewModel.UndoUpdateBatchCommand}" />
 
+                    <!--
+                        Labelled, like every other button in this strip. It was a bare cross with no
+                        label, no tooltip and no automation name, so the only way to clear the strip
+                        was to find a 12px glyph nothing named - and it got reported as the strip
+                        never going away.
+                    -->
                     <Button
                         Grid.Column="5"
-                        Width="32"
                         Height="32"
-                        Padding="0"
+                        Padding="16,0"
                         VerticalAlignment="Center"
                         Background="Transparent"
                         BorderThickness="0"
                         CornerRadius="{StaticResource DsCornerRadius}"
-                        Command="{x:Bind ViewModel.DismissUpdateBatchCommand}">
-                        <FontIcon Glyph="&#xE711;" FontSize="12" Foreground="{ThemeResource DsTextSecondaryBrush}" />
-                    </Button>
+                        Content="{x:Bind ViewModel.UpdateBatch.DismissLabel, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.DismissUpdateBatchCommand}" />
                 </Grid>
             </Grid>
         </Border>

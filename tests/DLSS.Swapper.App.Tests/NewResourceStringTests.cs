@@ -1,4 +1,4 @@
-using DLSS_Swapper.Helpers;
+﻿using DLSS_Swapper.Helpers;
 using Xunit;
 
 namespace DLSS_Swapper.App.Tests;
@@ -34,6 +34,7 @@ public class NewResourceStringTests
     [InlineData("Update_SeeWhatFailed")]
     [InlineData("Update_Undoing")]
     [InlineData("Update_UndoneTemplate")]
+    [InlineData("Update_Dismiss")]
     [InlineData("Upscalers_NotUsed")]
     [InlineData("Upscalers_UsedByOneGame")]
     [InlineData("Upscalers_UsedByGamesTemplate")]

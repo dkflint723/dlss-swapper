@@ -89,6 +89,13 @@ public partial class UpdateBatchModel : ObservableObject
 
     public string SeeWhatChangedLabel => ResourceHelper.GetString("Update_SeeWhatChanged");
 
+    /// <summary>
+    /// The strip stays after a run so the undo is still there to press, so something has to say how
+    /// to get rid of it. This was an unlabelled 12px cross, which is the one thing this app is
+    /// meant not to do: it was reported as the strip never going away.
+    /// </summary>
+    public string DismissLabel => ResourceHelper.GetString("Update_Dismiss");
+
     IReadOnlyList<DllChange> _changes = new List<DllChange>();
 
     /// <summary>What each file was before and after, for the strip to offer to show.</summary>

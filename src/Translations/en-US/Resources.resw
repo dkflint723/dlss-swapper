@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
     Microsoft ResX Schema
@@ -444,6 +444,9 @@
   </data>
   <data name="Update_UndoneTemplate" xml:space="preserve">
     <value>{0} files put back</value>
+  </data>
+  <data name="Update_Dismiss" xml:space="preserve">
+    <value>Dismiss</value>
   </data>
   <data name="Preview_Body" xml:space="preserve">
     <value>Every file below is replaced with a newer version. A copy of each original is saved first, so you can put any of them back from this list or from the game's page.</value>
