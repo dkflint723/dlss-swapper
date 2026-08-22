@@ -1,5 +1,5 @@
 <p align="center">
- <img width="150px" src="https://beeradmoore.github.io/dlss-swapper/logo_250.png" align="center" alt="GitHub Readme Stats" />
+ <img width="150px" src="docs/logo_250.png" align="center" alt="DLSS Swapper" />
  <h2 align="center">DLSS Swapper
 </h2>
  <p align="center">DLSS Swapper is a tool that allows you to conveniently download, manage, and swap <strong>DLSS</strong>, <strong>FSR</strong> and <strong>XeSS</strong> dlls allowing you to upgrade or downgrade DLSS, FSR and XeSS version in a game without the game needing an update.</p>
@@ -18,18 +18,17 @@
 > Please be aware of malicious sites claiming to be DLSS Swapper. See the original project's [official links](#official-links) for accounts and sites affiliated with DLSS Swapper. This fork is not one of them and publishes no downloads.
 
 <p align="center">
-    <a href="https://github.com/beeradmoore/dlss-swapper/releases"><img alt="Github Release" src="https://img.shields.io/github/v/release/beeradmoore/dlss-swapper" /></a>
-    <a href="https://github.com/beeradmoore/dlss-swapper/graphs/contributors"><img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/beeradmoore/dlss-swapper" /></a>
-    <a href="https://github.com/beeradmoore/dlss-swapper/issues"><img alt="Github Issues" src="https://img.shields.io/github/issues/beeradmoore/dlss-swapper?color=0088ff" /></a>
-    <a href="https://github.com/beeradmoore/dlss-swapper/pulls"><img alt="GitHub Pull Requests" src="https://img.shields.io/github/issues-pr/beeradmoore/dlss-swapper?color=0088ff" /></a>
+    <a href="https://github.com/dkflint723/dlss-swapper/issues"><img alt="Issues on this fork" src="https://img.shields.io/github/issues/dkflint723/dlss-swapper?color=0088ff&label=fork%20issues" /></a>
+    <a href="https://github.com/dkflint723/dlss-swapper/commits/main"><img alt="Last commit to this fork" src="https://img.shields.io/github/last-commit/dkflint723/dlss-swapper?label=fork%20updated" /></a>
+    <a href="https://github.com/beeradmoore/dlss-swapper/releases"><img alt="Latest release of the original" src="https://img.shields.io/github/v/release/beeradmoore/dlss-swapper?label=original%20release" /></a>
 </p>
 
 <p align="center">
-    <a href="https://github.com/beeradmoore/dlss-swapper/releases">Releases</a>
+    <a href="https://github.com/beeradmoore/dlss-swapper/releases">Download the original</a>
     ·
-    <a href="https://github.com/beeradmoore/dlss-swapper/issues/new?template=bug_report.yml">Report Bug</a>
+    <a href="https://github.com/dkflint723/dlss-swapper/issues/new">Report something about this interface</a>
     ·
-    <a href="https://github.com/beeradmoore/dlss-swapper/issues/new?template=feature_request.yml">Request Feature</a>
+    <a href="https://github.com/beeradmoore/dlss-swapper/issues/new/choose">Everything else, upstream</a>
 </p>
 
 <p align="center">
@@ -51,7 +50,7 @@
 </p>
 
 <p align="center">
-    <img src="https://beeradmoore.github.io/dlss-swapper/images/usage/usage_4.gif" />
+    <img src="docs/images/fork/games-page.png" alt="The games page in this fork: a sidebar with counts, filter tabs, and cards that each name their state and which upscalers the game has" />
 </p>
 
 ## What is different in this fork
@@ -152,10 +151,10 @@ If you have found an other accounts or sites claiming to be DLSS Swapper, please
 <table>
     <tr>
         <td style="width:50px">
-            <img src="https://beeradmoore.github.io/dlss-swapper/images/sponsors/signpath.png" width="50" height="50">
+            <img src="docs/images/sponsors/signpath.png" width="50" height="50" alt="SignPath">
         </td>
         <td>
-            Free code signing on Windows provided by <a href="https://signpath.io/">SignPath.io</a>, certificate by <a href="https://www.signpath.com/solutions/for-open-source-community-foundation">SignPath Foundation</a>.
+            <strong>Of the original project.</strong> Free code signing on Windows provided by <a href="https://signpath.io/">SignPath.io</a>, certificate by <a href="https://www.signpath.com/solutions/for-open-source-community-foundation">SignPath Foundation</a>. Builds from this fork are <strong>not</strong> signed — it publishes none, and its binaries carry no certificate.
         </td>
     </tr>
 </table>
