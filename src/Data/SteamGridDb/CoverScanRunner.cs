@@ -154,9 +154,14 @@ internal static class CoverScanRunner
                 };
             }
 
-            // The first, which is SteamGridDB's own ranking. Its score, upvote and downvote fields
-            // are zero on every result the api returns, so the order it hands them back in is the
-            // only ranking there is - there is no count to show anyone and none is claimed.
+            // The first, which is SteamGridDB's own ranking.
+            //
+            // Measured rather than read: its score, upvote and downvote fields come back zero on
+            // every result, and an "order" parameter is accepted with a nonsense value and changes
+            // nothing. The published api docs sit behind Cloudflare and could not be fetched, so
+            // other parameter spellings were never ruled out - if a real sort turns up, it belongs
+            // in CoverArtQuery.PortraitQuery, which is the one tested place that builds this query.
+            // Either way there is no download count to show anyone, and none is claimed.
             return new CoverScanEntry()
             {
                 Game = game,

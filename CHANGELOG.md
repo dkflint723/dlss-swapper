@@ -51,6 +51,24 @@ Forked at upstream v1.2.5.
 - **Launcher sections fold**, and unfolding one keeps its heading where it was rather than putting
   its games off the top of the screen.
 
+### Cover art
+
+- **A game's page can find its own cover.** It could always take a custom image you already had —
+  a button and a drag target — but not help you find one. It now searches SteamGridDB: pick which
+  game it is from the matches, then pick a cover from that game's art. Nothing is written until you
+  choose one, so a search that finds nothing leaves the cover you had alone and says so, and
+  choosing a file from your own disk stays available throughout.
+- **The whole library at once.** "Find covers" scans every game shown and proposes one only where
+  the name matches beyond doubt. Everything less certain is **listed by name with a reason** rather
+  than counted, and can be picked from without leaving the dialog — clicking one opens the same
+  picker a game's page uses and returns to the list once a cover is set, so the list can be worked
+  down. A batch can be put back in one press.
+- **Only the shape that fits.** The app draws one 400x600 portrait, so only portrait art is ever
+  fetched. Art flagged as adult, and art flagged for epilepsy, is never offered.
+- **A key is your own.** SteamGridDB issues keys to people rather than to applications, so the
+  setting says where to get one and links to the page that makes it. Without a key nothing else in
+  the app changes.
+
 ### Counts that were wrong
 
 Each of these was a count disagreeing with the list it described.
@@ -107,7 +125,7 @@ this redesign exists to prevent, and it survived until something actually wrote 
   A test now asserts that every manifest key with anything under it is one the app handles, and a
   daily job refreshes the bundled copy and raises a pull request saying whether what arrived is new
   versions of something already supported or something new that needs the app taught about it.
-- **453 tests** across the two suites, run in CI on every push. The rules that decide what a page
+- **555 tests** across the two suites, run in CI on every push. The rules that decide what a page
   shows are tested rather than the pages themselves — counts and the lists they describe come from
   one function, and a test asserts they cannot diverge.
 - **The write path has been run end to end on a real game**, not only against forced state: swap
