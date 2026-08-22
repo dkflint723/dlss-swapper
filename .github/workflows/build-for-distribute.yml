@@ -104,6 +104,25 @@ jobs:
         $ver = Select-String '<Version>(.+?)</Version>' "${{ github.workspace }}\src\DLSS Swapper.csproj" | % { $_.Matches[0].Groups[1].Value }
         echo "VERSION=$ver" >> $env:GITHUB_ENV
           
+    # The packaging scripts name their own output, and this fork renames it: its installer must
+    # never be mistakeable for the original's, so both files carry the fork in their name. Asking
+    # config.cmd what it produced beats writing those names out a second time here and finding
+    # out they disagreed only when an upload found nothing.
+    - name: Read the names the packaging scripts will produce
+      shell: cmd
+      working-directory: ${{ github.workspace }}\package\
+      run: |
+        call "${{ github.workspace }}\package\config.cmd"
+        echo OUTPUT_ZIP=%output_zip%>>%GITHUB_ENV%
+        echo OUTPUT_INSTALLER=%output_installer%>>%GITHUB_ENV%
+        for %%F in ("%output_installer%") do echo INSTALLER_FILENAME=%%~nxF>>%GITHUB_ENV%
+        if not "%app_version%"=="${{ env.VERSION }}" (
+          echo config.cmd builds %app_version% but the csproj says ${{ env.VERSION }}.
+          echo The version lives in both and they have drifted, so the built file would not be
+          echo named for the version the app reports. Fix one of them.
+          exit /b 1
+        )
+
     - name: Build DLSS Swapper portable
       run: ${{ github.workspace }}\package\build_Portable.cmd
       working-directory: ${{ github.workspace }}\package\
@@ -157,7 +176,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: DLSS.Swapper-${{ env.VERSION }}-portable
-        path: ${{ github.workspace }}\package\Output\DLSS.Swapper-${{ env.VERSION }}-portable.zip
+        path: ${{ github.workspace }}\package\${{ env.OUTPUT_ZIP }}
         if-no-files-found: error
 
     - name: Package DLSS Swapper installer
@@ -171,7 +190,7 @@ jobs:
       with:
         name: unsigned-installer-artifacts
         retention-days: 1
-        path: ${{ github.workspace }}\package\Output\DLSS.Swapper-${{ env.VERSION }}-installer.exe
+        path: ${{ github.workspace }}\package\${{ env.OUTPUT_INSTALLER }}
         if-no-files-found: error
   
     - name: Sign installer with SignPath
@@ -193,7 +212,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: DLSS.Swapper-${{ env.VERSION }}-installer
-        path: ${{ github.workspace }}\src\bin\signed_installer\DLSS.Swapper-${{ env.VERSION }}-installer.exe
+        path: ${{ github.workspace }}\src\bin\signed_installer\${{ env.INSTALLER_FILENAME }}
         if-no-files-found: error
 
     - name: Upload completed unsigned installer build artifact
@@ -201,6 +220,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: DLSS.Swapper-${{ env.VERSION }}-installer
-        path: ${{ github.workspace }}\package\Output\DLSS.Swapper-${{ env.VERSION }}-installer.exe
+        path: ${{ github.workspace }}\package\${{ env.OUTPUT_INSTALLER }}
         if-no-files-found: error
 
