@@ -881,9 +881,19 @@
             bar it was opened from stays visible and the sheet reads as belonging to the list it is
             about to change.
         -->
+        <!--
+            TabFocusNavigation Cycle as well as the GettingFocus handler in the code behind, which is
+            what a ContentDialog does - see BackgroundElement in Themes/FakeContentDialogStyle.xaml.
+            The handler is hooked on the page, so it only sees focus moving to somewhere inside the
+            page; the shell sidebar lives outside it, in the window. Tabbing off the end was not
+            observed to reach the sidebar on this build - it was checked at 10, 14 and 23 presses and
+            stayed in the sheet every time - but that is the page's tab order happening to wrap, not
+            anything this sheet arranged. Cycle makes it the sheet's own rule.
+        -->
         <Grid
             x:Name="UpdatePreviewSheet"
             Grid.Row="1"
+            TabFocusNavigation="Cycle"
             Visibility="{x:Bind ViewModel.UpdatePreviewVisibility, Mode=OneWay}">
             <!-- Clicking away is a cancel, same as Esc and the Cancel button. -->
             <Border Background="#73000000" Tapped="UpdatePreviewBackdrop_Tapped" />

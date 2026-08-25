@@ -254,7 +254,13 @@ public sealed partial class GameGridPage : Page
     /// </para>
     /// <para>
     /// Both halves are needed. Moving focus in is what makes the sheet operable; refusing to let it
-    /// back out is what makes the page behind it stop being a trap of its own.
+    /// back out is what keeps the scrimmed page from being reachable by keyboard.
+    /// </para>
+    /// <para>
+    /// This handler is hooked on the page, so it only sees focus arriving somewhere inside the page.
+    /// The shell sidebar is outside it, in the window, and this cannot redirect focus away from
+    /// there. The sheet carries TabFocusNavigation="Cycle" for that, the way a ContentDialog does;
+    /// see the comment above it in the markup.
     /// </para>
     /// </remarks>
     void UpdatePreviewOpened()

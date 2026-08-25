@@ -153,6 +153,17 @@ internal static class CoverScanRunner
 
             var entry = await ScanOneAsync(game, cancellationToken).ConfigureAwait(false);
 
+            if (cancellationToken.IsCancellationRequested)
+            {
+                // Stopped part way through this game. ScanOneAsync hands a cancellation back as
+                // Failed - it has no way to tell one apart from a refused request - so without this
+                // the game somebody stopped on was listed as "the search failed", and a stop that
+                // followed four real failures was reported as the scan giving up rather than as the
+                // stop it was.
+                completion = CoverScanCompletion.Stopped;
+                break;
+            }
+
             if (entry.Outcome == CoverScanOutcome.Failed)
             {
                 consecutiveFailures++;

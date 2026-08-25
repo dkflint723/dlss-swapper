@@ -16,6 +16,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -1600,10 +1601,43 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         {
             // Unit separator, so a value containing the separator cannot make two different rows
             // look alike.
-            builder.Append(column.Name).Append('=').Append(column.GetValue(this)).Append('');
+            builder.Append(column.Name).Append('=').Append(Stringify(column.GetValue(this))).Append(UnitSeparator);
         }
 
         return builder.ToString();
+    }
+
+    /// <summary>
+    /// The separator between one column and the next, spelled rather than typed.
+    /// </summary>
+    /// <remarks>
+    /// This was a raw control character sitting in the source, which is invisible in every editor
+    /// and survives a copy and paste only by luck.
+    /// </remarks>
+    const char UnitSeparator = '\u001f';
+
+    /// <summary>
+    /// One value, written the same way every time.
+    /// </summary>
+    /// <remarks>
+    /// StringBuilder.Append(object) calls ToString() with the current culture and the type's default
+    /// format, and neither is good enough to compare two runs by. A DateTime's default format has no
+    /// sub-second part at all, so two LastScannedAt values inside the same second read as identical;
+    /// and this app changes language while it is running, which changes the current culture
+    /// underneath a signature taken before it. Round trip format, invariant culture, so the only
+    /// thing that can change the string is the value.
+    /// </remarks>
+    static string Stringify(object? value)
+    {
+        return value switch
+        {
+            null => string.Empty,
+            DateTime dateTime => dateTime.ToString("o", CultureInfo.InvariantCulture),
+            DateTimeOffset dateTimeOffset => dateTimeOffset.ToString("o", CultureInfo.InvariantCulture),
+            string text => text,
+            IFormattable formattable => formattable.ToString(null, CultureInfo.InvariantCulture),
+            _ => value.ToString() ?? string.Empty,
+        };
     }
 
     /// <summary>

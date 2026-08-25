@@ -36,8 +36,36 @@ public partial class CoverScanModel : ObservableObject
 
     CancellationTokenSource? _cancellation;
 
-    /// <summary>What was written and what it replaced, so the whole batch can be put back.</summary>
+    /// <summary>
+    /// What was written and what it replaced, so the whole batch can be put back.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Three rules hold at every exit of <see cref="ApplyAsync"/>, and every bug this list has had
+    /// came from one of them being kept in only one of the three places it is left.
+    /// </para>
+    /// <para>
+    /// One tuple per game. <c>CoverScanRunner.ApplyAsync</c> copies the current cover to
+    /// <c>.before_scan</c> before writing, so applying the same game twice overwrites that backup
+    /// with the scan's own cover. Undo then restores the scan cover from the first tuple, deletes
+    /// the backup, and - finding none for the second tuple - deletes the game's cover outright. A
+    /// cover somebody chose by hand is gone, and nothing said so.
+    /// </para>
+    /// <para>
+    /// BackupPath is always the state before this batch touched the file, never something this
+    /// batch wrote.
+    /// </para>
+    /// <para>
+    /// <see cref="HasApplied"/> tracks this list on every exit, cancellation included - which is the
+    /// ordinary way an apply ends, since every item is a download. It used to be set only on the two
+    /// paths that ran to the end, so stopping a batch left the covers written, the originals in
+    /// backup files, and no undo button to put them back before Close deleted them.
+    /// </para>
+    /// </remarks>
     readonly List<(Game Game, string? BackupPath)> _applied = new List<(Game, string?)>();
+
+    /// <summary>Set once the dialog has gone, so nothing records an undo nobody can reach.</summary>
+    bool _isClosed;
 
     public CoverScanModelTranslationProperties TranslationProperties { get; } = new CoverScanModelTranslationProperties();
 
@@ -351,10 +379,22 @@ public partial class CoverScanModel : ObservableObject
             {
                 token.ThrowIfCancellationRequested();
 
+                var item = selected[index];
+
+                // The one place the "one tuple per game" rule is enforced. Unticking the row after a
+                // write is what normally keeps Apply from offering it again, but a row can be
+                // re-ticked by hand, so the destructive case is refused here rather than only made
+                // unlikely upstream.
+                if (_applied.Any(x => ReferenceEquals(x.Game, item.Entry.Game)))
+                {
+                    item.MarkApplied();
+                    continue;
+                }
+
                 ProgressText = ResourceHelper.GetFormattedResourceTemplate("CoverScan_ApplyingTemplate", index + 1, selected.Count);
                 ProgressValue = index + 1;
 
-                var outcome = await CoverScanRunner.ApplyAsync(selected[index].Entry, token).ConfigureAwait(true);
+                var outcome = await CoverScanRunner.ApplyAsync(item.Entry, token).ConfigureAwait(true);
 
                 // Counted only when a cover actually reached the disk. This counted every attempt,
                 // so "Applied 12 covers." could be true of none of them - and undo would have had
@@ -365,8 +405,20 @@ public partial class CoverScanModel : ObservableObject
                     continue;
                 }
 
-                _applied.Add((selected[index].Entry.Game, outcome.BackupPath));
+                if (_isClosed)
+                {
+                    // The dialog went while this one was in flight. Nothing can press undo now, so
+                    // recording it would only leave a .before_scan file that nothing will ever read
+                    // or remove.
+                    DeleteBackup(outcome.BackupPath);
+                    break;
+                }
+
+                _applied.Add((item.Entry.Game, outcome.BackupPath));
                 written++;
+
+                // Out of the proposal set the moment it is written, and it says so in words.
+                item.MarkApplied();
             }
 
             StatusText = written == 1
@@ -379,27 +431,32 @@ public partial class CoverScanModel : ObservableObject
                 // a silent count is most misleading.
                 StatusText += " " + ResourceHelper.GetFormattedResourceTemplate("CoverScan_SomeFailedTemplate", failed, selected.Count);
             }
-
-            HasApplied = written > 0;
         }
         catch (OperationCanceledException)
         {
+            // Stopping is the ordinary way this ends - every item is a download - so it gets a line
+            // of its own rather than the silence it used to get. What was written is still on disk
+            // and still undoable; saying neither left somebody looking at changed covers with no
+            // statement that anything had happened and no way back.
+            StatusText = ResourceHelper.GetFormattedResourceTemplate(
+                "CoverScan_ApplyStoppedTemplate", written, selected.Count);
         }
         catch (Exception err)
         {
             Logger.Error(err);
             StatusText = err is SteamGridDbException ? err.Message : ResourceHelper.GetString("General_Error");
-
-            // Whatever did get written is still undoable, which matters more after a failure
-            // part way through than after a clean run.
-            HasApplied = written > 0;
         }
         finally
         {
+            // Here rather than on each way out. Whatever is in the list is undoable, however the
+            // loop ended - see the remark on _applied.
+            HasApplied = _applied.Count > 0;
+
             IsBusy = false;
             IsStopping = false;
             CanBeStopped = false;
             ProgressText = string.Empty;
+            RefreshCounts();
         }
     }
 
@@ -480,28 +537,44 @@ public partial class CoverScanModel : ObservableObject
     /// </remarks>
     public void Close()
     {
+        // Set before the cancel, not after. An apply already in flight finishes the item it is on,
+        // and the loop reads this to decide whether recording it is worth anything - which it is
+        // not, once the button that would undo it has gone.
+        _isClosed = true;
+
         _cancellation?.Cancel();
 
         foreach (var (_, backupPath) in _applied)
         {
-            if (backupPath is null)
-            {
-                continue;
-            }
-
-            try
-            {
-                if (File.Exists(backupPath))
-                {
-                    File.Delete(backupPath);
-                }
-            }
-            catch (Exception err)
-            {
-                Logger.Error(err);
-            }
+            DeleteBackup(backupPath);
         }
 
         _applied.Clear();
+    }
+
+    /// <summary>Removes a backup copy this batch took, if it is still there.</summary>
+    /// <remarks>
+    /// Two callers - the close above, and an apply that finished an item after the dialog went.
+    /// Both are throwing away a copy nothing can reach any more, and a failure to delete one is
+    /// worth a log line and nothing else.
+    /// </remarks>
+    static void DeleteBackup(string? backupPath)
+    {
+        if (backupPath is null)
+        {
+            return;
+        }
+
+        try
+        {
+            if (File.Exists(backupPath))
+            {
+                File.Delete(backupPath);
+            }
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err);
+        }
     }
 }

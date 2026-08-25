@@ -20,8 +20,18 @@ public partial class CoverScanReadyItem : ObservableObject
 
     public string Title { get; }
 
-    /// <summary>What SteamGridDB called it, so the agreement is visible rather than assumed.</summary>
-    public string MatchedName { get; }
+    /// <summary>
+    /// What SteamGridDB called it, so the agreement is visible rather than assumed - and afterwards,
+    /// that the cover has been set.
+    /// </summary>
+    /// <remarks>
+    /// Rewritten rather than only unticked. A row that has been written is no longer a proposal, and
+    /// an empty tick box is a shape rather than a sentence: it reads the same as one somebody
+    /// unticked on purpose. The uncertain list below says "Cover set." the same way.
+    /// </remarks>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AccessibleDescription))]
+    public partial string MatchedName { get; set; }
 
     public Uri ThumbnailUri { get; }
 
@@ -37,7 +47,20 @@ public partial class CoverScanReadyItem : ObservableObject
     /// above a button that writes covers into a library.
     /// </remarks>
     public string AccessibleDescription =>
-        ResourceHelper.GetFormattedResourceTemplate("CoverScan_RowDescriptionTemplate", Title, Entry.MatchedName ?? string.Empty);
+        ResourceHelper.GetFormattedResourceTemplate("CoverScan_RowDescriptionTemplate", Title, MatchedName);
+
+    /// <summary>
+    /// Says this cover has been written, and takes the row out of the proposal set.
+    /// </summary>
+    /// <remarks>
+    /// Unticking is what stops Apply offering to do it again. See the invariant on
+    /// <c>CoverScanModel._applied</c> for why a second write is destructive rather than wasteful.
+    /// </remarks>
+    public void MarkApplied()
+    {
+        IsSelected = false;
+        MatchedName = ResourceHelper.GetString("CoverScan_CoverSet");
+    }
 
     public CoverScanReadyItem(CoverScanEntry entry)
     {

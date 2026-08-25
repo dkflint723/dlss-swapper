@@ -180,7 +180,6 @@ public partial class GameGridPageModel : ObservableObject
     public void ReapplyFilters()
     {
         ShowGameCollection();
-        RefreshFilterTabs();
     }
 
     /// <summary>Switches the page to a filter tab. Also used by the sidebar's backup card.</summary>
@@ -188,7 +187,6 @@ public partial class GameGridPageModel : ObservableObject
     {
         GameManager.Instance.ActiveFilter = filter;
         ShowGameCollection();
-        RefreshFilterTabs();
     }
 
     /// <summary>What the page is showing while a dll filter is on, and empty when there is none.</summary>
@@ -228,7 +226,6 @@ public partial class GameGridPageModel : ObservableObject
         GameManager.Instance.DllFilter = null;
         DllFilterLabel = string.Empty;
         ShowGameCollection();
-        RefreshFilterTabs();
     }
 
     /// <summary>
@@ -238,12 +235,25 @@ public partial class GameGridPageModel : ObservableObject
     /// One route rather than four copies of the same two calls, which is how the search box came to
     /// have its own version that skipped the filter text when it was empty.
     /// </remarks>
+    /// <param name="searchText">
+    /// What is in the search box, or null to keep whatever is already there.
+    /// </param>
     void ShowGameCollection(string? searchText = null)
     {
-        CurrentCollectionView = GameManager.Instance.GetGameCollection(searchText);
+        // Null means "leave the search alone", not "clear it". Every caller but the search box
+        // itself is rebuilding the view for some other reason - a tab was clicked, a dll filter was
+        // dropped, a setting changed - and each of them passed nothing, which cleared the search
+        // while the box went on showing the typed text. The list, the counts and the box then
+        // disagreed, and the only way back was to retype.
+        //
+        // Clearing still works: it goes through the box, which passes an empty string rather than
+        // null. GameGridPage.ClearSearchBox is the one route for that, for this reason.
+        CurrentCollectionView = GameManager.Instance.GetGameCollection(searchText ?? GameManager.Instance.SearchText);
 
         // After the collection, which is what records the search text. Both the tab counts and the
-        // empty state read it from there rather than from a copy kept here.
+        // empty state read it from there rather than from a copy kept here - and both are done here
+        // rather than by each caller, which is how one of them came to refresh the counts twice and
+        // another not at all.
         RefreshFilterTabs();
         RefreshEmptyState();
     }

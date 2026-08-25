@@ -96,7 +96,7 @@
                             <CheckBox
                                 Grid.Column="0"
                                 MinWidth="0"
-                                AutomationProperties.Name="{x:Bind AccessibleDescription}"
+                                AutomationProperties.Name="{x:Bind AccessibleDescription, Mode=OneWay}"
                                 IsChecked="{x:Bind IsSelected, Mode=TwoWay}" />
 
                             <Image Grid.Column="1" Width="32" Height="48" Stretch="UniformToFill">
@@ -107,8 +107,14 @@
 
                             <StackPanel Grid.Column="2" VerticalAlignment="Center">
                                 <TextBlock Text="{x:Bind Title}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                <!--
+                                    OneWay, not the x:Bind default. This line is rewritten to say
+                                    the cover has been set once the row is written, and the same
+                                    OneTime default has now caused this exact bug on the row below,
+                                    on the history dialog, and on the cover set line.
+                                -->
                                 <TextBlock
-                                    Text="{x:Bind MatchedName}"
+                                    Text="{x:Bind MatchedName, Mode=OneWay}"
                                     FontSize="12"
                                     TextWrapping="NoWrap"
                                     TextTrimming="CharacterEllipsis"
