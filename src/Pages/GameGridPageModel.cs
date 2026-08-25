@@ -338,18 +338,37 @@ public partial class GameGridPageModel : ObservableObject
         RefreshFilterTabs();
     }
 
+    /// <summary>
+    /// Reads the cached library, then rescans for what has changed since.
+    /// </summary>
+    /// <remarks>
+    /// Both flags are cleared in a finally. Anything thrown on the way out used to leave them set
+    /// for the rest of the session, which is a permanently spinning list and every toolbar button
+    /// disabled - the app looking like it is still working with nothing left running.
+    /// </remarks>
     public async Task InitialLoadAsync()
     {
         IsGameListLoading = true;
         IsDLSSLoading = true;
 
-        await GameManager.Instance.LoadGamesFromCacheAsync();
+        try
+        {
+            try
+            {
+                await GameManager.Instance.LoadGamesFromCacheAsync();
+            }
+            finally
+            {
+                // Released as soon as the cached list is on screen, rather than after the rescan.
+                IsGameListLoading = false;
+            }
 
-        IsGameListLoading = false;
-
-        await GameManager.Instance.LoadGamesAsync(false);
-
-        IsDLSSLoading = false;
+            await GameManager.Instance.LoadGamesAsync(false);
+        }
+        finally
+        {
+            IsDLSSLoading = false;
+        }
     }
 
     public void SearchForGameEvent(object sender, TextChangedEventArgs e)

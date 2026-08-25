@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
     x:Class="DLSS_Swapper.UserControls.GameHistoryControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -16,9 +16,15 @@
         <converters:GameHistoryEventTypeToLabelConverter x:Key="GameHistoryEventTypeToLabelConverter" />
     </UserControl.Resources>
     <Grid>
-        <TextBlock Text="{x:Bind ViewModel.TranslationProperties.NoHistoryText, Mode=OneWay}" Visibility="{x:Bind ViewModel.HistoryRows, Converter={StaticResource CollectionVisibilityInverterConverter}}" />
+        <!--
+            OneWay through a property, not OneTime through a converter on the collection. The rows
+            arrive after this is first evaluated, and a binding to the collection object never
+            re-evaluates anyway because the object itself does not change - so the dialog said "No
+            history" before the query returned and could not take it back.
+        -->
+        <TextBlock Text="{x:Bind ViewModel.TranslationProperties.NoHistoryText, Mode=OneWay}" Visibility="{x:Bind ViewModel.NoHistoryVisibility, Mode=OneWay}" />
         
-        <ctWinUI:DataGrid Visibility="{x:Bind ViewModel.HistoryRows, Converter={StaticResource CollectionVisibilityConverter}}" SelectionMode="Single" IsReadOnly="True" CanUserSortColumns="True" GridLinesVisibility="All" VerticalAlignment="Stretch" ColumnWidth="*" AutoGenerateColumns="False" ItemsSource="{x:Bind ViewModel.HistoryRows, Mode=OneTime}">
+        <ctWinUI:DataGrid Visibility="{x:Bind ViewModel.HistoryVisibility, Mode=OneWay}" SelectionMode="Single" IsReadOnly="True" CanUserSortColumns="True" GridLinesVisibility="All" VerticalAlignment="Stretch" ColumnWidth="*" AutoGenerateColumns="False" ItemsSource="{x:Bind ViewModel.HistoryRows, Mode=OneWay}">
 
             <ctWinUI:DataGrid.Resources>
                 <Style TargetType="TextBlock">

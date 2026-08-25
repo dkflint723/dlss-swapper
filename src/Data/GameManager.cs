@@ -273,7 +273,13 @@ internal partial class GameManager : ObservableObject
             var gameLibrary = IGameLibrary.GetGameLibrary(gameLibraryEnum);
             if (gameLibrary.IsEnabled)
             {
-                tasks.Add(gameLibrary.ListGamesAsync(forceNeedsProcessing));
+                // Started on the thread pool rather than called straight. A ListGamesAsync runs a
+                // long way before it reaches its first await - Steam parses libraryfolders.vdf and
+                // reads every .acf, Xbox enumerates every installed package and loads an XML per
+                // game folder - and this method is reached on the UI thread, so all of that ran
+                // there. Calling an async method does not move its beginning off the caller's
+                // thread; only this does.
+                tasks.Add(Task.Run(() => gameLibrary.ListGamesAsync(forceNeedsProcessing)));
             }
         }
 
@@ -283,7 +289,23 @@ internal partial class GameManager : ObservableObject
             var completedTask = await Task.WhenAny(tasks);
             tasks.Remove(completedTask);
 
-            foreach (var game in completedTask.Result)
+            List<Game> games;
+
+            try
+            {
+                // Awaited rather than read through .Result. That rethrows wrapped in an
+                // AggregateException, out of this loop, which abandoned every library still running
+                // - never observed, never added, and the loading flags left on. An unreadable drive
+                // in one library took the rest of the libraries with it.
+                games = await completedTask;
+            }
+            catch (Exception err)
+            {
+                Logger.Error(err, "A game library could not be listed. The others are unaffected.");
+                continue;
+            }
+
+            foreach (var game in games)
             {
                 AddGame(game);
             }
