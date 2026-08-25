@@ -217,6 +217,9 @@ public sealed class DllSwapExecutor
         readonly List<string> _stagedPaths = new List<string>();
         readonly List<(string TargetPath, string PreviousPath)> _previousContents = new List<(string, string)>();
         readonly List<string> _replacedPaths = new List<string>();
+
+        /// <summary>Targets that did not exist until this swap made them. Undone by deleting.</summary>
+        readonly List<string> _createdTargets = new List<string>();
         readonly List<string> _warnings = new List<string>();
 
         string? _currentPath;
@@ -278,8 +281,13 @@ public sealed class DllSwapExecutor
             }
             else
             {
-                // Nothing to preserve, so there is nothing to roll back to either.
+                // Nothing to preserve - but the path is still something this swap brought into
+                // existence, and undoing that means removing it rather than restoring it. Recorded
+                // separately from _previousContents for that reason. Leaving it behind after
+                // reporting failure put a dll in a game folder the app had just said it did not
+                // write, which the next scan reads as a version it does not recognise.
                 _fileSystem.Move(stagedPath, targetPath, false);
+                _createdTargets.Add(targetPath);
             }
 
             _stagedPaths.Remove(stagedPath);
@@ -327,6 +335,25 @@ public sealed class DllSwapExecutor
                 {
                     rollbackIncomplete = true;
                     _warnings.Add($"Could not restore '{targetPath}' from '{previousPath}': {rollbackErr.Message}");
+                }
+            }
+
+            // Targets this swap created go back to not existing. Reported when that fails, because
+            // a dll left in a game folder after a failure is exactly the divergence between disk and
+            // records that the scan later resolves by deleting a backup.
+            foreach (var createdTarget in _createdTargets)
+            {
+                try
+                {
+                    if (_fileSystem.FileExists(createdTarget))
+                    {
+                        _fileSystem.Delete(createdTarget);
+                    }
+                }
+                catch (Exception createdTargetErr)
+                {
+                    rollbackIncomplete = true;
+                    _warnings.Add($"Could not remove '{createdTarget}', which this swap created: {createdTargetErr.Message}");
                 }
             }
 

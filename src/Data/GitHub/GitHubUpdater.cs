@@ -55,13 +55,29 @@ internal class GitHubUpdater
                 // If we are not downloading and we are not forced to check then return the existing object.
                 if (forceCheck == false)
                 {
-                    using (var fileStream = File.OpenRead(releasesFile))
+                    // Inside a try, because this is a cache and an unusable cache is a miss rather
+                    // than an error. It was outside every try: a zero byte releases.json - which the
+                    // truncating write below could leave behind - threw a JsonException out of this
+                    // method, up through an async void Loaded handler, to an unhandled exception
+                    // handler that logs without marking it handled. The window disappeared, after
+                    // the game list had already been drawn, on every launch until the file aged past
+                    // thirty minutes.
+                    try
                     {
-                        var githubRelease = JsonSerializer.Deserialize(fileStream, SourceGenerationContext.Default.GitHubRelease);
-                        if (githubRelease is not null)
+                        using (var fileStream = File.OpenRead(releasesFile))
                         {
-                            return githubRelease;
+                            var githubRelease = JsonSerializer.Deserialize(fileStream, SourceGenerationContext.Default.GitHubRelease);
+                            if (githubRelease is not null)
+                            {
+                                return githubRelease;
+                            }
                         }
+                    }
+                    catch (Exception err)
+                    {
+                        Logger.Error(err, "The cached release could not be read, asking GitHub instead.");
+
+                        shouldDownload = true;
                     }
                 }
             }
@@ -86,11 +102,13 @@ internal class GitHubUpdater
 
                     memoryStream.Position = 0;
 
-                    // If we did load the json, save it to disk.
-                    using (var fileStream = File.Create(releasesFile))
+                    // If we did load the json, save it to disk. Beside and moved over, so an
+                    // interrupted write cannot leave a truncated cache for the read above to trip
+                    // on - see Storage.WriteFileAtomicallyAsync.
+                    await Storage.WriteFileAtomicallyAsync(releasesFile, async fileStream =>
                     {
                         await memoryStream.CopyToAsync(fileStream).ConfigureAwait(false);
-                    }
+                    }).ConfigureAwait(false);
 
                     return githubRelease;
                 }

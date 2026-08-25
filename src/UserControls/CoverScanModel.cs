@@ -268,6 +268,15 @@ public partial class CoverScanModel : ObservableObject
         Ready.Clear();
         NeedsYou.Clear();
         HasApplied = false;
+
+        // The copies go with the list that pointed at them. Clearing the list on its own left a
+        // .before_scan beside every cover the previous batch had written, unreachable from the app
+        // and never removed.
+        foreach (var (_, backupPath) in _applied)
+        {
+            DeleteBackup(backupPath);
+        }
+
         _applied.Clear();
 
         IsBusy = true;
@@ -477,6 +486,9 @@ public partial class CoverScanModel : ObservableObject
 
         try
         {
+            var restored = 0;
+            var couldNotRestore = new List<(Game Game, string? BackupPath)>();
+
             foreach (var (game, backupPath) in _applied)
             {
                 try
@@ -493,16 +505,31 @@ public partial class CoverScanModel : ObservableObject
 
                     game.CoverImage = null;
                     await game.LoadCoverImageAsync().ConfigureAwait(true);
+
+                    restored += 1;
                 }
                 catch (Exception err)
                 {
                     Logger.Error(err, $"Could not put back the cover for {game.Title}.");
+
+                    couldNotRestore.Add((game, backupPath));
                 }
             }
 
+            // Kept rather than dropped. A game whose cover could not be written back still has the
+            // scan's cover and still has its original sitting in a .before_scan file, so undo has to
+            // stay available and Close has to still know to remove that file. This used to clear the
+            // list whatever happened and say the batch was put back, which left the user looking at
+            // a cover they had undone, with the button gone and the original orphaned on disk.
             _applied.Clear();
-            HasApplied = false;
-            StatusText = ResourceHelper.GetString("CoverScan_Undone");
+            _applied.AddRange(couldNotRestore);
+
+            HasApplied = _applied.Count > 0;
+
+            StatusText = couldNotRestore.Count == 0
+                ? ResourceHelper.GetString("CoverScan_Undone")
+                : ResourceHelper.GetFormattedResourceTemplate(
+                    "CoverScan_UndonePartialTemplate", restored, restored + couldNotRestore.Count);
         }
         finally
         {

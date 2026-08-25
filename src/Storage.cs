@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace DLSS_Swapper;
 
@@ -37,6 +38,13 @@ static class Storage
     internal static void OverrideStoragePath(string path)
     {
         _storagePath = path;
+
+        // The static constructor made these under the previous path and has already run, so pointing
+        // somewhere new leaves the new folder without them. Anything writing settings or a manifest
+        // then fails on a missing directory rather than on whatever it was actually testing.
+        CreateDirectoryIfNotExists(GetStorageFolder());
+        CreateDirectoryIfNotExists(GetDynamicJsonFolder());
+        CreateDirectoryIfNotExists(GetImageCachePath());
     }
 
 
@@ -164,16 +172,106 @@ static class Storage
     internal static void SaveSettingsJson(Settings settings)
     {
         var settingsFile = Path.Combine(GetDynamicJsonFolder(), "settings.json");
+
+        WriteFileAtomically(settingsFile, stream =>
+        {
+            JsonSerializer.Serialize(stream, settings, SourceGenerationContext.Default.Settings);
+        });
+    }
+
+    /// <summary>
+    /// Writes a file by building it beside the target and moving it into place.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The three json files this app owns - settings, the imported dll manifest, and the cached
+    /// GitHub release - were each opened with <c>FileMode.Create</c>, which truncates the existing
+    /// file before a single byte of the replacement is written. Anything that interrupts the write
+    /// leaves an empty or half written file where the real one was. Settings are rewritten on almost
+    /// every toggle, so the window for that is not small.
+    /// </para>
+    /// <para>
+    /// Building beside it and moving over means the target is either entirely the old file or
+    /// entirely the new one. <c>File.Move</c> with overwrite is a rename within one folder, which is
+    /// the same shape <see cref="DLSS_Swapper.Swapping.DllSwapExecutor"/> already uses to replace a
+    /// dll inside a game, and for the same reason.
+    /// </para>
+    /// <para>
+    /// The temporary file is removed when the write fails, so a failure leaves nothing behind and,
+    /// importantly, leaves the existing file untouched.
+    /// </para>
+    /// </remarks>
+    /// <returns>Whether the file was written.</returns>
+    internal static bool WriteFileAtomically(string path, Action<Stream> write)
+    {
+        var temporaryPath = path + ".tmp";
+
         try
         {
-            using (var stream = File.Open(settingsFile, FileMode.Create))
+            using (var stream = File.Open(temporaryPath, FileMode.Create))
             {
-                JsonSerializer.Serialize(stream, settings, SourceGenerationContext.Default.Settings);
+                write(stream);
             }
+
+            File.Move(temporaryPath, path, true);
+
+            return true;
         }
         catch (Exception err)
         {
             Logger.Error(err);
+
+            try
+            {
+                if (File.Exists(temporaryPath))
+                {
+                    File.Delete(temporaryPath);
+                }
+            }
+            catch (Exception cleanupErr)
+            {
+                // A leftover .tmp is harmless - the next write overwrites it - and is not worth
+                // failing a save that has already failed.
+                Logger.Error(cleanupErr);
+            }
+
+            return false;
+        }
+    }
+
+    /// <summary>The same, for callers that already have the bytes rather than an object.</summary>
+    internal static async Task<bool> WriteFileAtomicallyAsync(string path, Func<Stream, Task> writeAsync)
+    {
+        var temporaryPath = path + ".tmp";
+
+        try
+        {
+            using (var stream = File.Open(temporaryPath, FileMode.Create))
+            {
+                await writeAsync(stream).ConfigureAwait(false);
+            }
+
+            File.Move(temporaryPath, path, true);
+
+            return true;
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err);
+
+            try
+            {
+                if (File.Exists(temporaryPath))
+                {
+                    File.Delete(temporaryPath);
+                }
+            }
+            catch (Exception cleanupErr)
+            {
+                Logger.Error(cleanupErr);
+            }
+
+            return false;
         }
     }
 
@@ -181,27 +279,93 @@ static class Storage
     /// Loads settings from settings.json in the apps dynamic json folder.
     /// </summary>
     /// <returns>Settings object, or null if it could not be loaded</returns>
-    internal static Settings? LoadSettingsJson()
+    /// <summary>How a settings load turned out.</summary>
+    /// <remarks>
+    /// Three answers rather than one, because the caller does very different things with them and
+    /// used to be told only "null". A file that is merely absent means a first run, and writing
+    /// defaults over it is right. A file that exists and could not be read is somebody's settings,
+    /// and writing defaults over it destroyed them - which happened not only to a corrupted file but
+    /// to a file an antivirus or backup agent had open for a moment.
+    /// </remarks>
+    internal enum SettingsLoadOutcome
+    {
+        /// <summary>Read and parsed.</summary>
+        Loaded,
+
+        /// <summary>No file yet. A first run.</summary>
+        Missing,
+
+        /// <summary>There is a file and it is not valid json.</summary>
+        Corrupt,
+
+        /// <summary>There is a file and it could not be opened. Very possibly temporary.</summary>
+        Unreadable,
+    }
+
+    /// <summary>
+    /// Loads settings from settings.json in the apps dynamic json folder.
+    /// </summary>
+    internal static (SettingsLoadOutcome Outcome, Settings? Settings) LoadSettingsJson()
     {
         var settingsFile = Path.Combine(GetDynamicJsonFolder(), "settings.json");
 
-        // If the settings file doesn't exist we return null to default it elsewhere.
         if (File.Exists(settingsFile) == false)
         {
-            return null;
+            return (SettingsLoadOutcome.Missing, null);
         }
 
         try
         {
             using (var stream = File.OpenRead(settingsFile))
             {
-                return JsonSerializer.Deserialize(stream, SourceGenerationContext.Default.Settings);
+                var settings = JsonSerializer.Deserialize(stream, SourceGenerationContext.Default.Settings);
+
+                // Valid json that is not a settings object - "null" on its own reads this way.
+                return settings is null
+                    ? (SettingsLoadOutcome.Corrupt, null)
+                    : (SettingsLoadOutcome.Loaded, settings);
+            }
+        }
+        catch (JsonException err)
+        {
+            // The file is there and is not settings. Reading it again later will not help.
+            Logger.Error(err, $"{settingsFile} is not readable as settings.");
+
+            return (SettingsLoadOutcome.Corrupt, null);
+        }
+        catch (Exception err)
+        {
+            // Locked, denied, a disconnected drive. The file may be perfectly good, so nothing may
+            // overwrite it on the strength of this.
+            Logger.Error(err, $"Could not open {settingsFile}.");
+
+            return (SettingsLoadOutcome.Unreadable, null);
+        }
+    }
+
+    /// <summary>
+    /// Moves an unreadable settings file aside so a fresh one can be written without destroying it.
+    /// </summary>
+    /// <remarks>
+    /// Only for a file that parsed as invalid json, never for one that merely would not open. The
+    /// user has lost their settings either way at that point; keeping the bytes costs nothing and
+    /// is the difference between "gone" and "gone but here it is".
+    /// </remarks>
+    internal static void MoveUnreadableSettingsAside()
+    {
+        var settingsFile = Path.Combine(GetDynamicJsonFolder(), "settings.json");
+
+        try
+        {
+            if (File.Exists(settingsFile))
+            {
+                File.Move(settingsFile, settingsFile + ".unreadable", true);
+                Logger.Warning($"Kept the unreadable settings as {settingsFile}.unreadable and started fresh.");
             }
         }
         catch (Exception err)
         {
             Logger.Error(err);
-            return null;
         }
     }
 }

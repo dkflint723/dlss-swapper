@@ -762,19 +762,15 @@ internal class DLLManager
         }
 
         var importedManifestFile = Storage.GetImportedManifestPath();
-        try
+
+        // Built beside the file and moved over it. This is the only index of which imported dll is
+        // which, and the load path deliberately refuses to overwrite a file it could not read - so a
+        // write interrupted part way through used to disable importing permanently, with the dlls
+        // still on disk and nothing left saying what any of them were.
+        return await Storage.WriteFileAtomicallyAsync(importedManifestFile, async stream =>
         {
-            using (var stream = File.Open(importedManifestFile, FileMode.Create))
-            {
-                await JsonSerializer.SerializeAsync(stream, ImportedManifest, SourceGenerationContext.Default.Manifest);
-            }
-            return true;
-        }
-        catch (Exception err)
-        {
-            Logger.Error(err);
-            return false;
-        }
+            await JsonSerializer.SerializeAsync(stream, ImportedManifest, SourceGenerationContext.Default.Manifest).ConfigureAwait(false);
+        }).ConfigureAwait(false);
     }
 
     static string GetExpectedDllFileName(DLLRecord dllRecord, bool isImported)

@@ -381,6 +381,68 @@ public class DllSwapExecutorTests
 
     #endregion
 
+    #region A target that was not there to begin with
+
+    /// <summary>
+    /// A target that did not exist is created by the swap, and a failed swap has to take it away
+    /// again.
+    /// </summary>
+    /// <remarks>
+    /// Commit has two branches. When the target exists it is replaced and its previous contents are
+    /// kept for rollback. When it does not, the staged file is moved into place and nothing is
+    /// recorded - "nothing to preserve, so nothing to roll back to", which is true of the contents
+    /// and wrong about the path. The file is still something this swap created, and leaving it
+    /// behind after reporting failure puts a dll in a game folder that the records say is not there.
+    ///
+    /// Reachable: a game patch deletes one of two dll locations, no rescan has run yet, so the
+    /// location is still in the game's recorded assets and is handed to the swap as a target.
+    /// </remarks>
+    [Fact]
+    public void Swap_WhenAMissingTargetWasCreatedAndALaterOneFails_TakesTheCreatedOneAway()
+    {
+        var fileSystem = new FakeFileSystem()
+            // TargetA is gone from disk but still recorded, and still has its backup.
+            .AddFile(BackupA, "dlss-original-a")
+            .AddFile(TargetB, "dlss-original-b")
+            .AddFile(BackupB, "dlss-original-b")
+            .AddFile(DownloadedDll, "dlss-3.8")
+            .LockFile(TargetB);
+
+        var result = new DllSwapExecutor(fileSystem).Swap(DownloadedDll, BothTargets);
+
+        Assert.False(result.Success);
+
+        // The one it created has to be gone again, or the game is left holding a dll the app just
+        // told the user it had not written.
+        Assert.False(fileSystem.FileExists(TargetA));
+
+        // And the untouched one is still its original.
+        Assert.Equal("dlss-original-b", fileSystem.ReadFile(TargetB));
+
+        AssertNoTemporaryFiles(fileSystem);
+    }
+
+    /// <summary>The same swap, succeeding: the created target keeps the new dll.</summary>
+    [Fact]
+    public void Swap_WhenAMissingTargetIsCreatedAndAllSucceed_KeepsIt()
+    {
+        var fileSystem = new FakeFileSystem()
+            .AddFile(BackupA, "dlss-original-a")
+            .AddFile(TargetB, "dlss-original-b")
+            .AddFile(DownloadedDll, "dlss-3.8");
+
+        var result = new DllSwapExecutor(fileSystem).Swap(DownloadedDll, BothTargets);
+
+        Assert.True(result.Success);
+        Assert.Equal("dlss-3.8", fileSystem.ReadFile(TargetA));
+        Assert.Equal("dlss-3.8", fileSystem.ReadFile(TargetB));
+
+        // The backup that was already there is still the original.
+        Assert.Equal("dlss-original-a", fileSystem.ReadFile(BackupA));
+    }
+
+    #endregion
+
     #region Housekeeping
 
     [Fact]

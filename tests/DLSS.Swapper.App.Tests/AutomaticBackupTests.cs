@@ -214,6 +214,49 @@ public class AutomaticBackupTests
     }
 
     /// <summary>
+    /// Deleting a user's saved original is recorded before the file goes, not after the scan.
+    /// </summary>
+    /// <remarks>
+    /// The history batch used to be inserted only at the very end of the scan, and only when the
+    /// game still had dlls. Anything that threw in between - a locked dll, an unreadable version -
+    /// dropped the batch, so the deletion had happened and nothing remembered it. That record is
+    /// what a later scan needs to tell "your swap was undone" from "this dll is new to me".
+    /// </remarks>
+    [Fact]
+    public async Task RemovingAStaleCopyIsRecordedEvenIfTheRestOfTheScanFails()
+    {
+        await using var database = await TemporaryDatabase.CreateAsync();
+        using var manifest = new ManifestScope();
+
+        var dllPath = database.WriteFakeDll("nvngx_dlss.dll");
+        var backupPath = dllPath + ".dlsss";
+        File.Copy(dllPath, backupPath);
+
+        // The installed dll no longer matches what was recorded, which is what makes the scan
+        // remove the stale copy.
+        File.WriteAllBytes(dllPath, new byte[4096]);
+
+        var game = new TestGame("backup_history")
+        {
+            InstallPath = database.GameFolder,
+            IsHidden = true,
+        };
+
+        game.GameAssets.Add(Asset(game.ID, GameAssetType.DLSS, dllPath));
+
+        game.ProcessGame(autoSave: false, forceNeedsProcessing: true);
+        await WaitForScanAsync(game);
+
+        Assert.False(File.Exists(backupPath));
+
+        var history = await Database.Instance.Connection.Table<GameHistory>()
+            .Where(x => x.GameId == game.ID)
+            .ToListAsync();
+
+        Assert.Contains(history, x => x.EventType == GameHistoryEventType.DLLBackupRemoved);
+    }
+
+    /// <summary>
     /// ProcessGame reports through a flag rather than a task, so the test waits on the flag.
     /// </summary>
     static async Task WaitForScanAsync(Game game)

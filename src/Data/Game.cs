@@ -457,10 +457,6 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
                 var oldGameAssets = GameAssets.ToList();
                 GameAssets.Clear();
-                using (await Database.Instance.Mutex.LockAsync())
-                {
-                    await Database.Instance.Connection.ExecuteAsync("DELETE FROM game_asset WHERE id = ?", ID).ConfigureAwait(false);
-                }
                 // TODO: See if changing these to filter specific files, or getting very *.dll and looking for our specific ones is faster
                 //
                 // Reuses the walk the guard already did, when there was one. HasUnrecordedDlls
@@ -490,7 +486,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 // overwrite an existing copy, so this cannot promote a swapped dll to "original".
                 var shouldBackUpNewDlls = Settings.Instance.BackupNewGamesAutomatically;
 
-                void ProcessGame_ProcessGameAsset(GameAsset gameAsset)
+                async Task ProcessGame_ProcessGameAsset(GameAsset gameAsset)
                 {
                     var backupWasJustRemoved = false;
 
@@ -541,7 +537,15 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                                 };
                                 tempBackupGameAsset.LoadVersionAndHash();
 
-                                dllHistory.Add(new GameHistory()
+                                // Written now, on its own, rather than added to the batch the end
+                                // of the scan inserts. This is the record that a copy of the dll the
+                                // game shipped with was destroyed, and it has to reach the disk
+                                // before the file does not: anything that went wrong later in the
+                                // scan dropped the whole batch, so the deletion happened and nothing
+                                // remembered it. Without the note the next scan sees no previous
+                                // asset at all and records the dll as newly detected, so nothing
+                                // ever tells the user their swap was undone.
+                                var backupRemoved = new GameHistory()
                                 {
                                     GameId = ID,
                                     EventType = GameHistoryEventType.DLLBackupRemoved,
@@ -549,7 +553,12 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                                     AssetType = tempBackupGameAsset.AssetType,
                                     AssetPath = tempBackupGameAsset.Path,
                                     AssetVersion = tempBackupGameAsset.DisplayName,
-                                });
+                                };
+
+                                using (await Database.Instance.Mutex.LockAsync())
+                                {
+                                    await Database.Instance.Connection.InsertAsync(backupRemoved).ConfigureAwait(false);
+                                }
 
                                 File.Delete(expectedBackupPath);
 
@@ -612,7 +621,21 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                         AssetType = dllTypeDefinition.AssetType,
                         Path = dllPath,
                     };
-                    ProcessGame_ProcessGameAsset(gameAsset);
+                    try
+                    {
+                        await ProcessGame_ProcessGameAsset(gameAsset).ConfigureAwait(false);
+                    }
+                    catch (Exception assetErr)
+                    {
+                        // One unreadable dll is one unreadable dll. This used to unwind to the
+                        // catch around the whole scan, which abandoned every other dll in the game
+                        // and threw away the history accumulated so far - including notes about
+                        // backups this same pass had already deleted from disk.
+                        Logger.Error(assetErr, $"Could not read {gameAsset.Path}, skipping it.");
+
+                        continue;
+                    }
+
                     GameAssets.Add(gameAsset);
                 }
 
@@ -621,17 +644,34 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                     UpdateCurrentDLLsFromGameAssets();
                 });
 
+                // The old rows are removed here, next to the rows that replace them, rather than
+                // before the walk that produces them. Deleting first meant anything that threw in
+                // between left the game with no recorded dlls at all - and the history describing
+                // what had just happened to them went with it, since that was only inserted at the
+                // end. Now a scan that fails leaves the previous rows in place, which are stale
+                // rather than absent, and HasUnrecordedDlls brings the game back for another look.
+                //
+                // Both statements are unconditional. They used to sit inside "did we find any
+                // dlls", so a game whose last dll was removed by a patch kept its old rows forever
+                // and lost the history saying they had gone.
+                using (await Database.Instance.Mutex.LockAsync())
+                {
+                    await Database.Instance.Connection.ExecuteAsync("DELETE FROM game_asset WHERE id = ?", ID).ConfigureAwait(false);
+
+                    if (dllHistory.Count > 0)
+                    {
+                        await Database.Instance.Connection.InsertAllAsync(dllHistory, false).ConfigureAwait(false);
+                    }
+
+                    if (GameAssets.Count > 0)
+                    {
+                        await Database.Instance.Connection.InsertAllAsync(GameAssets, false).ConfigureAwait(false);
+                    }
+                }
+
                 if (GameAssets.Any())
                 {
                     newHasSwappableItems = true;
-
-                    //App.CurrentApp.Database.ExecuteAsync
-                    //savePoint is not valid, and should be the result of a call to SaveTransactionPoint.
-                    using (await Database.Instance.Mutex.LockAsync())
-                    {
-                        await Database.Instance.Connection.InsertAllAsync(dllHistory, false).ConfigureAwait(false);
-                        await Database.Instance.Connection.InsertAllAsync(GameAssets, false).ConfigureAwait(false);
-                    }
 
                     if (unknownGameAssets.Any())
                     {

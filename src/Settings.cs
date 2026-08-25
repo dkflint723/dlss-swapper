@@ -476,18 +476,51 @@ public class Settings
 
     internal void SaveJson()
     {
+        if (CanBeSaved == false)
+        {
+            return;
+        }
+
         Storage.SaveSettingsJson(this);
     }
 
+    /// <summary>
+    /// Whether this session may write settings back to disk.
+    /// </summary>
+    /// <remarks>
+    /// False only when there is a settings file that could not be opened. It may be a perfectly good
+    /// file that an antivirus or backup agent had held for a moment, so the session runs on defaults
+    /// and writes nothing rather than replacing it - the next launch reads the real one. Every
+    /// setter goes through SaveJson, so this is the one place that has to be stopped.
+    /// </remarks>
+    internal bool CanBeSaved { get; private set; } = true;
+
     static Settings FromJson()
     {
-        var settings = Storage.LoadSettingsJson();
+        var (outcome, loaded) = Storage.LoadSettingsJson();
 
-        // If we couldn't load settings then save the defaults.
-        if (settings is null)
+        var settings = loaded ?? new Settings();
+
+        if (outcome == Storage.SettingsLoadOutcome.Missing)
         {
-            settings = new Settings();
+            // A first run. Writing the defaults over nothing is exactly right.
             settings.SaveJson();
+        }
+        else if (outcome == Storage.SettingsLoadOutcome.Corrupt)
+        {
+            // There is a file and it is not settings. Reading it again next launch will not help, so
+            // it is kept beside itself and a fresh one written - otherwise the user is stuck on
+            // defaults forever with no way to save a change.
+            Storage.MoveUnreadableSettingsAside();
+            settings.SaveJson();
+        }
+        else if (outcome == Storage.SettingsLoadOutcome.Unreadable)
+        {
+            // The file could not be opened, which is very often temporary. It used to be treated the
+            // same as no file at all, so a single locked read replaced somebody's api key, ignored
+            // paths, library order, language and theme with defaults and saved them over the top.
+            settings.CanBeSaved = false;
+            Logger.Warning("Running on default settings for this session. The settings file could not be read and has been left alone.");
         }
 
         var shouldSave = settings.CheckGameLibraries();
