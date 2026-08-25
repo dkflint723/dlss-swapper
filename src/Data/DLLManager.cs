@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -403,16 +403,23 @@ internal class DLLManager
             return;
         }
 
-        foreach (var dllRecord in dllRecords)
+        // The list and the flag come out of the same tuple, so they cannot disagree. They were two
+        // near identical loops differing only in that bool, and the second one iterated dllRecords
+        // while passing isImported: true - so a dll that exists only in the imported manifest was
+        // never migrated to the v1.1.7 layout. Its file was then not found at the new path,
+        // IsDownloaded stayed false, the cleanup read that as "the file is gone" and removed the
+        // record, and the dll disappeared from the library on first launch after upgrading with
+        // nothing said. Only genuinely custom dlls were reachable, which are the irreplaceable ones.
+        foreach (var (records, isImported) in new[] { (dllRecords, false), (importedDllRecords, true) })
         {
-            CheckDllRecordForMigration_117(dllRecord, false);
-        }
-
-        if (importedDllRecords is not null)
-        {
-            foreach (var dllRecord in dllRecords)
+            if (records is null)
             {
-                CheckDllRecordForMigration_117(dllRecord, true);
+                continue;
+            }
+
+            foreach (var dllRecord in records)
+            {
+                CheckDllRecordForMigration_117(dllRecord, isImported);
             }
         }
     }

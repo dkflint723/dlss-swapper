@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -164,19 +164,33 @@ internal class GitHubUpdater
 
     internal bool HasPromptedBefore(GitHubRelease gitHubRelease)
     {
-        var thisVersion = gitHubRelease.GetVersionNumber();
-        var lastVersionPromptedFor = Settings.Instance.LastPromptWasForVersion;
+        return HasPromptedBefore(gitHubRelease.GetVersionNumber(), Settings.Instance.LastPromptWasForVersion);
+    }
 
-        if (lastVersionPromptedFor == 0)
-        {
-            return false;
-        }
-        else if (thisVersion < lastVersionPromptedFor)
-        {
-            return false;
-        }
-
-        return true;
+    /// <summary>
+    /// Whether this release has already been offered.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The rule DisplayNewUpdateDialog states four lines below where it writes the setting: do not
+    /// prompt again for this version or lower. So a release is old news when it is at or below the
+    /// last one prompted for, and new when it is above.
+    /// </para>
+    /// <para>
+    /// It used to answer "already prompted" for everything except a release LOWER than the last one
+    /// - the exact inverse. Close one update dialog and no future release was ever announced again,
+    /// permanently and silently. It only showed the first time a genuinely newer version appeared,
+    /// because the everyday case - the latest release being the one already prompted for - happens
+    /// to give the right answer either way. Nothing tested it.
+    /// </para>
+    /// <para>
+    /// A never-prompted setting of 0 needs no special case: any real release encodes above zero, so
+    /// it is not "at or below" and the prompt is shown.
+    /// </para>
+    /// </remarks>
+    internal static bool HasPromptedBefore(ulong thisVersion, ulong lastVersionPromptedFor)
+    {
+        return thisVersion <= lastVersionPromptedFor;
     }
 
     internal async Task DisplayNewUpdateDialog(GitHubRelease gitHubRelease, XamlRoot xamlRoot)

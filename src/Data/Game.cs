@@ -1948,7 +1948,20 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             return true;
         }
 
-        if (PlatformId == other.PlatformId)
+        // Within the same library only. Platform ids are not unique across launchers - Steam app
+        // ids, Ubisoft Connect install ids, GOG and EA ids are all bare numbers out of overlapping
+        // ranges - so owning a Steam game and a Ubisoft game that happen to share one made the two
+        // equal. The list of games is a plain List, so AddGame's Contains then found the first one
+        // and handed it back: the second game never entered the library, and the first had its
+        // title and install path overwritten with the other's and saved under its own id. Which one
+        // won moved between launches, because the libraries are scanned concurrently and added in
+        // completion order.
+        //
+        // ID would be enough on its own - SetID prefixes the platform id with the library, and it
+        // is what the database keys on - but this branch is kept, narrowed, rather than removed,
+        // because it costs nothing and matching a game that has not been given its id yet is a
+        // thing this was presumably written for.
+        if (GameLibrary == other.GameLibrary && PlatformId == other.PlatformId)
         {
             return true;
         }

@@ -723,7 +723,22 @@ public partial class LibraryPageModel : ObservableObject
 
                             foreach (var zippedDll in zippedDlls)
                             {
-                                var tempFile = Path.Combine(tempExtractPath, Guid.NewGuid().ToString("D"), zippedDll.Name);
+                                // The name inside the zip is the archive author's to choose, and it
+                                // is not always a bare file name: .NET keeps the separators when an
+                                // entry claims to have been made on Unix, so "..\..\evil.dll"
+                                // arrives intact, passes the .dll filter above, and Path.Combine
+                                // resolves it outside the folder it was meant to go in. Reproduced,
+                                // not guessed - see ZipEntryPath, which is where the rule and its
+                                // tests live.
+                                var entryFolder = Path.Combine(tempExtractPath, Guid.NewGuid().ToString("D"));
+
+                                if (ZipEntryPath.TryResolve(entryFolder, zippedDll.Name, out var tempFile) == false)
+                                {
+                                    Logger.Error($"Refusing to extract '{zippedDll.FullName}' from {importFile}, it does not stay inside the import folder.");
+                                    importResults.Add(DLLImportResult.FromFail(importFile, ResourceHelper.GetString("LibraryPage_ZipEntryEscapedTheImportFolder")));
+                                    continue;
+                                }
+
                                 Storage.CreateDirectoryForFileIfNotExists(tempFile);
 
                                 zippedDll.ExtractToFile(tempFile, true);
