@@ -245,6 +245,142 @@ public class DllSwapExecutorTests
 
     #endregion
 
+    #region The whole life of a backup
+
+    /// <summary>
+    /// Swapping twice and then resetting has to land on the dll the game shipped with, not on
+    /// whatever was installed by the swap before last.
+    /// </summary>
+    /// <remarks>
+    /// This is the bug class that cost a user their chosen cover in the cover scan, where a second
+    /// apply overwrote the backup with the thing it had just written. The executor is built not to:
+    /// EnsureBackup returns early when a backup already exists. Written down as a test because that
+    /// early return is one line and reads like an optimisation.
+    /// </remarks>
+    [Fact]
+    public void SwapTwiceThenReset_ReturnsTheGameToTheDllItShippedWith()
+    {
+        var fileSystem = new FakeFileSystem()
+            .AddFile(TargetA, "dlss-as-shipped")
+            .AddFile(DownloadedDll, "dlss-3.8");
+
+        var executor = new DllSwapExecutor(fileSystem);
+        var targets = new[] { TargetA };
+
+        Assert.True(executor.Swap(DownloadedDll, targets).Success);
+
+        // A second swap, to a different version, exactly as somebody updating would do.
+        fileSystem.AddFile(DownloadedDll, "dlss-3.10");
+        Assert.True(executor.Swap(DownloadedDll, targets).Success);
+        Assert.Equal("dlss-3.10", fileSystem.ReadFile(TargetA));
+
+        // The backup still holds the original rather than 3.8.
+        Assert.Equal("dlss-as-shipped", fileSystem.ReadFile(BackupA));
+
+        Assert.True(executor.Reset(targets).Success);
+        Assert.Equal("dlss-as-shipped", fileSystem.ReadFile(TargetA));
+    }
+
+    /// <summary>
+    /// Reset consumes the backup, so the swap after it has to make a new one.
+    /// </summary>
+    /// <remarks>
+    /// If Reset ever left the backup behind, EnsureBackup would find it and skip - and the next
+    /// reset would restore a dll two swaps out of date while reporting success.
+    /// </remarks>
+    [Fact]
+    public void ResetThenSwapThenReset_StillReturnsTheGameToItsOriginal()
+    {
+        var fileSystem = new FakeFileSystem()
+            .AddFile(TargetA, "dlss-as-shipped")
+            .AddFile(DownloadedDll, "dlss-3.8");
+
+        var executor = new DllSwapExecutor(fileSystem);
+        var targets = new[] { TargetA };
+
+        Assert.True(executor.Swap(DownloadedDll, targets).Success);
+        Assert.True(executor.Reset(targets).Success);
+        Assert.False(fileSystem.FileExists(BackupA));
+
+        var second = executor.Swap(DownloadedDll, targets);
+        Assert.True(second.Success);
+        Assert.Equal(BackupA, Assert.Single(second.CreatedBackups).BackupPath);
+        Assert.Equal("dlss-as-shipped", fileSystem.ReadFile(BackupA));
+
+        Assert.True(executor.Reset(targets).Success);
+        Assert.Equal("dlss-as-shipped", fileSystem.ReadFile(TargetA));
+    }
+
+    /// <summary>
+    /// A second reset has nothing to restore from and must say so rather than touch the game.
+    /// </summary>
+    [Fact]
+    public void ResetTwice_ReportsTheMissingBackupAndLeavesTheGameAlone()
+    {
+        var fileSystem = new FakeFileSystem()
+            .AddFile(TargetA, "dlss-as-shipped")
+            .AddFile(DownloadedDll, "dlss-3.8");
+
+        var executor = new DllSwapExecutor(fileSystem);
+        var targets = new[] { TargetA };
+
+        Assert.True(executor.Swap(DownloadedDll, targets).Success);
+        Assert.True(executor.Reset(targets).Success);
+
+        var second = executor.Reset(targets);
+
+        Assert.False(second.Success);
+        Assert.Equal(SwapFailure.BackupMissing, second.Failure);
+        Assert.Equal("dlss-as-shipped", fileSystem.ReadFile(TargetA));
+    }
+
+    /// <summary>
+    /// The same location listed twice is one location.
+    /// </summary>
+    /// <remarks>
+    /// Nothing in the app is known to produce a duplicate today - the paths come from a directory
+    /// walk - but a junction, a symlink, or a second source of paths would, and the phases are three
+    /// separate loops over the list. Committing a path twice deletes the previous contents it had
+    /// just kept and then finds its staged file already consumed, which fails the whole swap and
+    /// reports an incomplete rollback for something the caller merely said twice.
+    /// </remarks>
+    [Fact]
+    public void Swap_WhenTheSameTargetIsListedTwice_TreatsItAsOne()
+    {
+        var fileSystem = new FakeFileSystem()
+            .AddFile(TargetA, "dlss-as-shipped")
+            .AddFile(DownloadedDll, "dlss-3.8");
+
+        var result = new DllSwapExecutor(fileSystem).Swap(DownloadedDll, new[] { TargetA, TargetA });
+
+        Assert.True(result.Success);
+        Assert.Equal("dlss-3.8", fileSystem.ReadFile(TargetA));
+        Assert.Equal("dlss-as-shipped", fileSystem.ReadFile(BackupA));
+        Assert.Equal(BackupA, Assert.Single(result.CreatedBackups).BackupPath);
+        Assert.Equal(TargetA, Assert.Single(result.ReplacedPaths));
+        AssertNoTemporaryFiles(fileSystem);
+    }
+
+    /// <summary>
+    /// The same location listed twice, on the way back.
+    /// </summary>
+    [Fact]
+    public void Reset_WhenTheSameTargetIsListedTwice_TreatsItAsOne()
+    {
+        var fileSystem = new FakeFileSystem()
+            .AddFile(TargetA, "dlss-3.8")
+            .AddFile(BackupA, "dlss-as-shipped");
+
+        var result = new DllSwapExecutor(fileSystem).Reset(new[] { TargetA, TargetA });
+
+        Assert.True(result.Success);
+        Assert.Equal("dlss-as-shipped", fileSystem.ReadFile(TargetA));
+        Assert.False(fileSystem.FileExists(BackupA));
+        AssertNoTemporaryFiles(fileSystem);
+    }
+
+    #endregion
+
     #region Housekeeping
 
     [Fact]

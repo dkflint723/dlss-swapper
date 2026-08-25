@@ -54,7 +54,9 @@ public sealed class DllSwapExecutor
     /// </summary>
     public SwapResult Swap(string sourcePath, IReadOnlyList<string> targetPaths)
     {
-        if (targetPaths.Count == 0)
+        var targets = WithoutDuplicates(targetPaths);
+
+        if (targets.Count == 0)
         {
             return SwapResult.Fail(SwapFailure.NoTargets);
         }
@@ -70,17 +72,17 @@ public sealed class DllSwapExecutor
         {
             // Each target is considered on its own. A backup existing for one location says nothing
             // about whether the others have one.
-            foreach (var targetPath in targetPaths)
+            foreach (var targetPath in targets)
             {
                 transaction.EnsureBackup(targetPath);
             }
 
-            foreach (var targetPath in targetPaths)
+            foreach (var targetPath in targets)
             {
                 transaction.Stage(targetPath, sourcePath);
             }
 
-            foreach (var targetPath in targetPaths)
+            foreach (var targetPath in targets)
             {
                 transaction.Commit(targetPath);
             }
@@ -98,14 +100,16 @@ public sealed class DllSwapExecutor
     /// </summary>
     public SwapResult Reset(IReadOnlyList<string> targetPaths)
     {
-        if (targetPaths.Count == 0)
+        var targets = WithoutDuplicates(targetPaths);
+
+        if (targets.Count == 0)
         {
             return SwapResult.Fail(SwapFailure.NoTargets);
         }
 
         // Check every backup before touching anything, so a game with one missing backup does not
         // end up half restored.
-        foreach (var targetPath in targetPaths)
+        foreach (var targetPath in targets)
         {
             var backupPath = GetBackupPath(targetPath);
             if (_fileSystem.FileExists(backupPath) == false)
@@ -118,12 +122,12 @@ public sealed class DllSwapExecutor
 
         try
         {
-            foreach (var targetPath in targetPaths)
+            foreach (var targetPath in targets)
             {
                 transaction.Stage(targetPath, GetBackupPath(targetPath));
             }
 
-            foreach (var targetPath in targetPaths)
+            foreach (var targetPath in targets)
             {
                 transaction.Commit(targetPath);
             }
@@ -134,12 +138,53 @@ public sealed class DllSwapExecutor
         }
 
         // A backup only exists to get back to the original dll. Once we are there it has done its job.
-        foreach (var targetPath in targetPaths)
+        foreach (var targetPath in targets)
         {
             transaction.Discard(GetBackupPath(targetPath));
         }
 
         return transaction.Complete();
+    }
+
+    /// <summary>
+    /// One location named twice is one location.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The phases below are three separate loops over this list, so a repeated path was worked three
+    /// times. The second commit deleted the previous contents the first had just set aside and then
+    /// found its staged file already consumed by the first replace - which failed the whole swap and
+    /// reported an incomplete rollback, for something the caller had merely said twice. The original
+    /// survived, in the backup, but a swap that could have worked did not.
+    /// </para>
+    /// <para>
+    /// Ordinal ignore case, matching how the rollback already compares these paths. That catches a
+    /// path repeated with different casing and an exact repeat; it does not canonicalise, so two
+    /// spellings of one file - through a junction, or a relative segment - are still two targets.
+    /// Nothing in the app produces either today: the paths come from one directory walk.
+    /// </para>
+    /// </remarks>
+    static IReadOnlyList<string> WithoutDuplicates(IReadOnlyList<string> targetPaths)
+    {
+        if (targetPaths.Count < 2)
+        {
+            return targetPaths;
+        }
+
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var distinct = new List<string>(targetPaths.Count);
+
+        foreach (var targetPath in targetPaths)
+        {
+            if (seen.Add(targetPath))
+            {
+                distinct.Add(targetPath);
+            }
+        }
+
+        // The list itself when there was nothing to remove, so the ordinary case allocates nothing
+        // and callers comparing against what they passed in still see it.
+        return distinct.Count == targetPaths.Count ? targetPaths : distinct;
     }
 
     public static string GetBackupPath(string targetPath) => targetPath + BackupSuffix;
