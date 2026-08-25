@@ -12,7 +12,9 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SQLite;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -1550,16 +1552,136 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         }
     }
 
+    /// <summary>
+    /// What the columns of this row looked like the last time it was known to match the database.
+    /// </summary>
+    /// <remarks>
+    /// A field rather than a property, so sqlite-net does not try to store it.
+    /// </remarks>
+    string? _savedRowSignature;
+
+    /// <summary>The mappings, which are a reflection walk each, so once per type.</summary>
+    static readonly ConcurrentDictionary<Type, TableMapping> _mappings = new ConcurrentDictionary<Type, TableMapping>();
+
+    /// <summary>
+    /// Every stored column of this row, as one string to compare against.
+    /// </summary>
+    /// <remarks>
+    /// Read through sqlite-net's own mapping rather than a hand written list of properties. The
+    /// mapping is what decides which columns get written, so this cannot fall out of step with it -
+    /// a column added to this class, or to one of the per platform subclasses, is included without
+    /// anyone remembering to come back here.
+    /// </remarks>
+    string BuildRowSignature()
+    {
+        var mapping = _mappings.GetOrAdd(GetType(), type => Database.Instance.Connection.GetConnection().GetMapping(type));
+
+        var builder = new StringBuilder();
+
+        foreach (var column in mapping.Columns)
+        {
+            // Unit separator, so a value containing the separator cannot make two different rows
+            // look alike.
+            builder.Append(column.Name).Append('=').Append(column.GetValue(this)).Append('');
+        }
+
+        return builder.ToString();
+    }
+
+    /// <summary>
+    /// Says this row is exactly what the database holds, so saving it again would write nothing new.
+    /// </summary>
+    /// <remarks>
+    /// Called on a game the moment it comes out of the cache, before anything has had a chance to
+    /// change it. Without this every game's first save of the session always wrote, which is the
+    /// whole library on every launch.
+    /// </remarks>
+    internal void MarkAsMatchingDatabase()
+    {
+        try
+        {
+            _savedRowSignature = BuildRowSignature();
+        }
+        catch (Exception err)
+        {
+            // Worst case the row is saved when it did not need to be, which is what used to happen
+            // to all of them.
+            Logger.Error(err);
+            _savedRowSignature = null;
+        }
+    }
+
+    /// <summary>
+    /// Writes this game, unless the row is already exactly this.
+    /// </summary>
+    /// <remarks>
+    /// The seven library scanners each save every game they walk past, whether or not anything about
+    /// it changed - so a library of a couple of hundred games did a couple of hundred writes on every
+    /// launch, all of them replacing a row with itself. They still call this; it just does nothing
+    /// when there is nothing to do.
+    /// </remarks>
+    /// <summary>
+    /// Raises the change on the UI thread, wherever it was set from.
+    /// </summary>
+    /// <remarks>
+    /// x:Bind writes straight into a control the moment this is raised, and a control may only be
+    /// touched from the thread that made it - so a property set from anywhere else threw
+    /// RPC_E_WRONG_THREAD out of the setter, and out of whatever was walking the library at the
+    /// time. The library scans run on the thread pool, so the moment a game's title or install path
+    /// genuinely changed on disk - a game renamed, or moved to another drive - the scan for that
+    /// whole library died on the first one it reached. It could not be seen in normal use, because
+    /// an unchanged value raises nothing.
+    ///
+    /// Here rather than at the seven call sites that assign these. It is the same rule every one of
+    /// them needs, and the next one to be written will get it without knowing to ask.
+    /// </remarks>
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        // Runs inline when this is already the UI thread, so nothing is deferred that need not be.
+        if (App.CurrentApp?.RunOnUIThread(() => base.OnPropertyChanged(e)) != true)
+        {
+            // No window to marshal through - during startup, or on the way out. Raising it here is
+            // no worse than the throw, and the bindings that would object do not exist yet.
+            base.OnPropertyChanged(e);
+        }
+    }
+
     public async Task SaveToDatabaseAsync()
     {
         try
         {
+            string? signature = null;
+
+            try
+            {
+                signature = BuildRowSignature();
+
+                if (signature == _savedRowSignature)
+                {
+                    return;
+                }
+            }
+            catch (Exception err)
+            {
+                // Falls through to the write. Not being able to tell whether a save is needed is a
+                // reason to save, not a reason to skip it.
+                Logger.Error(err);
+            }
+
             var rowsChanged = -1;
             using (await Database.Instance.Mutex.LockAsync())
             {
                 rowsChanged = await Database.Instance.Connection.InsertOrReplaceAsync(this);
                 // tODO: Configure await
             }
+
+            if (rowsChanged > 0)
+            {
+                // Only after the write landed. Recording it before would mean a failed save left the
+                // game believing it had been stored, and nothing would try again.
+                _savedRowSignature = signature;
+            }
+
             if (rowsChanged == 0)
             {
                 // TODO: Fix why this happens occasionally to reandom games.
@@ -1928,6 +2050,11 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
     public async Task LoadGameAssetsFromCacheAsync()
     {
+        // First, before anything below has touched a stored column. This game came straight out of
+        // the database, so right now it is the row - and saying so is what lets the save below skip
+        // the games this method leaves alone. See MarkAsMatchingDatabase.
+        MarkAsMatchingDatabase();
+
         await LoadCoverImageAsync();
 
         GameAssets.Clear();

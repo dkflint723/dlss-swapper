@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -174,6 +174,12 @@ internal class Database
                 "url",
                 "launcher",
                 "hash",
+                // last_scanned_at. This check splits a column name on underscores and wants every
+                // word listed, so adding a column without adding its words logs three errors a table
+                // on every debug launch and tells you to delete your database.
+                "last",
+                "scanned",
+                "at",
             };
 
             var hasIssues = false;
