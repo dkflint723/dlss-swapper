@@ -46,6 +46,32 @@ public sealed class CoverScanEntry
     public string? MatchedName { get; init; }
 }
 
+/// <summary>Why a scan stopped.</summary>
+public enum CoverScanCompletion
+{
+    /// <summary>It reached the end of the list.</summary>
+    Finished,
+
+    /// <summary>Somebody stopped it, and what it had found is kept.</summary>
+    Stopped,
+
+    /// <summary>Too many games failed in a row for the rest to be worth asking about.</summary>
+    GaveUp,
+}
+
+/// <summary>What a scan found, and how far it got.</summary>
+public sealed class CoverScanResult
+{
+    public required IReadOnlyList<CoverScanEntry> Entries { get; init; }
+
+    public required CoverScanCompletion Completion { get; init; }
+
+    /// <summary>How many games were looked at, which is not the whole list unless it finished.</summary>
+    public required int Scanned { get; init; }
+
+    public required int Total { get; init; }
+}
+
 public sealed class CoverScanProgress
 {
     public required int Done { get; init; }
@@ -77,42 +103,106 @@ internal static class CoverScanRunner
     /// </summary>
     static readonly TimeSpan _betweenRequests = TimeSpan.FromMilliseconds(150);
 
-    internal static async Task<IReadOnlyList<CoverScanEntry>> ScanAsync(
+    /// <summary>
+    /// How many games may fail in a row before the scan gives up on the rest.
+    /// </summary>
+    /// <remarks>
+    /// A rate limit or a dropped connection fails every remaining game, and the scan used to keep
+    /// asking: a limit hit at game 30 of 200 sent 170 more requests at several a second and produced
+    /// 170 rows all reading "the search failed". Stopping says the same thing once, keeps whatever
+    /// came before it, and stops making the rate limit worse.
+    /// </remarks>
+    internal const int ConsecutiveFailuresBeforeGivingUp = 5;
+
+    /// <summary>
+    /// Looks for a cover for each game, and always returns what it managed.
+    /// </summary>
+    /// <remarks>
+    /// Never throws on cancellation. The list is built here, so letting one unwind out of this
+    /// method threw away every game already scanned - a stall at game 173 of 200 returned the dialog
+    /// to its opening screen as though nothing had happened.
+    /// </remarks>
+    internal static async Task<CoverScanResult> ScanAsync(
         IReadOnlyList<Game> games,
         IProgress<CoverScanProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
         var entries = new List<CoverScanEntry>();
+        var consecutiveFailures = 0;
+        var completion = CoverScanCompletion.Finished;
+        var index = 0;
 
-        for (var index = 0; index < games.Count; index++)
+        for (; index < games.Count; index++)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            if (cancellationToken.IsCancellationRequested)
+            {
+                completion = CoverScanCompletion.Stopped;
+                break;
+            }
 
             var game = games[index];
 
             progress?.Report(new CoverScanProgress()
             {
-                Done = index,
+                // index + 1: this is the game being worked on, not the count already done, so the
+                // line opened on "Checking 0 of 200" and never reached the last number.
+                Done = index + 1,
                 Total = games.Count,
                 CurrentTitle = game.Title,
             });
 
-            entries.Add(await ScanOneAsync(game, cancellationToken).ConfigureAwait(false));
+            var entry = await ScanOneAsync(game, cancellationToken).ConfigureAwait(false);
+
+            if (entry.Outcome == CoverScanOutcome.Failed)
+            {
+                consecutiveFailures++;
+
+                if (consecutiveFailures >= ConsecutiveFailuresBeforeGivingUp)
+                {
+                    entries.Add(entry);
+                    index++;
+                    completion = CoverScanCompletion.GaveUp;
+                    break;
+                }
+            }
+            else
+            {
+                // Only a run of them means the network or the api is the problem. One game that
+                // fails on its own is just that game.
+                consecutiveFailures = 0;
+            }
+
+            entries.Add(entry);
 
             if (index < games.Count - 1)
             {
-                await Task.Delay(_betweenRequests, cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    await Task.Delay(_betweenRequests, cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    completion = CoverScanCompletion.Stopped;
+                    index++;
+                    break;
+                }
             }
         }
 
         progress?.Report(new CoverScanProgress()
         {
-            Done = games.Count,
+            Done = index,
             Total = games.Count,
             CurrentTitle = string.Empty,
         });
 
-        return entries;
+        return new CoverScanResult()
+        {
+            Entries = entries,
+            Completion = completion,
+            Scanned = index,
+            Total = games.Count,
+        };
     }
 
     static async Task<CoverScanEntry> ScanOneAsync(Game game, CancellationToken cancellationToken)
@@ -172,7 +262,9 @@ internal static class CoverScanRunner
         }
         catch (OperationCanceledException)
         {
-            throw;
+            // Handed back rather than thrown. The loop decides what a stopped scan means for the
+            // run as a whole; throwing from here unwound the list of everything already found.
+            return new CoverScanEntry() { Game = game, Outcome = CoverScanOutcome.Failed };
         }
         catch (Exception err)
         {

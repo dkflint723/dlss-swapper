@@ -36,13 +36,38 @@
                 Command="{x:Bind ViewModel.ScanCommand}" />
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Spacing="6" Visibility="{x:Bind ViewModel.ProgressVisibility, Mode=OneWay}">
-            <ProgressBar IsIndeterminate="True" />
-            <TextBlock
-                FontSize="12"
-                Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}"
-                Foreground="{ThemeResource DsTextSecondaryBrush}" />
-        </StackPanel>
+        <!--
+            A real count rather than a bar that only says "working". A hundred games is minutes, and
+            stopping keeps everything found so far - so the button is next to the progress, where
+            somebody who has decided to stop is already looking.
+        -->
+        <Grid Grid.Row="1" ColumnSpacing="12" Visibility="{x:Bind ViewModel.ProgressVisibility, Mode=OneWay}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Center">
+                <ProgressBar
+                    Minimum="0"
+                    Maximum="{x:Bind ViewModel.ProgressMaximum, Mode=OneWay}"
+                    Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" />
+                <TextBlock
+                    FontSize="12"
+                    Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}"
+                    Foreground="{ThemeResource DsTextSecondaryBrush}" />
+            </StackPanel>
+
+            <Button
+                Grid.Column="1"
+                Height="32"
+                Padding="16,0"
+                VerticalAlignment="Center"
+                CornerRadius="{StaticResource DsCornerRadius}"
+                Visibility="{x:Bind ViewModel.StopVisibility, Mode=OneWay}"
+                Content="{x:Bind ViewModel.StopLabel, Mode=OneWay}"
+                Command="{x:Bind ViewModel.StopCommand}" />
+        </Grid>
 
         <TextBlock
             Grid.Row="2"

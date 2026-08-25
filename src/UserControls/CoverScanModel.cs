@@ -55,10 +55,54 @@ public partial class CoverScanModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(ScanCommand))]
     [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
     [NotifyCanExecuteChangedFor(nameof(UndoCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StopCommand))]
     public partial bool IsBusy { get; set; }
+
+    /// <summary>
+    /// Set the moment stop is pressed, so the button can say so.
+    /// </summary>
+    /// <remarks>
+    /// A scan finishes the game it is on before it comes back, which is up to twenty seconds if that
+    /// request is the one that stalled. Without this the button simply greyed out and the count sat
+    /// where it was, which reads like the press was missed.
+    /// </remarks>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StopLabel))]
+    [NotifyCanExecuteChangedFor(nameof(StopCommand))]
+    public partial bool IsStopping { get; set; }
+
+    /// <summary>
+    /// Whether the work running right now is work a token can stop.
+    /// </summary>
+    /// <remarks>
+    /// Not the same as busy. Undo is a local file copy loop that reads no token, so offering Stop
+    /// during it would have been a button that said "Stopping..." and then did nothing at all.
+    /// </remarks>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StopVisibility))]
+    [NotifyCanExecuteChangedFor(nameof(StopCommand))]
+    public partial bool CanBeStopped { get; set; }
 
     [ObservableProperty]
     public partial string ProgressText { get; set; } = string.Empty;
+
+    /// <summary>How many games have been reached, for a bar that shows how far along it is.</summary>
+    /// <remarks>
+    /// The bar used to be indeterminate. A library scan is one request a game with a pause between,
+    /// so a hundred games is minutes of a bar that says only "something is happening" - and there is
+    /// a real count available to say how much of it is left.
+    /// </remarks>
+    [ObservableProperty]
+    public partial double ProgressValue { get; set; }
+
+    [ObservableProperty]
+    public partial double ProgressMaximum { get; set; } = 1;
+
+    public Visibility StopVisibility => CanBeStopped ? Visibility.Visible : Visibility.Collapsed;
+
+    public string StopLabel => IsStopping
+        ? ResourceHelper.GetString("CoverScan_Stopping")
+        : ResourceHelper.GetString("CoverScan_Stop");
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StatusVisibility))]
@@ -199,16 +243,24 @@ public partial class CoverScanModel : ObservableObject
         _applied.Clear();
 
         IsBusy = true;
+        IsStopping = false;
+        CanBeStopped = true;
         StatusText = string.Empty;
+        ProgressValue = 0;
+        ProgressMaximum = Math.Max(1, _games.Count);
 
         try
         {
             var progress = new Progress<CoverScanProgress>(x =>
-                ProgressText = ResourceHelper.GetFormattedResourceTemplate("CoverScan_ScanningTemplate", x.Done, x.Total));
+            {
+                ProgressText = ResourceHelper.GetFormattedResourceTemplate("CoverScan_ScanningTemplate", x.Done, x.Total);
+                ProgressValue = x.Done;
+                ProgressMaximum = Math.Max(1, x.Total);
+            });
 
-            var entries = await CoverScanRunner.ScanAsync(_games, progress, token).ConfigureAwait(true);
+            var result = await CoverScanRunner.ScanAsync(_games, progress, token).ConfigureAwait(true);
 
-            foreach (var entry in entries)
+            foreach (var entry in result.Entries)
             {
                 if (entry.Outcome == CoverScanOutcome.Ready)
                 {
@@ -229,6 +281,16 @@ public partial class CoverScanModel : ObservableObject
             }
 
             HasScanned = true;
+
+            // Said out loud when it did not get to the end. A short list after a stopped or
+            // abandoned scan is otherwise indistinguishable from a library that mostly has no art,
+            // and rescanning is the right next move in one of those cases and not the other.
+            StatusText = result.Completion switch
+            {
+                CoverScanCompletion.Stopped => ResourceHelper.GetFormattedResourceTemplate("CoverScan_StoppedTemplate", result.Scanned, result.Total),
+                CoverScanCompletion.GaveUp => ResourceHelper.GetFormattedResourceTemplate("CoverScan_GaveUpTemplate", CoverScanRunner.ConsecutiveFailuresBeforeGivingUp),
+                _ => string.Empty,
+            };
         }
         catch (OperationCanceledException)
         {
@@ -241,9 +303,28 @@ public partial class CoverScanModel : ObservableObject
         finally
         {
             IsBusy = false;
+            IsStopping = false;
+            CanBeStopped = false;
             ProgressText = string.Empty;
             RefreshCounts();
         }
+    }
+
+    bool CanStop() => CanBeStopped && IsStopping == false;
+
+    /// <summary>
+    /// Stops the scan, keeping whatever it has already found.
+    /// </summary>
+    /// <remarks>
+    /// Cancels the same token the dialog's close does, and the runner treats that as an answer
+    /// rather than an error - so pressing this on game 150 of 200 leaves 150 games' worth of results
+    /// on screen to apply.
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanStop))]
+    void Stop()
+    {
+        IsStopping = true;
+        _cancellation?.Cancel();
     }
 
     bool CanApply() => IsBusy == false && Ready.Any(x => x.IsSelected);
@@ -255,7 +336,11 @@ public partial class CoverScanModel : ObservableObject
         var selected = Ready.Where(x => x.IsSelected).ToList();
 
         IsBusy = true;
+        IsStopping = false;
+        CanBeStopped = true;
         StatusText = string.Empty;
+        ProgressValue = 0;
+        ProgressMaximum = Math.Max(1, selected.Count);
 
         var written = 0;
         var failed = 0;
@@ -267,6 +352,7 @@ public partial class CoverScanModel : ObservableObject
                 token.ThrowIfCancellationRequested();
 
                 ProgressText = ResourceHelper.GetFormattedResourceTemplate("CoverScan_ApplyingTemplate", index + 1, selected.Count);
+                ProgressValue = index + 1;
 
                 var outcome = await CoverScanRunner.ApplyAsync(selected[index].Entry, token).ConfigureAwait(true);
 
@@ -311,6 +397,8 @@ public partial class CoverScanModel : ObservableObject
         finally
         {
             IsBusy = false;
+            IsStopping = false;
+            CanBeStopped = false;
             ProgressText = string.Empty;
         }
     }

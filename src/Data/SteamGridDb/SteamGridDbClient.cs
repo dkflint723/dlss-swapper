@@ -82,20 +82,30 @@ internal static class SteamGridDbClient
     /// </remarks>
     internal static async Task<Stream> DownloadAsync(string url, CancellationToken cancellationToken = default)
     {
-        // The cdn is public and takes no key. Sending one would hand it to a host that has no use
-        // for it.
-        using var response = await App.CurrentApp.HttpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(RequestTimeout);
 
-        if (response.IsSuccessStatusCode == false)
+        try
         {
-            throw new SteamGridDbException($"The image could not be downloaded ({(int)response.StatusCode}).");
+            // The cdn is public and takes no key. Sending one would hand it to a host that has no
+            // use for it.
+            using var response = await App.CurrentApp.HttpClient.GetAsync(url, timeout.Token).ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new SteamGridDbException($"The image could not be downloaded ({(int)response.StatusCode}).");
+            }
+
+            var memoryStream = new MemoryStream();
+            await response.Content.CopyToAsync(memoryStream, timeout.Token).ConfigureAwait(false);
+            memoryStream.Position = 0;
+
+            return memoryStream;
         }
-
-        var memoryStream = new MemoryStream();
-        await response.Content.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
-        memoryStream.Position = 0;
-
-        return memoryStream;
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested == false)
+        {
+            throw new SteamGridDbException(ResourceHelper.GetString("CoverArt_TimedOut"));
+        }
     }
 
     /// <summary>
@@ -150,23 +160,74 @@ internal static class SteamGridDbClient
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
-        using var response = await App.CurrentApp.HttpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        // The shared HttpClient's timeout is half an hour, which is right for a dll download and
+        // absurd for a search. Without this a stalled network left the picker on "Searching…"
+        // indefinitely, and a library scan sat on one game with no way to tell it apart from a slow
+        // one. See RequestTimeout for why the cancellation has to be linked rather than replaced.
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(RequestTimeout);
 
-        var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        HttpResponseMessage response;
+        string body;
 
-        // Read the body's own error before the status code, because that is where the api says
-        // which of the two key problems it is - malformed, or not recognised.
-        var error = CoverArtJson.ReadError(body);
-        if (error is not null)
+        try
         {
-            throw new SteamGridDbException(error);
+            response = await App.CurrentApp.HttpClient.SendAsync(request, timeout.Token).ConfigureAwait(false);
+            body = await response.Content.ReadAsStringAsync(timeout.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested == false)
+        {
+            // Ours, not the user's. HttpClient reports its own timeout as a cancellation too, so
+            // without separating them a stalled request was indistinguishable from somebody closing
+            // the dialog - and was therefore reported as nothing at all.
+            throw new SteamGridDbException(ResourceHelper.GetString("CoverArt_TimedOut"));
+        }
+
+        using (response)
+        {
+            return ReadBody(response, body);
+        }
+    }
+
+    /// <summary>
+    /// How long one request is given before it is called stalled.
+    /// </summary>
+    /// <remarks>
+    /// A search or a grid listing is a small json response; anything beyond this is a network that
+    /// is not going to answer. The download of a chosen image gets the same, which is generous for
+    /// a few hundred kilobytes.
+    /// </remarks>
+    static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(20);
+
+    static string ReadBody(HttpResponseMessage response, string body)
+    {
+        // The status code first. This used to read the body's own error before looking at the code,
+        // which meant a rate limit or a gateway page - html, not json - was reported as "the
+        // response could not be read", and the branch that names a rejected key was unreachable for
+        // anything that did not return json.
+        if (response.StatusCode == HttpStatusCode.TooManyRequests)
+        {
+            throw new SteamGridDbException(ResourceHelper.GetString("CoverArt_RateLimited"));
+        }
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            // The body may still name which key problem it is, which is more use than the code.
+            throw new SteamGridDbException(CoverArtJson.ReadError(body) ?? ResourceHelper.GetString("CoverArt_KeyRejected"));
         }
 
         if (response.IsSuccessStatusCode == false)
         {
-            throw new SteamGridDbException(response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden
-                ? ResourceHelper.GetString("CoverArt_KeyRejected")
-                : $"SteamGridDB returned {(int)response.StatusCode}.");
+            // The api's own words when it sent any, the code when it did not - rather than the json
+            // reader's opinion of a page that was never json.
+            throw new SteamGridDbException(
+                CoverArtJson.ReadError(body) ?? $"SteamGridDB returned {(int)response.StatusCode}.");
+        }
+
+        var error = CoverArtJson.ReadError(body);
+        if (error is not null)
+        {
+            throw new SteamGridDbException(error);
         }
 
         return body;
