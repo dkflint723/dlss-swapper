@@ -514,6 +514,9 @@
   <data name="LibraryPage_ZipEntryEscapedTheImportFolder" xml:space="preserve">
     <value>This zip tries to write outside the import folder, so it was not imported. Only use zips from a source you trust.</value>
   </data>
+  <data name="GamesPage_Status_NoUpscalers" xml:space="preserve">
+    <value>No upscalers in this game</value>
+  </data>
   <data name="GamePage_CloseTemplate" xml:space="preserve">
     <value>Close {0}</value>
   </data>

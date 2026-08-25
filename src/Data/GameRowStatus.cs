@@ -13,6 +13,9 @@ public enum GameRowState
     NoBackup,
     Swapping,
     UpdatesSkipped,
+
+    /// <summary>The game ships none of the dlls this app swaps, so there is nothing to be up to date about.</summary>
+    NoUpscalers,
 }
 
 /// <summary>
@@ -66,6 +69,29 @@ public class GameRowStatus
             {
                 State = GameRowState.Swapping,
                 Sentence = ResourceHelper.GetString("GamesPage_Status_Swapping"),
+                Glyph = string.Empty,
+                UsesAccent = false,
+                ActionLabel = null,
+                Engines = engines,
+            };
+        }
+
+        // Before anything else that could be said about dlls, because this game has none. A game
+        // with no upscaler in it used to fall through to "Up to date", which is a claim about DLSS
+        // being current in a game that does not have DLSS at all - and it sat on Steam runtimes,
+        // engines and tools that will never have one. It outranks "Updates turned off" for the same
+        // reason: there is nothing there to update.
+        //
+        // LastScannedAt guards it. An empty asset list also describes a game nobody has looked at
+        // yet, and saying "no upscalers" before the first scan would be a guess.
+        if (string.IsNullOrEmpty(engines) && game.LastScannedAt is not null)
+        {
+            return new GameRowStatus()
+            {
+                State = GameRowState.NoUpscalers,
+                Sentence = ResourceHelper.GetString("GamesPage_Status_NoUpscalers"),
+
+                // No glyph, the same as up to date: it is not a problem and not something to fix.
                 Glyph = string.Empty,
                 UsesAccent = false,
                 ActionLabel = null,

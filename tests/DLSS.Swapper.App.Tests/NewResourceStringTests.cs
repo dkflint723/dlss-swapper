@@ -175,6 +175,7 @@ public class NewResourceStringTests
     [InlineData("CoverScan_ApplyStoppedTemplate")]
     [InlineData("CoverScan_UndonePartialTemplate")]
     [InlineData("GamePage_CloseTemplate")]
+    [InlineData("GamesPage_Status_NoUpscalers")]
     [InlineData("LibraryPage_ZipEntryEscapedTheImportFolder")]
     [InlineData("About_ThisBuild")]
     [InlineData("About_BasedOn")]

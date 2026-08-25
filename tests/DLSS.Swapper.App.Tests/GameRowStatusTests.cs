@@ -262,6 +262,53 @@ public class GameRowStatusTests
     /// See the note in Asset: a backup is always the dll it shadows plus ".dlsss", so a fixture that
     /// invents a path for it is describing something that cannot exist.
     /// </remarks>
+    /// <summary>
+    /// A game with none of the dlls this app swaps is not "up to date".
+    /// </summary>
+    /// <remarks>
+    /// Steam runtimes, engines and tools sit in the library forever and will never ship an upscaler.
+    /// Telling somebody DLSS is current in a game that has no DLSS is a claim about a thing that is
+    /// not there.
+    /// </remarks>
+    [Fact]
+    public void AGameWithNoUpscalersSaysSoRatherThanUpToDate()
+    {
+        var game = new TestGame("row_no_upscalers")
+        {
+            LastScannedAt = System.DateTime.UtcNow,
+        };
+
+        var status = GameRowStatus.For(game);
+
+        Assert.Equal(GameRowState.NoUpscalers, status.State);
+        Assert.Equal(string.Empty, status.Engines);
+    }
+
+    /// <summary>
+    /// Before the first scan an empty asset list means "not looked at yet", not "has none".
+    /// </summary>
+    [Fact]
+    public void AGameNobodyHasScannedYetDoesNotClaimToHaveNoUpscalers()
+    {
+        var game = new TestGame("row_unscanned");
+
+        Assert.Null(game.LastScannedAt);
+        Assert.NotEqual(GameRowState.NoUpscalers, GameRowStatus.For(game).State);
+    }
+
+    /// <summary>Locking a game with nothing in it still reports the nothing.</summary>
+    [Fact]
+    public void AGameWithNoUpscalersSaysSoEvenWhenUpdatesAreTurnedOff()
+    {
+        var game = new TestGame("row_no_upscalers_locked")
+        {
+            LastScannedAt = System.DateTime.UtcNow,
+            SkipUpdates = true,
+        };
+
+        Assert.Equal(GameRowState.NoUpscalers, GameRowStatus.For(game).State);
+    }
+
     static string BackupAwarePath(GameAssetType assetType)
     {
         var shadowed = DllTypes.All.FirstOrDefault(x => x.BackupAssetType == assetType);
