@@ -199,7 +199,20 @@
                                 <Border.Background>
                                     <ImageBrush Stretch="UniformToFill">
                                         <ImageBrush.ImageSource>
-                                            <BitmapImage CreateOptions="IgnoreImageCache" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
+                                            <!--
+                                                Decoded at the size it is drawn at. The cell is a
+                                                fixed 44x66 and the file behind it is 400x600, so
+                                                every realized row was decoding roughly a megabyte
+                                                of pixels to paint about three thousand of them -
+                                                and doing it again on every scroll, because
+                                                IgnoreImageCache means each realization is a fresh
+                                                read and decode.
+
+                                                Logical rather than the default Physical, so the
+                                                number is in the same units as the Width above it
+                                                and a scaled display still gets enough pixels.
+                                            -->
+                                            <BitmapImage CreateOptions="IgnoreImageCache" DecodePixelType="Logical" DecodePixelWidth="44" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
                                         </ImageBrush.ImageSource>
                                     </ImageBrush>
                                 </Border.Background>

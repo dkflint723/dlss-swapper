@@ -99,7 +99,8 @@
                         <Border.Background>
                             <ImageBrush Stretch="UniformToFill">
                                 <ImageBrush.ImageSource>
-                                    <BitmapImage CreateOptions="IgnoreImageCache" UriSource="{x:Bind ViewModel.Game.CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
+                                    <!-- Drawn at a pinned 200x300; see the games page's list row. -->
+                                    <BitmapImage CreateOptions="IgnoreImageCache" DecodePixelType="Logical" DecodePixelWidth="200" UriSource="{x:Bind ViewModel.Game.CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
                                 </ImageBrush.ImageSource>
                             </ImageBrush>
                         </Border.Background>
