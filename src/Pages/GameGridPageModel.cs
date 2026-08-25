@@ -107,6 +107,37 @@ public partial class GameGridPageModel : ObservableObject
     /// cannot open onto four games.
     /// </remarks>
     /// <summary>
+    /// The game whose details are open over the list, or null when none is.
+    /// </summary>
+    /// <remarks>
+    /// A sheet over the games page rather than a page of its own. The list stays where it was and
+    /// stays visible behind it, so opening a game, changing one dll and coming back is one motion
+    /// rather than a navigation each way - and the scroll position, the search and the tab are still
+    /// exactly as they were, because nothing navigated.
+    ///
+    /// The same shape the update preview uses, and it shares that sheet's scrim, its Escape, its
+    /// click-away and its focus trap. Two overlays behaving differently would be two things to learn.
+    /// </remarks>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(GameDetailVisibility))]
+    [NotifyPropertyChangedFor(nameof(GameDetailAccessibleName))]
+    public partial Game? OpenGame { get; set; }
+
+    public Visibility GameDetailVisibility => OpenGame is null ? Visibility.Collapsed : Visibility.Visible;
+
+    /// <summary>Reads "Close DOOM: The Dark Ages", so the dismiss control names what it dismisses.</summary>
+    public string GameDetailAccessibleName => OpenGame is null
+        ? string.Empty
+        : ResourceHelper.GetFormattedResourceTemplate("GamePage_CloseTemplate", OpenGame.Title);
+
+    /// <summary>Closes the game sheet. One of four ways out, all the same call.</summary>
+    [RelayCommand]
+    void CloseGameDetail()
+    {
+        gameGridPage.CloseGameDetail();
+    }
+
+    /// <summary>
     /// The games the page is currently about.
     /// </summary>
     /// <remarks>

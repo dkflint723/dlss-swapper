@@ -197,18 +197,27 @@ public sealed partial class MainWindow : Window
     /// </remarks>
     public void ShowGame(Game game)
     {
-        ViewModel.AcknowledgementsVisibility = Visibility.Collapsed;
-        ContentFrame.Content = new GameDetailPage(game);
+        // The games page first, then the sheet over it. This used to replace the whole frame, which
+        // meant coming back rebuilt the list and lost where you were in it - the scroll position,
+        // the search, the tab. Nothing navigates now, so there is nothing to restore.
+        GoToPage(GameGridPage.PageTag);
 
-        // The sidebar stays on Games. A game's page is somewhere you go from that list and come
-        // back to it, not a fourth section of the app.
+        // The sidebar stays on Games. A game is something you open from that list and close again,
+        // not a fourth section of the app.
         Sidebar.ViewModel.ActiveSection = ShellSection.Games;
+
+        gameGridPage?.ShowGameDetail(game);
     }
 
-    /// <summary>Back to the games list, from a game's own page.</summary>
+    /// <summary>Back to the games list, from a game's own sheet.</summary>
+    /// <remarks>
+    /// Still called GoToGames because that is what it means to the caller, and GameControlModel's
+    /// close command has always said it that way. It closes the sheet rather than navigating.
+    /// </remarks>
     public void GoToGames()
     {
         GoToPage(GameGridPage.PageTag);
+        gameGridPage?.CloseGameDetail();
     }
 
     void Sidebar_FixMissingBackupsInvoked(object? sender, EventArgs e)

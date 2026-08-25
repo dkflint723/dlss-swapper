@@ -58,19 +58,102 @@ public sealed partial class GameGridPage : Page
 
     void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(GameGridPageModel.UpdatePreview))
+        if (e.PropertyName == nameof(GameGridPageModel.UpdatePreview))
+        {
+            if (ViewModel.UpdatePreview is null)
+            {
+                UpdatePreviewClosed();
+            }
+            else
+            {
+                UpdatePreviewOpened();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Opens one game's details over the list.
+    /// </summary>
+    /// <remarks>
+    /// The page is built here rather than bound, because it is constructed per game and holds a
+    /// view model for that game - see GameDetailPage. Everything that used to navigate to it still
+    /// calls MainWindow.ShowGame, which comes here now.
+    /// </remarks>
+    internal void ShowGameDetail(Game game)
+    {
+        if (ViewModel.OpenGame == game && GameDetailHost.Content is not null)
         {
             return;
         }
 
-        if (ViewModel.UpdatePreview is null)
+        _focusBeforeGameDetail = FocusManager.GetFocusedElement(XamlRoot) as Control;
+
+        GameDetailHost.Content = new GameDetailPage(game);
+        ViewModel.OpenGame = game;
+
+        // Queued, for the reason on UpdatePreviewOpened: the sheet is made visible by a binding on
+        // the property just set, so nothing in it is focusable yet.
+        DispatcherQueue.TryEnqueue(() =>
         {
-            UpdatePreviewClosed();
-        }
-        else
+            if (ViewModel.OpenGame is null)
+            {
+                return;
+            }
+
+            if (FocusManager.FindFirstFocusableElement(GameDetailSheet) is Control first)
+            {
+                first.Focus(FocusState.Programmatic);
+            }
+        });
+    }
+
+    /// <summary>Closes it, and lets go of the page so the game it was about can be collected.</summary>
+    internal void CloseGameDetail()
+    {
+        if (ViewModel.OpenGame is null)
         {
-            UpdatePreviewOpened();
+            return;
         }
+
+        ViewModel.OpenGame = null;
+        GameDetailHost.Content = null;
+
+        var restoreTo = _focusBeforeGameDetail;
+        _focusBeforeGameDetail = null;
+
+        if (restoreTo is not null)
+        {
+            DispatcherQueue.TryEnqueue(() => restoreTo.Focus(FocusState.Programmatic));
+        }
+    }
+
+    Control? _focusBeforeGameDetail;
+
+    void GameDetailBackdrop_Tapped(object sender, TappedRoutedEventArgs e)
+    {
+        CloseGameDetail();
+    }
+
+    /// <summary>
+    /// Whichever sheet is over the list, or null when none is.
+    /// </summary>
+    /// <remarks>
+    /// The focus trap and Escape both need this, and both used to name the update preview directly.
+    /// Adding a second overlay meant either teaching them about it in two places or asking once.
+    /// </remarks>
+    FrameworkElement? OpenSheet()
+    {
+        if (ViewModel.OpenGame is not null)
+        {
+            return GameDetailSheet;
+        }
+
+        if (ViewModel.UpdatePreview is not null)
+        {
+            return UpdatePreviewSheet;
+        }
+
+        return null;
     }
 
     bool hasFirstLoaded;
@@ -306,12 +389,13 @@ public sealed partial class GameGridPage : Page
 
     void RootGameGridPage_GettingFocus(UIElement sender, GettingFocusEventArgs args)
     {
-        if (ViewModel.UpdatePreview is null)
+        var sheet = OpenSheet();
+        if (sheet is null)
         {
             return;
         }
 
-        if (args.NewFocusedElement is DependencyObject candidate && IsInsideUpdatePreview(candidate))
+        if (args.NewFocusedElement is DependencyObject candidate && IsInside(candidate, sheet))
         {
             return;
         }
@@ -319,8 +403,8 @@ public sealed partial class GameGridPage : Page
         // Wrapped in the direction it was going, so Tab off the end lands on the first control in
         // the sheet and Shift+Tab off the start lands on the last - the same wrap a dialog gives.
         var replacement = args.Direction == FocusNavigationDirection.Previous
-            ? FocusManager.FindLastFocusableElement(UpdatePreviewSheet)
-            : FocusManager.FindFirstFocusableElement(UpdatePreviewSheet);
+            ? FocusManager.FindLastFocusableElement(sheet)
+            : FocusManager.FindFirstFocusableElement(sheet);
 
         if (replacement is Control control && args.TrySetNewFocusedElement(control))
         {
@@ -332,13 +416,13 @@ public sealed partial class GameGridPage : Page
         args.TryCancel();
     }
 
-    bool IsInsideUpdatePreview(DependencyObject element)
+    static bool IsInside(DependencyObject element, DependencyObject container)
     {
         var current = element;
 
         while (current is not null)
         {
-            if (ReferenceEquals(current, UpdatePreviewSheet))
+            if (ReferenceEquals(current, container))
             {
                 return true;
             }
@@ -351,6 +435,17 @@ public sealed partial class GameGridPage : Page
 
     void EscapeAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
+        // The game sheet first: it is the one drawn on top, so it is the one Escape is about when
+        // both are somehow open.
+        if (ViewModel.OpenGame is not null)
+        {
+            CloseGameDetail();
+
+            args.Handled = true;
+
+            return;
+        }
+
         if (ViewModel.UpdatePreview is null)
         {
             return;

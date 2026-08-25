@@ -1063,6 +1063,58 @@
             </Border>
         </Grid>
 
+        <!--
+            One game's details, over the list rather than instead of it. The list keeps its scroll
+            position, its search and its tab, because nothing navigated - so opening a game, changing
+            a dll and coming back is one motion.
+
+            Deliberately the same shape as the update preview above: same scrim, same Escape, same
+            click-away, same TabFocusNavigation. The page inside is the same GameDetailPage that used
+            to fill the frame, hosted rather than rewritten, so there is one description of a game
+            and not two to keep in step.
+        -->
+        <Grid
+            x:Name="GameDetailSheet"
+            Grid.Row="1"
+            TabFocusNavigation="Cycle"
+            Visibility="{x:Bind ViewModel.GameDetailVisibility, Mode=OneWay}">
+
+            <!-- Clicking away closes it, the same as Escape and the header's back button. -->
+            <Border
+                Background="#73000000"
+                Tapped="GameDetailBackdrop_Tapped"
+                AutomationProperties.AccessibilityView="Raw" />
+
+            <!--
+                Sized to what the game actually has, not to the window. Stretched, it left a field of
+                empty sheet under a game with two dlls; centred, it grows with the content and the
+                page's own scroll viewer takes over once it reaches the cap.
+            -->
+            <Border
+                MaxWidth="1100"
+                MaxHeight="900"
+                VerticalAlignment="Center"
+                Margin="16"
+                Background="{ThemeResource DsBgBrush}"
+                BorderThickness="1"
+                BorderBrush="{ThemeResource DsLine2Brush}"
+                CornerRadius="{StaticResource DsCornerRadius}">
+
+                <!--
+                    The page brings its own header, scrolling middle and action row, so it needs
+                    nothing but somewhere to sit.
+                -->
+                <ContentControl
+                    x:Name="GameDetailHost"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    IsTabStop="False"
+                    AutomationProperties.Name="{x:Bind ViewModel.GameDetailAccessibleName, Mode=OneWay}" />
+            </Border>
+        </Grid>
+
     </Grid>
 </Page>
 

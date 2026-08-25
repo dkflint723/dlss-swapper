@@ -514,6 +514,9 @@
   <data name="LibraryPage_ZipEntryEscapedTheImportFolder" xml:space="preserve">
     <value>This zip tries to write outside the import folder, so it was not imported. Only use zips from a source you trust.</value>
   </data>
+  <data name="GamePage_CloseTemplate" xml:space="preserve">
+    <value>Close {0}</value>
+  </data>
   <data name="CoverScan_UndonePartialTemplate" xml:space="preserve">
     <value>Put back {0} of {1}. The others could not be written, so Undo is still there to try again.</value>
   </data>
