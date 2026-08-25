@@ -128,7 +128,10 @@ public partial class GameGridPageModel : ObservableObject
             games = games.Where(dllFilter.Matches).ToList();
         }
 
-        return games;
+        // The search box narrows the list the same way the dll filter does, so it has to narrow
+        // this the same way too. Without it the tabs above a search for "final" still counted the
+        // whole library, and "Update all games" would have written to games the search had hidden.
+        return games.Where(GameManager.Instance.MatchesSearch).ToList();
     }
 
     public void RefreshFilterTabs()
@@ -148,7 +151,13 @@ public partial class GameGridPageModel : ObservableObject
         ];
 
         var behind = GameFilters.Count(games, GameFilter.HasUpdate, hideNonDLSS);
-        ReviewUpdatesText = ResourceHelper.GetFormattedResourceTemplate("GamesPage_ReviewUpdatesTemplate", behind);
+
+        // "updates for N games", not "N updates". This number counts games, and the sheet it opens
+        // counts files - so a button reading "Review 2 updates" opened onto "Update 9 files across
+        // 2 games?" and the number appeared to change on the way.
+        ReviewUpdatesText = behind == 1
+            ? ResourceHelper.GetString("GamesPage_ReviewUpdatesOne")
+            : ResourceHelper.GetFormattedResourceTemplate("GamesPage_ReviewUpdatesTemplate", behind);
         ReviewUpdatesVisibility = behind > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
@@ -232,11 +241,12 @@ public partial class GameGridPageModel : ObservableObject
     void ShowGameCollection(string? searchText = null)
     {
         CurrentCollectionView = GameManager.Instance.GetGameCollection(searchText);
-        lastSearchText = searchText ?? string.Empty;
+
+        // After the collection, which is what records the search text. Both the tab counts and the
+        // empty state read it from there rather than from a copy kept here.
+        RefreshFilterTabs();
         RefreshEmptyState();
     }
-
-    string lastSearchText = string.Empty;
 
     /// <summary>What the content area says when it is showing nothing, or null when it is not.</summary>
     [ObservableProperty]
@@ -270,7 +280,7 @@ public partial class GameGridPageModel : ObservableObject
         var state = GamesEmptyState.For(
             visibleCount,
             GameManager.Instance.GetSynchronisedGamesListCopy().Count,
-            lastSearchText,
+            GameManager.Instance.SearchText,
             GameManager.Instance.ActiveFilter != GameFilter.All || GameManager.Instance.DllFilter is not null);
 
         EmptyState = state.Kind == GamesEmptyStateKind.None ? null : state;
@@ -721,17 +731,29 @@ public partial class GameGridPageModel : ObservableObject
     [RelayCommand]
     async Task FindCoversAsync()
     {
+        // Before the key prompt, not after it. An empty list used to be checked second, so pressing
+        // this with a search that matches nothing walked somebody through making an api key and
+        // then did nothing at all, with no line of text either way.
+        var games = GamesOnThePage();
+        if (games.Count == 0)
+        {
+            var nothingToScan = new EasyContentDialog(gameGridPage.XamlRoot)
+            {
+                Title = ResourceHelper.GetString("CoverScan_Title"),
+                Content = ResourceHelper.GetString("CoverScan_NothingToScan"),
+                CloseButtonText = ResourceHelper.GetString("General_Close"),
+            };
+
+            _ = await nothingToScan.ShowAsync();
+
+            return;
+        }
+
         // Somebody without a key gets the steps, a link to the page that makes one, and a box to
         // paste it into - and then carries straight on into the scan they asked for, rather than
         // being sent to Settings and back to press this button a second time. Somebody who already
         // has a key sees none of it.
         if (await SteamGridDbKeyPrompt.EnsureKeyAsync(gameGridPage.XamlRoot, ResourceHelper.GetString("CoverScan_Title")) == false)
-        {
-            return;
-        }
-
-        var games = GamesOnThePage();
-        if (games.Count == 0)
         {
             return;
         }

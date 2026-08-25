@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -59,7 +59,25 @@ internal partial class GameManager : ObservableObject
     /// grouped by library, and the hidden tab counted its games and then showed none. Each view now
     /// adds only the clause that is actually its own.
     /// </remarks>
-    bool PassesSharedFilters(Game game, bool hideNonDLSSGames, string? filterText)
+    /// <summary>
+    /// What is in the search box, or empty when it is empty.
+    /// </summary>
+    /// <remarks>
+    /// Here, next to the tab and the dll filter, because it is the third thing that narrows the
+    /// list and the only one that used to live somewhere else. While it did, the tab counts and the
+    /// review button were computed without it: searching "final" left the list showing four games
+    /// under a tab still reading twenty four.
+    /// </remarks>
+    public string SearchText { get; private set; } = string.Empty;
+
+    /// <summary>Whether a game survives the search box. The one place that rule is written.</summary>
+    public bool MatchesSearch(Game game)
+    {
+        return string.IsNullOrEmpty(SearchText)
+            || game.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+    }
+
+    bool PassesSharedFilters(Game game, bool hideNonDLSSGames)
     {
         // Hidden games are GameFilters' business now, along with the counts. They were excluded
         // here and only here, which is how "All games" came to count games it would not show.
@@ -75,25 +93,24 @@ internal partial class GameManager : ObservableObject
             return false;
         }
 
-        return string.IsNullOrEmpty(filterText)
-            || game.Title.Contains(filterText, StringComparison.OrdinalIgnoreCase);
+        return MatchesSearch(game);
     }
 
-    Predicate<object> GetPredicateForAllGames(bool hideNonDLSSGames, string? filterText = null)
+    Predicate<object> GetPredicateForAllGames(bool hideNonDLSSGames)
     {
-        return (obj) => PassesSharedFilters((Game)obj, hideNonDLSSGames, filterText);
+        return (obj) => PassesSharedFilters((Game)obj, hideNonDLSSGames);
     }
 
-    Predicate<object> GetPredicateForFavouriteGames(bool hideNonDLSSGames, string? filterText = null)
+    Predicate<object> GetPredicateForFavouriteGames(bool hideNonDLSSGames)
     {
         return (obj) =>
         {
             var game = (Game)obj;
-            return game.IsFavourite && PassesSharedFilters(game, hideNonDLSSGames, filterText);
+            return game.IsFavourite && PassesSharedFilters(game, hideNonDLSSGames);
         };
     }
 
-    Predicate<object> GetPredicateForLibraryGames(GameLibrary library, bool hideNonDLSSGames, string? filterText = null)
+    Predicate<object> GetPredicateForLibraryGames(GameLibrary library, bool hideNonDLSSGames)
     {
         return (obj) =>
         {
@@ -105,7 +122,7 @@ internal partial class GameManager : ObservableObject
             }
 
             var game = (Game)obj;
-            return game.GameLibrary == library && PassesSharedFilters(game, hideNonDLSSGames, filterText);
+            return game.GameLibrary == library && PassesSharedFilters(game, hideNonDLSSGames);
         };
     }
 
@@ -314,8 +331,12 @@ internal partial class GameManager : ObservableObject
 
     public ICollectionView GetGameCollection(string? filterText = null)
     {
+        // Stored before the filters below are rebuilt, because they read it. All three ways of
+        // narrowing now live on this object, so a count taken anywhere applies the same three.
+        SearchText = filterText?.Trim() ?? string.Empty;
+
         // Set before the filters below are rebuilt, because they ask each group whether it is
-        // folded and a narrowed one is not. Both ways of narrowing land here: the search text is an
+        // folded and a narrowed one is not. Every way of narrowing lands here: the search text is an
         // argument to this function, and the tab is set on this object immediately before it is
         // called, so nothing can narrow the list without passing through here.
         IsListNarrowed = string.IsNullOrWhiteSpace(filterText) == false
@@ -329,12 +350,12 @@ internal partial class GameManager : ObservableObject
         // Refresh all filters.
         using (FavouriteGamesView.DeferRefresh())
         {
-            FavouriteGamesView.Filter = GetPredicateForFavouriteGames(Settings.Instance.HideNonDLSSGames, filterText);
+            FavouriteGamesView.Filter = GetPredicateForFavouriteGames(Settings.Instance.HideNonDLSSGames);
         }
 
         using (AllGamesView.DeferRefresh())
         {
-            AllGamesView.Filter = GetPredicateForAllGames(Settings.Instance.HideNonDLSSGames, filterText);
+            AllGamesView.Filter = GetPredicateForAllGames(Settings.Instance.HideNonDLSSGames);
         }
 
         if (Settings.Instance.GroupGameLibrariesTogether)
@@ -344,7 +365,7 @@ internal partial class GameManager : ObservableObject
             {
                 using (keyValuePair.Value.DeferRefresh())
                 {
-                    keyValuePair.Value.Filter = GetPredicateForLibraryGames(keyValuePair.Key, Settings.Instance.HideNonDLSSGames, filterText);
+                    keyValuePair.Value.Filter = GetPredicateForLibraryGames(keyValuePair.Key, Settings.Instance.HideNonDLSSGames);
                 }
             }
 
