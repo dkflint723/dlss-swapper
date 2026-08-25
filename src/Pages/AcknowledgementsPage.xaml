@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="DLSS_Swapper.Pages.AcknowledgementsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -29,9 +29,22 @@
         <Grid Grid.Row="0" Grid.ColumnSpan="2" Padding="16,0,16,0">
             <TextBlock Margin="16,0,0,0" Text="{x:Bind ViewModel.TranslationProperties.LicencesAndAcknowledgementsText, Mode=OneWay}" TextWrapping="NoWrap" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" />
 
-            <!-- Needed to achieve parity in the looking with other pages -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <AppBarButton Label="" IsEnabled="False"/>
+            <!--
+                Reserves the height the other pages' command bars take, so the title sits on the
+                same line throughout. It was a disabled AppBarButton with an empty label, which is a
+                control: it appeared in the accessibility tree as a nameless disabled button on a
+                page that has no buttons at all. Raw keeps it out of that tree entirely, and it was
+                never anything but a gap.
+            -->
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                AutomationProperties.AccessibilityView="Raw">
+                <AppBarButton
+                    Label=""
+                    IsEnabled="False"
+                    IsTabStop="False"
+                    AutomationProperties.AccessibilityView="Raw" />
             </StackPanel>
         </Grid>
 
