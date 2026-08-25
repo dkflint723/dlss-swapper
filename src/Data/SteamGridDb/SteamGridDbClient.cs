@@ -98,9 +98,49 @@ internal static class SteamGridDbClient
         return memoryStream;
     }
 
-    static async Task<string> GetAsync(string url, CancellationToken cancellationToken)
+    /// <summary>
+    /// Checks a key by using it, and says what was wrong if it did not work.
+    /// </summary>
+    /// <returns>Null when the key works, otherwise SteamGridDB's own words for why not.</returns>
+    /// <remarks>
+    /// Worth a round trip before a key is saved. Saving one that does not work is a trap with no
+    /// visible way out: the prompt that offers to set a key only appears when there is none, so a
+    /// mistyped key means every search fails from then on and the only route back is a settings
+    /// page the user was never sent to.
+    ///
+    /// The cheapest call the api has that still exercises authentication - a search for a word
+    /// that certainly matches something. What comes back is thrown away; only whether it came back
+    /// matters.
+    /// </remarks>
+    internal static async Task<string?> ValidateKeyAsync(string apiKey, CancellationToken cancellationToken = default)
     {
-        var apiKey = Settings.Instance.SteamGridDbApiKey?.Trim() ?? string.Empty;
+        try
+        {
+            _ = await GetAsync($"{BaseUrl}/search/autocomplete/{Uri.EscapeDataString("portal")}", cancellationToken, apiKey).ConfigureAwait(false);
+
+            return null;
+        }
+        catch (SteamGridDbException err)
+        {
+            return err.Message;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err);
+
+            return ResourceHelper.GetString("General_Error");
+        }
+    }
+
+    static async Task<string> GetAsync(string url, CancellationToken cancellationToken, string? apiKeyOverride = null)
+    {
+        // The override is for checking a key the user has typed but not saved yet. Everything else
+        // reads the saved one, so there is still only one place a working key comes from.
+        var apiKey = (apiKeyOverride ?? Settings.Instance.SteamGridDbApiKey)?.Trim() ?? string.Empty;
 
         if (string.IsNullOrEmpty(apiKey))
         {

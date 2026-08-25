@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DLSS_Swapper.UserControls.CoverArtNoKeyView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DLSS_Swapper.UserControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <!--
+        Shown instead of the search when there is no key yet. Somebody who has not set one up is not
+        being told a feature failed, they are being told what it needs, where to get it, and given
+        somewhere to put it - here, rather than on a settings page they were never sent to and would
+        have to come back from.
+    -->
+    <StackPanel Width="460" Spacing="10">
+        <TextBlock
+            TextWrapping="WrapWholeWords"
+            Text="{x:Bind ViewModel.TranslationProperties.ExplanationText, Mode=OneWay}" />
+
+        <TextBlock
+            TextWrapping="WrapWholeWords"
+            Text="{x:Bind ViewModel.TranslationProperties.HowToText, Mode=OneWay}"
+            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+        <HyperlinkButton
+            Padding="0"
+            NavigateUri="https://www.steamgriddb.com/profile/preferences/api"
+            Content="{x:Bind ViewModel.TranslationProperties.GetKeyText, Mode=OneWay}" />
+
+        <TextBlock
+            TextWrapping="WrapWholeWords"
+            Text="{x:Bind ViewModel.TranslationProperties.PasteHereText, Mode=OneWay}"
+            Foreground="{ThemeResource DsTextSecondaryBrush}" />
+
+        <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox
+                Grid.Column="0"
+                IsEnabled="{x:Bind ViewModel.CanEditKey, Mode=OneWay}"
+                PlaceholderText="{x:Bind ViewModel.TranslationProperties.PlaceholderText, Mode=OneWay}"
+                Text="{x:Bind ViewModel.ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                KeyDown="KeyBox_KeyDown" />
+
+            <Button
+                Grid.Column="1"
+                Height="32"
+                Padding="16,0"
+                Style="{StaticResource AccentButtonStyle}"
+                CornerRadius="{StaticResource DsCornerRadius}"
+                Content="{x:Bind ViewModel.TranslationProperties.SaveText, Mode=OneWay}"
+                Command="{x:Bind ViewModel.SaveCommand}" />
+        </Grid>
+
+        <!-- What is happening, or what the api said was wrong with the key. -->
+        <Grid ColumnSpacing="8" Visibility="{x:Bind ViewModel.StatusVisibility, Mode=OneWay}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ProgressRing
+                Grid.Column="0"
+                Width="16"
+                Height="16"
+                VerticalAlignment="Top"
+                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                Visibility="{x:Bind ViewModel.BusyVisibility, Mode=OneWay}" />
+
+            <TextBlock
+                Grid.Column="1"
+                TextWrapping="WrapWholeWords"
+                Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+        </Grid>
+    </StackPanel>
+</UserControl>

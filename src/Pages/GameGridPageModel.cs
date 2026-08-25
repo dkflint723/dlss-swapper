@@ -697,18 +697,12 @@ public partial class GameGridPageModel : ObservableObject
     [RelayCommand]
     async Task FindCoversAsync()
     {
-        // Said here rather than inside the dialog, so an empty scan screen never stands in for a
-        // feature that simply has not been set up.
-        if (SteamGridDbClient.HasApiKey == false)
+        // Somebody without a key gets the steps, a link to the page that makes one, and a box to
+        // paste it into - and then carries straight on into the scan they asked for, rather than
+        // being sent to Settings and back to press this button a second time. Somebody who already
+        // has a key sees none of it.
+        if (await SteamGridDbKeyPrompt.EnsureKeyAsync(gameGridPage.XamlRoot, ResourceHelper.GetString("CoverScan_Title")) == false)
         {
-            var noKeyDialog = new EasyContentDialog(gameGridPage.XamlRoot)
-            {
-                Title = ResourceHelper.GetString("CoverScan_Title"),
-                Content = ResourceHelper.GetString("CoverArt_NoApiKey"),
-                CloseButtonText = ResourceHelper.GetString("General_Close"),
-            };
-
-            await noKeyDialog.ShowAsync();
             return;
         }
 

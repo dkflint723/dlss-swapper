@@ -554,17 +554,10 @@ public partial class GameControlModel : ObservableObject
         }
 
         // Said here rather than inside the picker, because an empty search box with an error under
-        // it reads as a broken feature rather than one that has not been set up.
-        if (SteamGridDbClient.HasApiKey == false)
+        // it reads as a broken feature rather than one that has not been set up. Setting a key up
+        // carries straight on into the search that asked for it.
+        if (await SteamGridDbKeyPrompt.EnsureKeyAsync(gameControl.XamlRoot, ResourceHelper.GetString("CoverArt_Title")) == false)
         {
-            var noKeyDialog = new EasyContentDialog(gameControl.XamlRoot)
-            {
-                Title = ResourceHelper.GetString("CoverArt_Title"),
-                Content = ResourceHelper.GetString("CoverArt_NoApiKey"),
-                CloseButtonText = ResourceHelper.GetString("General_Close"),
-            };
-
-            await noKeyDialog.ShowAsync();
             return;
         }
 
