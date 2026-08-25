@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DLSS_Swapper.UserControls;
@@ -85,5 +86,17 @@ public sealed partial class SettingsRow : UserControl
         LeadingGlyph.Visibility = string.IsNullOrEmpty(Glyph) ? Visibility.Collapsed : Visibility.Visible;
 
         ControlHost.Content = Control;
+
+        // Ties the hosted control to this row's title for a screen reader. The title is a sibling
+        // TextBlock two columns away and nothing connected them, so every setting announced as its
+        // control and nothing else - sixteen or more on the two most used pages all reading "Yes,
+        // on, toggle switch".
+        //
+        // Done here rather than on each control that gets hosted: one rule, one place, and every
+        // row on every page inherits it rather than each remembering.
+        if (Control is UIElement hostedControl)
+        {
+            AutomationProperties.SetLabeledBy(hostedControl, TitleText);
+        }
     }
 }

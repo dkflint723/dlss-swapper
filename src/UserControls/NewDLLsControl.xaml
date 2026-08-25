@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
     x:Class="DLSS_Swapper.UserControls.NewDLLsControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -25,7 +25,7 @@
 
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.TranslationProperties.StepTwoCopyTitleText, Mode=OneWay}" />
-                <Button Command="{x:Bind ViewModel.CopyTitleCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.CopyText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}">
+                <Button Command="{x:Bind ViewModel.CopyTitleCommand}" AutomationProperties.Name="{x:Bind ViewModel.TranslationProperties.CopyTitleActionText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.CopyTitleActionText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}">
                     <FontIcon Glyph="&#xE8C8;" />
                 </Button>
             </StackPanel>
@@ -33,7 +33,7 @@
 
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.TranslationProperties.StepThreeCopyBodyText, Mode=OneWay}" />
-                <Button Command="{x:Bind ViewModel.CopyBodyCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.CopyText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}">
+                <Button Command="{x:Bind ViewModel.CopyBodyCommand}" AutomationProperties.Name="{x:Bind ViewModel.TranslationProperties.CopyBodyActionText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.CopyBodyActionText, Mode=OneWay}" Style="{StaticResource TextBlockButtonStyle}">
                     <FontIcon Glyph="&#xE8C8;" />
                 </Button>
             </StackPanel>

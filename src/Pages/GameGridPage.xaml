@@ -422,6 +422,7 @@
                         TextChanged="{x:Bind ViewModel.SearchForGameEvent}" />
 
                     <Button x:Name="ClearButton"
+                            AutomationProperties.Name="{x:Bind ViewModel.TranslationProperties.ClearSearchText, Mode=OneWay}"
                             Width="26"
                             Height="26"
                             HorizontalAlignment="Right"
@@ -433,6 +434,9 @@
                             Visibility="{x:Bind SearchBox.Text, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
                             Click="ClearSearchBox_Click">
                         <FontIcon Glyph="&#xE711;" FontSize="14" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                        <ToolTipService.ToolTip>
+                            <TextBlock Text="{x:Bind ViewModel.TranslationProperties.ClearSearchText, Mode=OneWay}" />
+                        </ToolTipService.ToolTip>
                     </Button>
                 </Grid>
             </StackPanel>
@@ -515,7 +519,7 @@
                  IsOpen="True"
                  Severity="Warning"
                  IsClosable="False"
-                 Title="Warning"
+                 Title="{x:Bind ViewModel.TranslationProperties.WarningTitleText, Mode=OneWay}"
                  Message="{x:Bind ViewModel.TranslationProperties.ApplicationRunsInAdministrativeModeInfo, Mode=OneWay}"
                  Visibility="{x:Bind system:Environment.IsPrivilegedProcess, Converter={StaticResource BoolToVisibilityConverter}}" />
 
@@ -911,11 +915,19 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
+                                        <!--
+                                            Named with the whole row. These sit in an ItemsControl,
+                                            so there is no ListViewItem gathering the four columns
+                                            into one announcement - without this a screen reader met
+                                            a column of "checkbox, checked" with no game named,
+                                            immediately above a button that writes into game folders.
+                                        -->
                                         <CheckBox
                                             Grid.Column="0"
                                             MinWidth="0"
                                             Padding="0"
                                             VerticalAlignment="Center"
+                                            AutomationProperties.Name="{x:Bind AccessibleDescription}"
                                             IsChecked="{x:Bind IsSelected, Mode=TwoWay}" />
 
                                         <TextBlock

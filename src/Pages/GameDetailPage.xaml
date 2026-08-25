@@ -105,9 +105,9 @@
                         </Border.Background>
                     </Border>
 
-                    <Button HorizontalAlignment="Stretch" Background="Transparent" VerticalAlignment="Stretch" Command="{x:Bind ViewModel.AddCoverImageCommand}" AllowDrop="True" DragEnter="CoverButton_DragEnter" DragOver="CoverButton_DragOver" Drop="CoverButton_Drop" />
+                    <Button HorizontalAlignment="Stretch" Background="Transparent" VerticalAlignment="Stretch" AutomationProperties.Name="{x:Bind ViewModel.CoverButtonText, Mode=OneWay}" Command="{x:Bind ViewModel.AddCoverImageCommand}" AllowDrop="True" DragEnter="CoverButton_DragEnter" DragOver="CoverButton_DragOver" Drop="CoverButton_Drop" />
                 </Grid>
-                <Button Content="{x:Bind ViewModel.TranslationProperties.AddCustomCoverText, Mode=OneWay}" HorizontalAlignment="Stretch" Command="{x:Bind ViewModel.AddCoverImageCommand}" />
+                <Button Content="{x:Bind ViewModel.CoverButtonText, Mode=OneWay}" HorizontalAlignment="Stretch" Command="{x:Bind ViewModel.AddCoverImageCommand}" />
                 <Button Content="{x:Bind ViewModel.TranslationProperties.FindCoverArtText, Mode=OneWay}" HorizontalAlignment="Stretch" Command="{x:Bind ViewModel.FindCoverArtCommand}" />
             </StackPanel>
 

@@ -244,4 +244,10 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
 
     [TranslationProperty]
     public string SteamGridDbKeyPlaceholderText => ResourceHelper.GetString("SettingsPage_SteamGridDbKeyPlaceholder");
+
+    [TranslationProperty]
+    public string RemoveText => ResourceHelper.GetString("General_Remove");
+
+    [TranslationProperty]
+    public string CopyCommitText => ResourceHelper.GetString("Settings_CopyCommit");
 }

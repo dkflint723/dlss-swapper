@@ -67,7 +67,12 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <CheckBox Grid.Column="0" MinWidth="0" IsChecked="{x:Bind IsSelected, Mode=TwoWay}" />
+                            <!-- Named with the row, for the reason given on the update sheet's. -->
+                            <CheckBox
+                                Grid.Column="0"
+                                MinWidth="0"
+                                AutomationProperties.Name="{x:Bind AccessibleDescription}"
+                                IsChecked="{x:Bind IsSelected, Mode=TwoWay}" />
 
                             <Image Grid.Column="1" Width="32" Height="48" Stretch="UniformToFill">
                                 <Image.Source>

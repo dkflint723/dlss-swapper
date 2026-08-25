@@ -1,4 +1,4 @@
-using DLSS_Swapper.Attributes;
+﻿using DLSS_Swapper.Attributes;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
 
@@ -38,4 +38,14 @@ public class NewDLLsControlModelTranslationProperties : LocalizedViewModelBase
 
     [TranslationProperty]
     public string ThanksForHelpingText => ResourceHelper.GetString("GamesPage_NewDlls_ThanksForHelping");
+
+    /// <summary>
+    /// Distinct from the body's, because both buttons shared one generic "Copy" and a screen reader
+    /// met two controls with the same name and no way to tell which copied what.
+    /// </summary>
+    [TranslationProperty]
+    public string CopyTitleActionText => ResourceHelper.GetString("NewDlls_CopyTitleAction");
+
+    [TranslationProperty]
+    public string CopyBodyActionText => ResourceHelper.GetString("NewDlls_CopyBodyAction");
 }

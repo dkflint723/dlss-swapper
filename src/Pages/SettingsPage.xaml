@@ -440,7 +440,7 @@
                                         </Expander.Header>
                                         <Expander.Content>
                                             <Grid HorizontalAlignment="Right">
-                                                <Button Command="{Binding ElementName=RootPage, Path=ViewModel.DeleteIgnoredPathCommand}" CommandParameter="{x:Bind }">Remove</Button>
+                                                <Button Command="{Binding ElementName=RootPage, Path=ViewModel.DeleteIgnoredPathCommand}" CommandParameter="{x:Bind }" Content="{Binding ElementName=RootPage, Path=ViewModel.TranslationProperties.RemoveText}" />
                                             </Grid>
                                         </Expander.Content>
                                     </Expander>
@@ -478,7 +478,7 @@
                     <TextBlock Visibility="{x:Bind local:BuildInfo.ShowsGitCommit, Converter={StaticResource BoolToVisibilityConverter}}">
                         <Run Text="{x:Bind ViewModel.TranslationProperties.BuildCommitText, Mode=OneWay}" FontWeight="Bold" />
                         <Run Text="{x:Bind local:BuildInfo.GitCommitShort}" />
-                        <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.CopyGitCommitCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.CopyText, Mode=OneWay}" FontStyle="Normal" FontSize="12">
+                        <Hyperlink ct_winui:HyperlinkExtensions.Command="{x:Bind ViewModel.CopyGitCommitCommand}" AutomationProperties.Name="{x:Bind ViewModel.TranslationProperties.CopyCommitText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind ViewModel.TranslationProperties.CopyCommitText, Mode=OneWay}" FontStyle="Normal" FontSize="12">
                             <Run Text="&#xE8C8;" FontFamily="/Assets/Fonts/Segoe-Fluent-Icons.ttf#Segoe Fluent Icons" />
                         </Hyperlink>
                     </TextBlock>

@@ -619,6 +619,24 @@
   <data name="Preview_CloseGamesFirst" xml:space="preserve">
     <value>Close your games first — a file in use cannot be replaced.</value>
   </data>
+  <data name="Preview_RowDescriptionTemplate" xml:space="preserve">
+    <value>{0}, {1}, {2} to {3}</value>
+  </data>
+  <data name="CoverScan_RowDescriptionTemplate" xml:space="preserve">
+    <value>{0}, matched {1}</value>
+  </data>
+  <data name="General_Warning_Title" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="NewDlls_CopyTitleAction" xml:space="preserve">
+    <value>Copy the title</value>
+  </data>
+  <data name="NewDlls_CopyBodyAction" xml:space="preserve">
+    <value>Copy the report</value>
+  </data>
+  <data name="Settings_CopyCommit" xml:space="preserve">
+    <value>Copy the commit hash</value>
+  </data>
   <data name="Preview_ConfirmTemplate" xml:space="preserve">
     <value>Update {0} files</value>
   </data>
@@ -723,6 +741,9 @@
   </data>
   <data name="Game_AreYouSureRemoveCustomCover" xml:space="preserve">
     <value>Are you sure you want to remove the custom cover image?</value>
+  </data>
+  <data name="GamePage_RemoveCustomCover" xml:space="preserve">
+    <value>Remove custom cover</value>
   </data>
   <data name="Game_CurrentlyProcessing" xml:space="preserve">
     <value>Game Currently Processing</value>

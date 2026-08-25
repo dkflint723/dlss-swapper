@@ -28,6 +28,17 @@ public partial class CoverScanReadyItem : ObservableObject
     [ObservableProperty]
     public partial bool IsSelected { get; set; } = true;
 
+    /// <summary>
+    /// The row in one line, for the tick box that decides whether it is written.
+    /// </summary>
+    /// <remarks>
+    /// The title and the matched name are sibling TextBlocks in another column, so the tick box on
+    /// its own announced as "checkbox, checked" with no game named - a column of them directly
+    /// above a button that writes covers into a library.
+    /// </remarks>
+    public string AccessibleDescription =>
+        ResourceHelper.GetFormattedResourceTemplate("CoverScan_RowDescriptionTemplate", Title, Entry.MatchedName ?? string.Empty);
+
     public CoverScanReadyItem(CoverScanEntry entry)
     {
         Entry = entry;

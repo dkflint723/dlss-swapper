@@ -862,7 +862,26 @@ public partial class GameControlModel : ObservableObject
                 _reloadGameTaskCompletionSource?.SetResult();
             }
         }
+        else if (e.PropertyName == nameof(Game.CoverImage))
+        {
+            // The button below says which of its two things it does, and setting or removing a
+            // cover is what swaps them over.
+            OnPropertyChanged(nameof(CoverButtonText));
+        }
     }
+
+    /// <summary>
+    /// What the cover button does, rather than only ever what it did on a game with no custom cover.
+    /// </summary>
+    /// <remarks>
+    /// It was labelled "Add custom cover" always, while AddCoverImageAsync diverts to
+    /// PromptToRemoveCustomCover whenever one is already set - so the only labelled control
+    /// offering to change a cover said Add and opened "Remove custom cover?". Same check drives
+    /// both, so the word and the behaviour cannot disagree.
+    /// </remarks>
+    public string CoverButtonText => Game.CoverImage == Game.ExpectedCustomCoverImage
+        ? ResourceHelper.GetString("GamePage_RemoveCustomCover")
+        : ResourceHelper.GetString("GamePage_AddCustomCover");
 
     [RelayCommand]
     async Task ShowHideGameAsync()

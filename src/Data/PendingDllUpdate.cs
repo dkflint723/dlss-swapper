@@ -1,7 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DLSS_Swapper.Dlls;
+using DLSS_Swapper.Helpers;
 
 namespace DLSS_Swapper.Data;
 
@@ -41,6 +42,17 @@ public partial class PendingDllUpdate : ObservableObject
     /// <summary>Checked by default: the sheet offers to leave files out, it does not ask for opt in.</summary>
     [ObservableProperty]
     public partial bool IsSelected { get; set; } = true;
+
+    /// <summary>
+    /// The whole row in one line, for the tick box that decides whether it is written.
+    /// </summary>
+    /// <remarks>
+    /// The row is four columns of an ItemsControl, so there is no ListViewItem to gather them: a
+    /// screen reader met a column of "checkbox, checked" with no game named, immediately before a
+    /// batch that writes into game folders. Everything the row shows is said here instead.
+    /// </remarks>
+    public string AccessibleDescription =>
+        ResourceHelper.GetFormattedResourceTemplate("Preview_RowDescriptionTemplate", GameTitle, EngineName, FromVersion, ToVersion);
 
     /// <summary>
     /// Every out of date file across the given games, newest available version for each.
