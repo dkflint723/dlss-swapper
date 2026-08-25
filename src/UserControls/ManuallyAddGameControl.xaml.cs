@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using DLSS_Swapper.Helpers;
@@ -96,7 +97,13 @@ public partial class ManuallyAddGameControl : UserControl
                 {
                     if (DataContext is ManuallyAddGameModel manuallyAddGameModel)
                     {
-                        manuallyAddGameModel.Game.AddCustomCover(stream);
+                        // Off the UI thread, for the reason given on the game page's drop handler.
+                        var game = manuallyAddGameModel.Game;
+
+                        if (await Task.Run(() => game.AddCustomCover(stream)) == false)
+                        {
+                            Logger.Error($"Could not use the dropped image as a cover for {game.Title}.");
+                        }
                     }
                 }
             }

@@ -488,13 +488,31 @@
     <value>Verified</value>
   </data>
   <data name="CoverArt_NoApiKey" xml:space="preserve">
-    <value>Add your SteamGridDB key in Settings before searching for cover art.</value>
+    <value>Searching for cover art needs a free SteamGridDB API key, and there isn't one set yet.</value>
+  </data>
+  <data name="CoverArt_PasteKeyHere" xml:space="preserve">
+    <value>Then paste it here. It is checked before it is kept, and saved in Settings so you only do this once.</value>
+  </data>
+  <data name="CoverArt_SaveKey" xml:space="preserve">
+    <value>Save key</value>
+  </data>
+  <data name="CoverArt_CheckingKey" xml:space="preserve">
+    <value>Checking the key…</value>
   </data>
   <data name="CoverArt_KeyRejected" xml:space="preserve">
     <value>SteamGridDB did not accept that key. Check it in Settings.</value>
   </data>
   <data name="CoverArt_Applied" xml:space="preserve">
     <value>Cover updated.</value>
+  </data>
+  <data name="CoverArt_Applying" xml:space="preserve">
+    <value>Writing the cover…</value>
+  </data>
+  <data name="CoverArt_CouldNotApply" xml:space="preserve">
+    <value>That cover could not be saved. The image may be damaged, or the file may be in use.</value>
+  </data>
+  <data name="CoverScan_SomeFailedTemplate" xml:space="preserve">
+    <value>{0} of {1} covers could not be saved.</value>
   </data>
   <data name="CoverArt_ChooseFile" xml:space="preserve">
     <value>Choose a file instead</value>

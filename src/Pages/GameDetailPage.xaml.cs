@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using DLSS_Swapper.Data;
@@ -122,7 +123,15 @@ public sealed partial class GameDetailPage : Page
                 {
                     if (DataContext is GameControlModel gameControlModel)
                     {
-                        gameControlModel.Game.AddCustomCover(stream);
+                        // Off the UI thread, like every other caller. Decoding, resampling and
+                        // re-encoding a dropped image runs inline otherwise, and the filter accepts
+                        // any jpg, png or webp - so a photo-sized drop froze the window.
+                        var game = gameControlModel.Game;
+
+                        if (await Task.Run(() => game.AddCustomCover(stream)) == false)
+                        {
+                            Logger.Error($"Could not use the dropped image as a cover for {game.Title}.");
+                        }
                     }
                 }
             }

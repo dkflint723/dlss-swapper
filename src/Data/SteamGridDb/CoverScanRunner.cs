@@ -185,13 +185,24 @@ internal static class CoverScanRunner
     /// <summary>
     /// Writes one scanned cover, keeping whatever it replaced so the batch can be put back.
     /// </summary>
-    /// <returns>The path of the backup taken, or null when there was no custom cover to keep.</returns>
-    internal static async Task<string?> ApplyAsync(CoverScanEntry entry, CancellationToken cancellationToken = default)
+    /// <returns>
+    /// Whether a cover was written, and the path of the backup taken - null when there was no
+    /// custom cover to keep, or when nothing was written.
+    /// </returns>
+    /// <remarks>
+    /// The download happens before the backup is taken, deliberately. Copying first meant a
+    /// download that failed or was cancelled left a <c>.before_scan</c> file behind that nothing
+    /// could ever read or delete: the path died with the stack frame, so the batch never learned
+    /// of it and closing the dialog cleaned up only the ones it knew about.
+    /// </remarks>
+    internal static async Task<(bool Written, string? BackupPath)> ApplyAsync(CoverScanEntry entry, CancellationToken cancellationToken = default)
     {
         if (entry.Image is null)
         {
-            return null;
+            return (false, null);
         }
+
+        using var stream = await SteamGridDbClient.DownloadAsync(entry.Image.Url, cancellationToken).ConfigureAwait(false);
 
         var coverPath = entry.Game.ExpectedCustomCoverImage;
         string? backupPath = null;
@@ -205,10 +216,38 @@ internal static class CoverScanRunner
             File.Copy(coverPath, backupPath, overwrite: true);
         }
 
-        using var stream = await SteamGridDbClient.DownloadAsync(entry.Image.Url, cancellationToken).ConfigureAwait(false);
+        var written = await Task.Run(() => entry.Game.AddCustomCover(stream), cancellationToken).ConfigureAwait(false);
 
-        await Task.Run(() => entry.Game.AddCustomCover(stream), cancellationToken).ConfigureAwait(false);
+        if (written == false)
+        {
+            // AddCustomCover writes beside the target and moves, so a failure leaves the existing
+            // cover untouched - which means this copy is a backup of something nothing replaced.
+            // Removing it here is what keeps that from being the orphan described above.
+            DeleteIfPresent(backupPath);
 
-        return backupPath;
+            return (false, null);
+        }
+
+        return (true, backupPath);
+    }
+
+    static void DeleteIfPresent(string? path)
+    {
+        if (path is null)
+        {
+            return;
+        }
+
+        try
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err);
+        }
     }
 }

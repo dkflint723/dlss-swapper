@@ -253,7 +253,10 @@ public partial class CoverArtPickerModel : ObservableObject
         var token = Restart();
 
         IsBusy = true;
-        StatusText = ResourceHelper.GetString("CoverArt_Applied");
+
+        // Present tense, because none of it has happened yet. This said "Cover updated." here,
+        // before the download had even started.
+        StatusText = ResourceHelper.GetString("CoverArt_Applying");
 
         try
         {
@@ -261,7 +264,15 @@ public partial class CoverArtPickerModel : ObservableObject
 
             // Off the UI thread: this decodes and resizes an image, and the dialog is still on
             // screen while it happens.
-            await Task.Run(() => _game.AddCustomCover(stream), token).ConfigureAwait(true);
+            var written = await Task.Run(() => _game.AddCustomCover(stream), token).ConfigureAwait(true);
+
+            if (written == false)
+            {
+                // Closing here would report success by disappearing. The dialog stays open saying
+                // what went wrong, with the covers still on screen to try another one.
+                StatusText = ResourceHelper.GetString("CoverArt_CouldNotApply");
+                return;
+            }
 
             Finished?.Invoke(this, EventArgs.Empty);
         }

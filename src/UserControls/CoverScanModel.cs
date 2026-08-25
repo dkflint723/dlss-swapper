@@ -255,6 +255,7 @@ public partial class CoverScanModel : ObservableObject
         StatusText = string.Empty;
 
         var written = 0;
+        var failed = 0;
 
         try
         {
@@ -264,15 +265,31 @@ public partial class CoverScanModel : ObservableObject
 
                 ProgressText = ResourceHelper.GetFormattedResourceTemplate("CoverScan_ApplyingTemplate", index + 1, selected.Count);
 
-                var backupPath = await CoverScanRunner.ApplyAsync(selected[index].Entry, token).ConfigureAwait(true);
+                var outcome = await CoverScanRunner.ApplyAsync(selected[index].Entry, token).ConfigureAwait(true);
 
-                _applied.Add((selected[index].Entry.Game, backupPath));
+                // Counted only when a cover actually reached the disk. This counted every attempt,
+                // so "Applied 12 covers." could be true of none of them - and undo would have had
+                // twelve games in its list that it never changed.
+                if (outcome.Written == false)
+                {
+                    failed++;
+                    continue;
+                }
+
+                _applied.Add((selected[index].Entry.Game, outcome.BackupPath));
                 written++;
             }
 
             StatusText = written == 1
                 ? ResourceHelper.GetString("CoverScan_AppliedOne")
                 : ResourceHelper.GetFormattedResourceTemplate("CoverScan_AppliedTemplate", written);
+
+            if (failed > 0)
+            {
+                // Said rather than left to be noticed. A batch that half worked is the case where
+                // a silent count is most misleading.
+                StatusText += " " + ResourceHelper.GetFormattedResourceTemplate("CoverScan_SomeFailedTemplate", failed, selected.Count);
+            }
 
             HasApplied = written > 0;
         }

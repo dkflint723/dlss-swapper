@@ -170,6 +170,35 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     public string ExpectedCustomCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_custom_400_600.png");
     //public string ExpectedCustomCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_custom_600_900.webp");
 
+    /// <summary>
+    /// Remembers that a cover could not be fetched, so that failing is as good a reason to wait as
+    /// succeeding is.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// An empty file whose timestamp is the only thing read, which lets a failure go through the
+    /// same seven day backoff a downloaded cover gets - see <see cref="ProcessGameAsync"/>.
+    /// </para>
+    /// <para>
+    /// Without it a game whose cover cannot be fetched retries on every launch forever, because the
+    /// backoff was keyed on the cover file existing and a failure is precisely the case where no
+    /// file was produced. Measured on a real library: two Steam runtimes, four requests every
+    /// launch - an IStoreBrowseService call and a CDN request each - all four 404, every time,
+    /// for as long as the app is installed.
+    /// </para>
+    /// </remarks>
+    [Ignore]
+    public string ExpectedCoverImageUnavailableMarker => Path.Combine(Storage.GetImageCachePath(), $"{ID}_400_600.unavailable");
+
+    /// <summary>
+    /// How long a cover lookup's answer is trusted for, found or not found.
+    /// </summary>
+    /// <remarks>
+    /// One number for both, so a game with a cover and a game without one are refreshed on the same
+    /// schedule rather than one waiting a week and the other asking on every launch.
+    /// </remarks>
+    const double CoverLookupRetryDays = 7;
+
     [Ignore]
     public List<GameAsset> GameAssets { get; } = new List<GameAsset>();
 
@@ -295,7 +324,20 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             {
                 var shouldUpdatedCover = true;
 
-                if (forceNeedsProcessing == true && File.Exists(ExpectedCustomCoverImage) == false)
+                // A hidden entry with nothing swappable in it is not drawn anywhere and cannot be
+                // acted on, so fetching art for it is work with no destination. Steam and Xbox mark
+                // their own non-game entries hidden on sight, which is what these mostly are -
+                // runtimes, redistributables, launchers - and they are also the entries least
+                // likely to have any art to find. Checked before the force below, deliberately:
+                // there is nothing a refresh could usefully fetch for them either.
+                //
+                // Self correcting. Un-hiding a game clears IsHidden, and a game that gains a
+                // swappable dll clears the other half, so either one puts it back in the queue.
+                if (IsHidden == true && HasSwappableItems == false)
+                {
+                    shouldUpdatedCover = false;
+                }
+                else if (forceNeedsProcessing == true && File.Exists(ExpectedCustomCoverImage) == false)
                 {
                     // If we are forcing game load and custom cover image doesnt exist we will force load the cover no matter what.
                 }
@@ -305,14 +347,23 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                     try
                     {
                         FileInfo? fileInfo = null;
-                        if (File.Exists(ExpectedCustomCoverImage))
+                        if (HasUsableCover(ExpectedCustomCoverImage))
                         {
                             // If we are using a custom cover we don't want to try reloading any cover so we don't set fileInfo.
                             shouldUpdatedCover = false;
                         }
-                        else if (File.Exists(ExpectedCoverImage))
+                        else if (HasUsableCover(ExpectedCoverImage))
                         {
                             fileInfo = new FileInfo(ExpectedCoverImage);
+                        }
+                        else if (File.Exists(ExpectedCoverImageUnavailableMarker))
+                        {
+                            // A cover we already failed to fetch. Its marker goes through the same
+                            // backoff below, so a game with no cover waits exactly as long before
+                            // asking again as a game with one does - rather than asking on every
+                            // launch for ever, which is what happened while only the cover file
+                            // could hold the answer.
+                            fileInfo = new FileInfo(ExpectedCoverImageUnavailableMarker);
                         }
 
                         if (fileInfo is not null)
@@ -323,7 +374,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                             daysSinceLastModified += ((new Random()).NextDouble() - 0.5) * 4.0;
 
                             // If its less than 7 days lets not try refresh.
-                            if (daysSinceLastModified < 7)
+                            if (daysSinceLastModified < CoverLookupRetryDays)
                             {
                                 shouldUpdatedCover = false;
                             }
@@ -515,6 +566,8 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 if (coverImageTask is not null)
                 {
                     await coverImageTask;
+
+                    RecordWhetherACoverWasFound();
                 }
             }
             catch (Exception err)
@@ -744,6 +797,47 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         return file.Exists && file.Length > 0;
     }
 
+    /// <summary>
+    /// Writes down whether the cover fetch that just ran produced anything.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The marker is what lets a failure wait. Its contents are never read - only the timestamp is,
+    /// by the backoff in <see cref="ProcessGameAsync"/> - so it is written empty and rewritten each
+    /// time the attempt fails again, which is what moves the clock forward.
+    /// </para>
+    /// <para>
+    /// A cover that did arrive clears the marker, so a game whose art appears later - a store
+    /// backfilling it, or the user adding a custom one - is not held back by a note about a
+    /// failure that no longer describes it.
+    /// </para>
+    /// <para>
+    /// Failing to write the marker is not worth interrupting anything for. The cost is one retry
+    /// next launch, which is what happened every launch before it existed.
+    /// </para>
+    /// </remarks>
+    void RecordWhetherACoverWasFound()
+    {
+        try
+        {
+            if (HasUsableCover(ExpectedCoverImage))
+            {
+                if (File.Exists(ExpectedCoverImageUnavailableMarker))
+                {
+                    File.Delete(ExpectedCoverImageUnavailableMarker);
+                }
+
+                return;
+            }
+
+            File.WriteAllBytes(ExpectedCoverImageUnavailableMarker, Array.Empty<byte>());
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err, $"Could not record the cover lookup outcome for {Title}.");
+        }
+    }
+
     public async Task LoadCoverImageAsync()
     {
         if (_isLoadingCoverImage == true)
@@ -771,13 +865,37 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 CoverImage = ExpectedCoverImage;
             });
         }
+        else if (RecentlyFailedToFindACover())
+        {
+            // Already asked, recently, and there was nothing to find. This is the second of the two
+            // places that fetch a cover - ProcessGameAsync is the other - and until it checked, a
+            // game with no cover made its requests twice per launch rather than once, because
+            // suppressing one path still left this one asking.
+        }
         else
         {
             // If no cover exists use the abstracted method to get the game as expect for this library.
             await UpdateCacheImageAsync();
+
+            RecordWhetherACoverWasFound();
         }
 
         _isLoadingCoverImage = false;
+    }
+
+    /// <summary>
+    /// Whether a cover was looked for recently and was not there.
+    /// </summary>
+    /// <remarks>
+    /// Same window a downloaded cover waits before being refreshed, without the jitter - that
+    /// exists to spread a library's refreshes out, and there is nothing to spread here because a
+    /// failure costs a request that was never going to return an image.
+    /// </remarks>
+    bool RecentlyFailedToFindACover()
+    {
+        var marker = new FileInfo(ExpectedCoverImageUnavailableMarker);
+
+        return marker.Exists && (DateTime.Now - marker.LastWriteTime).TotalDays < CoverLookupRetryDays;
     }
 
     protected abstract Task UpdateCacheImageAsync();
@@ -1189,11 +1307,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 File.Move(partialPath, ExpectedCoverImage, true);
             }
 
-            UiThread.Run(() =>
-            {
-                CoverImage = null;
-                CoverImage = ExpectedCoverImage;
-            });
+            SetCoverImage(ExpectedCoverImage);
         }
         catch (Exception err)
         {
@@ -1202,15 +1316,42 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     }
 
 
-    public void AddCustomCover(string imageSource)
+    /// <summary>Reads an image off disk and makes it this game's cover.</summary>
+    /// <returns>Whether a cover was written. See <see cref="AddCustomCover(Stream)"/>.</returns>
+    public bool AddCustomCover(string imageSource)
     {
-        using (var fileStream = File.OpenRead(imageSource))
+        try
         {
-            AddCustomCover(fileStream);
+            using (var fileStream = File.OpenRead(imageSource))
+            {
+                return AddCustomCover(fileStream);
+            }
+        }
+        catch (Exception err)
+        {
+            // Opening it can fail on its own - a file that vanished between the picker and here, or
+            // one another program has locked - and that is still "no cover was written".
+            Logger.Error(err, $"Could not read {imageSource} as a cover for {Title}.");
+
+            return false;
         }
     }
 
-    public void AddCustomCover(Stream stream)
+    /// <summary>
+    /// Makes an image this game's cover.
+    /// </summary>
+    /// <returns>
+    /// Whether a cover was actually written. False covers an undecodable or truncated image, a
+    /// locked or full disk, and anything else that went wrong.
+    /// </returns>
+    /// <remarks>
+    /// This used to be void and swallow everything, which meant a caller could not tell a written
+    /// cover from a failed one - and both callers said so out loud regardless: the picker's last
+    /// words were "Cover updated." and the library scan counted the game as done. "Applied 12
+    /// covers." could be true of none of them, which is the one thing this app is supposed never
+    /// to do.
+    /// </remarks>
+    public bool AddCustomCover(Stream stream)
     {
         // TODO:
         // - find optimal format (eg, is displaying 100 webp images more intense than 100 png images)
@@ -1229,20 +1370,48 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                     Mode = ResizeMode.Min, // If image is smaller it won't be resized up.
                 };
                 image.Mutate(x => x.Resize(resizeOptions));
-                image.SaveAsPng(ExpectedCustomCoverImage);
-                //image.SaveAsWebp(ExpectedCustomCoverImage);
-                //image.SaveAsJpeg(ExpectedCustomCoverImage);
+
+                // Written beside the target and moved into place, for the reason ResizeCoverAsync
+                // records: a save that fails partway otherwise leaves a truncated png that is not
+                // zero bytes, so it passes HasUsableCover, is preferred over the store's art, and
+                // shows a broken cover with no way back except the remove dialog.
+                var partialPath = ExpectedCustomCoverImage + ".part";
+                image.SaveAsPng(partialPath);
+                File.Move(partialPath, ExpectedCustomCoverImage, true);
             }
 
-            UiThread.Run(() =>
-            {
-                CoverImage = ExpectedCustomCoverImage;
-            });
+            SetCoverImage(ExpectedCustomCoverImage);
+
+            return true;
         }
         catch (Exception err)
         {
             Logger.Error(err);
+
+            return false;
         }
+    }
+
+    /// <summary>
+    /// Points the UI at a cover file, in a way the UI will actually notice.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="CoverImage"/> is an <c>[ObservableProperty]</c> and both cover paths are derived
+    /// from <see cref="ID"/> alone, so writing the same path a second time - which is exactly what
+    /// replacing a custom cover does - is swallowed by the generated setter's equality check, and
+    /// the old image stays on screen. Clearing it first is what makes the change visible.
+    ///
+    /// Every writer goes through here rather than each remembering to do that. Three of them did
+    /// not: drag and drop, the SteamGridDB picker and the library scan all set a cover that only
+    /// appeared after the page was reopened.
+    /// </remarks>
+    void SetCoverImage(string path)
+    {
+        UiThread.Run(() =>
+        {
+            CoverImage = null;
+            CoverImage = path;
+        });
     }
 
     protected async Task<bool> DownloadCoverAsync(string url)
@@ -1455,9 +1624,10 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 return false;
             }
 
-            AddCustomCover(coverImageFile);
-
-            return true;
+            // The real answer, not an assumption that opening the picker worked. The doc above
+            // already promised false for a file that could not be read; this is what makes that
+            // true.
+            return AddCustomCover(coverImageFile);
         }
         catch (Exception err)
         {
