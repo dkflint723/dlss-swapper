@@ -1840,6 +1840,20 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             // Sometimes when a game is uninstalled the backup files are not removed, so ensure they are.
             // https://github.com/beeradmoore/dlss-swapper/issues/236
 
+            // Except when the user told us to leave that folder alone.
+            //
+            // Every library's scan skips a game in an ignored path, and every library then deletes
+            // the cached games its scan did not return, on the reasoning that they must have been
+            // uninstalled. Ignoring a path therefore ran this on every game underneath it - and this
+            // deletes the copies of the dlls those games shipped with. Adding an ignored path
+            // destroyed the originals for every game under it, permanently, which is the opposite of
+            // what "ignore this folder" asks for.
+            //
+            // Here rather than at the seven call sites, because it is one rule and the next library
+            // to be written should get it without knowing to ask. The rows still go, so the game
+            // does leave the app; un-ignoring the path finds the .dlsss files again on the next scan.
+            var mayDeleteFiles = IsInIgnoredPath() == false;
+
             List<GameAsset> gameAssets;
             using (await Database.Instance.Mutex.LockAsync())
             {
@@ -1848,7 +1862,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             foreach (var cachedGameAsset in gameAssets)
             {
                 // If its a file we made we should attempt to delete it.
-                if (DllTypes.IsBackupAssetType(cachedGameAsset.AssetType))
+                if (mayDeleteFiles && DllTypes.IsBackupAssetType(cachedGameAsset.AssetType))
                 {
                     if (File.Exists(cachedGameAsset.Path))
                     {
