@@ -150,7 +150,7 @@ internal partial class GameManager : ObservableObject
     {
         _allGames.CollectionChanged += (sender, args) =>
         {
-            GamesChanged?.Invoke(this, EventArgs.Empty);
+            RaiseGamesChanged();
         };
 
         FavouriteGamesView = new AdvancedCollectionView(_allGames, true);
@@ -351,7 +351,87 @@ internal partial class GameManager : ObservableObject
         // Whether a game is behind is only decided once the manifest has loaded, which is long
         // after the games themselves. Anything counting them has to be told, or it keeps the
         // answer it computed while every game still looked up to date.
-        GamesChanged?.Invoke(this, EventArgs.Empty);
+        RaiseGamesChanged();
+    }
+
+    /// <summary>
+    /// Says that something about a game has changed which the counts and tabs are computed from.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <see cref="GamesChanged"/> otherwise fires only when the list gains or loses a game, so
+    /// every mutation that changes a game rather than the list - hiding it, favouriting it, telling
+    /// it to skip updates, finishing a batch of swaps - left every count describing the library as
+    /// it was a moment earlier.
+    /// </para>
+    /// <para>
+    /// The lists themselves were never the problem: the views observe the individual properties and
+    /// re-filter on their own. It is the numbers beside them that nobody told, which is how a tab
+    /// came to read 23 over a list of 22, and how "Review 7 updates" survived the batch that
+    /// emptied it and then did nothing when pressed.
+    /// </para>
+    /// </remarks>
+    public void NotifyGamesChanged()
+    {
+        RaiseGamesChanged();
+    }
+
+    bool _gamesChangedIsPending;
+
+    /// <summary>
+    /// Raises <see cref="GamesChanged"/> once for a run of changes rather than once per change.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Both subscribers answer it by walking the whole library on the UI thread: the games page
+    /// rebuilds four filter tabs, and the sidebar re-summarises every game, its assets and every
+    /// known dll. Raising that per game made loading a library quadratic in its size, and it was
+    /// paid exactly while the list was trying to lay itself out - so the games appeared in visible
+    /// stutters, and got worse the more of them there were.
+    /// </para>
+    /// <para>
+    /// Enqueued on the dispatcher rather than raised, and deliberately not through
+    /// <c>RunOnUIThread</c>: that runs inline when it is already on the UI thread, which is exactly
+    /// where the adds happen, so nothing would ever be deferred. Going straight to the queue means
+    /// the whole run of adds lands first and the recount happens once, after them.
+    /// </para>
+    /// <para>
+    /// Nothing awaits this event, and both subscribers only recompute what they display, so
+    /// arriving a frame later than the change costs nothing.
+    /// </para>
+    /// </remarks>
+    void RaiseGamesChanged()
+    {
+        if (_gamesChangedIsPending)
+        {
+            return;
+        }
+
+        var dispatcher = App.CurrentApp?.MainWindow?.DispatcherQueue;
+
+        if (dispatcher is null)
+        {
+            // Before there is a window there is nothing to coalesce against, and nothing drawing
+            // that could be made to stutter.
+            GamesChanged?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
+        _gamesChangedIsPending = true;
+
+        var didEnqueue = dispatcher.TryEnqueue(() =>
+        {
+            _gamesChangedIsPending = false;
+            GamesChanged?.Invoke(this, EventArgs.Empty);
+        });
+
+        if (didEnqueue == false)
+        {
+            // A queue that will not take work is shutting down, but a dropped recount would leave
+            // the counts wrong for as long as the window lives, so raise it here instead.
+            _gamesChangedIsPending = false;
+            GamesChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     public List<Game> GetSynchronisedGamesListCopy()

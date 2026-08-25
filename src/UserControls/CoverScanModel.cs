@@ -214,8 +214,11 @@ public partial class CoverScanModel : ObservableObject
                 {
                     var item = new CoverScanReadyItem(entry);
 
-                    // The button counts ticks, so it has to hear about every one of them.
-                    item.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(ApplyLabel));
+                    // Through RefreshCounts, so the label and the button's enablement can only ever
+                    // come from the same call. Raising just the label meant unticking every row
+                    // recomputed the text to "Apply 0 covers" while leaving the button enabled,
+                    // which then ran an empty loop and answered "Applied 0 covers."
+                    item.PropertyChanged += (sender, args) => RefreshCounts();
 
                     Ready.Add(item);
                 }

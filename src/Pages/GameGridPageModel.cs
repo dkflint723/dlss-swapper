@@ -652,6 +652,11 @@ public partial class GameGridPageModel : ObservableObject
 
         game.SkipUpdates = game.SkipUpdates == false;
         await game.SaveToDatabaseAsync();
+
+        // GameFilters.HasUpdate excludes a game told to skip updates, so the row leaves the "Have
+        // an update" list the moment this is set - but nothing recounted, so the tab kept the old
+        // number and Review opened a sheet with one fewer row than the button had counted.
+        GameManager.Instance.NotifyGamesChanged();
     }
 
     /// <summary>
@@ -860,6 +865,12 @@ public partial class GameGridPageModel : ObservableObject
 
         // Swapping saves an original first, so the backup coverage moves with it.
         App.CurrentApp.MainWindow?.RefreshSidebar();
+
+        // And so does how many games are behind. The swap path refreshes each game on its own but
+        // raises nothing, so the tab count and the accent button kept the number they had before
+        // the batch - leaving "Review 7 updates" on screen over rows that all read "Up to date",
+        // which then recomputed to nothing and returned without doing anything when pressed.
+        GameManager.Instance.NotifyGamesChanged();
     }
 
     /// <summary>
@@ -927,6 +938,9 @@ public partial class GameGridPageModel : ObservableObject
 
         batch.CompleteUndo(result);
         App.CurrentApp.MainWindow?.RefreshSidebar();
+
+        // Putting the batch back makes those games behind again, which is the same recount.
+        GameManager.Instance.NotifyGamesChanged();
     }
 
     /// <summary>

@@ -649,6 +649,9 @@ public partial class GameControlModel : ObservableObject
     {
         Game.IsFavourite = !Game.IsFavourite;
         await Game.SaveToDatabaseAsync();
+
+        // Favourites are one of the counted collections, for the same reason as above.
+        GameManager.Instance.NotifyGamesChanged();
     }
 
     [RelayCommand]
@@ -873,6 +876,10 @@ public partial class GameControlModel : ObservableObject
             Game.IsHidden = !Game.IsHidden;
         }
         await Game.SaveToDatabaseAsync();
+
+        // The views observe IsHidden and drop the row on their own; the counts beside them do not,
+        // so "All games" went on reading one more than the list it labels.
+        GameManager.Instance.NotifyGamesChanged();
     }
 
     [RelayCommand]
