@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Dlls;
+using DLSS_Swapper.Swapping;
 using Xunit;
 
 namespace DLSS_Swapper.App.Tests;
@@ -22,7 +24,7 @@ public class SkipUpdatesTests
         {
             Id = gameId,
             AssetType = assetType,
-            Path = $@"C:\game\{assetType}.dll",
+            Path = BackupAwarePath(assetType),
             Version = version,
             Size = 1024,
             Hash = string.Empty,
@@ -204,5 +206,19 @@ public class SkipUpdatesTests
 
         Assert.DoesNotContain("LangResourceError", status.Sentence);
         Assert.False(string.IsNullOrWhiteSpace(status.Sentence));
+    }
+
+    /// <summary>Where an asset of this type would actually sit on disk.</summary>
+    /// <remarks>
+    /// See the note in Asset: a backup is always the dll it shadows plus ".dlsss", so a fixture that
+    /// invents a path for it is describing something that cannot exist.
+    /// </remarks>
+    static string BackupAwarePath(GameAssetType assetType)
+    {
+        var shadowed = DllTypes.All.FirstOrDefault(x => x.BackupAssetType == assetType);
+
+        return shadowed is null
+            ? $@"C:\game\{assetType}.dll"
+            : DllSwapExecutor.GetBackupPath($@"C:\game\{shadowed.AssetType}.dll");
     }
 }

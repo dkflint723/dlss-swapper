@@ -88,16 +88,12 @@ public static class GameFilters
     /// </remarks>
     public static bool IsMissingABackup(Game game)
     {
+        // Game.HasSavedOriginal, not a copy of its loop. This asked whether any dll of the same
+        // TYPE had a backup, so a game shipping one dll in two folders reported itself protected on
+        // the strength of a copy of the other location.
         foreach (var gameAsset in game.GameAssets)
         {
-            var definition = DllTypes.ForAssetType(gameAsset.AssetType);
-            if (definition is null)
-            {
-                // Already a backup, or a type we do not manage.
-                continue;
-            }
-
-            if (game.GameAssets.Any(x => x.AssetType == definition.BackupAssetType) == false)
+            if (game.HasSavedOriginal(gameAsset) == false)
             {
                 return true;
             }

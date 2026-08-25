@@ -492,6 +492,8 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
                 void ProcessGame_ProcessGameAsset(GameAsset gameAsset)
                 {
+                    var backupWasJustRemoved = false;
+
                     // Version and size first, both metadata. The hash is only worth paying for when
                     // the file actually looks different to what we already had.
                     gameAsset.LoadVersionAndSize();
@@ -528,7 +530,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                             // If the DLL was changed externally (eg. game update) we delete the backup.
                             // This fixes the issue where looking at your game it may appear to be downgraded but
                             // in reality it is because the game updated to a newer version than you had swapped to.
-                            var expectedBackupPath = $"{gameAsset.Path}.dlsss";
+                            var expectedBackupPath = DllSwapExecutor.GetBackupPath(gameAsset.Path);
                             if (File.Exists(expectedBackupPath))
                             {
                                 var tempBackupGameAsset = new GameAsset()
@@ -550,6 +552,20 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                                 });
 
                                 File.Delete(expectedBackupPath);
+
+                                // Nothing may put one back in this same pass. The copy below guards only
+                                // on the backup file not existing, which the line above has just made
+                                // true - so the scan deleted the one copy of the dll the game shipped
+                                // with and immediately wrote a new "original" from whatever is on disk
+                                // now, including a dll this app swapped in and then failed to record.
+                                // Reset would then have restored the swapped dll and called it a success.
+                                // The row now honestly reads that there is no saved original, and "Save a
+                                // copy" is there to take a fresh one deliberately.
+                                //
+                                // Deleting at all is upstream's rule, so a game updated past the version
+                                // you swapped to does not read as a downgrade. Whether that is worth
+                                // destroying the original for is a separate question, left alone here.
+                                backupWasJustRemoved = true;
                             }
                         }
                     }
@@ -571,7 +587,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                         unknownGameAssets.Add(gameAsset);
                     }
 
-                    if (shouldBackUpNewDlls)
+                    if (shouldBackUpNewDlls && backupWasJustRemoved == false)
                     {
                         CreateOriginalBackupForGameAsset(gameAsset);
                     }
@@ -642,7 +658,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             finally
             {
                 // Now update all the data on the UI therad.
-                await App.CurrentApp.RunOnUIThreadAsync(async () =>
+                await UiThread.RunAsync(async () =>
                 {
                     HasSwappableItems = newHasSwappableItems;
 
@@ -670,9 +686,41 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     /// Never overwrites an existing backup, so a game that already has one keeps it.
     /// </para>
     /// </remarks>
+    /// <summary>
+    /// Whether this particular dll has a saved copy of the original beside it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Asked about the path, not about the asset type. It used to be
+    /// <c>GameAssets.Any(x =&gt; x.AssetType == definition.BackupAssetType)</c> - "is there a backup of
+    /// any dll of this kind" - written out in four places. A game shipping the same dll in two
+    /// folders has two assets of one type, so one backup answered for both: "Save a copy" backed up
+    /// the first location, skipped the second, and reported success, and the row then read as
+    /// protected while the second location had no original saved anywhere. A game update before the
+    /// next swap destroyed the very file the user had asked to keep.
+    /// </para>
+    /// <para>
+    /// A dll that IS a backup, or of a type the app does not manage, has nothing to protect and
+    /// answers true - there is no missing copy to report.
+    /// </para>
+    /// </remarks>
+    internal bool HasSavedOriginal(GameAsset gameAsset)
+    {
+        var definition = DllTypes.ForAssetType(gameAsset.AssetType);
+        if (definition is null)
+        {
+            return true;
+        }
+
+        var backupPath = DllSwapExecutor.GetBackupPath(gameAsset.Path);
+
+        return GameAssets.Any(x => x.AssetType == definition.BackupAssetType
+            && string.Equals(x.Path, backupPath, StringComparison.OrdinalIgnoreCase));
+    }
+
     void CreateOriginalBackupForGameAsset(GameAsset gameAsset)
     {
-        var backupPath = $"{gameAsset.Path}.dlsss";
+        var backupPath = DllSwapExecutor.GetBackupPath(gameAsset.Path);
         if (File.Exists(backupPath))
         {
             return;
@@ -735,14 +783,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
         foreach (var gameAsset in cachedGameAssets)
         {
-            var definition = DllTypes.ForAssetType(gameAsset.AssetType);
-            if (definition is null)
-            {
-                // Already a backup, or a type we do not manage.
-                continue;
-            }
-
-            if (GameAssets.Any(x => x.AssetType == definition.BackupAssetType))
+            if (HasSavedOriginal(gameAsset))
             {
                 continue;
             }
@@ -752,7 +793,10 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             // Registers the copy as a game asset, so the row stops reporting it as missing.
             LoadBackupForGameAsset(gameAsset, cachedGameAssets);
 
-            if (GameAssets.Any(x => x.AssetType == definition.BackupAssetType))
+            // The same question again, so the count can only rise for a copy that actually landed
+            // beside this dll. Asked type-wide, it counted the first location and then agreed the
+            // second was done too.
+            if (HasSavedOriginal(gameAsset))
             {
                 saved += 1;
             }
@@ -769,7 +813,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
     void LoadBackupForGameAsset(GameAsset gameAsset, List<GameAsset> cachedGameAssets)
     {
-        var backupPath = $"{gameAsset.Path}.dlsss";
+        var backupPath = DllSwapExecutor.GetBackupPath(gameAsset.Path);
         if (File.Exists(backupPath))
         {
             var gameAssetBackup = new GameAsset()

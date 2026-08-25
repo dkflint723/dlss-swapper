@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace DLSS_Swapper;
 
@@ -25,5 +26,25 @@ internal static class UiThread
         }
 
         return app.RunOnUIThread(action);
+    }
+
+    /// <summary>
+    /// The same for work that has to be awaited.
+    /// </summary>
+    /// <remarks>
+    /// Game.ProcessGame's finally block called App.CurrentApp.RunOnUIThreadAsync straight, which
+    /// dereferences a null whenever no application is running - so the scan could not be driven from
+    /// a test at all, and the same call would throw on the way out of the app. Both go through here
+    /// now, for the reason on Run above.
+    /// </remarks>
+    internal static Task RunAsync(Func<Task> function)
+    {
+        var app = App.CurrentApp;
+        if (app is null)
+        {
+            return function();
+        }
+
+        return app.RunOnUIThreadAsync(function);
     }
 }

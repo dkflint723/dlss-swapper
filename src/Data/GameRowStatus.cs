@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Helpers;
@@ -187,19 +187,17 @@ public class GameRowStatus
         return string.Join(" · ", vendors.Select(x => DLLManager.Instance.GetVendorShortName(x)));
     }
 
-    /// <summary>Whether any swappable dll in this game has no backup of its type.</summary>
+    /// <summary>Whether any swappable dll in this game has no saved original beside it.</summary>
+    /// <remarks>
+    /// Through <see cref="Game.HasSavedOriginal"/>, which is the one place that rule lives. This was
+    /// the third copy of it, and like the other two it asked about the asset type rather than the
+    /// path - so the row said a game was protected when only one of its two dll locations was.
+    /// </remarks>
     static bool IsMissingABackup(Game game)
     {
         foreach (var gameAsset in game.GameAssets)
         {
-            var definition = DllTypes.ForAssetType(gameAsset.AssetType);
-            if (definition is null)
-            {
-                continue;
-            }
-
-            var hasBackup = game.GameAssets.Any(x => x.AssetType == definition.BackupAssetType);
-            if (hasBackup == false)
+            if (game.HasSavedOriginal(gameAsset) == false)
             {
                 return true;
             }
