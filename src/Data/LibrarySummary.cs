@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DLSS_Swapper.Dlls;
 
@@ -82,7 +82,9 @@ public class LibrarySummary
 
         foreach (var game in gameList)
         {
-            if (IsMissingABackup(game))
+            // GameFilters', not a copy. This number sits next to a link that opens the "Missing a
+            // saved original" tab, and the two used to decide it separately.
+            if (GameFilters.IsMissingABackup(game))
             {
                 gamesMissingBackups += 1;
             }
@@ -147,43 +149,5 @@ public class LibrarySummary
             ByVendor = byVendor,
             GamesMissingBackups = gamesMissingBackups,
         };
-    }
-
-    /// <summary>
-    /// Whether any swappable dll in this game has no backup of its type.
-    /// </summary>
-    /// <remarks>
-    /// Judged per type rather than per file. A game carrying the same dll in two folders needs one
-    /// backup of that type to be revertable, so counting per file would report a gap that reverting
-    /// does not actually have.
-    /// </remarks>
-    static bool IsMissingABackup(Game game)
-    {
-        foreach (var gameAsset in game.GameAssets)
-        {
-            var definition = DllTypes.ForAssetType(gameAsset.AssetType);
-            if (definition is null)
-            {
-                // Already a backup, or a type we do not manage.
-                continue;
-            }
-
-            var hasBackup = false;
-            foreach (var candidate in game.GameAssets)
-            {
-                if (candidate.AssetType == definition.BackupAssetType)
-                {
-                    hasBackup = true;
-                    break;
-                }
-            }
-
-            if (hasBackup == false)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

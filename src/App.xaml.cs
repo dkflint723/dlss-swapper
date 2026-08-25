@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -272,16 +273,39 @@ public sealed partial class App : Application
     }
 
 #if !PORTABLE
+    /// <summary>How often the number Windows shows in Apps &amp; features is worked out again.</summary>
+    /// <remarks>
+    /// This walks every file under the app's data folder, and that folder holds the downloaded dll
+    /// cache - which is where the size comes from and can be thousands of files. It used to do that
+    /// on every launch, competing for the disk with the library scan happening at the same time, to
+    /// refresh a number nobody is looking at. A week late is not a wrong answer for an estimate.
+    /// </remarks>
+    const double InstallSizeIntervalDays = 7;
+
+    const string InstallSizeCalculatedAtValueName = "DlssSwapperEstimatedSizeCalculatedAt";
+
     void CalculateInstallSize()
     {
         try
         {
-            long installSize = 0;
-            installSize += CalculateDirectorySize(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DLSS Swapper"));
-
             using (var dlssSwapperRegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\DLSS Swapper", true))
             {
-                var installLocation = dlssSwapperRegistryKey?.GetValue("InstallLocation") as string;
+                if (dlssSwapperRegistryKey is null)
+                {
+                    // Not an installed copy, so there is no entry to keep up to date and nothing
+                    // would read the answer. The walk used to happen first and be thrown away.
+                    return;
+                }
+
+                if (WasInstallSizeCalculatedRecently(dlssSwapperRegistryKey))
+                {
+                    return;
+                }
+
+                long installSize = 0;
+                installSize += CalculateDirectorySize(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DLSS Swapper"));
+
+                var installLocation = dlssSwapperRegistryKey.GetValue("InstallLocation") as string;
                 if (string.IsNullOrEmpty(installLocation) == false && Directory.Exists(installLocation) == true)
                 {
                     installSize += CalculateDirectorySize(installLocation);
@@ -290,7 +314,14 @@ public sealed partial class App : Application
                 if (installSize > 0)
                 {
                     var installSizeKB = (int)(installSize / 1000);
-                    dlssSwapperRegistryKey?.SetValue("EstimatedSize", installSizeKB, Microsoft.Win32.RegistryValueKind.DWord);
+                    dlssSwapperRegistryKey.SetValue("EstimatedSize", installSizeKB, Microsoft.Win32.RegistryValueKind.DWord);
+
+                    // Stamped only after a real answer was written, so a walk that found nothing
+                    // does not buy itself a week of silence.
+                    dlssSwapperRegistryKey.SetValue(
+                        InstallSizeCalculatedAtValueName,
+                        DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture),
+                        Microsoft.Win32.RegistryValueKind.String);
                 }
             }
         }
@@ -298,6 +329,36 @@ public sealed partial class App : Application
         {
             Logger.Error(err);
         }
+    }
+
+    /// <summary>
+    /// Whether the size was worked out recently enough to leave alone.
+    /// </summary>
+    /// <remarks>
+    /// Kept in the same key as the value it guards, so an uninstall takes both and a fresh install
+    /// starts by measuring. A clock that has gone backwards reads as "not recent", which costs one
+    /// extra walk rather than parking the estimate forever.
+    /// </remarks>
+    static bool WasInstallSizeCalculatedRecently(Microsoft.Win32.RegistryKey registryKey)
+    {
+        if (registryKey.GetValue(InstallSizeCalculatedAtValueName) is not string stamp)
+        {
+            return false;
+        }
+
+        if (long.TryParse(stamp, NumberStyles.Integer, CultureInfo.InvariantCulture, out var ticks) == false)
+        {
+            return false;
+        }
+
+        if (ticks < DateTime.MinValue.Ticks || ticks > DateTime.MaxValue.Ticks)
+        {
+            return false;
+        }
+
+        var age = DateTime.UtcNow - new DateTime(ticks, DateTimeKind.Utc);
+
+        return age >= TimeSpan.Zero && age.TotalDays < InstallSizeIntervalDays;
     }
 
     long CalculateDirectorySize(string path)

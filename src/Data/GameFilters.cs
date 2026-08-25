@@ -1,4 +1,4 @@
-using DLSS_Swapper.Dlls;
+﻿using DLSS_Swapper.Dlls;
 using System.Linq;
 
 namespace DLSS_Swapper.Data;
@@ -71,13 +71,29 @@ public static class GameFilters
     }
 
     /// <summary>Any swappable dll with no copy of its original beside it.</summary>
-    static bool IsMissingABackup(Game game)
+    /// <summary>
+    /// Whether any swappable dll in this game has no backup of its type.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Public because the sidebar's "Fix the other 3" counts the same games this filter shows, and
+    /// pressing it opens this filter. They each had their own copy of this loop, which is two
+    /// implementations of one rule and a count that was free to disagree with the list it opened.
+    /// </para>
+    /// <para>
+    /// Judged per type rather than per file. A game carrying the same dll in two folders needs one
+    /// backup of that type to be revertable, so counting per file would report a gap that reverting
+    /// does not actually have.
+    /// </para>
+    /// </remarks>
+    public static bool IsMissingABackup(Game game)
     {
         foreach (var gameAsset in game.GameAssets)
         {
             var definition = DllTypes.ForAssetType(gameAsset.AssetType);
             if (definition is null)
             {
+                // Already a backup, or a type we do not manage.
                 continue;
             }
 

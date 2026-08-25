@@ -50,6 +50,12 @@
             below, which is only there when the header is.
         -->
         <Style x:Key="ListGroupHeaderContainerStyle" TargetType="ListViewHeaderItem">
+            <!--
+                Not a tab stop. The container is a Control and stops by default, so Tab landed on
+                the empty box around each launcher heading and then again on the heading's own
+                button - two stops per group, one of which announces nothing and does nothing.
+            -->
+            <Setter Property="IsTabStop" Value="False" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
@@ -71,6 +77,8 @@
         </Style>
 
         <Style x:Key="GridGroupHeaderContainerStyle" TargetType="GridViewHeaderItem">
+            <!-- For the reason on the list one above. -->
+            <Setter Property="IsTabStop" Value="False" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
@@ -98,6 +106,11 @@
                 <!--
                     A button around the whole header rather than a chevron you have to hit: the
                     heading is the target people aim at, and a launcher name is a much bigger one.
+
+                    IsTabStop tracks IsCollapsible alongside IsHitTestVisible, which turns off the
+                    mouse and nothing else: a group that cannot be folded still took a tab stop and
+                    still folded nothing when Space was pressed on it, so the keyboard was offered
+                    something the mouse was not.
                 -->
                 <Button
                     HorizontalAlignment="Left"
@@ -106,6 +119,8 @@
                     Padding="0"
                     Tag="{x:Bind}"
                     IsHitTestVisible="{x:Bind IsCollapsible}"
+                    IsTabStop="{x:Bind IsCollapsible}"
+                    AutomationProperties.Name="{x:Bind Name}"
                     Click="GroupHeader_Click">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{x:Bind Name}" Margin="0" Style="{StaticResource TitleTextBlockStyle}" />
