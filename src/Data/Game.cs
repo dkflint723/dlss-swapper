@@ -205,6 +205,37 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     [Ignore]
     public bool NeedsProcessing { get; set; } = false;
 
+    /// <summary>
+    /// When this game's install folder was last walked in full.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Records that a scan happened rather than only what it found. <see cref="ProcessGame"/> writes
+    /// game_asset rows only when it finds something, so a game with no DLSS, FSR or XeSS dll has
+    /// zero rows for ever - and the cache read could not tell that apart from "never scanned", so it
+    /// forced a full rescan of that game on every launch. In most libraries that is the majority of
+    /// the games, and each one paid a DELETE, a cover freshness check and a recursive walk of its
+    /// install folder to find out again that there was nothing there.
+    /// </para>
+    /// <para>
+    /// Nothing is given up by trusting it. <see cref="HasUnrecordedDlls"/> still runs for every game
+    /// on every launch, and noticing a dll that appeared later is the case this rescan was actually
+    /// guarding - the rescan was just doing it the expensive way, twice.
+    /// </para>
+    /// </remarks>
+    [Column("last_scanned_at")]
+    public DateTime? LastScannedAt { get; set; } = null;
+
+    /// <summary>
+    /// How long a "there is nothing in this game" answer is trusted for.
+    /// </summary>
+    /// <remarks>
+    /// A backstop rather than the real guard, which is <see cref="HasUnrecordedDlls"/>. It exists so
+    /// that anything that check cannot see - a folder that was unreadable at the time, a dll type
+    /// added to the app since - is picked up eventually rather than never.
+    /// </remarks>
+    const double FullRescanIntervalDays = 7;
+
     bool _isLoadingCoverImage;
 
     /// <summary>
@@ -408,7 +439,13 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                     await Database.Instance.Connection.ExecuteAsync("DELETE FROM game_asset WHERE id = ?", ID).ConfigureAwait(false);
                 }
                 // TODO: See if changing these to filter specific files, or getting very *.dll and looking for our specific ones is faster
-                var dllPaths = Directory.GetFiles(InstallPath, "*.dll", enumerationOptions);
+                //
+                // Reuses the walk the guard already did, when there was one. HasUnrecordedDlls
+                // enumerates this same tree to decide whether this scan should happen at all, so
+                // doing it again here was the folder read twice in a row for every game that had
+                // changed.
+                var dllPaths = TakeDllPathsFromLastCheck()
+                    ?? Directory.GetFiles(InstallPath, "*.dll", enumerationOptions);
 
                 /*
                 var dlssDllPaths = Directory.GetFiles(InstallPath, "nvngx_dlss.dll", enumerationOptions);
@@ -569,6 +606,10 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
                     RecordWhetherACoverWasFound();
                 }
+
+                // The walk finished. Stamped even when it found nothing, which is the whole point of
+                // having it: see the remark on LastScannedAt.
+                LastScannedAt = DateTime.UtcNow;
             }
             catch (Exception err)
             {
@@ -759,7 +800,10 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 GameAssets.Select(x => x.Path),
                 StringComparer.OrdinalIgnoreCase);
 
-            foreach (var dllPath in Directory.EnumerateFiles(InstallPath, "*.dll", enumerationOptions))
+            var dllPaths = Directory.GetFiles(InstallPath, "*.dll", enumerationOptions);
+            var foundUnrecorded = false;
+
+            foreach (var dllPath in dllPaths)
             {
                 // Only the dlls this app manages. Everything else in a game folder is noise.
                 if (DllTypes.ForFileName(Path.GetFileName(dllPath)) is null)
@@ -769,9 +813,20 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
                 if (recorded.Contains(dllPath) == false)
                 {
-                    return true;
+                    foundUnrecorded = true;
+                    break;
                 }
             }
+
+            if (foundUnrecorded)
+            {
+                // Handed to ProcessGame, which is about to walk this exact tree for this exact
+                // reason. Kept only when the answer is yes, so a library of games with nothing to
+                // do does not sit on a path list per game for the sake of a scan that never runs.
+                _dllPathsFromLastCheck = dllPaths;
+            }
+
+            return foundUnrecorded;
         }
         catch (Exception err)
         {
@@ -781,6 +836,32 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// The dll paths <see cref="HasUnrecordedDlls"/> just saw, if it saw any.
+    /// </summary>
+    /// <remarks>
+    /// The guard walks the whole install folder and then, when it says yes, ProcessGame walked the
+    /// identical tree again a moment later. Passing the first walk's result across saves the second
+    /// for every game that actually changed.
+    /// </remarks>
+    string[]? _dllPathsFromLastCheck;
+
+    /// <summary>
+    /// Takes the handed-over paths, once.
+    /// </summary>
+    /// <remarks>
+    /// Cleared as it is read, so a later scan of the same game cannot be answered with what its
+    /// folder held some time ago. A scan with nothing handed to it walks the folder itself, which
+    /// is what happens for a game reprocessed for any other reason.
+    /// </remarks>
+    string[]? TakeDllPathsFromLastCheck()
+    {
+        var dllPaths = _dllPathsFromLastCheck;
+        _dllPathsFromLastCheck = null;
+
+        return dllPaths;
     }
 
     /// <summary>
@@ -1905,11 +1986,27 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         }
         else
         {
-            // If there is no known current DLLs then we likely want to do a full reload in case the game got updated.
-            // TODO: Also add a time last reloaded here.
-            NeedsProcessing = true;
+            // No recorded dlls, which is either a game that has none - most of a library - or one
+            // that has never been looked at. Those were the same state until LastScannedAt existed,
+            // and treating both as "never looked at" is what made the cache apply to almost nothing.
+            NeedsProcessing = HasNotBeenScannedRecently();
             return;
         }
+    }
+
+    /// <summary>Whether a game with no recorded dlls is worth walking again.</summary>
+    bool HasNotBeenScannedRecently()
+    {
+        if (LastScannedAt is null)
+        {
+            return true;
+        }
+
+        var age = DateTime.UtcNow - LastScannedAt.Value;
+
+        // A clock that has gone backwards - a timezone change, a corrected system time - would
+        // otherwise park a game on the far side of the interval indefinitely.
+        return age.TotalDays >= FullRescanIntervalDays || age < TimeSpan.Zero;
     }
 
     public bool IsInIgnoredPath()
