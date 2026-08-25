@@ -260,18 +260,97 @@ internal partial class GameManager : ObservableObject
 
     }
 
+    /// <summary>
+    /// Every cached game's recorded dlls, read in one go and handed out as each game asks.
+    /// </summary>
+    /// <remarks>
+    /// Null except during a cache load. Each game used to run its own <c>WHERE id = ?</c> against
+    /// game_asset, taking the database mutex for each - one query and one lock per game, in a phase
+    /// that is the reason the list is not on screen yet.
+    /// </remarks>
+    Dictionary<string, List<GameAsset>>? _prefetchedGameAssets;
+
+    /// <summary>
+    /// This game's recorded dlls out of the prefetch, or null if there is no prefetch to read.
+    /// </summary>
+    /// <remarks>
+    /// Null and empty mean different things here. Null is "ask the database yourself"; an empty
+    /// list is "the prefetch covered you and you have none", which is most of a library.
+    /// </remarks>
+    internal List<GameAsset>? PrefetchedAssetsFor(string gameId)
+    {
+        var prefetched = _prefetchedGameAssets;
+
+        if (prefetched is null)
+        {
+            return null;
+        }
+
+        return prefetched.TryGetValue(gameId, out var assets) ? assets : new List<GameAsset>();
+    }
+
     public async Task LoadGamesFromCacheAsync()
     {
         UnknownAssetsFound = false;
         _unknownGameAssets.Clear();
 
-        foreach (var gameLibraryEnum in GameManager.Instance.GetGameLibraries(true))
+        try
         {
-            var gameLibrary = IGameLibrary.GetGameLibrary(gameLibraryEnum);
-            if (gameLibrary.IsEnabled)
+            _prefetchedGameAssets = await ReadAllGameAssetsAsync().ConfigureAwait(false);
+
+            foreach (var gameLibraryEnum in GameManager.Instance.GetGameLibraries(true))
             {
-                await gameLibrary.LoadGamesFromCacheAsync().ConfigureAwait(false);
+                var gameLibrary = IGameLibrary.GetGameLibrary(gameLibraryEnum);
+                if (gameLibrary.IsEnabled)
+                {
+                    await gameLibrary.LoadGamesFromCacheAsync().ConfigureAwait(false);
+                }
             }
+        }
+        finally
+        {
+            // Dropped as soon as the load is over. Anything reading assets after this point wants
+            // what is in the database now, not what was there when the app started.
+            _prefetchedGameAssets = null;
+        }
+    }
+
+    /// <summary>Every row of game_asset, grouped by the game it belongs to.</summary>
+    /// <remarks>
+    /// Returns null rather than throwing, so a failure here costs the batching and nothing else -
+    /// each game falls back to asking for its own.
+    /// </remarks>
+    static async Task<Dictionary<string, List<GameAsset>>?> ReadAllGameAssetsAsync()
+    {
+        try
+        {
+            List<GameAsset> allAssets;
+
+            using (await Database.Instance.Mutex.LockAsync())
+            {
+                allAssets = await Database.Instance.Connection.Table<GameAsset>().ToListAsync().ConfigureAwait(false);
+            }
+
+            var grouped = new Dictionary<string, List<GameAsset>>();
+
+            foreach (var gameAsset in allAssets)
+            {
+                if (grouped.TryGetValue(gameAsset.Id, out var assets) == false)
+                {
+                    assets = new List<GameAsset>();
+                    grouped[gameAsset.Id] = assets;
+                }
+
+                assets.Add(gameAsset);
+            }
+
+            return grouped;
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err);
+
+            return null;
         }
     }
 

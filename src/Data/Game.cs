@@ -160,17 +160,37 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     [Ignore]
     public abstract GameLibrary GameLibrary { get; }
 
-    [Ignore]
-    //public string ExpectedCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_600_900.jpg");
-    //public string ExpectedCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_600_900.png");
-    public string ExpectedCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_400_600.png");
-    //public string ExpectedCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_600_900.webp");
+    /// <summary>
+    /// The cover art is drawn at 200x300, and these are what is kept on disk for it.
+    /// </summary>
+    /// <remarks>
+    /// A store's art is kept at twice the drawn size and one chosen by hand at three times it: a
+    /// downloaded cover is one of hundreds and is replaceable, while a chosen one was somebody's
+    /// decision and is the one likely to be looked at closely.
+    /// </remarks>
+    const int CoverDrawnWidth = 200;
 
+    const int CoverDrawnHeight = 300;
+
+    const int StoreCoverScale = 2;
+
+    const int CustomCoverScale = 3;
+
+    /// <summary>
+    /// Where a store's cover art is kept.
+    /// </summary>
+    /// <remarks>
+    /// The 400_600 in the name is the size this one is stored at. The custom one below carries the
+    /// same suffix and is stored at 600x900, which is simply wrong and is left alone deliberately:
+    /// the name is how an already downloaded cover is found, so changing it orphans every cover
+    /// anyone has ever chosen. Read the constants above for the sizes, not the filenames.
+    /// </remarks>
     [Ignore]
-    //public string ExpectedCustomCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_custom_600_900.jpg");
-    //public string ExpectedCustomCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_custom_600_900.png");
+    public string ExpectedCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_400_600.png");
+
+    /// <summary>Where a cover chosen by hand is kept. See <see cref="ExpectedCoverImage"/> on the name.</summary>
+    [Ignore]
     public string ExpectedCustomCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_custom_400_600.png");
-    //public string ExpectedCustomCoverImage => Path.Combine(Storage.GetImageCachePath(), $"{ID}_custom_600_900.webp");
 
     /// <summary>
     /// Remembers that a cover could not be fetched, so that failing is as good a reason to wait as
@@ -1371,12 +1391,11 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         {
             using (var image = await SixLabors.ImageSharp.Image.LoadAsync(imageStream).ConfigureAwait(false))
             {
-                // If images are really big we resize to at least 2x the 200x300 we display as.
                 // In future this should be updated to resize to display scale.
                 // If the image is smaller than this we are just saving as png.
                 var resizeOptions = new ResizeOptions()
                 {
-                    Size = new Size(200 * 2, 300 * 2),
+                    Size = new Size(CoverDrawnWidth * StoreCoverScale, CoverDrawnHeight * StoreCoverScale),
                     Sampler = KnownResamplers.Lanczos5,
                     Mode = ResizeMode.Min, // If image is smaller it won't be resized up.
                 };
@@ -1443,12 +1462,11 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         {
             using (var image = SixLabors.ImageSharp.Image.Load(stream))
             {
-                // If images are really big we resize to at least 3x the 200x300 we display as.
                 // In future this should be updated to resize to display scale.
                 // If the image is smaller than this we are just saving as png.
                 var resizeOptions = new ResizeOptions()
                 {
-                    Size = new Size(200 * 3, 300 * 3),
+                    Size = new Size(CoverDrawnWidth * CustomCoverScale, CoverDrawnHeight * CustomCoverScale),
                     Sampler = KnownResamplers.Lanczos5,
                     Mode = ResizeMode.Min, // If image is smaller it won't be resized up.
                 };
@@ -2058,13 +2076,23 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         await LoadCoverImageAsync();
 
         GameAssets.Clear();
-        using (await Database.Instance.Mutex.LockAsync())
+
+        // Out of the one read GameManager does for the whole library when it can, rather than a
+        // query and a lock per game. Null means there is no prefetch - a game loading on its own
+        // rather than as part of a cache load - and that game asks for its own.
+        var gameAssets = GameManager.Instance.PrefetchedAssetsFor(ID);
+
+        if (gameAssets is null)
         {
-            var gameAssets = await Database.Instance.Connection.Table<GameAsset>().Where(ga => ga.Id == ID).ToListAsync().ConfigureAwait(false);
-            if (gameAssets?.Any() == true)
+            using (await Database.Instance.Mutex.LockAsync())
             {
-                GameAssets.AddRange(gameAssets);
+                gameAssets = await Database.Instance.Connection.Table<GameAsset>().Where(ga => ga.Id == ID).ToListAsync().ConfigureAwait(false);
             }
+        }
+
+        if (gameAssets?.Any() == true)
+        {
+            GameAssets.AddRange(gameAssets);
         }
 
         UpdateCurrentDLLsFromGameAssets();
