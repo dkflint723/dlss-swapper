@@ -866,7 +866,10 @@
             bar it was opened from stays visible and the sheet reads as belonging to the list it is
             about to change.
         -->
-        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.UpdatePreviewVisibility, Mode=OneWay}">
+        <Grid
+            x:Name="UpdatePreviewSheet"
+            Grid.Row="1"
+            Visibility="{x:Bind ViewModel.UpdatePreviewVisibility, Mode=OneWay}">
             <!-- Clicking away is a cancel, same as Esc and the Cancel button. -->
             <Border Background="#73000000" Tapped="UpdatePreviewBackdrop_Tapped" />
 

@@ -3,7 +3,9 @@ using DLSS_Swapper.UserControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.System;
 using AsyncAwaitBestPractices;
@@ -47,6 +49,28 @@ public sealed partial class GameGridPage : Page
         this.InitializeComponent();
         ViewModel = new GameGridPageModel(this);
         DataContext = ViewModel;
+
+        // The preview sheet is a modal drawn inside the page rather than a dialog, so nothing gives
+        // it a focus scope for free. See UpdatePreviewOpened.
+        ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+        GettingFocus += RootGameGridPage_GettingFocus;
+    }
+
+    void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(GameGridPageModel.UpdatePreview))
+        {
+            return;
+        }
+
+        if (ViewModel.UpdatePreview is null)
+        {
+            UpdatePreviewClosed();
+        }
+        else
+        {
+            UpdatePreviewOpened();
+        }
     }
 
     bool hasFirstLoaded;
@@ -216,6 +240,107 @@ public sealed partial class GameGridPage : Page
     void UpdatePreviewBackdrop_Tapped(object sender, TappedRoutedEventArgs e)
     {
         ViewModel.CancelUpdatePreviewCommand.Execute(null);
+    }
+
+    /// <summary>
+    /// Puts focus into the preview sheet, and keeps it there while it is open.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A sheet that is about to write to game folders was, to the keyboard, not there at all. Focus
+    /// stayed on the button that opened it, so Tab walked the list, the filters and the command bar
+    /// underneath the dimming - all of it invisible behind a scrim and all of it still reachable and
+    /// still clickable by Space. There was no way to reach Confirm without a mouse.
+    /// </para>
+    /// <para>
+    /// Both halves are needed. Moving focus in is what makes the sheet operable; refusing to let it
+    /// back out is what makes the page behind it stop being a trap of its own.
+    /// </para>
+    /// </remarks>
+    void UpdatePreviewOpened()
+    {
+        _focusBeforeUpdatePreview = FocusManager.GetFocusedElement(XamlRoot) as Control;
+
+        // Queued rather than called straight. The sheet is made visible by a binding on this same
+        // property change, so at this point it has not been laid out and has nothing focusable in it
+        // yet - focusing it here silently did nothing.
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            if (ViewModel.UpdatePreview is null)
+            {
+                return;
+            }
+
+            if (FocusManager.FindFirstFocusableElement(UpdatePreviewSheet) is Control first)
+            {
+                first.Focus(FocusState.Programmatic);
+            }
+        });
+    }
+
+    /// <summary>Hands focus back to whatever opened the sheet.</summary>
+    /// <remarks>
+    /// Otherwise focus is left on a button that has just been collapsed, and the next Tab starts
+    /// again from the top of the page rather than from where the person was.
+    /// </remarks>
+    void UpdatePreviewClosed()
+    {
+        var restoreTo = _focusBeforeUpdatePreview;
+        _focusBeforeUpdatePreview = null;
+
+        if (restoreTo is null)
+        {
+            return;
+        }
+
+        DispatcherQueue.TryEnqueue(() => restoreTo.Focus(FocusState.Programmatic));
+    }
+
+    Control? _focusBeforeUpdatePreview;
+
+    void RootGameGridPage_GettingFocus(UIElement sender, GettingFocusEventArgs args)
+    {
+        if (ViewModel.UpdatePreview is null)
+        {
+            return;
+        }
+
+        if (args.NewFocusedElement is DependencyObject candidate && IsInsideUpdatePreview(candidate))
+        {
+            return;
+        }
+
+        // Wrapped in the direction it was going, so Tab off the end lands on the first control in
+        // the sheet and Shift+Tab off the start lands on the last - the same wrap a dialog gives.
+        var replacement = args.Direction == FocusNavigationDirection.Previous
+            ? FocusManager.FindLastFocusableElement(UpdatePreviewSheet)
+            : FocusManager.FindFirstFocusableElement(UpdatePreviewSheet);
+
+        if (replacement is Control control && args.TrySetNewFocusedElement(control))
+        {
+            args.Handled = true;
+
+            return;
+        }
+
+        args.TryCancel();
+    }
+
+    bool IsInsideUpdatePreview(DependencyObject element)
+    {
+        var current = element;
+
+        while (current is not null)
+        {
+            if (ReferenceEquals(current, UpdatePreviewSheet))
+            {
+                return true;
+            }
+
+            current = VisualTreeHelper.GetParent(current);
+        }
+
+        return false;
     }
 
     void EscapeAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
