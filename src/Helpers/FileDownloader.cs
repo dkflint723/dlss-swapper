@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Buffers;
 using System.IO;
 using System.Net;
@@ -200,7 +200,12 @@ public partial class FileDownloader : ObservableObject
         finally
         {
             ArrayPool<byte>.Shared.Return(buffer);
+
+            // Disposed, not merely stopped. A stopped timer is still a live object holding a handler
+            // that captures this downloader, and one of these is made per file - so a bulk download
+            // of every dll in the library left one behind for each.
             uiUpdateTimer?.Stop();
+            uiUpdateTimer?.Dispose();
         }
     }
 }

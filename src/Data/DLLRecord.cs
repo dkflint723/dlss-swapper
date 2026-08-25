@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -257,8 +257,15 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
 
     internal void CancelDownload()
     {
-        _cancellationTokenSource?.Cancel();
+        var cancellation = _cancellationTokenSource;
         _cancellationTokenSource = null;
+
+        cancellation?.Cancel();
+
+        // A linked source registers a callback on the token it was linked to, and that registration
+        // outlives the download until this is called. Downloading a hundred dlls in one run left a
+        // hundred of them attached to the caller's token.
+        cancellation?.Dispose();
     }
 
     /// <summary>
@@ -280,11 +287,14 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
             return (false, "Local record is null.", false);
         }
 
-        _cancellationTokenSource?.Cancel();
+        // Through CancelDownload rather than cancelling in place, so the one it replaces is
+        // disposed rather than dropped.
+        CancelDownload();
 
         // Linked so the existing per record cancel button still works alongside the caller's.
-        _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(callerCancellationToken);
-        var cancellationToken = _cancellationTokenSource.Token;
+        var cancellation = CancellationTokenSource.CreateLinkedTokenSource(callerCancellationToken);
+        _cancellationTokenSource = cancellation;
+        var cancellationToken = cancellation.Token;
 
         var fileDownloader = new FileDownloader(DownloadUrl);
         var tempZipFile = Path.Combine(Storage.GetTemp(), $"{fileDownloader.Guid.ToString("D").ToUpper()}.zip");
@@ -367,6 +377,15 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
             {
                 // NOOP
             }
+
+            // Only when it is still ours. A second download started while this one was finishing
+            // has already replaced the field, and disposing it here would cancel that one instead.
+            if (ReferenceEquals(_cancellationTokenSource, cancellation))
+            {
+                _cancellationTokenSource = null;
+            }
+
+            cancellation.Dispose();
         }
     }
 

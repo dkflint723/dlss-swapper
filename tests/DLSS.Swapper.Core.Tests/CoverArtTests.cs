@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DLSS_Swapper.CoverArt;
 using Xunit;
 
@@ -219,6 +220,46 @@ public class CoverArtTests
     public void ReadImages_SkipsArtWithNothingBehindIt()
     {
         Assert.DoesNotContain(CoverArtJson.ReadImages(GridResponse), x => x.Id == 5);
+    }
+
+    /// <summary>
+    /// Anything that is not an http url is dropped here rather than by whatever tries to fetch it.
+    /// </summary>
+    /// <remarks>
+    /// The picker turns a thumbnail into a Uri without asking, so one unparseable row used to throw
+    /// away the whole page of results. A file:// or data: url is worse than broken: it would be an
+    /// api response pointing this app at something local.
+    /// </remarks>
+    [Theory]
+    [InlineData("/relative/path.png")]
+    [InlineData("file:///C:/Windows/System32/notepad.exe")]
+    [InlineData("data:image/png;base64,iVBORw0KGgo=")]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("not a url at all")]
+    public void ReadImages_SkipsArtThatIsNotAnHttpUrl(string url)
+    {
+        var json = """
+            {"data":[
+              {"id":9,"width":600,"height":900,"style":"alternate",
+               "url":"URL","thumb":"URL","author":{"name":"a"}}
+            ]}
+            """.Replace("URL", url, StringComparison.Ordinal);
+
+        Assert.Empty(CoverArtJson.ReadImages(json));
+    }
+
+    [Fact]
+    public void ReadImages_KeepsHttpsArt()
+    {
+        var json = """
+            {"data":[
+              {"id":9,"width":600,"height":900,"style":"alternate",
+               "url":"https://cdn2.steamgriddb.com/grid/a.png",
+               "thumb":"https://cdn2.steamgriddb.com/thumb/a.jpg","author":{"name":"a"}}
+            ]}
+            """;
+
+        Assert.Single(CoverArtJson.ReadImages(json));
     }
 
     #endregion

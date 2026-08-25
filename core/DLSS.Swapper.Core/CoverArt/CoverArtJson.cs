@@ -128,9 +128,11 @@ public static class CoverArtJson
             var url = TryReadString(element, "url");
             var thumbnail = TryReadString(element, "thumb");
 
-            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(thumbnail))
+            if (IsFetchableUrl(url) == false || IsFetchableUrl(thumbnail) == false)
             {
-                // A row with nothing to show and nothing to apply is not worth a tile.
+                // A row with nothing to show and nothing to apply is not worth a tile. Dropped here
+                // rather than left for the picker, which turns the thumbnail into a Uri without
+                // asking and threw the whole page of results away on the one bad row.
                 continue;
             }
 
@@ -150,6 +152,20 @@ public static class CoverArtJson
         }
 
         return images;
+    }
+
+    /// <summary>
+    /// Whether this is a url we would be willing to fetch.
+    /// </summary>
+    /// <remarks>
+    /// Absolute, and http or https. Anything else is not something to hand to an image control or a
+    /// download - a relative path, a file:// or a data: url is at best broken and at worst a
+    /// response telling this app to read something local.
+    /// </remarks>
+    static bool IsFetchableUrl(string? url)
+    {
+        return Uri.TryCreate(url, UriKind.Absolute, out var parsed)
+            && (parsed.Scheme == Uri.UriSchemeHttp || parsed.Scheme == Uri.UriSchemeHttps);
     }
 
     static IEnumerable<JsonElement> EnumerateData(string json)

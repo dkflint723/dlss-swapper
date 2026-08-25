@@ -632,10 +632,15 @@ public partial class LibraryPageModel : ObservableObject
 
             foreach (var importFile in openFileList)
             {
+                // Snapshotted before the lambda, not read inside it. These updates are queued to
+                // the UI thread from a thread pool item that keeps counting, so a lambda reading the
+                // counter directly reported whatever it had reached by the time the queue got round
+                // to it - the bar and the "processed" number could describe different files.
                 ++selectedFilesProcessed;
+                var filesDone = selectedFilesProcessed;
                 App.CurrentApp.RunOnUIThread(() =>
                 {
-                    filesProgressBar.Value = selectedFilesProcessed;
+                    filesProgressBar.Value = filesDone;
                 });
 
                 if (importFile is null || File.Exists(importFile) == false)
@@ -674,9 +679,10 @@ public partial class LibraryPageModel : ObservableObject
                                 if (HandleLocalDLLRecordZip(importFile, zipRecord, importResults))
                                 {
                                     ++totalDllsProcessed;
+                                    var knownZipDllsDone = totalDllsProcessed;
                                     App.CurrentApp.RunOnUIThread(() =>
                                     {
-                                        progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
+                                        progressRun.Text = knownZipDllsDone.ToString(CultureInfo.CurrentCulture);
                                     });
                                     handledKnownZip = true;
                                     break;
@@ -707,7 +713,11 @@ public partial class LibraryPageModel : ObservableObject
                             App.CurrentApp.RunOnUIThread(() =>
                             {
                                 dllInZipProgressBar.IsIndeterminate = false;
-                                dllInZipProgressBar.Value = processedDllsInZip;
+
+                                // Zero, said as zero. This is the reset before the zip's own loop
+                                // starts, and reading the counter here meant it could arrive after
+                                // the loop had moved on and set the bar backwards.
+                                dllInZipProgressBar.Value = 0;
                                 dllInZipProgressBar.Maximum = dllsInZip;
                             });
 
@@ -720,10 +730,12 @@ public partial class LibraryPageModel : ObservableObject
 
                                 ++processedDllsInZip;
                                 ++totalDllsProcessed;
+                                var zipDllsDone = processedDllsInZip;
+                                var allDllsDone = totalDllsProcessed;
                                 App.CurrentApp.RunOnUIThread(() =>
                                 {
-                                    dllInZipProgressBar.Value = processedDllsInZip;
-                                    progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
+                                    dllInZipProgressBar.Value = zipDllsDone;
+                                    progressRun.Text = allDllsDone.ToString(CultureInfo.CurrentCulture);
                                 });
 
 
@@ -756,9 +768,10 @@ public partial class LibraryPageModel : ObservableObject
                         }
 
                         ++totalDllsProcessed;
+                        var looseDllsDone = totalDllsProcessed;
                         App.CurrentApp.RunOnUIThread(() =>
                         {
-                            progressRun.Text = totalDllsProcessed.ToString(CultureInfo.CurrentCulture);
+                            progressRun.Text = looseDllsDone.ToString(CultureInfo.CurrentCulture);
                         });
                     }
                 }
