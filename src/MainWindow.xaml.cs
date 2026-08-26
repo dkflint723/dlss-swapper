@@ -216,8 +216,8 @@ public sealed partial class MainWindow : Window
     /// </remarks>
     public void GoToGames()
     {
+        // GoToPage closes the sheet, so there is nothing else to do here.
         GoToPage(GameGridPage.PageTag);
-        gameGridPage?.CloseGameDetail();
     }
 
     void Sidebar_FixMissingBackupsInvoked(object? sender, EventArgs e)
@@ -265,6 +265,15 @@ public sealed partial class MainWindow : Window
             {
                 ContentFrame.Content = gameGridPage ??= new GameGridPage();
             }
+
+            // Every arrival at the games page closes the sheet, here rather than at the callers.
+            // The sheet lives on this page and the page is cached, so leaving and coming back used
+            // to bring the sheet with it: "show games using this dll" and the sidebar's missing
+            // backup card both landed on a filtered list hidden under a game opened minutes
+            // earlier, and clicking Games in the sidebar to escape did nothing at all, because the
+            // branch above sees the page is already there and stops. Navigating away from a detail
+            // view used to be impossible to get wrong - the detail WAS the page.
+            gameGridPage.CloseGameDetail();
         }
         else if (page == LibraryPage.PageTag)
         {

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Helpers;
@@ -49,7 +49,12 @@ public class UpscalerRowStatus
         var newest = DLLManager.Instance.GetLatestRecord(assetType)?.DisplayVersion ?? string.Empty;
 
         var isBehind = game.OutdatedAssetTypes.Contains(assetType);
-        var hasBackup = HasSavedOriginal(game, assetType);
+        // Game.HasSavedOriginal, per location, the same rule the games list, the row status and the
+        // sidebar all read. This had its own copy asking whether a backup of the same TYPE existed
+        // anywhere in the game - so a game with one dll in two folders and a copy beside only one of
+        // them was reported as missing a copy by the list, and as having one by the very page you
+        // open to do something about it. Every location has to be covered for the row to say so.
+        var hasBackup = installedAssets.Count > 0 && installedAssets.All(game.HasSavedOriginal);
 
         // The same rule the asset slot applies, from the same list it applies it to.
         var multipleFound = installedAssets.Count > 1;
@@ -65,26 +70,6 @@ public class UpscalerRowStatus
                 : installed,
             IsLocked = game.SkipUpdates,
         };
-    }
-
-    /// <summary>Whether a copy of what this game shipped with is sitting beside it.</summary>
-    static bool HasSavedOriginal(Game game, GameAssetType assetType)
-    {
-        var definition = DllTypes.ForAssetType(assetType);
-        if (definition is null)
-        {
-            return false;
-        }
-
-        foreach (var gameAsset in game.GameAssets)
-        {
-            if (gameAsset.AssetType == definition.BackupAssetType)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /// <summary>

@@ -118,13 +118,47 @@ public sealed partial class GameGridPage : Page
         ViewModel.OpenGame = null;
         GameDetailHost.Content = null;
 
+        // A pending restore that points inside the sheet is about to become a detached element, so
+        // it is re-pointed at whatever opened the sheet. Reachable: the game page's "Update all
+        // dlls" opens the preview and closes the sheet in that order, so the preview recorded a
+        // button that this line is about to tear out of the tree, and cancelling the preview then
+        // restored focus nowhere at all.
+        if (_focusBeforeUpdatePreview is not null && IsInside(_focusBeforeUpdatePreview, GameDetailSheet))
+        {
+            _focusBeforeUpdatePreview = _focusBeforeGameDetail;
+        }
+
         var restoreTo = _focusBeforeGameDetail;
         _focusBeforeGameDetail = null;
 
-        if (restoreTo is not null)
+        RestoreFocusTo(restoreTo);
+    }
+
+    /// <summary>
+    /// Puts focus back on a control, if it is still there to put it on.
+    /// </summary>
+    /// <remarks>
+    /// Focus() on a detached element returns false and does nothing, which leaves the window with no
+    /// focused element at all: the next Tab starts again from the top of the page with no visible
+    /// ring in between. XamlRoot goes null when an element leaves the tree, which is the cheapest
+    /// way to ask.
+    /// </remarks>
+    void RestoreFocusTo(Control? restoreTo)
+    {
+        if (restoreTo is null)
         {
-            DispatcherQueue.TryEnqueue(() => restoreTo.Focus(FocusState.Programmatic));
+            return;
         }
+
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            if (restoreTo.XamlRoot is null)
+            {
+                return;
+            }
+
+            restoreTo.Focus(FocusState.Programmatic);
+        });
     }
 
     Control? _focusBeforeGameDetail;
@@ -377,12 +411,7 @@ public sealed partial class GameGridPage : Page
         var restoreTo = _focusBeforeUpdatePreview;
         _focusBeforeUpdatePreview = null;
 
-        if (restoreTo is null)
-        {
-            return;
-        }
-
-        DispatcherQueue.TryEnqueue(() => restoreTo.Focus(FocusState.Programmatic));
+        RestoreFocusTo(restoreTo);
     }
 
     Control? _focusBeforeUpdatePreview;

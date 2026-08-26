@@ -8,7 +8,94 @@ Nothing here has been offered upstream. Builds from this fork are **unsigned**; 
 project is the signed, official one. Versions here carry a fourth part that is this fork's own
 count, so 1.2.5.1 is the first build from this repository on top of upstream's 1.2.5.
 
-## Unreleased — interface redesign
+## v1.2.6.0 — keeping your original dlls
+
+Forked at upstream v1.2.5. Takes upstream's DLSS 310.7.128 entries and its DLSS D Preset F.
+
+Most of this release is one theme: several ways the app could destroy the copy of a dll your game
+shipped with — the file that lets you put a game back the way it came. None of them announced
+themselves, and most needed nothing unusual to happen.
+
+### Your saved originals
+
+- **Ignoring a folder no longer deletes what is inside it.** Every launcher's scan skips a game in an
+  ignored path, and every launcher then deletes the games its scan did not return, assuming they were
+  uninstalled — which deletes their saved originals. So adding an ignored path destroyed the original
+  dll of every game underneath it on the very next refresh. The game still leaves the app; the files
+  stay, and un-ignoring the path finds them again.
+- **A scan no longer invents an original.** When an installed dll stopped matching the version on
+  record, the scan deleted the saved original and then immediately wrote a new one from whatever was
+  installed at that moment — which could be a dll the app itself had swapped in and failed to record.
+  Reverting would then have restored the swapped dll and reported success. The row now says plainly
+  that there is no saved original, and "Save a copy" takes a fresh one when you ask.
+- **"Save a copy" covers every location of a dll.** A game shipping the same dll in two folders had
+  the first copied, the second skipped, and success reported — and the row then read as protected
+  while that second location had nothing saved anywhere. The same wrong question was being asked in
+  four places, so the list, the row and the sidebar all agreed.
+- **Deleting a saved original is written down before the file goes**, so an interrupted scan can no
+  longer destroy the copy and the note that it did.
+- **A failed swap removes a dll it created.** When a target file was missing, the swap wrote one and
+  could not undo that, so a swap that failed part way left a dll in your game folder while reporting
+  that nothing had changed.
+
+### Your settings and your imported dlls
+
+- **An interrupted write no longer costs you either.** Settings, the imported dll list and the cached
+  update check were each written by emptying the real file first, so a crash, a power cut or a full
+  disk left nothing behind. Settings were then silently replaced with defaults — api key, ignored
+  paths, library order, language, theme. The imported dll list disabled importing permanently, with
+  the dlls still on disk and nothing left saying what they were. All three are now written beside the
+  real file and moved over it, so it is either entirely the old one or entirely the new one.
+- **A settings file that cannot be read is left alone.** A file held open for a moment by an
+  antivirus used to read as "no settings yet" and get overwritten. Being unreadable and being absent
+  are now different answers.
+- **Imported dlls survive upgrading.** A dll that existed only in your imported list was skipped by
+  the upgrade to the current layout, then read as missing and removed — it disappeared from the
+  library on the first launch after updating, silently. Only genuinely custom dlls could hit this,
+  which are the ones that cannot be downloaded again.
+- **A zip that writes outside the import folder is refused.** Entry names inside a zip are chosen by
+  whoever made it, and are not always a plain file name.
+
+### Things that were not true
+
+- **A game with no upscalers says so** instead of "Up to date", which was a claim about DLSS being
+  current in a game that has no DLSS.
+- **The update count clears when the batch finishes.** "Review 13 updates" stayed on screen over rows
+  that all read up to date, and then did nothing when pressed.
+- **Searching survives clicking a filter tab.** The box kept your text over a list that had stopped
+  honouring it.
+- **Update prompts come back.** Closing one update dialog suppressed every future release
+  permanently — the check asked whether it had prompted before and answered the question backwards.
+- **Two games from different launchers that share an id are two games.** Owning a Steam game and a
+  Ubisoft game with the same number made one silently overwrite the other's name and install path.
+
+### Cover art
+
+- **Apply cannot run twice.** Pressing it again re-ran games already done, overwriting the backup of
+  your own cover with the one the scan had just written — and undo then deleted your cover outright.
+- **Stopping part way keeps undo**, and says how many were applied. It used to say nothing at all and
+  hide the button, then delete the backups when the dialog closed.
+- **Undo says how many it actually put back** rather than always claiming success.
+- **A stalled search gives up** instead of sitting silent, and a scan that is stopped keeps what it
+  found rather than throwing it away.
+
+### Interface
+
+- **A game opens over the list rather than instead of it.** Closing it leaves the list exactly where
+  it was — same scroll position, same search, same tab — so looking at several games in a row is no
+  longer a round trip through a list that resets each time. Escape, the back button and clicking away
+  all close it.
+
+### Under it
+
+- The library is no longer rewritten to the database on every launch — measured at 25 writes per
+  start before, none now unless something actually changed.
+- Setting a game's title during a scan could throw and take the rest of that launcher's scan with it,
+  so a game renamed or moved to another drive stopped the whole library being scanned.
+- The installed build walked its own dll cache on every launch to refresh a number in Windows' Apps
+  list. Once a week now.
+
+## v1.2.5.1 — interface redesign
 
 Forked at upstream v1.2.5.
 

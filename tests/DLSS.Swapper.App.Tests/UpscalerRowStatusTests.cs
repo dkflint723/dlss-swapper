@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Dlls;
+using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Swapping;
 using Xunit;
 
@@ -172,6 +173,54 @@ public class UpscalerRowStatusTests
     /// See the note in Asset: a backup is always the dll it shadows plus ".dlsss", so a fixture that
     /// invents a path for it is describing something that cannot exist.
     /// </remarks>
+    /// <summary>
+    /// The page you open to act on a missing original has to agree that it is missing.
+    /// </summary>
+    /// <remarks>
+    /// This row kept a fourth private copy of "has a saved original", asked by asset type rather
+    /// than by path - so a game shipping one dll in two folders with a copy beside only one of them
+    /// was reported as missing a copy by the list, the row and the sidebar, and as having one by the
+    /// game's own page. It reads Game.HasSavedOriginal now, like the other three.
+    /// </remarks>
+    [Fact]
+    public void ARowCoveringTwoLocationsNeedsBothSaved()
+    {
+        var game = new TestGame("upscaler_two_locations");
+
+        var first = Asset(game.ID, GameAssetType.DLSS, "310.7.0.0");
+        var second = new GameAsset()
+        {
+            Id = game.ID,
+            AssetType = GameAssetType.DLSS,
+            Path = @"C:\game\Engine\DLSS.dll",
+            Version = "310.7.0.0",
+            Size = 1024,
+            Hash = string.Empty,
+        };
+
+        game.GameAssets.Add(first);
+        game.GameAssets.Add(second);
+
+        // Only the first location has its original beside it.
+        game.GameAssets.Add(new GameAsset()
+        {
+            Id = game.ID,
+            AssetType = GameAssetType.DLSS_BACKUP,
+            Path = DllSwapExecutor.GetBackupPath(first.Path),
+            Version = "310.7.0.0",
+            Size = 1024,
+            Hash = string.Empty,
+        });
+
+        // The list already says so; the game's own row has to say the same.
+        Assert.True(GameFilters.IsMissingABackup(game));
+        Assert.Equal(GameRowState.NoBackup, GameRowStatus.For(game).State);
+
+        var row = UpscalerRowStatus.For(game, GameAssetType.DLSS);
+
+        Assert.Contains(ResourceHelper.GetString("GamePage_Row_NoSavedOriginal"), row.Sentence);
+    }
+
     static string BackupAwarePath(GameAssetType assetType)
     {
         var shadowed = DllTypes.All.FirstOrDefault(x => x.BackupAssetType == assetType);

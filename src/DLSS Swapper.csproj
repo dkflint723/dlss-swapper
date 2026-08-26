@@ -21,7 +21,7 @@
       never claims to be a release the original made — the app reports it, the installer stamps it,
       and the updater compares against it.
     -->
-    <Version>1.2.5.1</Version>
+    <Version>1.2.6.0</Version>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <PublishSingleFile>false</PublishSingleFile>

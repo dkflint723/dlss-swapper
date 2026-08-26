@@ -663,7 +663,13 @@
             The strip is docked over the content rather than beside it, so without this the last row
             sits behind it and looks like the end of the list.
         -->
-        <ContentControl x:Name="MainContentControl" Grid.Row="1" Margin="{x:Bind ViewModel.ContentBottomMargin, Mode=OneWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Content="{x:Bind ViewModel, Mode=OneWay}" ContentTemplateSelector="{StaticResource TemplateSelector}" />
+        <!--
+            AccessibilityView follows whether a sheet is up. A scrim only stops the pointer, so
+            without this a screen reader walks out of the sheet onto the game cards behind it and
+            invokes them without ever needing focus - which the pointer scrim and the focus trap
+            both fail to prevent, because neither is what the control view is built from.
+        -->
+        <ContentControl x:Name="MainContentControl" Grid.Row="1" AutomationProperties.AccessibilityView="{x:Bind ViewModel.BehindSheetAccessibilityView, Mode=OneWay}" Margin="{x:Bind ViewModel.ContentBottomMargin, Mode=OneWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Content="{x:Bind ViewModel, Mode=OneWay}" ContentTemplateSelector="{StaticResource TemplateSelector}" />
 
         <!--
             What the content area says when there is nothing in it. Flush left rather than centred
@@ -877,9 +883,13 @@
         </Border>
 
         <!--
-            The preview sheet. In the content row rather than over the whole page, so the command
-            bar it was opened from stays visible and the sheet reads as belonging to the list it is
-            about to change.
+            The preview sheet, over the whole page including the command bar.
+            It used to sit in the content row only, so the bar it was opened from stayed visible -
+            which also left it live. Refresh and the filter tabs still acted on the list behind it,
+            and with a game open you could press "Review N updates" and render the confirm step for
+            writing dlls into game folders underneath the other sheet's scrim: dimmed, unclickable,
+            and unreachable by keyboard because the focus trap dragged focus back out of it.
+            Covering the header is what makes a modal modal.
         -->
         <!--
             TabFocusNavigation Cycle as well as the GettingFocus handler in the code behind, which is
@@ -892,8 +902,11 @@
         -->
         <Grid
             x:Name="UpdatePreviewSheet"
-            Grid.Row="1"
+            Grid.Row="0"
+            Grid.RowSpan="2"
             TabFocusNavigation="Cycle"
+            AutomationProperties.IsDialog="True"
+            AutomationProperties.Name="{x:Bind ViewModel.UpdatePreview.Title, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.UpdatePreviewVisibility, Mode=OneWay}">
             <!-- Clicking away is a cancel, same as Esc and the Cancel button. -->
             <Border Background="#73000000" Tapped="UpdatePreviewBackdrop_Tapped" />
@@ -1075,8 +1088,11 @@
         -->
         <Grid
             x:Name="GameDetailSheet"
-            Grid.Row="1"
+            Grid.Row="0"
+            Grid.RowSpan="2"
             TabFocusNavigation="Cycle"
+            AutomationProperties.IsDialog="True"
+            AutomationProperties.Name="{x:Bind ViewModel.GameDetailAccessibleName, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.GameDetailVisibility, Mode=OneWay}">
 
             <!-- Clicking away closes it, the same as Escape and the header's back button. -->
@@ -1110,8 +1126,7 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    IsTabStop="False"
-                    AutomationProperties.Name="{x:Bind ViewModel.GameDetailAccessibleName, Mode=OneWay}" />
+                    IsTabStop="False" />
             </Border>
         </Grid>
 

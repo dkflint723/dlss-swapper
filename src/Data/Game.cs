@@ -372,6 +372,9 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
         ThreadPool.QueueUserWorkItem(async (stateInfo) =>
         {
+            // Declared out here so the catch can put it back. See the catch for why.
+            var oldGameAssets = new List<GameAsset>();
+
             var newHasSwappableItems = false;
 
             try
@@ -455,7 +458,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 enumerationOptions.RecurseSubdirectories = true;
                 enumerationOptions.AttributesToSkip |= FileAttributes.ReparsePoint;
 
-                var oldGameAssets = GameAssets.ToList();
+                oldGameAssets = GameAssets.ToList();
                 GameAssets.Clear();
                 // TODO: See if changing these to filter specific files, or getting very *.dll and looking for our specific ones is faster
                 //
@@ -693,6 +696,17 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             catch (Exception err)
             {
                 Logger.Error(err);
+
+                // Put back what the scan emptied before it began. A game whose drive was unplugged
+                // part way through was left with no assets and a timestamp from a previous scan,
+                // which reads as "this game has no upscalers in it" - a confident statement, about a
+                // game that plainly ships one. Restoring the last known list keeps the row honest
+                // until HasUnrecordedDlls brings the game back for another look.
+                if (GameAssets.Count == 0 && oldGameAssets.Count > 0)
+                {
+                    GameAssets.AddRange(oldGameAssets);
+                }
+
                 Debugger.Break();
             }
             finally

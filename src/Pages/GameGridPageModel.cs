@@ -100,13 +100,6 @@ public partial class GameGridPageModel : ObservableObject
     public partial Visibility ReviewUpdatesVisibility { get; set; } = Visibility.Collapsed;
 
     /// <summary>
-    /// Recomputes the tab counts and the review button.
-    /// </summary>
-    /// <remarks>
-    /// The counts come from the same rule that decides what each tab shows, so a tab reading "3"
-    /// cannot open onto four games.
-    /// </remarks>
-    /// <summary>
     /// The game whose details are open over the list, or null when none is.
     /// </summary>
     /// <remarks>
@@ -121,21 +114,37 @@ public partial class GameGridPageModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GameDetailVisibility))]
     [NotifyPropertyChangedFor(nameof(GameDetailAccessibleName))]
+    [NotifyPropertyChangedFor(nameof(BehindSheetAccessibilityView))]
     public partial Game? OpenGame { get; set; }
 
     public Visibility GameDetailVisibility => OpenGame is null ? Visibility.Collapsed : Visibility.Visible;
 
-    /// <summary>Reads "Close DOOM: The Dark Ages", so the dismiss control names what it dismisses.</summary>
+    /// <summary>
+    /// Names the sheet for a screen reader: "DOOM: The Dark Ages details".
+    /// </summary>
+    /// <remarks>
+    /// It used to read "Close DOOM: The Dark Ages" and sit on the container holding the whole page -
+    /// a thing that cannot be closed, cannot be invoked, and is not a button. A name is a promise
+    /// about what a node is, and that one described a control that does not exist. The ways out are
+    /// named where they are: the page's own "Back to games" button, Escape, and the dimmed area.
+    /// </remarks>
     public string GameDetailAccessibleName => OpenGame is null
         ? string.Empty
-        : ResourceHelper.GetFormattedResourceTemplate("GamePage_CloseTemplate", OpenGame.Title);
+        : ResourceHelper.GetFormattedResourceTemplate("GamePage_DetailsTemplate", OpenGame.Title);
 
-    /// <summary>Closes the game sheet. One of four ways out, all the same call.</summary>
-    [RelayCommand]
-    void CloseGameDetail()
-    {
-        gameGridPage.CloseGameDetail();
-    }
+    /// <summary>
+    /// Whether the page behind a sheet should be hidden from assistive technology.
+    /// </summary>
+    /// <remarks>
+    /// A scrim only stops the pointer. The list, the toolbar and the tabs behind it stay in the
+    /// automation tree, so a screen reader walks straight out of the sheet onto controls the user
+    /// cannot see and invokes them without needing focus. Raw takes them out of the control view for
+    /// as long as either sheet is up.
+    /// </remarks>
+    public Microsoft.UI.Xaml.Automation.Peers.AccessibilityView BehindSheetAccessibilityView =>
+        OpenGame is not null || UpdatePreview is not null
+            ? Microsoft.UI.Xaml.Automation.Peers.AccessibilityView.Raw
+            : Microsoft.UI.Xaml.Automation.Peers.AccessibilityView.Content;
 
     /// <summary>
     /// The games the page is currently about.
@@ -751,6 +760,7 @@ public partial class GameGridPageModel : ObservableObject
     /// <summary>The preview sheet's contents, or null when it is closed.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(UpdatePreviewVisibility))]
+    [NotifyPropertyChangedFor(nameof(BehindSheetAccessibilityView))]
     public partial UpdatePreviewModel? UpdatePreview { get; set; }
 
     public Visibility UpdatePreviewVisibility => UpdatePreview is null ? Visibility.Collapsed : Visibility.Visible;
