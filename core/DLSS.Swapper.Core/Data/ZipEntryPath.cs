@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 
 namespace DLSS_Swapper.Data;
@@ -55,6 +55,24 @@ public static class ZipEntryPath
             return false;
         }
 
+        // Both separators, on every host. A zip may spell its paths either way whatever machine
+        // wrote it, and what counts as a separator otherwise depends on the machine reading it -
+        // on Linux a backslash is an ordinary character, so "..\..\evil.dll" reads as one long
+        // file name and sails through a containment check that only understands "/". This app only
+        // ships on Windows, but the rule is not allowed to be true only there: a guard that stops
+        // being a guard when the host changes is worse than no guard, because the tests that prove
+        // it still pass somewhere.
+        var normalisedEntry = entryName.Replace('\\', Path.DirectorySeparatorChar)
+            .Replace('/', Path.DirectorySeparatorChar);
+
+        // Rooted in the Windows sense as well as the host's. Path.IsPathRooted answers for the
+        // platform it is running on, so a drive letter or a UNC path is "not rooted" on Linux and
+        // would be combined onto the folder rather than refused.
+        if (IsRootedAnywhere(normalisedEntry))
+        {
+            return false;
+        }
+
         string resolvedRoot;
         string candidate;
 
@@ -62,15 +80,7 @@ public static class ZipEntryPath
         {
             resolvedRoot = Path.GetFullPath(destinationDirectory);
 
-            // Refused before Path.Combine sees it. Combine silently discards the folder when the
-            // second argument is rooted, so an absolute entry name would otherwise not even look
-            // like an escape - it simply lands wherever it says.
-            if (Path.IsPathRooted(entryName))
-            {
-                return false;
-            }
-
-            candidate = Path.GetFullPath(Path.Combine(resolvedRoot, entryName));
+            candidate = Path.GetFullPath(Path.Combine(resolvedRoot, normalisedEntry));
         }
         catch (Exception)
         {
@@ -93,5 +103,34 @@ public static class ZipEntryPath
         fullPath = candidate;
 
         return true;
+    }
+
+    /// <summary>
+    /// Whether this name names an absolute location, by this platform's rules or by Windows'.
+    /// </summary>
+    /// <remarks>
+    /// Path.Combine silently discards the folder when the second argument is rooted, so an absolute
+    /// entry name does not even look like an escape - it simply lands wherever it says. Windows
+    /// spellings are checked explicitly rather than left to Path.IsPathRooted, which answers for
+    /// whichever platform happens to be running.
+    /// </remarks>
+    static bool IsRootedAnywhere(string entryName)
+    {
+        if (Path.IsPathRooted(entryName))
+        {
+            return true;
+        }
+
+        // A leading separator: "\evil.dll", and UNC "\\server\share\evil.dll".
+        if (entryName[0] == Path.DirectorySeparatorChar || entryName[0] == Path.AltDirectorySeparatorChar)
+        {
+            return true;
+        }
+
+        // A drive letter: "C:\evil.dll", and the drive relative "C:evil.dll", which is just as
+        // much not inside the folder we asked for.
+        return entryName.Length >= 2
+            && entryName[1] == ':'
+            && char.IsAsciiLetter(entryName[0]);
     }
 }

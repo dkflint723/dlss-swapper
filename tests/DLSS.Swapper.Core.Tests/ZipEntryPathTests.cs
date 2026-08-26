@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using DLSS_Swapper.Data;
 using Xunit;
 
@@ -15,7 +15,17 @@ namespace DLSS_Swapper.Tests;
 /// </remarks>
 public class ZipEntryPathTests
 {
-    const string Root = @"C:\Temp\DLSS Swapper\import\abc";
+    /// <summary>
+    /// A real rooted folder for whichever host is running, because these tests run on ubuntu too.
+    /// </summary>
+    /// <remarks>
+    /// It was a literal Windows path. On Linux that is not rooted, backslashes are ordinary
+    /// characters, and Path.GetFullPath prepends the working directory - so every case here failed
+    /// on the manifest sync workflow, which runs the core tests on ubuntu. The escapes being tested
+    /// are Windows spellings on purpose: they are what a hostile zip actually contains, and
+    /// ZipEntryPath now refuses them whatever the host thinks a separator is.
+    /// </remarks>
+    static readonly string Root = Path.Combine(Path.GetTempPath(), "dlss-swapper-tests", "import", "abc");
 
     [Theory]
     [InlineData("nvngx_dlss.dll")]
