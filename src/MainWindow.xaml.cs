@@ -273,7 +273,7 @@ public sealed partial class MainWindow : Window
             // earlier, and clicking Games in the sidebar to escape did nothing at all, because the
             // branch above sees the page is already there and stops. Navigating away from a detail
             // view used to be impossible to get wrong - the detail WAS the page.
-            gameGridPage.CloseGameDetail();
+            gameGridPage?.CloseGameDetail();
         }
         else if (page == LibraryPage.PageTag)
         {

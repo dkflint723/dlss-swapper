@@ -5,8 +5,27 @@ fork of [beeradmoore/dlss-swapper](https://github.com/beeradmoore/dlss-swapper).
 what changed for someone using the app, and why — the reasoning in full is in the commit messages.
 
 Nothing here has been offered upstream. Builds from this fork are **unsigned**; the original
-project is the signed, official one. Versions here carry a fourth part that is this fork's own
-count, so 1.2.5.1 is the first build from this repository on top of upstream's 1.2.5.
+project is the signed, official one.
+
+**Versions from 2.0.0.0 onward are this fork's own count** and have nothing to do with upstream's
+number. Before that the scheme was upstream's version with this fork's count in the fourth part —
+1.2.5.1 being the first build on top of upstream's 1.2.5 — which stopped working the day upstream
+released a 1.2.6.0 of its own: two different builds wearing one number, and this fork's reading as
+*older* than an upstream release it already contained all of. Starting a separate line at 2 keeps
+them apart without anyone having to remember a rule. It stays four plain numbers because the
+updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
+working.
+
+## Unreleased
+
+- The version is now checked in one place. It lives in four files by hand and three of them had
+  been missed, so the **1.2.6.0 installer identified itself as 1.2.5.1** — in its file properties
+  and in the entry it wrote to *Add or remove programs*. A test now fails if they disagree.
+- Upstream's Japanese retranslation, minus the sixteen strings it carries for UI this fork removed.
+  Better wording throughout, and one real correction: the "NVIDIA recommended" preset had been
+  labelled "always use the latest version".
+- A zip entry that tries to escape the import folder is refused on any operating system, not only
+  on Windows.
 
 ## v1.2.6.0 — keeping your original dlls
 

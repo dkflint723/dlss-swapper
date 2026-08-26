@@ -17,11 +17,22 @@
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <!--
-      Forked from upstream 1.2.5. The fourth part is this fork's own count, so a build from here
-      never claims to be a release the original made — the app reports it, the installer stamps it,
-      and the updater compares against it.
+      This fork counts its own versions, from 2.0.0.0, and does not track upstream's number.
+
+      It used to be "upstream's version, with our count in the fourth part". That collided the day
+      upstream released a 1.2.6.0 of its own: two different builds wearing one number, and this
+      fork's reading as older than an upstream release it already contained all of. Starting at 2
+      keeps the two apart without needing anyone to remember a rule.
+
+      It stays four numeric parts on purpose. GitHubRelease.GetVersionNumber parses the release name
+      into four ulongs and packs them 16 bits each, so a semver suffix like -fork.3 fails TryParse,
+      returns 0, and silently stops the app ever seeing an update.
+
+      Must match package/config.cmd, package/NSIS/Installer.nsi and src/app.manifest.
+      VersionConsistencyTests fails if they drift - they did, and 1.2.6.0 shipped an installer whose
+      file properties and uninstall entry both still said 1.2.5.1.
     -->
-    <Version>1.2.6.0</Version>
+    <Version>2.0.0.0</Version>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <PublishSingleFile>false</PublishSingleFile>

@@ -97,16 +97,25 @@ RequestExecutionLevel highest
 
 ; App version information. Named and versioned as this fork throughout, so nothing the installer
 ; shows — its title, its file properties, the entry it writes — claims to be the original or a
-; release the original made. The fourth version part is this fork's own count.
+; release the original made.
+;
+; This fork counts its own versions from 2.0.0.0 and does not track upstream's number. It used to
+; be "upstream's version with our count in the fourth part", which collided the moment upstream
+; released a 1.2.6.0 of its own — two different builds with one number, and this fork's reading as
+; older than an upstream release it contains all of. See DLSS Swapper.csproj for the whole rule.
+;
+; Every version below must match package/config.cmd, src/DLSS Swapper.csproj and src/app.manifest.
+; VersionConsistencyTests fails if they drift: they did, and the 1.2.6.0 release shipped an
+; installer whose file properties and uninstall entry both said 1.2.5.1.
 Name "DLSS Swapper (dkflint723)"
 !define MUI_ICON "..\..\src\Assets\icon.ico"
-!define MUI_VERSION "1.2.5.1"
+!define MUI_VERSION "2.0.0.0"
 !define MUI_PRODUCT "DLSS Swapper (dkflint723)"
-VIProductVersion "1.2.5.1"
+VIProductVersion "2.0.0.0"
 VIAddVersionKey "ProductName" "DLSS Swapper (dkflint723 fork)"
-VIAddVersionKey "ProductVersion" "1.2.5.1"
+VIAddVersionKey "ProductVersion" "2.0.0.0"
 VIAddVersionKey "FileDescription" "DLSS Swapper (dkflint723 fork) installer"
-VIAddVersionKey "FileVersion" "1.2.5.1"
+VIAddVersionKey "FileVersion" "2.0.0.0"
 VIAddVersionKey "CompanyName" "dkflint723"
 VIAddVersionKey "LegalCopyright" "Fork of beeradmoore/dlss-swapper"
 
@@ -209,7 +218,7 @@ Section
   CreateShortcut "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk" "$INSTDIR\DLSS Swapper.exe"
 
   WriteRegStr SHCTX "${UNINST_KEY}" "DisplayName" "DLSS Swapper (dkflint723 fork)"
-  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayVersion" "1.2.5.1"
+  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayVersion" "2.0.0.0"
 
   ; Named for whoever built it, with what it was forked from, because this build is not the
   ; original author's work and Apps & features is where someone checks who to hold responsible.
