@@ -732,6 +732,13 @@ public partial class GameControlModel : ObservableObject
             ResourceHelper.GetString("GamePage_ResetAll"),
             revertableAssetTypes.Count,
             ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", revertableAssetTypes.Count, Game.Title),
+
+            // The button and the progress dialog say restore, because that is what this does. They
+            // used to say "Update" and "Updating dlls" - the prompt hardcoded the update voice
+            // whoever called it. Update_Undoing doubles as the batch strip's undo text, on purpose:
+            // both are the same act of putting originals back, and one string cannot drift.
+            ResourceHelper.GetString("General_Restore"),
+            ResourceHelper.GetString("Update_Undoing"),
             ResourceHelper.GetString("DllRevert_NothingToRevert"),
             (games, progress, cancellationToken) => DllUpdateRunner.RevertGamesAsync(games, progress, cancellationToken),
             "DllRevert_RevertedTemplate");

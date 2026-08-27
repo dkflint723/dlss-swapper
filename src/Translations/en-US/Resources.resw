@@ -1144,6 +1144,9 @@ If you have checked these and your game is still not showing up there may be a b
   <data name="General_DontShowAgain" xml:space="preserve">
     <value>Don't show again</value>
   </data>
+  <data name="General_Restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
   <data name="General_Download" xml:space="preserve">
     <value>Download</value>
   </data>

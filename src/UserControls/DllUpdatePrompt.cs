@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
@@ -12,11 +12,14 @@ using Microsoft.UI.Xaml.Documents;
 namespace DLSS_Swapper.UserControls;
 
 /// <summary>
-/// The confirm, progress and summary dialogs around an update run.
+/// The confirm, progress and summary dialogs around a run that writes dlls.
 /// </summary>
 /// <remarks>
-/// Shared so updating one game and updating every game behave the same. The only difference between
-/// them is which games go in and what the confirmation says.
+/// The update path moved to the games page's preview sheet, so today this fronts the revert run -
+/// but it stays parameterised rather than hardcoding revert words, because what it does is generic
+/// and what it says must match whoever calls it. It used to hardcode "Update" and "Updating dlls",
+/// which meant confirming a restore by pressing a button labelled Update and then watching a dialog
+/// claim to be updating while it put the originals back.
 /// </remarks>
 internal static class DllUpdatePrompt
 {
@@ -26,6 +29,8 @@ internal static class DllUpdatePrompt
     /// <param name="title">Dialog title, so updating and reverting read differently.</param>
     /// <param name="affectedDllCount">How many dlls the operation will touch. Zero shows the nothing-to-do message.</param>
     /// <param name="confirmationMessage">Says what is about to happen, including the counts.</param>
+    /// <param name="confirmButtonText">The verb on the confirm button. It has to name the operation.</param>
+    /// <param name="progressTitle">What the progress dialog says is happening.</param>
     /// <param name="operation">Either the update or the revert run.</param>
     internal static async Task RunAsync(
         XamlRoot xamlRoot,
@@ -33,6 +38,8 @@ internal static class DllUpdatePrompt
         string title,
         int affectedDllCount,
         string confirmationMessage,
+        string confirmButtonText,
+        string progressTitle,
         string nothingToDoMessage,
         Func<IReadOnlyList<Game>, IProgress<DllUpdateProgress>, CancellationToken, Task<DllUpdateResult>> operation,
         string summaryTemplateResourceKey)
@@ -54,7 +61,7 @@ internal static class DllUpdatePrompt
         var confirmDialog = new EasyContentDialog(xamlRoot)
         {
             Title = title,
-            PrimaryButtonText = ResourceHelper.GetString("General_Update"),
+            PrimaryButtonText = confirmButtonText,
             CloseButtonText = ResourceHelper.GetString("General_Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             Content = confirmationMessage,
@@ -65,7 +72,7 @@ internal static class DllUpdatePrompt
             return;
         }
 
-        await RunConfirmedAsync(xamlRoot, games, title, operation, summaryTemplateResourceKey);
+        await RunConfirmedAsync(xamlRoot, games, title, progressTitle, operation, summaryTemplateResourceKey);
     }
 
     /// <summary>
@@ -79,6 +86,7 @@ internal static class DllUpdatePrompt
         XamlRoot xamlRoot,
         IReadOnlyList<Game> games,
         string title,
+        string progressTitle,
         Func<IReadOnlyList<Game>, IProgress<DllUpdateProgress>, CancellationToken, Task<DllUpdateResult>> operation,
         string summaryTemplateResourceKey)
     {
@@ -92,7 +100,7 @@ internal static class DllUpdatePrompt
 
         var progressDialog = new EasyContentDialog(xamlRoot)
         {
-            Title = ResourceHelper.GetString("DllUpdate_Updating"),
+            Title = progressTitle,
             CloseButtonText = ResourceHelper.GetString("General_Cancel"),
             Content = new StackPanel()
             {
