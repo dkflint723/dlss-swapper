@@ -616,7 +616,11 @@ internal class DLLManager
                 foreach (var dllRecord in importedDllRecordsToDelete)
                 {
                     var dllRecordPath = dllRecord.LocalRecord?.ExpectedPath;
-                    if (string.IsNullOrWhiteSpace(dllRecordPath) == true && File.Exists(dllRecordPath))
+                    // == false. The condition was inverted - "path is empty AND the file at the
+                    // empty path exists" - which no input satisfies, so the cleanup this loop
+                    // exists for never deleted a single file and removed records left their zips
+                    // behind as unreachable orphans.
+                    if (string.IsNullOrWhiteSpace(dllRecordPath) == false && File.Exists(dllRecordPath))
                     {
                         try
                         {

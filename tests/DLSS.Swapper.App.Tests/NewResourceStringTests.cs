@@ -192,6 +192,7 @@ public class NewResourceStringTests
     [InlineData("GamePage_DllPicker_DownloadingBeforeSwap")]
     [InlineData("GamePage_DllPicker_DownloadCancelled")]
     [InlineData("LibraryPage_ShowInFolder")]
+    [InlineData("SettingsPage_UpdateCheckFailed")]
     [InlineData("CoverScan_ApplyStoppedTemplate")]
     [InlineData("CoverScan_UndonePartialTemplate")]
     [InlineData("GamePage_DetailsTemplate")]

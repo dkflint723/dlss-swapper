@@ -92,7 +92,20 @@ internal class XboxLibrary : IGameLibrary
                             if (File.Exists(configFile))
                             {
                                 var xmlDocument = new XmlDocument();
-                                xmlDocument.Load(configFile);
+
+                                try
+                                {
+                                    xmlDocument.Load(configFile);
+                                }
+                                catch (Exception err)
+                                {
+                                    // One game's malformed config is one game's problem. This threw
+                                    // out of the loop, so a single bad MicrosoftGame.config removed
+                                    // every other Xbox game from the library in the same breath.
+                                    Logger.Error(err, $"Could not read {configFile}, skipping this game.");
+
+                                    continue;
+                                }
 
                                 var gameNode = xmlDocument.DocumentElement?.SelectSingleNode("/Game");
                                 if (gameNode is null)

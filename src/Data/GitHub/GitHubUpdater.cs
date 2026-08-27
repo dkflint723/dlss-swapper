@@ -155,13 +155,28 @@ internal class GitHubUpdater
     /// Queries GitHub and returns a GitHubRelease only if a newer version was detected, otherwise null
     /// </summary>
     /// <returns>GitHubRelease object if an update is available, otherwise null.</returns>
+    /// <summary>
+    /// Whether the last check failed to get an answer at all, as opposed to answering "no update".
+    /// </summary>
+    /// <remarks>
+    /// The settings page used to read null as "no new updates are available" and say so - to a
+    /// machine that was offline, or rate limited, or behind a broken proxy. Telling somebody they
+    /// are up to date when nothing was checked is the one wrong answer an update checker can give.
+    /// </remarks>
+    internal bool CheckFailed { get; private set; }
+
     internal async Task<GitHubRelease?> CheckForNewGitHubRelease(bool forceCheck)
     {
         var latestRelease = await FetchLatestRelease(forceCheck).ConfigureAwait(false);
         if (latestRelease is null)
         {
+            // Whoever asked cannot see the difference between "you are current" and "GitHub never
+            // answered" from a null alone - see CheckFailed.
+            CheckFailed = true;
             return null;
         }
+
+        CheckFailed = false;
 
         var latestVersion = latestRelease.GetVersionNumber();
         var version = App.CurrentApp.GetVersion();

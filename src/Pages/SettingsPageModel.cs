@@ -596,11 +596,16 @@ public partial class SettingsPageModel : ObservableObject
             }
             else
             {
+                // "You are current" and "GitHub never answered" are different answers, and this
+                // used to give the reassuring one for both - an offline machine was told no new
+                // updates were available.
                 var dialog = new EasyContentDialog(settingsPage.XamlRoot)
                 {
                     CloseButtonText = ResourceHelper.GetString("General_Okay"),
                     DefaultButton = ContentDialogButton.Close,
-                    Content = ResourceHelper.GetString("SettingsPage_NoNewUpdatesAvailable"),
+                    Content = githubUpdater.CheckFailed
+                        ? ResourceHelper.GetString("SettingsPage_UpdateCheckFailed")
+                        : ResourceHelper.GetString("SettingsPage_NoNewUpdatesAvailable"),
                 };
                 await dialog.ShowAsync();
 

@@ -714,6 +714,13 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 if (GameAssets.Count == 0 && oldGameAssets.Count > 0)
                 {
                     GameAssets.AddRange(oldGameAssets);
+
+                    // The flag has to agree with the assets just put back. It was zeroed when the
+                    // scan began and only a completed scan sets it again, so restoring the assets
+                    // while leaving it false made a rescued game vanish under "Only show games
+                    // with an upscaler" - hidden by the very failure the restore was for. A
+                    // backup-type asset has no definition, which is the same rule the scan uses.
+                    newHasSwappableItems = oldGameAssets.Any(x => Dlls.DllTypes.ForAssetType(x.AssetType) is not null);
                 }
 
                 Debugger.Break();
