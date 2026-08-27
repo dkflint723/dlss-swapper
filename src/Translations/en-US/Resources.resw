@@ -1620,16 +1620,16 @@ Because of this we recommend using caution for multiplayer games.</value>
     <value>About</value>
   </data>
   <data name="SettingsPage_AddIgnoredPath" xml:space="preserve">
-    <value>Add Ignored Path</value>
+    <value>Add ignored path</value>
   </data>
   <data name="SettingsPage_BackupNewGames" xml:space="preserve">
-    <value>Back up dlls when a game is first found</value>
+    <value>Back up DLLs when a game is first found</value>
   </data>
   <data name="SettingsPage_BackupNewGamesInfo" xml:space="preserve">
     <value>Keeps a copy of each dll the first time a game is detected, so you can always go back to the version it shipped with. Only done on first detection, because after that there is no way to tell an original dll from one you swapped in.</value>
   </data>
   <data name="SettingsPage_AllowDebugDlls" xml:space="preserve">
-    <value>Allow Debug DLLs</value>
+    <value>Allow debug DLLs</value>
   </data>
   <data name="SettingsPage_AllowDebugDlls_Desc" xml:space="preserve">
     <value>Lets debug builds of the DLLs appear in the lists so you can swap one in. They draw extra information over the game while it runs, which helps when working out why something looks wrong.</value>
@@ -1651,7 +1651,7 @@ Because of this we recommend using caution for multiplayer games.</value>
     <comment>{0} is the file path that the user is removing from the ignored path feature.</comment>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathTitle" xml:space="preserve">
-    <value>Delete Ignored Path</value>
+    <value>Delete ignored path</value>
   </data>
   <data name="SettingsPage_DLSSDeveloperOptions" xml:space="preserve">
     <value>DLSS Developer Options</value>
@@ -1775,16 +1775,16 @@ Because of this we recommend using caution for multiplayer games.</value>
     <comment>{0} is the path that the user tried to add but it was already ignored.</comment>
   </data>
   <data name="SettingsPage_ProxySettings" xml:space="preserve">
-    <value>Proxy Settings</value>
+    <value>Proxy settings</value>
   </data>
   <data name="SettingsPage_SettingsAllowUntrusted" xml:space="preserve">
-    <value>Allow Untrusted</value>
+    <value>Allow untrusted DLLs</value>
   </data>
   <data name="SettingsPage_SettingsCheckForUpdates" xml:space="preserve">
     <value>Check for updates</value>
   </data>
   <data name="SettingsPage_ShowOnlyDownloadedDlls" xml:space="preserve">
-    <value>Only Show Downloaded DLLs</value>
+    <value>Only show downloaded DLLs</value>
   </data>
   <data name="SettingsPage_ShowOnlyDownloadedDlls_Desc" xml:space="preserve">
     <value>Hides versions you have not downloaded yet when picking a DLL for a game, so the list only offers what you can swap in right now. The upscalers page still lists everything.</value>
@@ -1796,7 +1796,7 @@ Because of this we recommend using caution for multiplayer games.</value>
     <value>Light</value>
   </data>
   <data name="SettingsPage_ThemeMode" xml:space="preserve">
-    <value>Theme Mode</value>
+    <value>Theme mode</value>
   </data>
   <data name="SettingsPage_ThemeSystemSettingDefault" xml:space="preserve">
     <value>Use system setting</value>
