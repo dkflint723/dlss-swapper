@@ -16,16 +16,34 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
-## Unreleased
+## v2.0.0.0 — a version number of its own
 
-- The version is now checked in one place. It lives in four files by hand and three of them had
-  been missed, so the **1.2.6.0 installer identified itself as 1.2.5.1** — in its file properties
-  and in the entry it wrote to *Add or remove programs*. A test now fails if they disagree.
-- Upstream's Japanese retranslation, minus the sixteen strings it carries for UI this fork removed.
-  Better wording throughout, and one real correction: the "NVIDIA recommended" preset had been
-  labelled "always use the latest version".
-- A zip entry that tries to escape the import folder is refused on any operating system, not only
-  on Windows.
+A small release. Its reason for existing is the version number, and one thing that number was
+getting wrong.
+
+**The installer was naming the wrong release.** The version is written in four files by hand and
+only two of them were ever bumped, so the 1.2.6.0 build stamped **1.2.5.1** into its file
+properties and into the entry it writes to *Add or remove programs* — the place you look to see
+what you have installed. Fixed, and a test now reads all four files and fails when they disagree,
+so it cannot happen quietly again.
+
+**This fork counts its own versions now**, starting here. It used to carry upstream's version with
+its own count in the fourth part, which collided the day upstream released a 1.2.6.0 of its own —
+two different builds wearing one number, and this fork's reading as *older* than an upstream
+release it already contained all of. Nothing about the app changes; the number just stops being
+ambiguous.
+
+Also in this build:
+
+- **DLSS 310.7.129**, in both the served manifest and the copy bundled with the app. Upstream
+  updated only the first of those in their own release, so a fresh install here starts with the
+  newer list rather than waiting to fetch it.
+- **Upstream's Japanese retranslation**, minus the sixteen strings it carries for UI this fork
+  removed. Better wording throughout, and one real correction: the "NVIDIA recommended" preset had
+  been labelled "always use the latest version".
+- **A zip that tries to write outside the import folder is refused on any operating system**, not
+  only on Windows. The check asked the running platform what counted as a path separator, which
+  meant the rule was true where the app ships and quietly false everywhere it was tested.
 
 ## v1.2.6.0 — keeping your original dlls
 
