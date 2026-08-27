@@ -646,6 +646,21 @@
   <data name="SettingsPage_SteamGridDbKeyHowTo" xml:space="preserve">
     <value>Sign in at steamgriddb.com, open your profile's Preferences, then the API tab, and generate a key. It is free, and it only ever reads public art.</value>
   </data>
+  <data name="FirstRun_ScanningTitle" xml:space="preserve">
+    <value>Looking for your games…</value>
+  </data>
+  <data name="FirstRun_ScanningBody" xml:space="preserve">
+    <value>Your game libraries are being scanned. This usually takes a few seconds.</value>
+  </data>
+  <data name="GamesPage_EmptyTab_HaveUpdate" xml:space="preserve">
+    <value>No games have an update available.</value>
+  </data>
+  <data name="GamesPage_EmptyTab_MissingOriginal" xml:space="preserve">
+    <value>Every game here has its originals saved.</value>
+  </data>
+  <data name="GamesPage_EmptyTab_Hidden" xml:space="preserve">
+    <value>No games are hidden.</value>
+  </data>
   <data name="SettingsPage_SteamGridDbSaveKey" xml:space="preserve">
     <value>Save key</value>
   </data>

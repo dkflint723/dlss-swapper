@@ -41,6 +41,12 @@ public partial class GameGridPageModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsLoading))]
     public partial bool IsDLSSLoading { get; set; } = true;
 
+    // The empty state distinguishes "scanning" from "scanned and found nothing", so it has to be
+    // told when scanning starts and stops - these flags flip long after the state was last built.
+    partial void OnIsDLSSLoadingChanged(bool value) => RefreshEmptyState();
+
+    partial void OnIsGameListLoadingChanged(bool value) => RefreshEmptyState();
+
     public bool IsLoading => (IsGameListLoading || IsDLSSLoading);
 
     [ObservableProperty]
@@ -362,7 +368,9 @@ public partial class GameGridPageModel : ObservableObject
             visibleCount,
             GameManager.Instance.GetSynchronisedGamesListCopy().Count,
             GameManager.Instance.SearchText,
-            GameManager.Instance.ActiveFilter != GameFilter.All || GameManager.Instance.DllFilter is not null);
+            GameManager.Instance.ActiveFilter,
+            GameManager.Instance.DllFilter is not null,
+            IsLoading);
 
         EmptyState = state.Kind == GamesEmptyStateKind.None ? null : state;
     }
@@ -485,6 +493,30 @@ public partial class GameGridPageModel : ObservableObject
                 },
             };
 
+            var noteContent = new StackPanel()
+            {
+                Orientation = Orientation.Vertical,
+                Spacing = 16,
+                Children = {
+                    new TextBlock()
+                    {
+                        TextWrapping = TextWrapping.Wrap,
+                        Text = ResourceHelper.GetString("GamesPage_ManuallyAdding_NoteMessage"),
+                    },
+                },
+            };
+
+            // Both notes in one dialog when both are pending. A first-time user used to click Add
+            // Game and be walked through two stacked dialogs - the checklist, then the folder
+            // guidance - before ever seeing the picker they asked for. The guidance is about the
+            // picker this dialog leads to, so it belongs on the same page.
+            if (Settings.Instance.HasShownAddGameFolderMessage == false)
+            {
+                noteContent.Children.Add(new TextBlockBuilder(ResourceHelper.GetString("GamesPage_ManuallyAdding_InfoHtml")).Build());
+            }
+
+            noteContent.Children.Add(dontShowAgainCheckbox);
+
             var dialog = new EasyContentDialog(gameGridPage.XamlRoot)
             {
                 Title = ResourceHelper.GetString("GamesPage_ManuallyAdding_NoteTitle"),
@@ -492,19 +524,7 @@ public partial class GameGridPageModel : ObservableObject
                 SecondaryButtonText = ResourceHelper.GetString("General_ReportIssue"),
                 CloseButtonText = ResourceHelper.GetString("General_Cancel"),
                 DefaultButton = ContentDialogButton.Primary,
-                Content = new StackPanel()
-                {
-                    Children = {
-                        new TextBlock()
-                        {
-                            TextWrapping = TextWrapping.Wrap,
-                            Text = ResourceHelper.GetString("GamesPage_ManuallyAdding_NoteMessage"),
-                        },
-                        dontShowAgainCheckbox,
-                    },
-                    Orientation = Orientation.Vertical,
-                    Spacing = 16,
-                },
+                Content = noteContent,
             };
 
             var result = await dialog.ShowAsync();
@@ -522,11 +542,17 @@ public partial class GameGridPageModel : ObservableObject
                 {
                     Settings.Instance.DontShowManuallyAddingGamesNotice = true;
                 }
+
+                // The folder guidance was on this dialog, so it has been seen.
+                Settings.Instance.HasShownAddGameFolderMessage = true;
+
                 await AddGameManually();
             }
             else if (result == ContentDialogResult.Secondary)
             {
-                await Launcher.LaunchUriAsync(new Uri("https://github.com/beeradmoore/dlss-swapper/issues"));
+                // This fork's tracker - a game this fork fails to list is this fork's bug to hear
+                // about, and upstream cannot see this code.
+                await Launcher.LaunchUriAsync(new Uri("https://github.com/dkflint723/dlss-swapper/issues"));
             }
         }
         else

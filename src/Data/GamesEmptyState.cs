@@ -1,4 +1,4 @@
-using DLSS_Swapper.Helpers;
+﻿using DLSS_Swapper.Helpers;
 
 namespace DLSS_Swapper.Data;
 
@@ -16,6 +16,12 @@ public enum GamesEmptyStateKind
 
     /// <summary>A search matched nothing.</summary>
     NoSearchResults,
+
+    /// <summary>Nothing yet because the very first scan is still running.</summary>
+    Scanning,
+
+    /// <summary>A filter tab with nothing behind it, stating the truth of that tab.</summary>
+    EmptyTab,
 }
 
 /// <summary>
@@ -62,12 +68,18 @@ public class GamesEmptyState
     /// <param name="visibleCount">How many games the list is actually showing.</param>
     /// <param name="totalGames">How many games are known about at all.</param>
     /// <param name="searchText">What was typed in the search box.</param>
-    /// <param name="isFilteredTab">Whether a tab other than "All games" is selected.</param>
+    /// <param name="activeFilter">Which tab is selected.</param>
+    /// <param name="hasDllFilter">Whether the list is narrowed to one dll's games.</param>
+    /// <param name="isScanning">Whether a library scan is still running.</param>
     /// <remarks>
-    /// A filtered tab is left alone deliberately. "No games with upscalers" would be a lie on an
-    /// empty "Have an update" tab, and that tab already says how many it has beside its own name.
+    /// A dll-filtered list is left alone: the filter chip already names the dll, and "no games use
+    /// this here" would only repeat it. An empty filter tab used to be left alone too, on the
+    /// grounds that a generic "no games with upscalers" message would be a lie there - which it
+    /// would. The blank canvas read as broken instead, so each tab now states its own truth: no
+    /// updates, nothing missing, nothing hidden. The original objection was to the lie, not to
+    /// saying anything.
     /// </remarks>
-    public static GamesEmptyState For(int visibleCount, int totalGames, string searchText, bool isFilteredTab)
+    public static GamesEmptyState For(int visibleCount, int totalGames, string searchText, GameFilter activeFilter, bool hasDllFilter, bool isScanning)
     {
         if (visibleCount > 0)
         {
@@ -89,9 +101,45 @@ public class GamesEmptyState
             };
         }
 
-        if (isFilteredTab)
+        if (hasDllFilter)
         {
             return NotEmpty;
+        }
+
+        if (activeFilter != GameFilter.All)
+        {
+            var emptyTabTitleKey = activeFilter switch
+            {
+                GameFilter.HasUpdate => "GamesPage_EmptyTab_HaveUpdate",
+                GameFilter.MissingBackup => "GamesPage_EmptyTab_MissingOriginal",
+                _ => "GamesPage_EmptyTab_Hidden",
+            };
+
+            return new GamesEmptyState()
+            {
+                Kind = GamesEmptyStateKind.EmptyTab,
+                Title = ResourceHelper.GetString(emptyTabTitleKey),
+                Body = string.Empty,
+                PrimaryLabel = string.Empty,
+                SecondaryLabel = string.Empty,
+                Hint = string.Empty,
+            };
+        }
+
+        if (totalGames == 0 && isScanning)
+        {
+            // The first scan is still running. Without this the first-run state showed underneath
+            // it, offering "Scan my libraries" while the scan it offers was already going - a
+            // button whose press could only start a second copy of the work in progress.
+            return new GamesEmptyState()
+            {
+                Kind = GamesEmptyStateKind.Scanning,
+                Title = ResourceHelper.GetString("FirstRun_ScanningTitle"),
+                Body = ResourceHelper.GetString("FirstRun_ScanningBody"),
+                PrimaryLabel = string.Empty,
+                SecondaryLabel = string.Empty,
+                Hint = string.Empty,
+            };
         }
 
         if (totalGames == 0)
