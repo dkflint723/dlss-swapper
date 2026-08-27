@@ -87,7 +87,13 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8">
-                <Grid Width="200" Height="300" CornerRadius="8"  BorderThickness="1" ColumnSpacing="0" RowSpacing="0" Margin="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                <!--
+                    The same card exists in ManuallyAddGameControl.xaml - a change here almost
+                    certainly belongs there too. Painted with the Ds tokens the rest of the app
+                    uses; it carried pre-redesign Card* brushes, so the one screen about a single
+                    game framed its art in colours nothing else used.
+                -->
+                <Grid Width="200" Height="300" CornerRadius="{StaticResource DsCornerRadiusLarge}" BorderThickness="1" ColumnSpacing="0" RowSpacing="0" Margin="0" Background="{ThemeResource DsCoverPlaceholderBrush}" BorderBrush="{ThemeResource DsLine2Brush}">
 
                     <!-- Padding="{ThemeResource ContentDialogPadding}" -->
 
