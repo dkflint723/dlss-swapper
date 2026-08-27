@@ -730,14 +730,35 @@ public partial class GameControlModel : ObservableObject
 
         var revertableAssetTypes = DllUpdateRunner.GetRevertableAssetTypes(Game);
 
+        // The rows this will actually touch, named the way the update preview names its files:
+        // what each dll is now, and what it goes back to. A count alone made the reset the one
+        // write in the app that asked for a yes without showing its work.
+        var revertLines = new List<string>();
+        foreach (var assetType in revertableAssetTypes)
+        {
+            var typeName = DLLManager.Instance.GetAssetTypeName(assetType);
+            var current = Game.GameAssets.FirstOrDefault(x => x.AssetType == assetType)?.DisplayName ?? string.Empty;
+            var backupType = DLLManager.Instance.GetAssetBackupType(assetType);
+            var original = Game.GameAssets.FirstOrDefault(x => x.AssetType == backupType)?.DisplayName ?? string.Empty;
+
+            revertLines.Add($"{typeName}: {current} → {original}");
+        }
+
+        var confirmation = revertableAssetTypes.Count == 1
+            ? ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneDllTemplate", Game.Title)
+            : ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", revertableAssetTypes.Count, Game.Title);
+
+        if (revertLines.Count > 0)
+        {
+            confirmation += "\n\n" + string.Join("\n", revertLines);
+        }
+
         await DllUpdatePrompt.RunAsync(
             gameControl.XamlRoot,
             [Game],
             ResourceHelper.GetString("GamePage_ResetAll"),
             revertableAssetTypes.Count,
-            revertableAssetTypes.Count == 1
-                ? ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneDllTemplate", Game.Title)
-                : ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", revertableAssetTypes.Count, Game.Title),
+            confirmation,
 
             // The button and the progress dialog say restore, because that is what this does. They
             // used to say "Update" and "Updating dlls" - the prompt hardcoded the update voice
