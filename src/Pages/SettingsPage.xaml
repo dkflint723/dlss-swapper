@@ -225,8 +225,9 @@
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
+                    <!-- 36 like every other mid-page section; only a column's first rule sits at 4. -->
                     <usercontrols:SectionRule
-                        Margin="0,4,0,4"
+                        Margin="0,36,0,4"
                         Label="{x:Bind ViewModel.TranslationProperties.BehaviourText, Mode=OneWay}" />
 
                     <usercontrols:SettingsRow
@@ -237,6 +238,22 @@
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
+<usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.AllowDebugDllsText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.AllowDebugDllsInfo, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.AllowDebugDlls, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+<usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.ShowOnlyDownloadedDllsText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.ApliesOnlyToDllPickerNotLibraryText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.OnlyShowDownloadedDlls, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
                     <!--
                         The key is the user's own and there is no way around that: SteamGridDB issues
                         them to people, and one shipped inside an open source client is one anybody
@@ -244,21 +261,6 @@
                         one, not just a box to paste it into. The link goes straight to the page that
                         generates it rather than to the site's front door.
                     -->
-                    <usercontrols:SettingsRow
-                        Title="{x:Bind ViewModel.TranslationProperties.SteamGridDbKeyText, Mode=OneWay}"
-                        Description="{x:Bind ViewModel.TranslationProperties.SteamGridDbKeyInfo, Mode=OneWay}">
-                        <usercontrols:SettingsRow.Control>
-                            <StackPanel Spacing="4" MinWidth="240">
-                                <TextBox
-                                    Text="{x:Bind ViewModel.SteamGridDbApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    PlaceholderText="{x:Bind ViewModel.TranslationProperties.SteamGridDbKeyPlaceholderText, Mode=OneWay}" />
-                                <HyperlinkButton
-                                    Padding="0"
-                                    NavigateUri="https://www.steamgriddb.com/profile/preferences/api"
-                                    Content="{x:Bind ViewModel.TranslationProperties.SteamGridDbGetKeyText, Mode=OneWay}" />
-                            </StackPanel>
-                        </usercontrols:SettingsRow.Control>
-                    </usercontrols:SettingsRow>
 
 
                     <usercontrols:SettingsRow
@@ -277,22 +279,47 @@
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
-                    <usercontrols:SettingsRow
-                        Title="{x:Bind ViewModel.TranslationProperties.AllowDebugDllsText, Mode=OneWay}"
-                        Description="{x:Bind ViewModel.TranslationProperties.AllowDebugDllsInfo, Mode=OneWay}">
+<usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.SteamGridDbKeyText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.SteamGridDbKeyInfo, Mode=OneWay}">
                         <usercontrols:SettingsRow.Control>
-                            <ToggleSwitch IsOn="{x:Bind ViewModel.AllowDebugDlls, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                            <StackPanel Spacing="4" MinWidth="240">
+                                <!--
+                                    A draft until saved. This box used to write into settings on
+                                    every keystroke, unvalidated, while the Find Covers prompt
+                                    checked a key before keeping it - so a key mistyped here failed
+                                    every later search silently. Save runs the same check the
+                                    prompt does and says what it found, in words below the box.
+                                -->
+                                <Grid ColumnSpacing="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox
+                                        Grid.Column="0"
+                                        Text="{x:Bind ViewModel.SteamGridDbApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        PlaceholderText="{x:Bind ViewModel.TranslationProperties.SteamGridDbKeyPlaceholderText, Mode=OneWay}" />
+                                    <Button
+                                        Grid.Column="1"
+                                        Content="{x:Bind ViewModel.TranslationProperties.SteamGridDbSaveKeyText, Mode=OneWay}"
+                                        Command="{x:Bind ViewModel.SaveSteamGridDbKeyCommand}" />
+                                </Grid>
+                                <TextBlock
+                                    FontSize="12"
+                                    TextWrapping="Wrap"
+                                    Text="{x:Bind ViewModel.SteamGridDbKeyStatusText, Mode=OneWay}"
+                                    Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                                <HyperlinkButton
+                                    Padding="0"
+                                    NavigateUri="https://www.steamgriddb.com/profile/preferences/api"
+                                    Content="{x:Bind ViewModel.TranslationProperties.SteamGridDbGetKeyText, Mode=OneWay}" />
+                            </StackPanel>
                         </usercontrols:SettingsRow.Control>
                     </usercontrols:SettingsRow>
 
 
-                    <usercontrols:SettingsRow
-                        Title="{x:Bind ViewModel.TranslationProperties.ShowOnlyDownloadedDllsText, Mode=OneWay}"
-                        Description="{x:Bind ViewModel.TranslationProperties.ApliesOnlyToDllPickerNotLibraryText, Mode=OneWay}">
-                        <usercontrols:SettingsRow.Control>
-                            <ToggleSwitch IsOn="{x:Bind ViewModel.OnlyShowDownloadedDlls, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
-                        </usercontrols:SettingsRow.Control>
-                    </usercontrols:SettingsRow>
+
 
                     <usercontrols:SettingsRow
                         Title="{x:Bind ViewModel.TranslationProperties.NetworkingText, Mode=OneWay}"
@@ -417,55 +444,88 @@
                     <usercontrols:SectionRule
                         Margin="0,36,0,4"
                         Label="{x:Bind ViewModel.TranslationProperties.DLSSDeveloperOptionsText, Mode=OneWay}" />
-                    <StackPanel Margin="0,10,0,0">
-                        <ComboBox Header="{x:Bind ViewModel.TranslationProperties.ShowOnScreenIndicatorText, Mode=OneWay}" ItemsSource="{Binding DLSSOnScreenIndicatorOptions, Mode=OneTime}" SelectedItem="{Binding SelectedDlssOnScreenIndicator, Mode=TwoWay}" DisplayMemberPath="Label" Margin="0,0,0,8" />
-                        <CheckBox Content="{x:Bind ViewModel.TranslationProperties.EnableLoggingToFileText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.DlssEnableLogging, Mode=TwoWay}" Margin="0,0,0,4"/>
-                        <CheckBox Content="{x:Bind ViewModel.TranslationProperties.VerboseLoggingText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.DlssVerboseLogging, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.DlssEnableLogging, Mode=TwoWay}" Margin="0,0,0,4"/>
-                        <CheckBox Content="{x:Bind ViewModel.TranslationProperties.EnableLoggingToConsoleWindowText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.DlssLoggingToWindow, Mode=TwoWay}"  Margin="0,0,0,4"/>
-                    </StackPanel>
+                    <!--
+                        The same rows as every other setting. This was a header-less combo box and
+                        three bare check boxes - the one section still in the pre-redesign shape,
+                        and the only one where a control had no sentence saying what flipping it
+                        does to a running game.
+                    -->
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.ShowOnScreenIndicatorText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.ShowOnScreenIndicatorInfoText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ComboBox MinWidth="180" ItemsSource="{Binding DLSSOnScreenIndicatorOptions, Mode=OneTime}" SelectedItem="{Binding SelectedDlssOnScreenIndicator, Mode=TwoWay}" DisplayMemberPath="Label" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.EnableLoggingToFileText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.EnableLoggingToFileInfoText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.DlssEnableLogging, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.VerboseLoggingText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.VerboseLoggingInfoText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.DlssVerboseLogging, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.DlssEnableLogging, Mode=OneWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
+
+                    <usercontrols:SettingsRow
+                        Title="{x:Bind ViewModel.TranslationProperties.EnableLoggingToConsoleWindowText, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.TranslationProperties.EnableLoggingToConsoleWindowInfoText, Mode=OneWay}">
+                        <usercontrols:SettingsRow.Control>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.DlssLoggingToWindow, Mode=TwoWay}" OffContent="{x:Bind ViewModel.TranslationProperties.NoText, Mode=OneWay}" OnContent="{x:Bind ViewModel.TranslationProperties.YesText, Mode=OneWay}" />
+                        </usercontrols:SettingsRow.Control>
+                    </usercontrols:SettingsRow>
 
                     <usercontrols:SectionRule
                         Margin="0,36,0,4"
                         Label="{x:Bind ViewModel.TranslationProperties.IgnoredPathsText, Mode=OneWay}" />
-                    <StackPanel Margin="0,10,0,0">
-                        <StackPanel.Resources>
-                            <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="Transparent" />
-                            <x:Double x:Key="CornerRadius">0</x:Double>
-                            <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
-                            <Thickness x:Key="ExpanderHeaderPadding">0,0,0,0</Thickness>
-                        </StackPanel.Resources>
+                    <StackPanel Margin="0,10,0,0" Spacing="8">
+                        <!-- The section says what ignoring means before offering to do it. -->
+                        <TextBlock
+                            FontSize="12"
+                            TextWrapping="Wrap"
+                            Text="{x:Bind ViewModel.TranslationProperties.IgnoredPathsInfoText, Mode=OneWay}"
+                            Foreground="{ThemeResource DsTextSecondaryBrush}" />
 
                         <Button Content="{x:Bind ViewModel.TranslationProperties.AddIgnoredPathText, Mode=OneWay}" Command="{x:Bind ViewModel.AddIgnoredPathCommand}" />
 
-                        <ListView ItemsSource="{x:Bind ViewModel.IgnoredPaths}" SelectionMode="Single">
-                            <ListView.ItemTemplate>
+                        <!--
+                            A plain row per path with Remove beside it. Remove used to live inside
+                            an Expander, so taking a path off the list meant discovering the row
+                            unfolds at all - an action hidden behind an interaction with no cue.
+                        -->
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.IgnoredPaths}">
+                            <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="x:String">
-                                    <Expander
-                                        ExpandDirection="Down"
-                                        HorizontalAlignment="Stretch"
-                                        BorderThickness="0"
-                                        Background="Transparent"
-                                        BorderBrush="Transparent"
-                                        HorizontalContentAlignment="Stretch"
-                                        >
-                                        <Expander.Header>
-                                            <TextBlock Text="{x:Bind}" TextWrapping="Wrap" />
-                                        </Expander.Header>
-                                        <Expander.Content>
-                                            <Grid HorizontalAlignment="Right">
-                                                <Button Command="{Binding ElementName=RootPage, Path=ViewModel.DeleteIgnoredPathCommand}" CommandParameter="{x:Bind }" Content="{Binding ElementName=RootPage, Path=ViewModel.TranslationProperties.RemoveText}" />
-                                            </Grid>
-                                        </Expander.Content>
-                                    </Expander>
+                                    <Grid ColumnSpacing="10" Padding="0,4" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource DsLineBrush}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{x:Bind}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                        <Button
+                                            Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Command="{Binding ElementName=RootPage, Path=ViewModel.DeleteIgnoredPathCommand}"
+                                            CommandParameter="{x:Bind}"
+                                            Content="{Binding ElementName=RootPage, Path=ViewModel.TranslationProperties.RemoveText}" />
+                                    </Grid>
                                 </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
+                    <!-- 4, matching Appearance across the gutter, so the two columns start level. -->
                     <usercontrols:SectionRule
-                        Margin="0,36,0,4"
+                        Margin="0,4,0,4"
                         Label="{x:Bind ViewModel.TranslationProperties.GameLibrariesText, Mode=OneWay}" />
                     <StackPanel Margin="0,10,0,0">
                         <usercontrols:GameLibrarySelectorControl />

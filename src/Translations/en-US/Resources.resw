@@ -646,6 +646,30 @@
   <data name="SettingsPage_SteamGridDbKeyHowTo" xml:space="preserve">
     <value>Sign in at steamgriddb.com, open your profile's Preferences, then the API tab, and generate a key. It is free, and it only ever reads public art.</value>
   </data>
+  <data name="SettingsPage_SteamGridDbSaveKey" xml:space="preserve">
+    <value>Save key</value>
+  </data>
+  <data name="CoverArt_KeySaved" xml:space="preserve">
+    <value>Key accepted and saved.</value>
+  </data>
+  <data name="CoverArt_KeyRemoved" xml:space="preserve">
+    <value>Key removed.</value>
+  </data>
+  <data name="SettingsPage_DLSSDeveloperOptions_ShowOnScreenIndicatorInfo" xml:space="preserve">
+    <value>Draws DLSS's own overlay in the corner of a running game, naming the mode and preset in use. NVIDIA's tool for checking what is actually active.</value>
+  </data>
+  <data name="SettingsPage_DLSSDeveloperOptions_EnableLoggingToFileInfo" xml:space="preserve">
+    <value>Has DLSS write its own log file while a game runs, for working out why something looks wrong.</value>
+  </data>
+  <data name="SettingsPage_DLSSDeveloperOptions_VerboseLoggingInfo" xml:space="preserve">
+    <value>More detail in that log. Only read when logging to file is on, which is why this switch waits for it.</value>
+  </data>
+  <data name="SettingsPage_DLSSDeveloperOptions_EnableLoggingToConsoleWindowInfo" xml:space="preserve">
+    <value>Opens a console window alongside the game, showing DLSS's log as it happens.</value>
+  </data>
+  <data name="SettingsPage_IgnoredPathsInfo" xml:space="preserve">
+    <value>Folders the game scan skips entirely. A game under one of these is never listed, and nothing inside it is ever touched.</value>
+  </data>
   <data name="SettingsPage_SteamGridDbGetKey" xml:space="preserve">
     <value>Open the API key page</value>
   </data>

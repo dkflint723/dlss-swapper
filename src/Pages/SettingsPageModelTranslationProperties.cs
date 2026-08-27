@@ -243,6 +243,24 @@ public class SettingsPageModelTranslationProperties : LocalizedViewModelBase
     public string SteamGridDbGetKeyText => ResourceHelper.GetString("SettingsPage_SteamGridDbGetKey");
 
     [TranslationProperty]
+    public string SteamGridDbSaveKeyText => ResourceHelper.GetString("SettingsPage_SteamGridDbSaveKey");
+
+    [TranslationProperty]
+    public string ShowOnScreenIndicatorInfoText => ResourceHelper.GetString("SettingsPage_DLSSDeveloperOptions_ShowOnScreenIndicatorInfo");
+
+    [TranslationProperty]
+    public string EnableLoggingToFileInfoText => ResourceHelper.GetString("SettingsPage_DLSSDeveloperOptions_EnableLoggingToFileInfo");
+
+    [TranslationProperty]
+    public string VerboseLoggingInfoText => ResourceHelper.GetString("SettingsPage_DLSSDeveloperOptions_VerboseLoggingInfo");
+
+    [TranslationProperty]
+    public string EnableLoggingToConsoleWindowInfoText => ResourceHelper.GetString("SettingsPage_DLSSDeveloperOptions_EnableLoggingToConsoleWindowInfo");
+
+    [TranslationProperty]
+    public string IgnoredPathsInfoText => ResourceHelper.GetString("SettingsPage_IgnoredPathsInfo");
+
+    [TranslationProperty]
     public string SteamGridDbKeyPlaceholderText => ResourceHelper.GetString("SettingsPage_SteamGridDbKeyPlaceholder");
 
     [TranslationProperty]

@@ -254,22 +254,6 @@ public class Settings
     }
 
 
-    bool _wasLoadingGames;
-    public bool WasLoadingGames
-    {
-        get { return _wasLoadingGames; }
-        set
-        {
-            if (_wasLoadingGames != value)
-            {
-                _wasLoadingGames = value;
-                if (_autoSave)
-                {
-                    SaveJson();
-                }
-            }
-        }
-    }
 
 
     bool _dontShowManuallyAddingGamesNotice;

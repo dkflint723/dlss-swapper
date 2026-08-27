@@ -97,6 +97,64 @@ public partial class SettingsPageModel : ObservableObject
     [ObservableProperty]
     public partial string SteamGridDbApiKey { get; set; } = string.Empty;
 
+    /// <summary>What the last save attempt said: accepted, removed, or the API's refusal.</summary>
+    [ObservableProperty]
+    public partial string SteamGridDbKeyStatusText { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool IsCheckingSteamGridDbKey { get; set; }
+
+    /// <summary>
+    /// Checks the key by using it, then saves it - or says why not.
+    /// </summary>
+    /// <remarks>
+    /// The box used to write straight into settings on every keystroke, unvalidated, while the Find
+    /// Covers prompt checked a key before keeping it. So the careful route and the settings route
+    /// disagreed, and a key mistyped here failed every later search with nothing on this page ever
+    /// saying so. Same rule now, through the same SteamGridDbClient.ValidateKeyAsync. An emptied box
+    /// removes the key without a network call - there is nothing to validate about wanting it gone.
+    /// </remarks>
+    [RelayCommand]
+    async Task SaveSteamGridDbKeyAsync()
+    {
+        var key = SteamGridDbApiKey?.Trim() ?? string.Empty;
+
+        if (string.IsNullOrEmpty(key))
+        {
+            Settings.Instance.SteamGridDbApiKey = string.Empty;
+            SteamGridDbKeyStatusText = ResourceHelper.GetString("CoverArt_KeyRemoved");
+            return;
+        }
+
+        IsCheckingSteamGridDbKey = true;
+        SteamGridDbKeyStatusText = ResourceHelper.GetString("CoverArt_CheckingKey");
+
+        try
+        {
+            var problem = await DLSS_Swapper.Data.SteamGridDb.SteamGridDbClient.ValidateKeyAsync(key);
+
+            if (problem is not null)
+            {
+                // The api's own words, and the key is not kept: a saved key that does not work is a
+                // trap with no visible way out.
+                SteamGridDbKeyStatusText = problem;
+                return;
+            }
+
+            Settings.Instance.SteamGridDbApiKey = key;
+            SteamGridDbKeyStatusText = ResourceHelper.GetString("CoverArt_KeySaved");
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err);
+            SteamGridDbKeyStatusText = ResourceHelper.GetString("General_Error");
+        }
+        finally
+        {
+            IsCheckingSteamGridDbKey = false;
+        }
+    }
+
     [ObservableProperty]
     public partial bool OnlyShowDownloadedDlls { get; set; } = false;
 
@@ -444,9 +502,9 @@ public partial class SettingsPageModel : ObservableObject
         }
         else if (e.PropertyName == nameof(SteamGridDbApiKey))
         {
-            // Trimmed on the way in, because a key is pasted and a trailing space or newline comes
-            // with it more often than not - and the failure it causes reads as a rejected key.
-            Settings.Instance.SteamGridDbApiKey = SteamGridDbApiKey?.Trim() ?? string.Empty;
+            // Deliberately nothing. The key is a draft until "Save key" validates and keeps it -
+            // this used to be a settings write per keystroke of an unchecked value, while the Find
+            // Covers prompt validated before saving. The trim lives in the save command now.
         }
         else if (e.PropertyName == nameof(AllowDebugDlls))
         {
