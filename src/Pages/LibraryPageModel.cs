@@ -1669,11 +1669,20 @@ public partial class LibraryPageModel : ObservableObject
     }
 
     /// <summary>
-    /// Shows everything known about one file.
+    /// Shows everything known about one file, and offers to download it when it is not here yet.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Also what clicking the row does. Both routes exist because the row being clickable is not
     /// discoverable, and a menu item that says what it opens is.
+    /// </para>
+    /// <para>
+    /// The download button matters more than it looks: the row's own Download lives in an overflow
+    /// menu, so the most prominent click target on the page - the row - used to land on a dialog
+    /// whose only button was a close. Somebody who came to get a version read its hashes and left
+    /// no closer to having it. The dialog was also titled with the bare engine name, which is the
+    /// one fact the reader already knew; it names the version now.
+    /// </para>
     /// </remarks>
     [RelayCommand]
     async Task ShowRecordInfoAsync(DLLRecord? dllRecord)
@@ -1685,13 +1694,29 @@ public partial class LibraryPageModel : ObservableObject
 
         var dialog = new EasyContentDialog(_libraryPage.XamlRoot)
         {
-            Title = DLLManager.Instance.GetAssetTypeName(dllRecord.AssetType),
+            Title = $"{DLLManager.Instance.GetAssetTypeName(dllRecord.AssetType)} {dllRecord.DisplayName}",
             CloseButtonText = ResourceHelper.GetString("General_Close"),
             DefaultButton = ContentDialogButton.Close,
             Content = new DLLRecordInfoControl(dllRecord),
         };
 
-        await dialog.ShowAsync();
+        // The same rule the row's menu applies: offer a download only for a file that is neither
+        // here nor on its way.
+        var canDownload = dllRecord.LocalRecord is { IsDownloaded: false, FileDownloader: null };
+        if (canDownload)
+        {
+            dialog.PrimaryButtonText = ResourceHelper.GetString("General_Download");
+            dialog.DefaultButton = ContentDialogButton.Primary;
+        }
+
+        var result = await dialog.ShowAsync();
+
+        if (result == ContentDialogResult.Primary && canDownload)
+        {
+            // Fired rather than awaited - the row's progress bar is the download's feedback, and
+            // holding this command hostage would keep the row's menu from opening meanwhile.
+            _ = DownloadRecordAsync(dllRecord);
+        }
     }
 
     /// <summary>The versions of the selected engine, under one heading per release line.</summary>

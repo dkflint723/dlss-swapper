@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 namespace DLSS_Swapper.CoverArt;
@@ -162,7 +163,7 @@ public static class CoverArtJson
     /// download - a relative path, a file:// or a data: url is at best broken and at worst a
     /// response telling this app to read something local.
     /// </remarks>
-    static bool IsFetchableUrl(string? url)
+    static bool IsFetchableUrl([NotNullWhen(true)] string? url)
     {
         return Uri.TryCreate(url, UriKind.Absolute, out var parsed)
             && (parsed.Scheme == Uri.UriSchemeHttp || parsed.Scheme == Uri.UriSchemeHttps);

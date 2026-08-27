@@ -32,14 +32,10 @@ public sealed partial class LibraryPage : Page
     {
         if (e.ClickedItem is DLLRecord dllRecord)
         {
-            var dialog = new EasyContentDialog(XamlRoot)
-            {
-                Title = DLLManager.Instance.GetAssetTypeName(dllRecord.AssetType),
-                CloseButtonText = ResourceHelper.GetString("General_Cancel"),
-                DefaultButton = ContentDialogButton.Close,
-                Content = new DLLRecordInfoControl(dllRecord),
-            };
-            _ = dialog.ShowAsync();
+            // Through the model's command rather than a copy of its dialog. This used to build the
+            // same dialog by hand, and the two had already drifted: this one's close button said
+            // "Cancel" over a dialog that cancels nothing, the model's said "Close".
+            _ = ViewModel.ShowRecordInfoCommand.ExecuteAsync(dllRecord);
         }
     }
 }
