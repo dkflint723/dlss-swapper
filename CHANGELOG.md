@@ -16,6 +16,36 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v2.1.0.0 — the app meets you halfway
+
+A user-experience release: two adversarial review passes over the whole app, every finding either
+implemented and verified on screen, or declined with the reason recorded in the commit.
+
+**Flows finish what the press asked for.** Swapping a not-yet-downloaded version downloads and then
+swaps, in one motion. The dll picker gets the search box and release-line groupings the Upscalers
+page already had, and a selection the filter hides disarms Swap. Reset all lists every dll it will
+touch — what each is now and what it goes back to — before asking for a yes. Version rows on the
+Upscalers page offer Download in the dialog the row opens, instead of hiding it in an overflow menu.
+Exports end with "Show in folder".
+
+**First launch is honest.** The page says "Looking for your games…" while the first scan runs instead
+of offering to start it; empty filter tabs state their truth instead of a blank canvas; the anti-cheat
+note appears before your first swap rather than over the loading screen; adding a game by hand shows
+one note, not two stacked ones.
+
+**Settings speak one language.** The SteamGridDB key is validated before it is saved, with the API's
+own answer under the box — a mistyped key used to be saved silently and fail every later search. The
+DLSS developer options got sentences; ignored paths say what ignoring means, with Remove visible; the
+dll-list toggles sit together; titles share one style.
+
+**It is faster where you feel it.** The game list appears before cover art finishes loading; grid
+covers decode at the size they are drawn; unchanged covers are a cache hit across the session instead
+of a fresh disk read on every scroll; Refresh walks your dlls without re-downloading every cover.
+
+**And it stops guessing.** A failed update check says it could not reach GitHub instead of "no new
+updates"; one malformed Xbox config no longer removes every other Xbox game from the list; a failed
+scan no longer hides the game it failed on.
+
 ## v2.0.0.0 — a version number of its own
 
 A small release. Its reason for existing is the version number, and one thing that number was
