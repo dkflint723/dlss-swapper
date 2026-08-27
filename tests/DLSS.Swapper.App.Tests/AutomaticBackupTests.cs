@@ -201,7 +201,7 @@ public class AutomaticBackupTests
 
         game.GameAssets.Add(Asset(game.ID, GameAssetType.DLSS, dllPath));
 
-        game.ProcessGame(autoSave: false, forceNeedsProcessing: true);
+        game.ProcessGame(autoSave: false);
         await WaitForScanAsync(game);
 
         // Worth stating: the setup is only meaningful because these differ.
@@ -244,7 +244,7 @@ public class AutomaticBackupTests
 
         game.GameAssets.Add(Asset(game.ID, GameAssetType.DLSS, dllPath));
 
-        game.ProcessGame(autoSave: false, forceNeedsProcessing: true);
+        game.ProcessGame(autoSave: false);
         await WaitForScanAsync(game);
 
         Assert.False(File.Exists(backupPath));

@@ -1,4 +1,4 @@
-using DLSS_Swapper.Data.Steam.Manifest;
+﻿using DLSS_Swapper.Data.Steam.Manifest;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
 using Microsoft.Win32;
@@ -245,7 +245,7 @@ internal partial class SteamLibrary : IGameLibrary
 
             if (activeGame.NeedsProcessing == true || forceNeedsProcessing == true || activeGame.HasUnrecordedDlls())
             {
-                activeGame.ProcessGame(forceNeedsProcessing: forceNeedsProcessing);
+                activeGame.ProcessGame();
             }
 
             games.Add(activeGame);

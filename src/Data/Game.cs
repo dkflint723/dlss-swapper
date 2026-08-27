@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using AsyncAwaitBestPractices;
 using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
@@ -341,7 +342,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     /// <summary>
     /// Detects DLSS and updates cover image.
     /// </summary>
-    public void ProcessGame(bool autoSave = true, bool forceNeedsProcessing = false)
+    public void ProcessGame(bool autoSave = true)
     {
         // If we are alreayd procssing we don't need to process again
         if (Processing == true)
@@ -385,18 +386,26 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 // acted on, so fetching art for it is work with no destination. Steam and Xbox mark
                 // their own non-game entries hidden on sight, which is what these mostly are -
                 // runtimes, redistributables, launchers - and they are also the entries least
-                // likely to have any art to find. Checked before the force below, deliberately:
-                // there is nothing a refresh could usefully fetch for them either.
+                // likely to have any art to find.
                 //
                 // Self correcting. Un-hiding a game clears IsHidden, and a game that gains a
                 // swappable dll clears the other half, so either one puts it back in the queue.
+                //
+                // There used to be a force branch here that made Refresh bypass the freshness
+                // check below, which meant pressing Refresh refetched every non-custom cover in
+                // the library from the network - a per-game roundtrip the button's name never
+                // promised. The backoff below is the one place "is this cover fresh enough"
+                // lives; somebody who wants new art has the labelled route, Find covers.
                 if (IsHidden == true && HasSwappableItems == false)
                 {
                     shouldUpdatedCover = false;
                 }
-                else if (forceNeedsProcessing == true && File.Exists(ExpectedCustomCoverImage) == false)
+                else if (_isLoadingCoverImage)
                 {
-                    // If we are forcing game load and custom cover image doesnt exist we will force load the cover no matter what.
+                    // The cache-load's own cover fetch may still be in flight, now that nothing
+                    // awaits it. Consulting its guard keeps "one fetch per launch" the one rule in
+                    // its one place - see the WHY on LoadCoverImageAsync.
+                    shouldUpdatedCover = false;
                 }
                 else
                 {
@@ -1049,6 +1058,11 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
         _isLoadingCoverImage = true;
 
+        // try/finally, because nothing awaits this any more: a throw that left the flag true would
+        // silently block every future cover load for this game, with nobody watching to notice.
+        try
+        {
+
         // TODO: Update if the image last write is > 1 week old or something
 
         if (HasUsableCover(ExpectedCustomCoverImage))
@@ -1082,7 +1096,11 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             RecordWhetherACoverWasFound();
         }
 
-        _isLoadingCoverImage = false;
+        }
+        finally
+        {
+            _isLoadingCoverImage = false;
+        }
     }
 
     /// <summary>
@@ -2232,7 +2250,14 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         // the games this method leaves alone. See MarkAsMatchingDatabase.
         MarkAsMatchingDatabase();
 
-        await LoadCoverImageAsync();
+        // The cover is presentation, not the row. This await was the one shared gate for every
+        // library's cache load, so the game list could not appear until every cover had been read -
+        // and a game whose cover was missing held a network fetch inline, in the phase whose whole
+        // job is putting cards on screen. The OneWay CoverImage bindings and the placeholder brush
+        // are built for filling art in over cards that are already visible. A failure lands in the
+        // log rather than aborting the rest of this library's cache load, which the old await also
+        // did.
+        LoadCoverImageAsync().SafeFireAndForget((err) => Logger.Error(err, $"Cover load failed for {Title}."));
 
         GameAssets.Clear();
 

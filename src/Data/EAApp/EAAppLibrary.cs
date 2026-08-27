@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -196,7 +196,7 @@ internal class EAAppLibrary : IGameLibrary
 
                                     if (activeGame.NeedsProcessing == true || forceNeedsProcessing == true || activeGame.HasUnrecordedDlls())
                                     {
-                                        activeGame.ProcessGame(forceNeedsProcessing: forceNeedsProcessing);
+                                        activeGame.ProcessGame();
                                     }
 
                                     lock (gameListLock)

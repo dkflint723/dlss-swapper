@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -52,7 +52,7 @@ public class ManuallyAddedLibrary : IGameLibrary
 
             if (activeGame.NeedsProcessing == true || forceNeedsProcessing == true || activeGame.HasUnrecordedDlls())
             {
-                activeGame.ProcessGame(forceNeedsProcessing: forceNeedsProcessing);
+                activeGame.ProcessGame();
             }
 
             games.Add(activeGame);

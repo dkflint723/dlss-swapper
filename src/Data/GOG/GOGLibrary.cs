@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -296,7 +296,7 @@ internal class GOGLibrary : IGameLibrary
 
             if (gogGame.NeedsProcessing == true || forceNeedsProcessing == true || gogGame.HasUnrecordedDlls())
             {
-                gogGame.ProcessGame(forceNeedsProcessing: forceNeedsProcessing);
+                gogGame.ProcessGame();
             }
         }
 

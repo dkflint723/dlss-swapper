@@ -802,7 +802,7 @@ public partial class GameControlModel : ObservableObject
 
             Game.PropertyChanged += Game_PropertyChanged;
             Game.NeedsProcessing = true;
-            Game.ProcessGame(forceNeedsProcessing: true);
+            Game.ProcessGame();
 
             var dialogStart = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
