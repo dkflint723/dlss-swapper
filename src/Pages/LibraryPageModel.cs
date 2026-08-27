@@ -372,14 +372,21 @@ public partial class LibraryPageModel : ObservableObject
 
                 if (exportError is null)
                 {
+                    // With a way to the file it just made. "Exported 12 DLLs. [Okay]" left the one
+                    // thing the user wanted - the zip - to be hunted down by hand.
                     var dialog = new EasyContentDialog(_libraryPage.XamlRoot)
                     {
+                        PrimaryButtonText = ResourceHelper.GetString("LibraryPage_ShowInFolder"),
                         CloseButtonText = ResourceHelper.GetString("General_Okay"),
-                        DefaultButton = ContentDialogButton.Close,
+                        DefaultButton = ContentDialogButton.Primary,
                         Title = ResourceHelper.GetString("General_Success"),
                         Content = ResourceHelper.GetFormattedResourceTemplate("LibraryPage_ExportedDLLsCount_Message", toExport.Count),
                     };
-                    await dialog.ShowAsync();
+
+                    if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+                    {
+                        FileSystemHelper.OpenFolderInExplorerSelectFile(finalExportZip);
+                    }
                 }
                 else
                 {
@@ -1002,6 +1009,8 @@ public partial class LibraryPageModel : ObservableObject
             var successCount = 0;
             var failedCount = 0;
 
+            var failures = new List<string>();
+
             await Task.Run(() => {
                 for (var i = 0; i < modelsToImport.Count; ++i)
                 {
@@ -1015,6 +1024,7 @@ public partial class LibraryPageModel : ObservableObject
                         else
                         {
                             ++failedCount;
+                            failures.Add(didImport.Message);
                         }
                     }
                     catch (Exception ex)
@@ -1024,10 +1034,14 @@ public partial class LibraryPageModel : ObservableObject
                     }
                     finally
                     {
+                        // Snapshotted, and one past the index: the loop variable is shared across
+                        // iterations, so the enqueued lambda could read a later value - and item
+                        // one of N used to finish with the counter still reading zero.
+                        var done = i + 1;
                         App.CurrentApp.RunOnUIThread(() =>
                         {
-                            filesProgressBar.Value = i;
-                            progressRun.Text = i.ToString(CultureInfo.CurrentCulture);
+                            filesProgressBar.Value = done;
+                            progressRun.Text = done.ToString(CultureInfo.CurrentCulture);
                         });
                     }
                 }
@@ -1040,11 +1054,19 @@ public partial class LibraryPageModel : ObservableObject
 
             importingDialog.Hide();
 
+            // The counts, and when something failed, what failed - the loop had each failure's
+            // own message and used to throw it away in favour of a bare number.
+            var completeSummary = $"{ResourceHelper.GetString("General_Success")}: {successCount}\n{ResourceHelper.GetString("General_Failed")}: {failedCount}";
+            if (failures.Count > 0)
+            {
+                completeSummary += "\n\n" + string.Join("\n", failures);
+            }
+
             var completeDialog = new EasyContentDialog(_libraryPage.XamlRoot)
             {
                 Title = ResourceHelper.GetString("LibraryPage_ImportFromNVIDIADriver"),
                 DefaultButton = ContentDialogButton.Close,
-                Content = $"{ResourceHelper.GetString("General_Success")}: {successCount}\n{ResourceHelper.GetString("General_Failed")}: {failedCount}",
+                Content = completeSummary,
                 CloseButtonText = ResourceHelper.GetString("General_Close"),
             };
             await completeDialog.ShowAsync();

@@ -646,6 +646,15 @@
   <data name="SettingsPage_SteamGridDbKeyHowTo" xml:space="preserve">
     <value>Sign in at steamgriddb.com, open your profile's Preferences, then the API tab, and generate a key. It is free, and it only ever reads public art.</value>
   </data>
+  <data name="GamePage_DllPicker_DownloadingBeforeSwap" xml:space="preserve">
+    <value>Downloading this version first, then swapping…</value>
+  </data>
+  <data name="GamePage_DllPicker_DownloadCancelled" xml:space="preserve">
+    <value>Download cancelled. Nothing was changed.</value>
+  </data>
+  <data name="LibraryPage_ShowInFolder" xml:space="preserve">
+    <value>Show in folder</value>
+  </data>
   <data name="FirstRun_ScanningTitle" xml:space="preserve">
     <value>Looking for your games…</value>
   </data>

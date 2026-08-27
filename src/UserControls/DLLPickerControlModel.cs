@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -148,9 +148,28 @@ public partial class DLLPickerControlModel : ObservableObject
         }
         else if (SelectedDLLRecord.LocalRecord.IsDownloaded == false)
         {
-            ShowTempInfoBar(string.Empty, ResourceHelper.GetString("GamePage_DllPicker_StartingDownload"));
-            SelectedDLLRecord.DownloadAsync().SafeFireAndForget();
-            return;
+            // One motion. Pressing Swap on a version that is not here yet used to start the
+            // download and stop - the user watched the row's progress bar and then pressed Swap a
+            // second time. The press already said what they want; the download is a step on the
+            // way, not a destination. A second press while this waits lands in the downloader
+            // guard above, which is the right answer for it.
+            ShowTempInfoBar(string.Empty, ResourceHelper.GetString("GamePage_DllPicker_DownloadingBeforeSwap"), duration: 600);
+
+            var (downloaded, downloadMessage, cancelled) = await SelectedDLLRecord.DownloadAsync();
+
+            if (cancelled)
+            {
+                ShowTempInfoBar(string.Empty, ResourceHelper.GetString("GamePage_DllPicker_DownloadCancelled"));
+                return;
+            }
+
+            if (downloaded == false)
+            {
+                ShowTempInfoBar(ResourceHelper.GetString("General_Error"), downloadMessage, severity: InfoBarSeverity.Error);
+                return;
+            }
+
+            // Fell through: the file is here now, so the swap the user asked for happens.
         }
 
         var didUpdate = await Game.UpdateDllAsync(SelectedDLLRecord);

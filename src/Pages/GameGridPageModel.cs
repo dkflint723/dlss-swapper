@@ -765,8 +765,11 @@ public partial class GameGridPageModel : ObservableObject
             }
         }
 
-        // Both branches change the backup coverage the sidebar reports.
+        // Both branches change the backup coverage the sidebar reports - and the "Missing a saved
+        // original" tab's count, which used to stay stale until something else happened to rebuild
+        // it, so saving a copy looked like it had not counted.
         App.CurrentApp.MainWindow?.RefreshSidebar();
+        RefreshFilterTabs();
     }
 
     /// <summary>
