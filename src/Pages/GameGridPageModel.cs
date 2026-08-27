@@ -968,6 +968,9 @@ public partial class GameGridPageModel : ObservableObject
             return;
         }
 
+        // Every update route funnels through here, so this is the one gate for the batch side.
+        await MultiplayerWarning.EnsureShownAsync(gameGridPage.XamlRoot);
+
         var batch = new UpdateBatchModel();
         UpdateBatch = batch;
 

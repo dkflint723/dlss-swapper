@@ -659,6 +659,10 @@ public partial class GameControlModel : ObservableObject
     {
         if (gameControlWeakReference.TryGetTarget(out Pages.GameDetailPage? gameControl))
         {
+            // Before the picker opens, not inside its swap - the picker is itself a ContentDialog
+            // and WinUI allows one per root, so a warning shown from within it would throw.
+            await MultiplayerWarning.EnsureShownAsync(gameControl.XamlRoot);
+
             var dialog = new EasyContentDialog(gameControl.XamlRoot)
             {
                 Title = ResourceHelper.GetFormattedResourceTemplate("GamePage_SelectDllTemplateTitle", DLLManager.Instance.GetAssetTypeName(gameAssetType)),

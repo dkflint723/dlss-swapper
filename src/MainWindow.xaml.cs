@@ -340,20 +340,8 @@ public sealed partial class MainWindow : Window
         await DLLManager.Instance.LoadManifestsAsync();
 
 
-        if (Settings.Instance.HasShownMultiplayerWarning == false)
-        {
-            var dialog = new EasyContentDialog(RootGrid.XamlRoot)
-            {
-                Title = ResourceHelper.GetString("MainWindow_NoteForMultiplayerGames_Title"),
-                CloseButtonText = ResourceHelper.GetString("General_Okay"),
-                DefaultButton = ContentDialogButton.Close,
-                Content = ResourceHelper.GetString("MainWindow_NoteForMultiplayerGames_Message"),
-            };
-            var result = await dialog.ShowAsync();
-
-            Settings.Instance.HasShownMultiplayerWarning = true;
-        }
-
+        // The multiplayer warning used to interrupt here, over the loading screen, about an action
+        // the user had not taken. It now appears before the first write - see MultiplayerWarning.
 
         if (DLLManager.Instance.HasLoadedManifest() == false)
         {
