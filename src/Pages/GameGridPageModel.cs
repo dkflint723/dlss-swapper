@@ -56,6 +56,37 @@ public partial class GameGridPageModel : ObservableObject
     public int GridViewArtHeight => (int)(GridViewItemWidth * 1.5);
 
     /// <summary>
+    /// The width grid covers are decoded at, in logical pixels.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Bucketed, not the card width itself. Ctrl+wheel zoom moves GridViewItemWidth in 5% steps
+    /// across 60-600, and a raw binding would re-decode every visible cover on every tick; a bucket
+    /// crossing is the only re-decode. At the default 200 the decode buffer is a quarter of
+    /// decoding the stored 400x600 outright, and a ninth for a 600x900 custom cover - per card,
+    /// on every scroll re-realisation, because IgnoreImageCache makes each one a fresh decode.
+    /// </para>
+    /// <para>
+    /// The one imprecision, owned: at the 600 bucket a 400-wide store cover is upscale-decoded.
+    /// Only a couple of cards fit on screen at that zoom, and custom 600x900 art decodes natively
+    /// there, so the trade goes the right way.
+    /// </para>
+    /// </remarks>
+    public int GridViewCoverDecodeWidth => CoverDecodeBucketFor(GridViewItemWidth);
+
+    static int CoverDecodeBucketFor(int width) => width <= 200 ? 200 : width <= 400 ? 400 : 600;
+
+    partial void OnGridViewItemWidthChanged(int oldValue, int newValue)
+    {
+        // Raised by hand rather than via NotifyPropertyChangedFor, precisely so it does NOT fire
+        // on every zoom tick - only when the tick crosses a bucket edge.
+        if (CoverDecodeBucketFor(oldValue) != CoverDecodeBucketFor(newValue))
+        {
+            OnPropertyChanged(nameof(GridViewCoverDecodeWidth));
+        }
+    }
+
+    /// <summary>
     /// The caption below the art: a title line, a status line, and the padding around them.
     /// </summary>
     /// <remarks>

@@ -336,7 +336,16 @@
                                         <Border.Background>
                                             <ImageBrush Stretch="UniformToFill">
                                                 <ImageBrush.ImageSource>
-                                                    <BitmapImage CreateOptions="IgnoreImageCache" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
+                                                    <!--
+                                                        Decoded at the drawn size, not the stored
+                                                        size - the same reasoning the list row
+                                                        records, applied to the heaviest surface.
+                                                        The width comes bucketed from the view
+                                                        model so zoom ticks inside a bucket do not
+                                                        re-decode every visible cover; see
+                                                        GridViewCoverDecodeWidth for the numbers.
+                                                    -->
+                                                    <BitmapImage CreateOptions="IgnoreImageCache" DecodePixelType="Logical" DecodePixelWidth="{Binding ElementName=RootGameGridPage, Path=ViewModel.GridViewCoverDecodeWidth, Mode=OneWay}" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
                                                 </ImageBrush.ImageSource>
                                             </ImageBrush>
                                         </Border.Background>
