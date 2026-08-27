@@ -144,9 +144,16 @@ internal static class DllUpdatePrompt
     {
         var summary = new StackPanel() { Spacing = 8 };
 
+        // The one-variant when exactly one dll in one game moved, because "Restored 1 dlls across
+        // 1 games" reads like nobody proofread the sentence a user sees after trusting the app with
+        // their game folder. The convention matches the cover scan's AppliedOne pair.
+        var summaryText = result.Swapped == 1 && result.GamesUpdated == 1
+            ? ResourceHelper.GetString(summaryTemplateResourceKey + "One")
+            : ResourceHelper.GetFormattedResourceTemplate(summaryTemplateResourceKey, result.Swapped, result.GamesUpdated);
+
         summary.Children.Add(new TextBlock()
         {
-            Text = ResourceHelper.GetFormattedResourceTemplate(summaryTemplateResourceKey, result.Swapped, result.GamesUpdated),
+            Text = summaryText,
             TextWrapping = TextWrapping.Wrap,
         });
 

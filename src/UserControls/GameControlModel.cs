@@ -735,7 +735,9 @@ public partial class GameControlModel : ObservableObject
             [Game],
             ResourceHelper.GetString("GamePage_ResetAll"),
             revertableAssetTypes.Count,
-            ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", revertableAssetTypes.Count, Game.Title),
+            revertableAssetTypes.Count == 1
+                ? ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneDllTemplate", Game.Title)
+                : ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", revertableAssetTypes.Count, Game.Title),
 
             // The button and the progress dialog say restore, because that is what this does. They
             // used to say "Update" and "Updating dlls" - the prompt hardcoded the update voice

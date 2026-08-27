@@ -791,13 +791,19 @@
     <value>Remove custom cover?</value>
   </data>
   <data name="DllRevert_ConfirmOneGameTemplate" xml:space="preserve">
-    <value>Restore {0} dlls in {1} to the versions the game shipped with? Their backups will be used up.</value>
+    <value>Restore {0} dlls in {1} to the versions the game shipped with? Their saved originals will be used up.</value>
+  </data>
+  <data name="DllRevert_ConfirmOneDllTemplate" xml:space="preserve">
+    <value>Restore the one dll in {0} to the version the game shipped with? Its saved original will be used up.</value>
   </data>
   <data name="DllRevert_NothingToRevert" xml:space="preserve">
-    <value>There are no backups to restore for this game.</value>
+    <value>There are no saved originals to restore for this game.</value>
   </data>
   <data name="DllRevert_RevertedTemplate" xml:space="preserve">
     <value>Restored {0} dlls across {1} games.</value>
+  </data>
+  <data name="DllRevert_RevertedOne" xml:space="preserve">
+    <value>Restored 1 dll to the version the game shipped with.</value>
   </data>
   <data name="DllUpdate_Cancelling" xml:space="preserve">
     <value>Finishing the current dll, then stopping...</value>
@@ -842,7 +848,7 @@
     <value>Unable to swap dll as we are unable to write to the target directory. Running DLSS Swapper as administrator may fix this.</value>
   </data>
   <data name="Game_Swap_DllRecordNotFound" xml:space="preserve">
-    <value>Unable to swap dll as your dll record was not found.</value>
+    <value>This version could not be found in DLSS Swapper's list of known DLLs. Refresh and try again.</value>
   </data>
   <data name="Game_Swap_DownloadedDllNotFound" xml:space="preserve">
     <value>Downloaded dll not found.</value>
@@ -851,13 +857,13 @@
     <value>Unable to swap dll. It appears to be in use by another program. Is your game currently running?</value>
   </data>
   <data name="Game_Swap_InvalidHash" xml:space="preserve">
-    <value>Unable to swap dll because dll hash was invalid.</value>
+    <value>The downloaded copy of this version failed its integrity check. Delete it on the Upscalers page and download it again.</value>
   </data>
   <data name="Game_Swap_LocalDllRecordNotFound" xml:space="preserve">
-    <value>Unable to swap dll as your local dll record was not found.</value>
+    <value>DLSS Swapper has no local copy of this version. Download it on the Upscalers page and try again.</value>
   </data>
   <data name="Game_Swap_NoDllRecordsToUpdate" xml:space="preserve">
-    <value>Unable to swap dll as there were no dll records to update.</value>
+    <value>This game does not contain this kind of dll, so there is nothing to swap.</value>
   </data>
   <data name="Game_Swap_UnknownError" xml:space="preserve">
     <value>Unable to swap dll. Please check your error log for more information.</value>
