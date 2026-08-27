@@ -172,6 +172,7 @@ public class NewResourceStringTests
     [InlineData("GamesPage_ClearSearch")]
     [InlineData("GamesPage_ReviewUpdatesOne")]
     [InlineData("CoverScan_NothingToScan")]
+    [InlineData("GamesPage_ManuallyAdding_NoteMessage")]
     [InlineData("CoverScan_ApplyStoppedTemplate")]
     [InlineData("CoverScan_UndonePartialTemplate")]
     [InlineData("GamePage_DetailsTemplate")]

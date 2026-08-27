@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DLSS_Swapper.Data;
@@ -49,6 +49,10 @@ public partial class ShellSidebarModel : ObservableObject
     /// <summary>Reads as "39 of 42 games", under a static label.</summary>
     [ObservableProperty]
     public partial string BackupCoverageText { get; set; } = string.Empty;
+
+    /// <summary>Collapsed until there is a library to make a coverage claim about.</summary>
+    [ObservableProperty]
+    public partial Visibility BackupCoverageVisibility { get; set; } = Visibility.Collapsed;
 
     /// <summary>Reads as "Fix the other 3". Hidden when every game has a copy.</summary>
     [ObservableProperty]
@@ -114,6 +118,10 @@ public partial class ShellSidebarModel : ObservableObject
             "Sidebar_BackupCoverageCountTemplate",
             withBackup,
             summary.TotalGames);
+
+        // Nothing to cover means nothing to claim. A brand new user's rail read "Originals kept
+        // for 0 of 0 games", a coverage statement about a library that does not exist yet.
+        BackupCoverageVisibility = summary.TotalGames > 0 ? Visibility.Visible : Visibility.Collapsed;
 
         FixTheOthersText = ResourceHelper.GetFormattedResourceTemplate(
             "Sidebar_FixTheOthersTemplate",

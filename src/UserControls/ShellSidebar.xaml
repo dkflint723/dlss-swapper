@@ -63,7 +63,8 @@
             Padding="18,0,18,14"
             BorderThickness="0,1,0,0"
             BorderBrush="{ThemeResource DsLineBrush}"
-            Margin="0,0,0,0">
+            Margin="0,0,0,0"
+            Visibility="{x:Bind ViewModel.BackupCoverageVisibility, Mode=OneWay}">
             <!--
                 A Grid rather than a horizontal StackPanel: a StackPanel measures its children with
                 infinite width in its own direction, so wrapping text never wraps and simply runs

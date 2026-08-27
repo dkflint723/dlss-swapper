@@ -947,7 +947,7 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
     <value>Setting a DLSS preset does not guarantee that the preset is used.</value>
   </data>
   <data name="GamePage_Favorited" xml:space="preserve">
-    <value>Favorited</value>
+    <value>Favourited</value>
   </data>
   <data name="GamePage_History" xml:space="preserve">
     <value>History</value>
@@ -1053,8 +1053,8 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
     <value>DLSS Swapper should find games from your installed game libraries automatically. If your game is not listed there may be a few settings preventing it. Please check:
 
-- Games list filter is not set to "Hide games with no swappable items"
-- Specific game library is enabled in settings
+- 'Only show games with an upscaler' is turned off in Settings
+- The game's library is enabled under Game Libraries in Settings
 
 If you have checked these and your game is still not showing up there may be a bug. We would appreciate it if you could report the issue on our GitHub repository so we can make a fix and have your games better detected in the future.</value>
   </data>
@@ -1078,7 +1078,7 @@ If you have checked these and your game is still not showing up there may be a b
     <value>Create new GitHub issue</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>While loading your games some new DLLs have been discovered which are not in the DLSS Swapper manifest.</value>
+    <value>While loading your games, some DLLs were found that are not in DLSS Swapper's list of known DLLs.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(GitHub account required)</value>
@@ -1494,7 +1494,7 @@ Only import dlls from sources you trust.</value>
     <value>Attempting to update</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper was not able to load its manifest file. It will now close.</value>
+    <value>DLSS Swapper could not load its list of known DLLs, so it cannot swap anything. It will now close.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
     <value>DLSS Swapper must close</value>
@@ -1503,12 +1503,12 @@ Only import dlls from sources you trust.</value>
     <value>GitHub Issues</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_Message" xml:space="preserve">
-    <value>We were unable to load manifest.json from your computer or from the internet.
+    <value>DLSS Swapper could not read its list of known DLLs — not from the copy saved on this PC, and not from the internet.
 
-If this keeps happening please file an report in our issue tracker on GitHub.</value>
+If this keeps happening, please file a report on the issue tracker.</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_UpdateManifest" xml:space="preserve">
-    <value>Update manifest</value>
+    <value>Try downloading again</value>
   </data>
   <data name="MainWindow_NoteForMultiplayerGames_Message" xml:space="preserve">
     <value>While swapping DLSS versions should not be considered cheating, certain anti-cheat systems may not be happy with you if the files in your game directory are not what the game was distributed with.
