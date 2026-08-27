@@ -27,6 +27,50 @@ public partial class DLLPickerControlModel : ObservableObject
 
     public List<DLLRecord> DLLRecords { get; private set; }
 
+    /// <summary>The list as shown: filtered by the search box, grouped by release line.</summary>
+    /// <remarks>
+    /// The same <see cref="DllVersionGroup.Build"/> and <see cref="DllSearch.Matches"/> the
+    /// upscalers page uses, so the picker and the page can never disagree about grouping or about
+    /// what a query matches. The picker was a flat run of a hundred near identical numbers with no
+    /// way to jump - the two tested rules for exactly this were sitting one page over.
+    /// </remarks>
+    public System.Collections.ObjectModel.ObservableCollection<DllVersionGroup> VersionGroups { get; } = new System.Collections.ObjectModel.ObservableCollection<DllVersionGroup>();
+
+    /// <summary>Whether this type has any versions at all, before the search has a say.</summary>
+    /// <remarks>
+    /// The search box shows on this rather than on the filtered count, because a query that
+    /// matches nothing must leave the box on screen to be cleared.
+    /// </remarks>
+    [ObservableProperty]
+    public partial bool HasAnyRecords { get; set; }
+
+    [ObservableProperty]
+    public partial string SearchText { get; set; } = string.Empty;
+
+    partial void OnSearchTextChanged(string value) => RebuildVersionGroups();
+
+    void RebuildVersionGroups()
+    {
+        VersionGroups.Clear();
+
+        var visible = DLLRecords.Where(x => DllSearch.Matches(x, SearchText)).ToList();
+
+        foreach (var group in DllVersionGroup.Build(visible, DLLManager.Instance.GetAssetTypeName(GameAssetType)))
+        {
+            VersionGroups.Add(group);
+        }
+
+        HasAnyRecords = DLLRecords.Count > 0;
+        AnyDLLsVisible = visible.Count > 0;
+
+        // A selection the filter just hid would leave Swap armed for a row that is no longer on
+        // screen - the button would do what it says to something invisible.
+        if (SelectedDLLRecord is not null && visible.Contains(SelectedDLLRecord) == false)
+        {
+            SelectedDLLRecord = null;
+        }
+    }
+
     [ObservableProperty]
     public partial DLLRecord? SelectedDLLRecord { get; set; } = null;
 
@@ -99,7 +143,7 @@ public partial class DLLPickerControlModel : ObservableObject
             }
         }
 
-        AnyDLLsVisible = DLLRecords.Count > 0;
+        RebuildVersionGroups();
 
         ResetSelection();
     }
@@ -190,7 +234,7 @@ public partial class DLLPickerControlModel : ObservableObject
         }
     }
 
-    void ShowTempInfoBar(string title, string message, double duration = 5.0, InfoBarSeverity severity = InfoBarSeverity.Informational, int gridIndex = 2)
+    void ShowTempInfoBar(string title, string message, double duration = 5.0, InfoBarSeverity severity = InfoBarSeverity.Informational, int gridIndex = 3)
     {
         if (_dllPickerControlWeakReference.TryGetTarget(out var dllPickerControl) == true)
         {

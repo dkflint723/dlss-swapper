@@ -1,4 +1,4 @@
-using DLSS_Swapper.Attributes;
+﻿using DLSS_Swapper.Attributes;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
 
@@ -14,6 +14,9 @@ public class DLLPickerControlModelTranslationProperties : LocalizedViewModelBase
 
     [TranslationProperty]
     public string OpenDllLocationText => ResourceHelper.GetString("GamePage_OpenDllLocation");
+
+    [TranslationProperty]
+    public string SearchVersionsText => ResourceHelper.GetString("Upscalers_Search");
 
     [TranslationProperty]
     public string CurrentDllText => ResourceHelper.GetString("GamePage_CurrentDll");

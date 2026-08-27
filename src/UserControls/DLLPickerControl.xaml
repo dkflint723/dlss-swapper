@@ -21,10 +21,18 @@
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <ct_converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
         <ct_converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+
+        <!-- Grouped by release line, like the upscalers page: one wall of numbers, same cure. -->
+        <CollectionViewSource
+            x:Name="GroupedPickerVersions"
+            IsSourceGrouped="True"
+            ItemsPath="Versions"
+            Source="{x:Bind ViewModel.VersionGroups, Mode=OneWay}" />
     </UserControl.Resources>
 
     <Grid RowSpacing="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -93,7 +101,24 @@
             </Button>
         </Grid>
 
-        <ListView Grid.Row="2" Visibility="{x:Bind ViewModel.AnyDLLsVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" ItemsSource="{x:Bind ViewModel.DLLRecords}" SelectedItem="{x:Bind ViewModel.SelectedDLLRecord, Mode=TwoWay}" MaxHeight="400">
+        <!-- On HasAnyRecords, not the filtered count: a query that matches nothing must leave
+             the box on screen to be cleared. -->
+        <TextBox
+            Grid.Row="2"
+            Visibility="{x:Bind ViewModel.HasAnyRecords, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+            Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            PlaceholderText="{x:Bind ViewModel.TranslationProperties.SearchVersionsText, Mode=OneWay}" />
+
+        <ListView Grid.Row="3" Visibility="{x:Bind ViewModel.AnyDLLsVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" ItemsSource="{x:Bind GroupedPickerVersions.View, Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedDLLRecord, Mode=TwoWay}" MaxHeight="400">
+            <ListView.GroupStyle>
+                <GroupStyle HidesIfEmpty="True">
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate x:DataType="data:DllVersionGroup">
+                            <usercontrols:SectionRule Margin="0,8,0,2" Label="{x:Bind Label}" />
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
 
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:DLLRecord">
@@ -122,7 +147,8 @@
             </ListView.ItemContainerStyle>
         </ListView>
 
-        <InfoBar Grid.Row="2"
+        <!-- Shares the list's row: exactly one of the two is ever visible. -->
+        <InfoBar Grid.Row="3"
               Visibility="{x:Bind ViewModel.AnyDLLsVisible, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"
               Severity="Warning"
               IsOpen="True"
