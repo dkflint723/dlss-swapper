@@ -1,4 +1,4 @@
-<Application
+﻿<Application
     x:Class="DLSS_Swapper.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -28,6 +28,8 @@
                                 converted to #AARRGGBB, eg .075 x 255 = 19 = 0x13.
                             -->
                             <SolidColorBrush x:Key="DsBgBrush" Color="#151C26" />
+                            <!-- The dim behind a sheet. Black over a dark page. -->
+                            <SolidColorBrush x:Key="DsScrimBrush" Color="#73000000" />
                             <SolidColorBrush x:Key="DsSurfBrush" Color="#1F2733" />
                             <SolidColorBrush x:Key="DsSurf2Brush" Color="#26303E" />
 
@@ -84,6 +86,8 @@
 
                             <!-- Redesign tokens. See the dark dictionary for how alpha is derived. -->
                             <SolidColorBrush x:Key="DsBgBrush" Color="#DCE5EF" />
+                            <!-- Lighter than the dark theme's: full-strength black over a light page reads as a blackout, not a dim. -->
+                            <SolidColorBrush x:Key="DsScrimBrush" Color="#40000000" />
                             <SolidColorBrush x:Key="DsSurfBrush" Color="#CDD9E6" />
                             <SolidColorBrush x:Key="DsSurf2Brush" Color="#BECDDD" />
 

@@ -450,9 +450,10 @@
 
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <Grid Width="300" Margin="10,0,0,0">
+                    <!-- 32 like every other control; it was a 20px box beside 32px buttons. -->
                     <TextBox x:Name="SearchBox"
-                        Height="20"
-                        Padding="8,5,32,0"
+                        Height="32"
+                        Padding="8,6,32,0"
                         AcceptsReturn="True"
                         IsEnabled="{x:Bind ViewModel.IsGameListLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}"
                         PlaceholderText="{x:Bind ViewModel.TranslationProperties.SearchText, Mode=OneWay}"
@@ -918,7 +919,7 @@
             AutomationProperties.Name="{x:Bind ViewModel.UpdatePreview.Title, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.UpdatePreviewVisibility, Mode=OneWay}">
             <!-- Clicking away is a cancel, same as Esc and the Cancel button. -->
-            <Border Background="#73000000" Tapped="UpdatePreviewBackdrop_Tapped" />
+            <Border Background="{ThemeResource DsScrimBrush}" Tapped="UpdatePreviewBackdrop_Tapped" />
 
             <Border
                 Width="640"
@@ -955,7 +956,7 @@
                         -->
                         <TextBlock
                             Text="{x:Bind ViewModel.UpdatePreview.Body, Mode=OneWay}"
-                            FontSize="12.5"
+                            FontSize="12"
                             LineHeight="19"
                             TextWrapping="Wrap"
                             Foreground="{ThemeResource DsTextSecondaryBrush}" />
@@ -1106,7 +1107,7 @@
 
             <!-- Clicking away closes it, the same as Escape and the header's back button. -->
             <Border
-                Background="#73000000"
+                Background="{ThemeResource DsScrimBrush}"
                 Tapped="GameDetailBackdrop_Tapped"
                 AutomationProperties.AccessibilityView="Raw" />
 
