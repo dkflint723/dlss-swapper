@@ -220,14 +220,14 @@
                                                 every realized row was decoding roughly a megabyte
                                                 of pixels to paint about three thousand of them -
                                                 and doing it again on every scroll, because
-                                                IgnoreImageCache means each realization is a fresh
+                                                A cache miss makes a realization a fresh
                                                 read and decode.
 
                                                 Logical rather than the default Physical, so the
                                                 number is in the same units as the Width above it
                                                 and a scaled display still gets enough pixels.
                                             -->
-                                            <BitmapImage CreateOptions="IgnoreImageCache" DecodePixelType="Logical" DecodePixelWidth="44" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
+                                            <BitmapImage DecodePixelType="Logical" DecodePixelWidth="44" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
                                         </ImageBrush.ImageSource>
                                     </ImageBrush>
                                 </Border.Background>
@@ -345,7 +345,7 @@
                                                         re-decode every visible cover; see
                                                         GridViewCoverDecodeWidth for the numbers.
                                                     -->
-                                                    <BitmapImage CreateOptions="IgnoreImageCache" DecodePixelType="Logical" DecodePixelWidth="{Binding ElementName=RootGameGridPage, Path=ViewModel.GridViewCoverDecodeWidth, Mode=OneWay}" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
+                                                    <BitmapImage DecodePixelType="Logical" DecodePixelWidth="{Binding ElementName=RootGameGridPage, Path=ViewModel.GridViewCoverDecodeWidth, Mode=OneWay}" UriSource="{x:Bind CoverImage, Mode=OneWay, Converter={StaticResource BitmapImageUriConverter}}"/>
                                                 </ImageBrush.ImageSource>
                                             </ImageBrush>
                                         </Border.Background>
