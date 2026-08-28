@@ -16,6 +16,49 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v2.2.0.0 — the app closes the loop
+
+A feature release, and the first with features of this fork's own rather than repairs and
+refinements of what was there. One thesis runs through all five: the app's job used to end at the
+file write, while the user's job ends when the game runs well — these close the gap.
+
+**Restore originals, for the whole library.** The sidebar has always said "Originals kept for 24 of
+24 games"; acting on that promise meant opening every game one at a time. One toolbar button now
+puts everything back — scoped to the games shown like every bulk action, skipping games marked
+leave alone like every bulk write, and confirming with every dll named: what each is now, what it
+goes back to, in a list that scrolls. For the moments that call for a clean slate: a driver
+rollback, a support thread, handing the machine on.
+
+**The app says so when a game throws a swap away.** A game update overwrites the dll you swapped
+in, and the scan that notices also deletes the stranded backup — so the swap and the way back both
+vanished silently, recorded only in a history dialog nobody opens. A warning bar on the games page
+now names each game and dll it happened to. Closing the bar acknowledges exactly what it showed;
+a swap undone next month reopens it.
+
+**A dll can be pinned where it is, with the reason written down.** You roll a game back because the
+newest build ghosts, and nothing remembers — so next month's update-all offers the bad version
+again. "Never update this game" existed but is all-or-nothing. A pin holds one dll: no batch moves
+it — not an update run, not a restore run — while the picker on the game's own page always can.
+The row says it in words: *v310.1 installed and pinned there — v310.7.129 exists — newer builds
+ghost in this game*, the last clause being whatever you wrote when you pinned it.
+
+**The version wall gained a curated lane.** A hundred near-identical numbers, and the knowledge of
+which two matter lived on forums. A Recommended group now leads the list on the Upscalers page and
+in the picker, each entry carrying its why — the 310.x transformer line, and 3.8.10 as the last
+CNN build and the fallback when the transformer misbehaves. Every claim names an exact build, and
+a test fails the build if an entry points at a version the shipped manifest does not carry.
+
+**Launch, then restore originals.** The swap you do not want to still be there next week: play the
+session swapped, and the shipped versions return the moment the game closes. The confirmation
+names every dll before anything is agreed to; a strip narrates the watch in words; and every
+uncertain path — the app closing, the game never starting, the watch stopped — leaves the files
+exactly as they are, which is where every game is without this feature.
+
+Also: the revert summary now has a sentence for every count. "Restored 4 dlls across 1 games" is
+gone, and the one-dll case — which resolved a resource key nothing defined and showed an error in
+the exact case singled out for better wording — reads properly, with tests holding every
+concatenated key to the resources for good.
+
 ## v2.1.0.0 — the app meets you halfway
 
 A user-experience release: two adversarial review passes over the whole app, every finding either
