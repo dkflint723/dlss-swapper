@@ -472,7 +472,7 @@
   </data>
   <data name="Upscalers_ImportOnlyBodyTemplate" xml:space="preserve">
     <value>There is no download list for {0}. Versions appear here once you import the dll file yourself.</value>
-    <comment>{0} is the engine name (eg. DLSS NR)</comment>
+    <comment>{0} is the engine name (eg. DLSS Neural Rendering)</comment>
   </data>
   <data name="Upscalers_ImportFromLocalFiles" xml:space="preserve">
     <value>Import from local files</value>
@@ -1356,8 +1356,8 @@ If you have checked these and your game is still not showing up there may be a b
     <comment>If DLSS does not have a direct translation put in the English characters for it</comment>
   </data>
   <data name="General_Name_DLSS_NR" xml:space="preserve">
-    <value>DLSS NR</value>
-    <comment>The dll calls itself DLSSNR and NVIDIA has not published what NR stands for, so the abbreviation is left as-is rather than guessed at. If DLSS does not have a direct translation put in the English characters for it</comment>
+    <value>DLSS Neural Rendering</value>
+    <comment>The NR in the dll's own name (nvngx_dlssnr.dll, internal name DLSSNR), spelled out the way its siblings are - DLSS Frame Generation, DLSS Ray Reconstruction. If DLSS does not have a direct translation put in the English characters for it</comment>
   </data>
   <data name="General_Name_DLSS_Preset" xml:space="preserve">
     <value>DLSS Preset</value>

@@ -145,12 +145,12 @@ public class DllSearchTests
     public void AnEngineWithNoDownloadListSaysToImportInstead()
     {
         var state = UpscalersEmptyState.For(
-            visibleCount: 0, engineTotal: 0, engineName: "DLSS NR", searchText: string.Empty,
+            visibleCount: 0, engineTotal: 0, engineName: "DLSS Neural Rendering", searchText: string.Empty,
             matchesElsewhere: 0, versionsArriveOnlyByImport: true);
 
         Assert.Equal(UpscalersEmptyStateKind.ImportOnly, state.Kind);
-        Assert.Contains("DLSS NR", state.Title);
-        Assert.Contains("DLSS NR", state.Body);
+        Assert.Contains("DLSS Neural Rendering", state.Title);
+        Assert.Contains("DLSS Neural Rendering", state.Body);
         Assert.DoesNotContain("LangResourceError", state.Body);
 
         // The offer has to be the one that can actually work.
@@ -165,7 +165,7 @@ public class DllSearchTests
     public void AnImportOnlyEngineStillReportsASearchAsASearch()
     {
         var state = UpscalersEmptyState.For(
-            visibleCount: 0, engineTotal: 0, engineName: "DLSS NR", searchText: "310",
+            visibleCount: 0, engineTotal: 0, engineName: "DLSS Neural Rendering", searchText: "310",
             matchesElsewhere: 2, versionsArriveOnlyByImport: true);
 
         Assert.Equal(UpscalersEmptyStateKind.NoSearchResults, state.Kind);
