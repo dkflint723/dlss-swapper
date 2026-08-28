@@ -202,6 +202,9 @@ public class NewResourceStringTests
     [InlineData("About_BasedOn")]
     [InlineData("About_OriginalCommunity")]
     [InlineData("About_FeedbackForkInfo")]
+    [InlineData("GamesPage_RestoreOriginals")]
+    [InlineData("DllRevert_ConfirmLibraryTemplate")]
+    [InlineData("DllRevert_NothingToRevertLibrary")]
     public void TheStringResolves(string resourceKey)
     {
         var value = ResourceHelper.GetString(resourceKey);

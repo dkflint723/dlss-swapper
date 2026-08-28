@@ -47,6 +47,9 @@ public class GameGridPageModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string FindCoversText => ResourceHelper.GetString("GamesPage_FindCovers");
 
+    [TranslationProperty]
+    public string RestoreOriginalsText => ResourceHelper.GetString("GamesPage_RestoreOriginals");
+
     /// <summary>
     /// The admin warning bar's title. The identical bar on the other two pages binds this; only
     /// this one had the word typed into the markup, where no translator could see it.

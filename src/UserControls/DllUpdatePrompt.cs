@@ -32,6 +32,7 @@ internal static class DllUpdatePrompt
     /// <param name="confirmButtonText">The verb on the confirm button. It has to name the operation.</param>
     /// <param name="progressTitle">What the progress dialog says is happening.</param>
     /// <param name="operation">Either the update or the revert run.</param>
+    /// <param name="detailLines">One line per dll: what it is and what it becomes. Scrolls when long.</param>
     internal static async Task RunAsync(
         XamlRoot xamlRoot,
         IReadOnlyList<Game> games,
@@ -42,7 +43,8 @@ internal static class DllUpdatePrompt
         string progressTitle,
         string nothingToDoMessage,
         Func<IReadOnlyList<Game>, IProgress<DllUpdateProgress>, CancellationToken, Task<DllUpdateResult>> operation,
-        string summaryTemplateResourceKey)
+        string summaryTemplateResourceKey,
+        IReadOnlyList<string>? detailLines = null)
     {
         if (affectedDllCount == 0)
         {
@@ -64,7 +66,7 @@ internal static class DllUpdatePrompt
             PrimaryButtonText = confirmButtonText,
             CloseButtonText = ResourceHelper.GetString("General_Cancel"),
             DefaultButton = ContentDialogButton.Primary,
-            Content = confirmationMessage,
+            Content = BuildConfirmContent(confirmationMessage, detailLines),
         };
 
         if (await confirmDialog.ShowAsync() != ContentDialogResult.Primary)
@@ -73,6 +75,43 @@ internal static class DllUpdatePrompt
         }
 
         await RunConfirmedAsync(xamlRoot, games, title, progressTitle, operation, summaryTemplateResourceKey);
+    }
+
+    /// <summary>
+    /// The confirmation's body: the sentence, and under it the per-dll rows when the caller has
+    /// them.
+    /// </summary>
+    /// <remarks>
+    /// The rows scroll on their own rather than riding in the message string, because a library
+    /// wide restore lists dozens of lines and a ContentDialog clips overflow rather than scrolling
+    /// it. The sentence stays put while the rows scroll, so the question being asked is never the
+    /// part that is off screen.
+    /// </remarks>
+    static object BuildConfirmContent(string confirmationMessage, IReadOnlyList<string>? detailLines)
+    {
+        if (detailLines is null || detailLines.Count == 0)
+        {
+            return confirmationMessage;
+        }
+
+        return new StackPanel()
+        {
+            Spacing = 12,
+            Children =
+            {
+                new TextBlock() { Text = confirmationMessage, TextWrapping = TextWrapping.Wrap },
+                new ScrollViewer()
+                {
+                    MaxHeight = 320,
+                    Content = new TextBlock()
+                    {
+                        Text = string.Join(Environment.NewLine, detailLines),
+                        TextWrapping = TextWrapping.Wrap,
+                        Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style,
+                    },
+                },
+            },
+        };
     }
 
     /// <summary>

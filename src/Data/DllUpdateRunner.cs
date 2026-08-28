@@ -41,6 +41,9 @@ internal sealed class DllUpdateProgress
 /// Recorded as the batch runs, because the version a file was before is only knowable before it is
 /// written over. The done strip could say seven files were updated and nothing at all about what
 /// they became, which is the one thing worth checking before deciding to keep it.
+///
+/// Also the row a revert preview is made of, so "what this will do" and "what this did" format a
+/// version change one way. See <see cref="DllUpdateRunner.GetRevertPreview"/>.
 /// </remarks>
 internal sealed class DllChange
 {
@@ -201,6 +204,39 @@ internal static class DllUpdateRunner
         }
 
         return revertableAssetTypes;
+    }
+
+    /// <summary>
+    /// The rows a revert confirmation lists: each dll with a saved original, what it is now, and
+    /// what it goes back to.
+    /// </summary>
+    /// <remarks>
+    /// Built on <see cref="GetRevertableAssetTypes"/> so the preview and the run read one rule and
+    /// cannot disagree about which dlls are meant. Names come straight off the type definition
+    /// rather than through <see cref="DLLManager.GetAssetTypeName"/> — the same field, but read
+    /// here so a test can check a preview without standing up the whole manager.
+    /// </remarks>
+    internal static List<DllChange> GetRevertPreview(Game game)
+    {
+        var preview = new List<DllChange>();
+
+        foreach (var assetType in GetRevertableAssetTypes(game))
+        {
+            if (DllTypes.ForAssetType(assetType) is not DllTypeDefinition definition)
+            {
+                continue;
+            }
+
+            preview.Add(new DllChange()
+            {
+                GameTitle = game.Title,
+                EngineName = ResourceHelper.GetString(definition.DisplayNameResourceKey),
+                FromVersion = game.GameAssets.FirstOrDefault(x => x.AssetType == assetType)?.DisplayName ?? string.Empty,
+                ToVersion = game.GameAssets.FirstOrDefault(x => x.AssetType == definition.BackupAssetType)?.DisplayName ?? string.Empty,
+            });
+        }
+
+        return preview;
     }
 
     /// <summary>

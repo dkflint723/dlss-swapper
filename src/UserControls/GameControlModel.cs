@@ -728,36 +728,17 @@ public partial class GameControlModel : ObservableObject
             return;
         }
 
-        var revertableAssetTypes = DllUpdateRunner.GetRevertableAssetTypes(Game);
+        var preview = DllUpdateRunner.GetRevertPreview(Game);
 
-        // The rows this will actually touch, named the way the update preview names its files:
-        // what each dll is now, and what it goes back to. A count alone made the reset the one
-        // write in the app that asked for a yes without showing its work.
-        var revertLines = new List<string>();
-        foreach (var assetType in revertableAssetTypes)
-        {
-            var typeName = DLLManager.Instance.GetAssetTypeName(assetType);
-            var current = Game.GameAssets.FirstOrDefault(x => x.AssetType == assetType)?.DisplayName ?? string.Empty;
-            var backupType = DLLManager.Instance.GetAssetBackupType(assetType);
-            var original = Game.GameAssets.FirstOrDefault(x => x.AssetType == backupType)?.DisplayName ?? string.Empty;
-
-            revertLines.Add($"{typeName}: {current} → {original}");
-        }
-
-        var confirmation = revertableAssetTypes.Count == 1
+        var confirmation = preview.Count == 1
             ? ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneDllTemplate", Game.Title)
-            : ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", revertableAssetTypes.Count, Game.Title);
-
-        if (revertLines.Count > 0)
-        {
-            confirmation += "\n\n" + string.Join("\n", revertLines);
-        }
+            : ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", preview.Count, Game.Title);
 
         await DllUpdatePrompt.RunAsync(
             gameControl.XamlRoot,
             [Game],
             ResourceHelper.GetString("GamePage_ResetAll"),
-            revertableAssetTypes.Count,
+            preview.Count,
             confirmation,
 
             // The button and the progress dialog say restore, because that is what this does. They
@@ -768,7 +749,12 @@ public partial class GameControlModel : ObservableObject
             ResourceHelper.GetString("Update_Undoing"),
             ResourceHelper.GetString("DllRevert_NothingToRevert"),
             (games, progress, cancellationToken) => DllUpdateRunner.RevertGamesAsync(games, progress, cancellationToken),
-            "DllRevert_RevertedTemplate");
+            "DllRevert_RevertedTemplate",
+
+            // The rows this will actually touch, named the way the update preview names its files:
+            // what each dll is now, and what it goes back to. A count alone made the reset the one
+            // write in the app that asked for a yes without showing its work.
+            preview.Select(x => $"{x.EngineName}: {x.VersionChange}").ToList());
 
         // Same reason as the picker: this one has just put every dll back.
         RefreshUpscalerRows();

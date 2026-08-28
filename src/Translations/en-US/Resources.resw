@@ -565,6 +565,9 @@
   <data name="GamesPage_FindCovers" xml:space="preserve">
     <value>Find covers</value>
   </data>
+  <data name="GamesPage_RestoreOriginals" xml:space="preserve">
+    <value>Restore originals</value>
+  </data>
   <data name="CoverScan_Title" xml:space="preserve">
     <value>Find covers for every game</value>
   </data>
@@ -846,6 +849,13 @@
   </data>
   <data name="DllRevert_NothingToRevert" xml:space="preserve">
     <value>There are no saved originals to restore for this game.</value>
+  </data>
+  <data name="DllRevert_ConfirmLibraryTemplate" xml:space="preserve">
+    <value>Restore {0} dlls across {1} games to the versions they shipped with? Their saved originals will be used up.</value>
+    <comment>{0} is how many dlls will be restored, {1} is how many games they are spread across</comment>
+  </data>
+  <data name="DllRevert_NothingToRevertLibrary" xml:space="preserve">
+    <value>There are no saved originals to restore in these games.</value>
   </data>
   <data name="DllRevert_RevertedTemplate" xml:space="preserve">
     <value>Restored {0} dlls across {1} games.</value>

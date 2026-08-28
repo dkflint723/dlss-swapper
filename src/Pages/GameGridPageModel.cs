@@ -891,6 +891,65 @@ public partial class GameGridPageModel : ObservableObject
     }
 
     /// <summary>
+    /// Puts every saved original back, across the games shown.
+    /// </summary>
+    /// <remarks>
+    /// The mirror of Review updates: one action that returns the library to the versions the games
+    /// shipped with, for the moments that call for a clean slate — a driver rollback, a support
+    /// thread, handing the machine on. Until now that meant opening every game one at a time and
+    /// pressing its Reset all, which gives up half way through a real library.
+    ///
+    /// Scoped by <see cref="GamesOnThePage"/> like every bulk action here, and leaving out games
+    /// marked leave alone like every bulk write, because the run itself refuses them — a preview
+    /// must not claim a row the run would skip.
+    /// </remarks>
+    [RelayCommand]
+    async Task RestoreAllGamesAsync()
+    {
+        var games = GamesOnThePage()
+            .Where(x => x.SkipUpdates == false)
+            .Where(x => DllUpdateRunner.GetRevertableAssetTypes(x).Count > 0)
+            .ToList();
+
+        var preview = games.SelectMany(DllUpdateRunner.GetRevertPreview).ToList();
+
+        // One game asks in that game's own Reset all words, because it is the same act; the
+        // library sentence exists so nobody is ever told "1 games".
+        string confirmation;
+        List<string> lines;
+        if (games.Count == 1)
+        {
+            confirmation = preview.Count == 1
+                ? ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneDllTemplate", games[0].Title)
+                : ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmOneGameTemplate", preview.Count, games[0].Title);
+            lines = preview.Select(x => $"{x.EngineName}: {x.VersionChange}").ToList();
+        }
+        else
+        {
+            confirmation = ResourceHelper.GetFormattedResourceTemplate("DllRevert_ConfirmLibraryTemplate", preview.Count, games.Count);
+            lines = preview.Select(x => $"{x.Description}: {x.VersionChange}").ToList();
+        }
+
+        await DllUpdatePrompt.RunAsync(
+            gameGridPage.XamlRoot,
+            games,
+            ResourceHelper.GetString("GamesPage_RestoreOriginals"),
+            preview.Count,
+            confirmation,
+            ResourceHelper.GetString("General_Restore"),
+            ResourceHelper.GetString("Update_Undoing"),
+            ResourceHelper.GetString("DllRevert_NothingToRevertLibrary"),
+            (g, progress, cancellationToken) => DllUpdateRunner.RevertGamesAsync(g, progress, cancellationToken),
+            "DllRevert_RevertedTemplate",
+            lines);
+
+        // Restoring uses the saved originals up, so the sidebar's coverage line and the "Missing a
+        // saved original" tab both just changed — the same pair the save-a-copy action refreshes.
+        App.CurrentApp.MainWindow?.RefreshSidebar();
+        RefreshFilterTabs();
+    }
+
+    /// <summary>
     /// Opens the preview sheet rather than starting to write.
     /// </summary>
     /// <remarks>
