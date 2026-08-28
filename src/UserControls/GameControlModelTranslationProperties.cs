@@ -51,6 +51,12 @@ public class GameControlModelTranslationProperties : LocalizedViewModelBase
     [TranslationProperty]
     public string LaunchText => ResourceHelper.GetString("GamePage_Launch");
 
+    [TranslationProperty]
+    public string PlayCleanText => ResourceHelper.GetString("GamePage_PlayClean");
+
+    [TranslationProperty]
+    public string PlayCleanStopText => ResourceHelper.GetString("PlayClean_StopWatching");
+
     /// <summary>
     /// The three that were glyph-only toggles. Each states the setting rather than the click, so
     /// the menu says what is true and the check mark says whether it is on.

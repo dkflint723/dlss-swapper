@@ -334,7 +334,25 @@
             The action row, which used to be two ControlTemplates injected into the dialog's own
             template at OnApplyTemplate. A page just has a row.
         -->
-        <Grid Grid.Row="2" Padding="0,12" BorderThickness="0,1,0,0" BorderBrush="{ThemeResource DsLineBrush}">
+        <StackPanel Grid.Row="2">
+
+        <!--
+            The play-clean watch, while one is live for this game. Not closable from the corner:
+            the one way out is the button that says what leaving does.
+        -->
+        <InfoBar
+            Severity="Informational"
+            IsClosable="False"
+            IsOpen="{Binding PlayCleanStripIsOpen}"
+            Message="{Binding PlayCleanStripText}">
+            <InfoBar.ActionButton>
+                <Button
+                    Content="{Binding TranslationProperties.PlayCleanStopText, Mode=OneWay}"
+                    Command="{Binding StopPlayCleanCommand}" />
+            </InfoBar.ActionButton>
+        </InfoBar>
+
+        <Grid Padding="0,12" BorderThickness="0,1,0,0" BorderBrush="{ThemeResource DsLineBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -422,6 +440,21 @@
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
 
+                            <!--
+                                Launch, but for the swap you do not want to still be there next
+                                week: the originals go back the moment the game closes. Only
+                                offered when it could both launch and restore something, per this
+                                bar's rule that an action that can only refuse does not appear.
+                            -->
+                            <MenuFlyoutItem
+                                Text="{Binding TranslationProperties.PlayCleanText, Mode=OneWay}"
+                                Visibility="{Binding PlayCleanVisibility}"
+                                Command="{Binding PlayCleanCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE768;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
                             <!-- Last, and behind a separator: the only one that undoes anything. -->
                             <MenuFlyoutSeparator Visibility="{Binding CanChangeDllsVisibility}" />
 
@@ -452,5 +485,7 @@
                 <Button Content="{Binding TranslationProperties.RemoveText, Mode=OneWay}" Visibility="{Binding IsManuallyAdded, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding RemoveCommand}" />
             </StackPanel>
         </Grid>
+
+        </StackPanel>
     </Grid>
 </Page>

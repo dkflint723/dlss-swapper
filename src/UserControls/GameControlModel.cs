@@ -224,6 +224,10 @@ public partial class GameControlModel : ObservableObject
 
         NotPresentSummary = rows.AbsentSummary;
 
+        // The launch-then-restore item exists only while something could be restored, and every
+        // caller of this rebuild has just changed what is on disk.
+        OnPropertyChanged(nameof(PlayCleanVisibility));
+
         // A game with no upscalers at all would otherwise get a line listing all nine, which is
         // just a long way of saying the app has nothing to do here.
         NotPresentSummaryVisibility = string.IsNullOrEmpty(rows.AbsentSummary) == false && rows.Rows.Count > 0
@@ -246,6 +250,13 @@ public partial class GameControlModel : ObservableObject
         DlssGPresetVisibility = VisibleIfPresent(engines, GameAssetType.DLSS_G);
 
         RefreshUpscalerRows();
+
+        // A watch outlives the page that started it, so a page opened mid-session has to pick the
+        // strip back up rather than showing nothing about a restore that is still armed.
+        if (PlayCleanSession.Current?.Game == game)
+        {
+            AttachToPlayCleanSession(PlayCleanSession.Current);
+        }
 
 
         // Make sure NVAPIHelper is supported and the game has DLSS.
@@ -473,6 +484,145 @@ public partial class GameControlModel : ObservableObject
                 await dialog.ShowAsync();
             }
         }
+    }
+
+    /// <summary>
+    /// Launches the game and puts the originals back the moment it closes.
+    /// </summary>
+    /// <remarks>
+    /// The confirmation names every dll that will go back, through the same preview builder every
+    /// revert asks with — the write happens later, but it is agreed to now, so it is shown now.
+    /// </remarks>
+    [RelayCommand]
+    async Task PlayCleanAsync()
+    {
+        if (gameControlWeakReference.TryGetTarget(out var gameControl) == false)
+        {
+            return;
+        }
+
+        if (PlayCleanSession.Current is not null)
+        {
+            var busyDialog = new EasyContentDialog(gameControl.XamlRoot)
+            {
+                Title = ResourceHelper.GetString("GamePage_PlayClean"),
+                CloseButtonText = ResourceHelper.GetString("General_Okay"),
+                DefaultButton = ContentDialogButton.Close,
+                Content = ResourceHelper.GetFormattedResourceTemplate("PlayClean_AlreadyWatchingTemplate", PlayCleanSession.Current.Game.Title),
+            };
+            await busyDialog.ShowAsync();
+            return;
+        }
+
+        var preview = DllUpdateRunner.GetRevertPreview(Game);
+        if (preview.Count == 0)
+        {
+            var nothingDialog = new EasyContentDialog(gameControl.XamlRoot)
+            {
+                Title = ResourceHelper.GetString("GamePage_PlayClean"),
+                CloseButtonText = ResourceHelper.GetString("General_Okay"),
+                DefaultButton = ContentDialogButton.Close,
+                Content = ResourceHelper.GetString("DllRevert_NothingToRevert"),
+            };
+            await nothingDialog.ShowAsync();
+            return;
+        }
+
+        var confirmDialog = new EasyContentDialog(gameControl.XamlRoot)
+        {
+            Title = ResourceHelper.GetString("GamePage_PlayClean"),
+            PrimaryButtonText = ResourceHelper.GetString("PlayClean_LaunchButton"),
+            CloseButtonText = ResourceHelper.GetString("General_Cancel"),
+            DefaultButton = ContentDialogButton.Primary,
+            Content = DllUpdatePrompt.BuildConfirmContent(
+                ResourceHelper.GetFormattedResourceTemplate("PlayClean_ConfirmBodyTemplate", Game.Title),
+                preview.Select(x => $"{x.EngineName}: {x.VersionChange}").ToList()),
+        };
+
+        if (await confirmDialog.ShowAsync() != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        var session = PlayCleanSession.Start(Game);
+        if (session is null)
+        {
+            return;
+        }
+
+        AttachToPlayCleanSession(session);
+
+        await GameManager.Instance.LaunchGameAsync(Game);
+    }
+
+    /// <summary>
+    /// Keeps this page's strip telling the session's truth, and lets go when the session ends.
+    /// </summary>
+    /// <remarks>
+    /// Also called at construction when a session for this game is already live, because the page
+    /// that started a watch can be closed and reopened while it runs. The completed handler
+    /// removes itself, so a model that outlives its dialog is not pinned by the static event.
+    /// </remarks>
+    void AttachToPlayCleanSession(PlayCleanSession session)
+    {
+        session.PhaseChanged += () => App.CurrentApp.RunOnUIThread(RefreshPlayCleanStrip);
+
+        Action<PlayCleanSession, PlayCleanOutcome, DllUpdateResult?>? completedHandler = null;
+        completedHandler = (endedSession, outcome, result) =>
+        {
+            PlayCleanSession.SessionCompleted -= completedHandler;
+
+            App.CurrentApp.RunOnUIThread(() =>
+            {
+                RefreshPlayCleanStrip();
+
+                // The restore has just rewritten what is on disk, and every row describes disk.
+                RefreshUpscalerRows();
+                OnPropertyChanged(nameof(HasUpdatesVisibility));
+            });
+        };
+        PlayCleanSession.SessionCompleted += completedHandler;
+
+        RefreshPlayCleanStrip();
+    }
+
+    /// <summary>Offered only when it could both launch and restore something afterwards.</summary>
+    public Visibility PlayCleanVisibility => GameManager.Instance.CanLaunchGame(Game)
+        && DllUpdateRunner.GetRevertableAssetTypes(Game).Count > 0
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
+    public bool PlayCleanStripIsOpen => PlayCleanSession.Current?.Game == Game;
+
+    public string PlayCleanStripText
+    {
+        get
+        {
+            var session = PlayCleanSession.Current;
+            if (session is null || session.Game != Game)
+            {
+                return string.Empty;
+            }
+
+            return session.Phase switch
+            {
+                PlayCleanPhase.WaitingForStart => ResourceHelper.GetFormattedResourceTemplate("PlayClean_WaitingTemplate", Game.Title),
+                PlayCleanPhase.Running => ResourceHelper.GetFormattedResourceTemplate("PlayClean_RunningTemplate", Game.Title),
+                _ => ResourceHelper.GetString("Update_Undoing"),
+            };
+        }
+    }
+
+    void RefreshPlayCleanStrip()
+    {
+        OnPropertyChanged(nameof(PlayCleanStripIsOpen));
+        OnPropertyChanged(nameof(PlayCleanStripText));
+    }
+
+    [RelayCommand]
+    void StopPlayClean()
+    {
+        PlayCleanSession.Current?.Stop();
     }
 
     [RelayCommand]

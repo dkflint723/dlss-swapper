@@ -219,6 +219,14 @@ public class NewResourceStringTests
     [InlineData("GamesPage_Status_PinnedOne")]
     [InlineData("GamesPage_Status_PinnedMany")]
     [InlineData("DllGroup_Recommended")]
+    [InlineData("GamePage_PlayClean")]
+    [InlineData("PlayClean_LaunchButton")]
+    [InlineData("PlayClean_ConfirmBodyTemplate")]
+    [InlineData("PlayClean_AlreadyWatchingTemplate")]
+    [InlineData("PlayClean_WaitingTemplate")]
+    [InlineData("PlayClean_RunningTemplate")]
+    [InlineData("PlayClean_StopWatching")]
+    [InlineData("PlayClean_NeverStartedTemplate")]
     public void TheStringResolves(string resourceKey)
     {
         var value = ResourceHelper.GetString(resourceKey);

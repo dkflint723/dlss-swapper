@@ -87,7 +87,7 @@ internal static class DllUpdatePrompt
     /// it. The sentence stays put while the rows scroll, so the question being asked is never the
     /// part that is off screen.
     /// </remarks>
-    static object BuildConfirmContent(string confirmationMessage, IReadOnlyList<string>? detailLines)
+    internal static object BuildConfirmContent(string confirmationMessage, IReadOnlyList<string>? detailLines)
     {
         if (detailLines is null || detailLines.Count == 0)
         {
@@ -179,7 +179,7 @@ internal static class DllUpdatePrompt
         await ShowSummaryAsync(xamlRoot, title, summaryTemplateResourceKey, result);
     }
 
-    static async Task ShowSummaryAsync(XamlRoot xamlRoot, string title, string summaryTemplateResourceKey, DllUpdateResult result)
+    internal static async Task ShowSummaryAsync(XamlRoot xamlRoot, string title, string summaryTemplateResourceKey, DllUpdateResult result)
     {
         var summary = new StackPanel() { Spacing = 8 };
 

@@ -190,6 +190,35 @@
   <data name="GamePage_PinDialog_PinButton" xml:space="preserve">
     <value>Pin</value>
   </data>
+  <data name="GamePage_PlayClean" xml:space="preserve">
+    <value>Launch, then restore originals</value>
+  </data>
+  <data name="PlayClean_LaunchButton" xml:space="preserve">
+    <value>Launch</value>
+  </data>
+  <data name="PlayClean_ConfirmBodyTemplate" xml:space="preserve">
+    <value>Play {0} with the dlls as they are. The moment it closes, the ones below go back to the versions the game shipped with. Keep DLSS Swapper open while you play — the watch ends if the app does, and then nothing is changed.</value>
+    <comment>{0} is the game's title</comment>
+  </data>
+  <data name="PlayClean_AlreadyWatchingTemplate" xml:space="preserve">
+    <value>Already watching {0} — one game at a time.</value>
+    <comment>{0} is the title of the game already being watched</comment>
+  </data>
+  <data name="PlayClean_WaitingTemplate" xml:space="preserve">
+    <value>Waiting for {0} to start — the originals go back when it closes. Keep this app open.</value>
+    <comment>{0} is the game's title</comment>
+  </data>
+  <data name="PlayClean_RunningTemplate" xml:space="preserve">
+    <value>{0} is running — the originals go back when it closes. Keep this app open.</value>
+    <comment>{0} is the game's title</comment>
+  </data>
+  <data name="PlayClean_StopWatching" xml:space="preserve">
+    <value>Stop watching — leave the dlls as they are</value>
+  </data>
+  <data name="PlayClean_NeverStartedTemplate" xml:space="preserve">
+    <value>{0} did not start, so the watch ended. Nothing was changed.</value>
+    <comment>{0} is the game's title</comment>
+  </data>
   <data name="GamesPage_Status_PinnedOne" xml:space="preserve">
     <value>{0} is pinned — a newer version exists</value>
     <comment>{0} is the dll's name, eg. DLSS</comment>

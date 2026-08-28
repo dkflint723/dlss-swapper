@@ -447,7 +447,76 @@ public partial class GameGridPageModel : ObservableObject
             });
         };
 
+        // Subscribed here because this page lives as long as the window: a play-clean session
+        // outlives the game dialog that started it, and its ending still needs a mouth.
+        PlayCleanSession.SessionCompleted += OnPlayCleanSessionCompleted;
+
         RefreshFilterTabs();
+    }
+
+    /// <summary>
+    /// Says what a play-clean session did, wherever the user is by then.
+    /// </summary>
+    /// <remarks>
+    /// A stopped session ends silently — the user just pressed the button that ends it, and a
+    /// dialog restating their own click is noise. The other two endings happened on their own
+    /// while the user was in a game, so they are exactly the ones that need saying.
+    /// </remarks>
+    void OnPlayCleanSessionCompleted(PlayCleanSession session, PlayCleanOutcome outcome, DllUpdateResult? result)
+    {
+        App.CurrentApp.RunOnUIThread(() =>
+        {
+            // A restore uses saved originals up, so both counters just moved.
+            RefreshFilterTabs();
+            App.CurrentApp.MainWindow?.RefreshSidebar();
+
+            if (outcome == PlayCleanOutcome.Stopped)
+            {
+                return;
+            }
+
+            _ = ReportPlayCleanAsync(session, outcome, result);
+        });
+    }
+
+    async Task ReportPlayCleanAsync(PlayCleanSession session, PlayCleanOutcome outcome, DllUpdateResult? result)
+    {
+        try
+        {
+            var xamlRoot = gameGridPage.XamlRoot;
+            if (xamlRoot is null)
+            {
+                return;
+            }
+
+            if (outcome == PlayCleanOutcome.NeverStarted)
+            {
+                var dialog = new EasyContentDialog(xamlRoot)
+                {
+                    Title = ResourceHelper.GetString("GamePage_PlayClean"),
+                    CloseButtonText = ResourceHelper.GetString("General_Okay"),
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = ResourceHelper.GetFormattedResourceTemplate("PlayClean_NeverStartedTemplate", session.Game.Title),
+                };
+                await dialog.ShowAsync();
+                return;
+            }
+
+            if (result is not null)
+            {
+                // The same summary every revert run shows: what went back, and what failed by name.
+                await DllUpdatePrompt.ShowSummaryAsync(
+                    xamlRoot,
+                    ResourceHelper.GetString("GamePage_PlayClean"),
+                    "DllRevert_RevertedTemplate",
+                    result);
+            }
+        }
+        catch (Exception err)
+        {
+            // The restore itself already happened; only the telling failed.
+            Logger.Error(err, "Could not report the play-clean session's ending.");
+        }
     }
 
     /// <summary>
