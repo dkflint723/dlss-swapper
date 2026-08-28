@@ -49,6 +49,19 @@ public partial class GameGridPageModel : ObservableObject
 
     public bool IsLoading => (IsGameListLoading || IsDLSSLoading);
 
+    /// <summary>What the page says about swaps undone behind the app's back, or null for nothing.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UndoneSwapsIsOpen))]
+    [NotifyPropertyChangedFor(nameof(UndoneSwapsTitle))]
+    [NotifyPropertyChangedFor(nameof(UndoneSwapsMessage))]
+    public partial UndoneSwapNotice? UndoneSwapsNotice { get; set; }
+
+    public bool UndoneSwapsIsOpen => UndoneSwapsNotice is not null;
+
+    public string UndoneSwapsTitle => UndoneSwapsNotice?.Title ?? string.Empty;
+
+    public string UndoneSwapsMessage => UndoneSwapsNotice?.Message ?? string.Empty;
+
     [ObservableProperty]
     public partial ICollectionView? CurrentCollectionView { get; set; } = null;
 
@@ -463,10 +476,63 @@ public partial class GameGridPageModel : ObservableObject
             }
 
             await GameManager.Instance.LoadGamesAsync(false);
+
+            // After the rescan, because the rescan is what writes the history this reads.
+            await CheckForUndoneSwapsAsync();
         }
         finally
         {
             IsDLSSLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Looks for swaps that no longer hold and says so on the page.
+    /// </summary>
+    /// <remarks>
+    /// The scan records a swapped dll being overwritten by a game update, and then deletes the
+    /// backup because the game's new stock dll is the thing worth going back to now — so the swap
+    /// and the way back both vanish, and the only trace was a row in a history dialog nobody opens
+    /// unprompted. This turns the trace into a sentence where the games are.
+    /// </remarks>
+    async Task CheckForUndoneSwapsAsync()
+    {
+        try
+        {
+            List<GameHistory> history;
+            using (await Database.Instance.Mutex.LockAsync())
+            {
+                history = await Database.Instance.Connection.Table<GameHistory>()
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+
+            var gameTitlesById = GameManager.Instance.GetSynchronisedGamesListCopy()
+                .ToDictionary(x => x.ID, x => x.Title);
+
+            var notice = UndoneSwapNotice.For(
+                UndoneSwapFinder.Find(history),
+                gameTitlesById,
+                Settings.Instance.UndoneSwapsDismissedAt);
+
+            App.CurrentApp.RunOnUIThread(() => UndoneSwapsNotice = notice);
+        }
+        catch (Exception err)
+        {
+            // A failed check must not take the page down with it; the notice is a courtesy.
+            Logger.Error(err, "Could not check for undone swaps.");
+        }
+    }
+
+    /// <summary>
+    /// Closes the notice and remembers how far it had read, so only newer changes reopen it.
+    /// </summary>
+    public void DismissUndoneSwaps()
+    {
+        if (UndoneSwapsNotice is not null)
+        {
+            Settings.Instance.UndoneSwapsDismissedAt = UndoneSwapsNotice.NewestChangedAt;
+            UndoneSwapsNotice = null;
         }
     }
 
@@ -687,6 +753,9 @@ public partial class GameGridPageModel : ObservableObject
 
         // A scan can add games and take their first backups, both of which the sidebar counts.
         App.CurrentApp.MainWindow?.RefreshSidebar();
+
+        // And it can notice a game update overwrote a swap, which is this page's to say.
+        await CheckForUndoneSwapsAsync();
     }
 
     /// <summary>

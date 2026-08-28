@@ -558,14 +558,28 @@
                 </AppBarButton>
             </StackPanel>
 
-            <InfoBar x:Name="AdminInfoBar"
-                 Grid.Row="1"
-                 IsOpen="True"
-                 Severity="Warning"
-                 IsClosable="False"
-                 Title="{x:Bind ViewModel.TranslationProperties.WarningTitleText, Mode=OneWay}"
-                 Message="{x:Bind ViewModel.TranslationProperties.ApplicationRunsInAdministrativeModeInfo, Mode=OneWay}"
-                 Visibility="{x:Bind system:Environment.IsPrivilegedProcess, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <StackPanel Grid.Row="1">
+                <InfoBar x:Name="AdminInfoBar"
+                     IsOpen="True"
+                     Severity="Warning"
+                     IsClosable="False"
+                     Title="{x:Bind ViewModel.TranslationProperties.WarningTitleText, Mode=OneWay}"
+                     Message="{x:Bind ViewModel.TranslationProperties.ApplicationRunsInAdministrativeModeInfo, Mode=OneWay}"
+                     Visibility="{x:Bind system:Environment.IsPrivilegedProcess, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                <!--
+                    Swaps a game update quietly overwrote. The scan has always recorded these and
+                    deleted the stranded backup; the record's only home was the history dialog
+                    nobody opens unprompted. Closing the bar acknowledges exactly what it showed -
+                    a swap undone later brings it back.
+                -->
+                <InfoBar x:Name="UndoneSwapsInfoBar"
+                     Severity="Warning"
+                     IsOpen="{x:Bind ViewModel.UndoneSwapsIsOpen, Mode=OneWay}"
+                     Title="{x:Bind ViewModel.UndoneSwapsTitle, Mode=OneWay}"
+                     Message="{x:Bind ViewModel.UndoneSwapsMessage, Mode=OneWay}"
+                     CloseButtonClick="UndoneSwapsInfoBar_CloseButtonClick" />
+            </StackPanel>
 
             <!--
                 Filter tabs. Each carries the count of what it would show, from the same rule that

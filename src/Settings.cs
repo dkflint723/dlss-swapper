@@ -54,6 +54,26 @@ public class Settings
         }
     }
 
+    // How far the undone-swaps notice has been read. Dismissing the bar stores the newest change
+    // it showed, so only a swap undone after that brings it back. A boolean would have silenced
+    // every future undone swap the first time the bar was closed.
+    DateTime _undoneSwapsDismissedAt = DateTime.MinValue;
+    public DateTime UndoneSwapsDismissedAt
+    {
+        get { return _undoneSwapsDismissedAt; }
+        set
+        {
+            if (_undoneSwapsDismissedAt != value)
+            {
+                _undoneSwapsDismissedAt = value;
+                if (_autoSave)
+                {
+                    SaveJson();
+                }
+            }
+        }
+    }
+
     bool _hideNonDLSSGames;
     public bool HideNonDLSSGames
     {

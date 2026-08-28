@@ -205,6 +205,9 @@ public class NewResourceStringTests
     [InlineData("GamesPage_RestoreOriginals")]
     [InlineData("DllRevert_ConfirmLibraryTemplate")]
     [InlineData("DllRevert_NothingToRevertLibrary")]
+    [InlineData("UndoneSwaps_TitleOne")]
+    [InlineData("UndoneSwaps_TitleTemplate")]
+    [InlineData("UndoneSwaps_Body")]
     public void TheStringResolves(string resourceKey)
     {
         var value = ResourceHelper.GetString(resourceKey);
