@@ -42,6 +42,10 @@ public enum GameAssetType
     DeepDVC = 55,
     NvLowLatencyVK = 57,
 
+    // Appended rather than sitting with the other DLSS entries above, because these values are
+    // written to game_asset and game_history and renumbering them breaks existing installs.
+    DLSS_NR = 59,
+
     // Backup
 
     DLSS_BACKUP = 9,
@@ -79,4 +83,6 @@ public enum GameAssetType
 
     DeepDVC_BACKUP = 56,
     NvLowLatencyVK_BACKUP = 58,
+
+    DLSS_NR_BACKUP = 60,
 }

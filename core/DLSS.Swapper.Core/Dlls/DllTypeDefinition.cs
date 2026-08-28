@@ -51,4 +51,36 @@ public sealed class DllTypeDefinition
 
     /// <summary>Resource key for the translated display name.</summary>
     public required string DisplayNameResourceKey { get; init; }
+
+    /// <summary>
+    /// Whether games ship this dll themselves.
+    /// </summary>
+    /// <remarks>
+    /// True for every released upscaler: the copy found in a game folder on first scan is the one
+    /// the developer shipped, which is precisely why it is worth saving before anything overwrites
+    /// it.
+    ///
+    /// False for a dll no game ships. A copy of one in a game folder was put there by a person or a
+    /// tool, so there is no original to save and never will be — and saving one anyway fabricates
+    /// an "original" that is really just the injected file, which the app would then offer to
+    /// restore and count as protection it does not have. It also costs a full second copy on disk,
+    /// which for a 158 MB dll across a library is most of a gigabyte.
+    /// </remarks>
+    public bool GamesShipThisDll { get; init; } = true;
+
+    /// <summary>
+    /// Whether the upstream manifest is expected to carry a key for this type.
+    /// </summary>
+    /// <remarks>
+    /// True for everything the manifest builder produces, and a test holds the manifest to it, so a
+    /// key renamed upstream is caught here rather than by versions silently vanishing from the app.
+    ///
+    /// False for a type this fork recognises that upstream has no key for — an unreleased dll, say.
+    /// Such a type has no download source and its versions can only ever arrive by importing the
+    /// file, which the picker and the upscalers page handle already. Setting the flag rather than
+    /// adding the key to the shipped manifest is deliberate: both manifest copies are overwritten
+    /// wholesale from upstream by sync_manifest.ps1, so an invented key there survives exactly
+    /// until the next sync and then fails the very test it was added to satisfy.
+    /// </remarks>
+    public bool ExpectedInUpstreamManifest { get; init; } = true;
 }

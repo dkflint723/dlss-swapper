@@ -51,6 +51,25 @@ public static class DllTypes
         },
         new DllTypeDefinition()
         {
+            AssetType = GameAssetType.DLSS_NR,
+            BackupAssetType = GameAssetType.DLSS_NR_BACKUP,
+            FileName = "nvngx_dlssnr.dll",
+            ManifestKey = "dlss_nr",
+            Vendor = DllVendor.Nvidia,
+            DisplayNameResourceKey = "General_Name_DLSS_NR",
+
+            // No game ships this dll, so a copy of it in a game folder was put there deliberately
+            // and there is no original behind it to save.
+            GamesShipThisDll = false,
+
+            // Not in any upstream manifest: this dll has leaked rather than shipped, so there is
+            // nothing to download and its versions arrive only by importing the file. The manifest
+            // key is still named, so if the builder ever does publish one it lands here rather than
+            // in an unrecognised bucket nothing reads.
+            ExpectedInUpstreamManifest = false,
+        },
+        new DllTypeDefinition()
+        {
             AssetType = GameAssetType.FSR_31_DX12,
             BackupAssetType = GameAssetType.FSR_31_DX12_BACKUP,
             FileName = "amd_fidelityfx_dx12.dll",

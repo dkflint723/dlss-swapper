@@ -855,11 +855,17 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     /// A dll that IS a backup, or of a type the app does not manage, has nothing to protect and
     /// answers true - there is no missing copy to report.
     /// </para>
+    /// <para>
+    /// So does a dll of a type no game ships. Nobody's install had that file until a person or a
+    /// tool put it there, so there is no original behind it and no amount of copying would make
+    /// one. Reporting it as missing a copy would ask the user to fix something that is not broken,
+    /// and every count of backup coverage in the app reads this.
+    /// </para>
     /// </remarks>
     internal bool HasSavedOriginal(GameAsset gameAsset)
     {
         var definition = DllTypes.ForAssetType(gameAsset.AssetType);
-        if (definition is null)
+        if (definition is null || definition.GamesShipThisDll == false)
         {
             return true;
         }
@@ -870,8 +876,22 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             && string.Equals(x.Path, backupPath, StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>
+    /// Saves the copy of a dll that the game shipped with, if there is not one already.
+    /// </summary>
+    /// <remarks>
+    /// The refusal for types games do not ship lives here rather than at the call sites, because
+    /// both callers - the scan on first detection and "Save a copy" - would otherwise each have to
+    /// remember it. Copying such a file records the version somebody installed as though it were
+    /// the developer's, which the app would then offer to restore.
+    /// </remarks>
     void CreateOriginalBackupForGameAsset(GameAsset gameAsset)
     {
+        if (DllTypes.ForAssetType(gameAsset.AssetType)?.GamesShipThisDll == false)
+        {
+            return;
+        }
+
         var backupPath = DllSwapExecutor.GetBackupPath(gameAsset.Path);
         if (File.Exists(backupPath))
         {
