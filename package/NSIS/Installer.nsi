@@ -109,13 +109,13 @@ RequestExecutionLevel highest
 ; installer whose file properties and uninstall entry both said 1.2.5.1.
 Name "DLSS Swapper (dkflint723)"
 !define MUI_ICON "..\..\src\Assets\icon.ico"
-!define MUI_VERSION "2.2.0.0"
+!define MUI_VERSION "2.2.1.0"
 !define MUI_PRODUCT "DLSS Swapper (dkflint723)"
-VIProductVersion "2.2.0.0"
+VIProductVersion "2.2.1.0"
 VIAddVersionKey "ProductName" "DLSS Swapper (dkflint723 fork)"
-VIAddVersionKey "ProductVersion" "2.2.0.0"
+VIAddVersionKey "ProductVersion" "2.2.1.0"
 VIAddVersionKey "FileDescription" "DLSS Swapper (dkflint723 fork) installer"
-VIAddVersionKey "FileVersion" "2.2.0.0"
+VIAddVersionKey "FileVersion" "2.2.1.0"
 VIAddVersionKey "CompanyName" "dkflint723"
 VIAddVersionKey "LegalCopyright" "Fork of beeradmoore/dlss-swapper"
 
@@ -218,7 +218,7 @@ Section
   CreateShortcut "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk" "$INSTDIR\DLSS Swapper.exe"
 
   WriteRegStr SHCTX "${UNINST_KEY}" "DisplayName" "DLSS Swapper (dkflint723 fork)"
-  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayVersion" "2.2.0.0"
+  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayVersion" "2.2.1.0"
 
   ; Named for whoever built it, with what it was forked from, because this build is not the
   ; original author's work and Apps & features is where someone checks who to hold responsible.

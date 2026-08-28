@@ -16,6 +16,35 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v2.2.1.0 — it keeps what it cannot replace
+
+A new dll type, and two places the app was choosing something other than the truth. The middle one
+is the reason to take this release.
+
+**The app no longer deletes your saved original.** When a dll changed outside the app — a game
+update, or a tool that writes dlls into game folders — the scan deleted the copy it had kept of the
+version the game shipped with. Upstream's reason is real, that a game which updates its own dll past
+the version you swapped to should not read as a downgrade, but the price was the one file *restore*
+exists to put back, and nothing brings it back: not a rescan, not a reinstall, not verifying the
+game's files. A single scan of one library took 29 saved originals across 13 games. The copy stays
+now, and the confusion it was avoiding is answered with words instead — every surface that offers a
+restore already names both versions first, and the upscaler row now names the saved original
+whenever it differs from what is installed: *"v2.0.2.68 installed, which is the newest — the saved
+original is v2.0.1.41"*. Nobody restores without being told what they get, so nothing has to be
+destroyed to keep them from being surprised.
+
+**DLSS Neural Rendering is recognised**, alongside DLSS, Frame Generation and Ray Reconstruction.
+It has leaked rather than shipped, so there is no list to download and no upstream manifest key:
+versions appear once you import the dll yourself, and the page says exactly that instead of
+offering a Refresh button that could never produce anything.
+
+**And it no longer invents an original for a dll that has none.** The automatic backup reads the
+file it finds in a game folder as the version the developer shipped, which is true of every
+released upscaler and false of one that is only there because somebody installed it. On first sight
+of Neural Rendering it duly saved six "originals" that were copies of the injected file, claimed
+protection it did not have, and spent 0.93 GB doing it. A dll no game ships is now left alone, and
+is not reported as missing a copy it could never have.
+
 ## v2.2.0.0 — the app closes the loop
 
 A feature release, and the first with features of this fork's own rather than repairs and
