@@ -39,6 +39,18 @@ public class UpscalerRowStatus
     /// <summary>True when this game is set to be left alone, which disables the row's control.</summary>
     public required bool IsLocked { get; init; }
 
+    /// <summary>True when this dll is held where it is. The sentence says so in words.</summary>
+    public required bool IsPinned { get; init; }
+
+    /// <summary>What pressing the pin toggle would do, for its tooltip and accessible name.</summary>
+    public required string PinActionText { get; init; }
+
+    /// <summary>The toggle shows the act it offers: pin to hold, unpin to release.</summary>
+    public string PinGlyph => IsPinned ? "\ue77a" : "\ue718";
+
+    /// <summary>Only a row with something installed has anything to hold in place.</summary>
+    public required bool IsPinnable { get; init; }
+
     public static UpscalerRowStatus For(Game game, GameAssetType assetType)
     {
         // Read straight off the assets, the way GameEngines.Split does, rather than through the
@@ -48,7 +60,10 @@ public class UpscalerRowStatus
         var installed = installedAssets.FirstOrDefault()?.DisplayName ?? string.Empty;
         var newest = DLLManager.Instance.GetLatestRecord(assetType)?.DisplayVersion ?? string.Empty;
 
-        var isBehind = game.OutdatedAssetTypes.Contains(assetType);
+        // BehindAssetTypes rather than OutdatedAssetTypes, deliberately: a pinned dll is left out
+        // of the second so batches skip it, but this sentence must still say a newer version
+        // exists, or "pinned" would read as "current".
+        var isBehind = game.BehindAssetTypes.Contains(assetType);
         // Game.HasSavedOriginal, per location, the same rule the games list, the row status and the
         // sidebar all read. This had its own copy asking whether a backup of the same TYPE existed
         // anywhere in the game - so a game with one dll in two folders and a copy beside only one of
@@ -59,16 +74,23 @@ public class UpscalerRowStatus
         // The same rule the asset slot applies, from the same list it applies it to.
         var multipleFound = installedAssets.Count > 1;
 
+        var pin = game.DllPinFor(assetType);
+
         return new UpscalerRowStatus()
         {
             AssetType = assetType,
             Title = DLLManager.Instance.GetAssetTypeName(assetType),
-            Sentence = Describe(installed, newest, isBehind, hasBackup, multipleFound, game.SkipUpdates),
-            Glyph = GlyphFor(isBehind, hasBackup, game.SkipUpdates),
+            Sentence = Describe(installed, newest, isBehind, hasBackup, multipleFound, game.SkipUpdates, pin),
+            Glyph = GlyphFor(isBehind, hasBackup, game.SkipUpdates, pin is not null),
             ActionLabel = string.IsNullOrEmpty(installed)
                 ? ResourceHelper.GetString("GamePage_Row_Choose")
                 : installed,
             IsLocked = game.SkipUpdates,
+            IsPinned = pin is not null,
+            PinActionText = pin is not null
+                ? ResourceHelper.GetString("GamePage_Row_Unpin")
+                : ResourceHelper.GetString("GamePage_Row_Pin"),
+            IsPinnable = string.IsNullOrEmpty(installed) == false && game.SkipUpdates == false,
         };
     }
 
@@ -78,9 +100,11 @@ public class UpscalerRowStatus
     /// <remarks>
     /// Behind first, because it is the only one that asks for a decision. "Left alone" beats it,
     /// because a game set to be skipped is not going to be updated whatever else is true, and
-    /// saying it is behind would invite a click that the row then refuses.
+    /// saying it is behind would invite a click that the row then refuses. A pin beats behind for
+    /// the same reason — the holding is the point — but unlike left alone it still names the newer
+    /// version, because the pin is a choice the user may want to revisit when something new lands.
     /// </remarks>
-    static string Describe(string installed, string newest, bool isBehind, bool hasSavedOriginal, bool multipleFound, bool skipUpdates)
+    static string Describe(string installed, string newest, bool isBehind, bool hasSavedOriginal, bool multipleFound, bool skipUpdates, GameDllPin? pin)
     {
         var parts = new List<string>();
 
@@ -91,6 +115,21 @@ public class UpscalerRowStatus
         else if (skipUpdates)
         {
             parts.Add(ResourceHelper.GetFormattedResourceTemplate("GamePage_Row_InstalledLeftAloneTemplate", installed));
+        }
+        else if (pin is not null)
+        {
+            parts.Add(ResourceHelper.GetFormattedResourceTemplate("GamePage_Row_PinnedTemplate", installed));
+
+            if (isBehind && string.IsNullOrEmpty(newest) == false)
+            {
+                parts.Add(ResourceHelper.GetFormattedResourceTemplate("GamePage_Row_PinnedNewerTemplate", newest));
+            }
+
+            if (string.IsNullOrEmpty(pin.Reason) == false)
+            {
+                // The user's own sentence to their future self, word for word.
+                parts.Add(pin.Reason);
+            }
         }
         else if (isBehind && string.IsNullOrEmpty(newest) == false)
         {
@@ -124,11 +163,18 @@ public class UpscalerRowStatus
     /// A row that is current and has its original saved gets no glyph. That is most rows on most
     /// games, and marking all of them would make the absence of a mark the exceptional case.
     /// </remarks>
-    static string GlyphFor(bool isBehind, bool hasSavedOriginal, bool skipUpdates)
+    static string GlyphFor(bool isBehind, bool hasSavedOriginal, bool skipUpdates, bool isPinned)
     {
         if (skipUpdates)
         {
             return "";
+        }
+
+        // Before behind: a pinned row may well be behind, and the update mark would invite the
+        // exact click the pin exists to refuse.
+        if (isPinned)
+        {
+            return "";
         }
 
         if (isBehind)

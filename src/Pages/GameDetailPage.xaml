@@ -189,6 +189,7 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <FontIcon
@@ -215,12 +216,37 @@
                                     </StackPanel>
 
                                     <!--
+                                        The pin holds this dll against every batch - update runs
+                                        and restore runs alike - while the Change button beside it
+                                        stays free: acting on this exact dll deliberately is how a
+                                        pin gets reconsidered. What pressing it would do is in its
+                                        tooltip and accessible name; the state itself is said in
+                                        the row's sentence, in words, not by the icon.
+                                    -->
+                                    <Button
+                                        Grid.Column="2"
+                                        Width="32"
+                                        Height="32"
+                                        Padding="0"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        CornerRadius="{StaticResource DsCornerRadius}"
+                                        Visibility="{x:Bind IsPinnable, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        ToolTipService.ToolTip="{x:Bind PinActionText}"
+                                        AutomationProperties.Name="{x:Bind PinActionText}"
+                                        Command="{Binding ElementName=RootGameControl, Path=ViewModel.TogglePinCommand}"
+                                        CommandParameter="{x:Bind AssetType}">
+                                        <FontIcon Glyph="{x:Bind PinGlyph}" FontSize="14" Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                                    </Button>
+
+                                    <!--
                                         Carries its own command rather than reaching back through
                                         the page: an ElementName binding does not resolve from
                                         inside a template placed in a content property.
                                     -->
                                     <Button
-                                        Grid.Column="2"
+                                        Grid.Column="3"
                                         MinWidth="150"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"

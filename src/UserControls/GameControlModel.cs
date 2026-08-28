@@ -761,6 +761,65 @@ public partial class GameControlModel : ObservableObject
         OnPropertyChanged(nameof(HasUpdatesVisibility));
     }
 
+    /// <summary>
+    /// Pins a dll where it is, asking for the why, or releases the pin.
+    /// </summary>
+    /// <remarks>
+    /// The reason is asked for at the moment of pinning because that is when it is known: "newer
+    /// versions ghost in this game" is obvious on the day you rolled back and gone a month later,
+    /// when update all offers the bad version again. It is optional — the pin holds either way.
+    /// </remarks>
+    [RelayCommand]
+    async Task TogglePinAsync(GameAssetType assetType)
+    {
+        if (gameControlWeakReference.TryGetTarget(out var gameControl) == false)
+        {
+            return;
+        }
+
+        if (Game.IsDllPinned(assetType))
+        {
+            await Game.UnpinDllAsync(assetType);
+        }
+        else
+        {
+            var reasonBox = new TextBox()
+            {
+                PlaceholderText = ResourceHelper.GetString("GamePage_PinDialog_ReasonPlaceholder"),
+            };
+
+            var panel = new StackPanel() { Spacing = 12 };
+            panel.Children.Add(new TextBlock()
+            {
+                Text = ResourceHelper.GetString("GamePage_PinDialog_Body"),
+                TextWrapping = TextWrapping.Wrap,
+            });
+            panel.Children.Add(reasonBox);
+
+            var dialog = new EasyContentDialog(gameControl.XamlRoot)
+            {
+                Title = ResourceHelper.GetFormattedResourceTemplate("GamePage_PinDialog_TitleTemplate", DLLManager.Instance.GetAssetTypeName(assetType)),
+                PrimaryButtonText = ResourceHelper.GetString("GamePage_PinDialog_PinButton"),
+                CloseButtonText = ResourceHelper.GetString("General_Cancel"),
+                DefaultButton = ContentDialogButton.Primary,
+                Content = panel,
+            };
+
+            if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            await Game.PinDllAsync(assetType, reasonBox.Text);
+        }
+
+        // The row's sentence, this page's update button, and the "Have an update" tab all read
+        // the pin, and the last lives on the games page behind this one.
+        RefreshUpscalerRows();
+        OnPropertyChanged(nameof(HasUpdatesVisibility));
+        App.CurrentApp.MainWindow?.GameGridPage?.ViewModel.RefreshFilterTabs();
+    }
+
     [RelayCommand]
     async Task MultipleDLLsFoundAsync(GameAssetType gameAssetType)
     {

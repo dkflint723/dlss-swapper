@@ -163,6 +163,41 @@
     <value>{0} installed, {1} is available</value>
     <comment>{0} is the installed version, {1} the newest available</comment>
   </data>
+  <data name="GamePage_Row_PinnedTemplate" xml:space="preserve">
+    <value>{0} installed and pinned there</value>
+    <comment>{0} is the installed version, eg. v310.5</comment>
+  </data>
+  <data name="GamePage_Row_PinnedNewerTemplate" xml:space="preserve">
+    <value>{0} exists</value>
+    <comment>{0} is a newer version the pin is holding back, eg. v310.7</comment>
+  </data>
+  <data name="GamePage_Row_Pin" xml:space="preserve">
+    <value>Pin this dll where it is</value>
+  </data>
+  <data name="GamePage_Row_Unpin" xml:space="preserve">
+    <value>Unpin this dll so update runs can offer newer versions</value>
+  </data>
+  <data name="GamePage_PinDialog_TitleTemplate" xml:space="preserve">
+    <value>Pin {0} where it is</value>
+    <comment>{0} is the dll's name, eg. DLSS</comment>
+  </data>
+  <data name="GamePage_PinDialog_Body" xml:space="preserve">
+    <value>No update or restore run will touch this dll while it is pinned. You can still change or restore it yourself from this page, and unpin it at any time.</value>
+  </data>
+  <data name="GamePage_PinDialog_ReasonPlaceholder" xml:space="preserve">
+    <value>Why? A note to your future self — optional</value>
+  </data>
+  <data name="GamePage_PinDialog_PinButton" xml:space="preserve">
+    <value>Pin</value>
+  </data>
+  <data name="GamesPage_Status_PinnedOne" xml:space="preserve">
+    <value>{0} is pinned — a newer version exists</value>
+    <comment>{0} is the dll's name, eg. DLSS</comment>
+  </data>
+  <data name="GamesPage_Status_PinnedMany" xml:space="preserve">
+    <value>{0} are pinned — newer versions exist</value>
+    <comment>{0} is a list of dll names, eg. "DLSS and XeSS"</comment>
+  </data>
   <data name="GamePage_Row_InstalledLeftAloneTemplate" xml:space="preserve">
     <value>{0} installed, and this game is set to be left alone</value>
     <comment>{0} is the installed version</comment>

@@ -208,6 +208,16 @@ public class NewResourceStringTests
     [InlineData("UndoneSwaps_TitleOne")]
     [InlineData("UndoneSwaps_TitleTemplate")]
     [InlineData("UndoneSwaps_Body")]
+    [InlineData("GamePage_Row_PinnedTemplate")]
+    [InlineData("GamePage_Row_PinnedNewerTemplate")]
+    [InlineData("GamePage_Row_Pin")]
+    [InlineData("GamePage_Row_Unpin")]
+    [InlineData("GamePage_PinDialog_TitleTemplate")]
+    [InlineData("GamePage_PinDialog_Body")]
+    [InlineData("GamePage_PinDialog_ReasonPlaceholder")]
+    [InlineData("GamePage_PinDialog_PinButton")]
+    [InlineData("GamesPage_Status_PinnedOne")]
+    [InlineData("GamesPage_Status_PinnedMany")]
     public void TheStringResolves(string resourceKey)
     {
         var value = ResourceHelper.GetString(resourceKey);

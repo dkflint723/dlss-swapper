@@ -193,6 +193,14 @@ internal static class DllUpdateRunner
 
         foreach (var dllTypeDefinition in DllTypes.All)
         {
+            // A pinned dll is held against every batch, restores included; the picker's own
+            // restore is the deliberate, single-dll way past it. One rule, no exceptions, so a
+            // preview can never claim a row a run would refuse.
+            if (game.IsDllPinned(dllTypeDefinition.AssetType))
+            {
+                continue;
+            }
+
             foreach (var gameAsset in game.GameAssets)
             {
                 if (gameAsset.AssetType == dllTypeDefinition.BackupAssetType)
@@ -267,6 +275,13 @@ internal static class DllUpdateRunner
             }
 
             if (item.Game.SkipUpdates)
+            {
+                continue;
+            }
+
+            // Same standing as the locked-game rule above: refused here, in the one place every
+            // batch passes through, so no caller building its own list can move a pinned dll.
+            if (item.Game.IsDllPinned(item.AssetType))
             {
                 continue;
             }

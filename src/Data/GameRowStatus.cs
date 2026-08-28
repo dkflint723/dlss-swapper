@@ -16,6 +16,9 @@ public enum GameRowState
 
     /// <summary>The game ships none of the dlls this app swaps, so there is nothing to be up to date about.</summary>
     NoUpscalers,
+
+    /// <summary>A pinned dll is holding back a newer version, which is deliberate and worth a word.</summary>
+    Pinned,
 }
 
 /// <summary>
@@ -143,6 +146,29 @@ public class GameRowStatus
                 State = GameRowState.UpdatesSkipped,
                 Sentence = ResourceHelper.GetString("GamesPage_Status_UpdatesSkipped"),
                 Glyph = "\uE72E",
+                UsesAccent = false,
+                ActionLabel = null,
+                Engines = engines,
+            };
+        }
+
+        // A pin earns the card's one line only while it is actually holding something back; a
+        // pinned dll that is also the newest has nothing to say at this distance, and the row
+        // falls through to up to date, which is then simply true. No accent and no button: this
+        // is the user's own choice restated, not a prompt.
+        var pinnedBehindNames = game.BehindAssetTypes
+            .Where(game.IsDllPinned)
+            .Select(x => DLLManager.Instance.GetAssetTypeName(x))
+            .ToList();
+        if (pinnedBehindNames.Count > 0)
+        {
+            return new GameRowStatus()
+            {
+                State = GameRowState.Pinned,
+                Sentence = pinnedBehindNames.Count == 1
+                    ? ResourceHelper.GetFormattedResourceTemplate("GamesPage_Status_PinnedOne", pinnedBehindNames[0])
+                    : ResourceHelper.GetFormattedResourceTemplate("GamesPage_Status_PinnedMany", JoinNames(pinnedBehindNames)),
+                Glyph = "\uE718",
                 UsesAccent = false,
                 ActionLabel = null,
                 Engines = engines,

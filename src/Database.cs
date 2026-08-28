@@ -180,6 +180,12 @@ internal class Database
                 "last",
                 "scanned",
                 "at",
+
+                // game_dll_pin and its reason / pinned_at columns.
+                "dll",
+                "pin",
+                "pinned",
+                "reason",
             };
 
             var hasIssues = false;
@@ -238,6 +244,16 @@ internal class Database
             try
             {
                 syncConnection.CreateTable<GameHistory>();
+            }
+            catch (Exception err)
+            {
+                Logger.Error(err);
+                Debugger.Break();
+            }
+
+            try
+            {
+                syncConnection.CreateTable<GameDllPin>();
             }
             catch (Exception err)
             {

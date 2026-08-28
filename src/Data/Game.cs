@@ -287,6 +287,18 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     public partial IReadOnlyList<GameAssetType> OutdatedAssetTypes { get; set; } = [];
 
     /// <summary>
+    /// The dll types with a newer version available, pinned or not.
+    /// </summary>
+    /// <remarks>
+    /// What the row sentences read, so a pinned row can still say a newer version exists rather
+    /// than claiming it is current. Bulk actions read <see cref="OutdatedAssetTypes"/>, which is
+    /// this minus the pins.
+    /// </remarks>
+    [ObservableProperty]
+    [Ignore]
+    public partial IReadOnlyList<GameAssetType> BehindAssetTypes { get; set; } = [];
+
+    /// <summary>
     /// What this game has installed for each swappable dll type.
     /// </summary>
     /// <remarks>
@@ -304,6 +316,76 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     public GameAssetSlot? GetAssetSlot(GameAssetType assetType)
     {
         return _assetSlots.FirstOrDefault(x => x.AssetType == assetType);
+    }
+
+    // In their own table and loaded by GameManager when the library loads, not columns here: a
+    // pin has to outlive the scans that delete and rewrite this game's asset rows.
+    List<GameDllPin> _dllPins = new List<GameDllPin>();
+
+    [Ignore]
+    public IReadOnlyList<GameDllPin> DllPins => _dllPins;
+
+    /// <summary>Whether this dll is held where it is. A pinned dll is refused by every batch.</summary>
+    public bool IsDllPinned(GameAssetType assetType)
+    {
+        return _dllPins.Any(x => x.AssetType == assetType);
+    }
+
+    public GameDllPin? DllPinFor(GameAssetType assetType)
+    {
+        return _dllPins.FirstOrDefault(x => x.AssetType == assetType);
+    }
+
+    /// <summary>Hands this game its pins. Internal so tests can arrange them without a database.</summary>
+    internal void SetDllPins(IEnumerable<GameDllPin> dllPins)
+    {
+        _dllPins = dllPins.ToList();
+
+        // Pins decide what OutdatedAssetTypes leaves out, and these can arrive after the assets.
+        RefreshUpdateAvailable();
+    }
+
+    /// <summary>
+    /// Holds one dll where it is, with the user's own reason.
+    /// </summary>
+    /// <remarks>
+    /// One pin per dll type: pinning again replaces the reason rather than stacking a second row,
+    /// so what the row shows is always the sentence most recently written.
+    /// </remarks>
+    public async Task PinDllAsync(GameAssetType assetType, string reason)
+    {
+        var pin = new GameDllPin()
+        {
+            GameId = ID,
+            AssetType = assetType,
+            Reason = reason.Trim(),
+            PinnedAt = DateTime.Now,
+        };
+
+        using (await Database.Instance.Mutex.LockAsync())
+        {
+            await Database.Instance.Connection.ExecuteAsync(
+                "DELETE FROM game_dll_pin WHERE game_id = ? AND asset_type = ?", ID, (int)assetType).ConfigureAwait(false);
+            await Database.Instance.Connection.InsertAsync(pin).ConfigureAwait(false);
+        }
+
+        _dllPins.RemoveAll(x => x.AssetType == assetType);
+        _dllPins.Add(pin);
+
+        RefreshUpdateAvailable();
+    }
+
+    public async Task UnpinDllAsync(GameAssetType assetType)
+    {
+        using (await Database.Instance.Mutex.LockAsync())
+        {
+            await Database.Instance.Connection.ExecuteAsync(
+                "DELETE FROM game_dll_pin WHERE game_id = ? AND asset_type = ?", ID, (int)assetType).ConfigureAwait(false);
+        }
+
+        _dllPins.RemoveAll(x => x.AssetType == assetType);
+
+        RefreshUpdateAvailable();
     }
 
 
@@ -2192,7 +2274,13 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
             }
         }
 
-        var outdatedAssetTypes = UpdateAvailability.FindOutdatedTypes(installedDlls, latestRankByAssetType);
+        var behindAssetTypes = UpdateAvailability.FindOutdatedTypes(installedDlls, latestRankByAssetType);
+
+        // A pinned dll is deliberately held, so no batch is offered it and no badge nags about
+        // it - but the row describing it still needs to know a newer version exists, or "pinned"
+        // would read as "current". Two lists, one fact each: what is behind, and what an update
+        // run may touch.
+        var outdatedAssetTypes = behindAssetTypes.Where(x => IsDllPinned(x) == false).ToList();
 
         // One badge per vendor rather than per dll, otherwise a game trailing on four Intel dlls
         // would show four identical dots. The tooltip names the specific dlls instead.
@@ -2211,6 +2299,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         UiThread.Run(() =>
         {
             OutdatedAssetTypes = outdatedAssetTypes;
+            BehindAssetTypes = behindAssetTypes;
             AvailableUpdates = availableUpdates;
             UpdateAvailable = availableUpdates.Count > 0;
 

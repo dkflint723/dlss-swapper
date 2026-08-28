@@ -313,6 +313,47 @@ internal partial class GameManager : ObservableObject
             // what is in the database now, not what was there when the app started.
             _prefetchedGameAssets = null;
         }
+
+        await LoadDllPinsAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Hands every loaded game its pins.
+    /// </summary>
+    /// <remarks>
+    /// After the cache load rather than during it, because pins belong to games and the games have
+    /// to exist first. A game scanned into the library later has no pins by definition — a pin is
+    /// only ever created from that game's own page.
+    /// </remarks>
+    async Task LoadDllPinsAsync()
+    {
+        try
+        {
+            List<GameDllPin> allPins;
+            using (await Database.Instance.Mutex.LockAsync())
+            {
+                allPins = await Database.Instance.Connection.Table<GameDllPin>().ToListAsync().ConfigureAwait(false);
+            }
+
+            if (allPins.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var game in GetSynchronisedGamesListCopy())
+            {
+                var pinsForGame = allPins.Where(x => x.GameId == game.ID).ToList();
+                if (pinsForGame.Count > 0)
+                {
+                    game.SetDllPins(pinsForGame);
+                }
+            }
+        }
+        catch (Exception err)
+        {
+            // A failed read costs the pins for this session, not the library.
+            Logger.Error(err);
+        }
     }
 
     /// <summary>Every row of game_asset, grouped by the game it belongs to.</summary>
