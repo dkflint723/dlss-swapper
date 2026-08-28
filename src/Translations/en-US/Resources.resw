@@ -930,6 +930,10 @@
   <data name="DllRevert_RevertedOne" xml:space="preserve">
     <value>Restored 1 dll to the version the game shipped with.</value>
   </data>
+  <data name="DllRevert_RevertedOneGameTemplate" xml:space="preserve">
+    <value>Restored {0} dlls to the versions the game shipped with.</value>
+    <comment>{0} is how many dlls were restored, all in one game</comment>
+  </data>
   <data name="DllUpdate_Cancelling" xml:space="preserve">
     <value>Finishing the current dll, then stopping...</value>
   </data>

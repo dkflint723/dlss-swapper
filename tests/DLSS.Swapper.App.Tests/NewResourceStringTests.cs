@@ -227,6 +227,7 @@ public class NewResourceStringTests
     [InlineData("PlayClean_RunningTemplate")]
     [InlineData("PlayClean_StopWatching")]
     [InlineData("PlayClean_NeverStartedTemplate")]
+    [InlineData("DllRevert_RevertedOneGameTemplate")]
     public void TheStringResolves(string resourceKey)
     {
         var value = ResourceHelper.GetString(resourceKey);

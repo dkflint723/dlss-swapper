@@ -508,7 +508,7 @@ public partial class GameGridPageModel : ObservableObject
                 await DllUpdatePrompt.ShowSummaryAsync(
                     xamlRoot,
                     ResourceHelper.GetString("GamePage_PlayClean"),
-                    "DllRevert_RevertedTemplate",
+                    "DllRevert_Reverted",
                     result);
             }
         }
@@ -1078,7 +1078,7 @@ public partial class GameGridPageModel : ObservableObject
             ResourceHelper.GetString("Update_Undoing"),
             ResourceHelper.GetString("DllRevert_NothingToRevertLibrary"),
             (g, progress, cancellationToken) => DllUpdateRunner.RevertGamesAsync(g, progress, cancellationToken),
-            "DllRevert_RevertedTemplate",
+            "DllRevert_Reverted",
             lines);
 
         // Restoring uses the saved originals up, so the sidebar's coverage line and the "Missing a

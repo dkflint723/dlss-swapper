@@ -43,7 +43,7 @@ internal static class DllUpdatePrompt
         string progressTitle,
         string nothingToDoMessage,
         Func<IReadOnlyList<Game>, IProgress<DllUpdateProgress>, CancellationToken, Task<DllUpdateResult>> operation,
-        string summaryTemplateResourceKey,
+        string summaryResourceKeyPrefix,
         IReadOnlyList<string>? detailLines = null)
     {
         if (affectedDllCount == 0)
@@ -74,7 +74,7 @@ internal static class DllUpdatePrompt
             return;
         }
 
-        await RunConfirmedAsync(xamlRoot, games, title, progressTitle, operation, summaryTemplateResourceKey);
+        await RunConfirmedAsync(xamlRoot, games, title, progressTitle, operation, summaryResourceKeyPrefix);
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ internal static class DllUpdatePrompt
         string title,
         string progressTitle,
         Func<IReadOnlyList<Game>, IProgress<DllUpdateProgress>, CancellationToken, Task<DllUpdateResult>> operation,
-        string summaryTemplateResourceKey)
+        string summaryResourceKeyPrefix)
     {
         var progressRun = new Run() { Text = string.Empty };
         var progressTextBlock = new TextBlock() { TextWrapping = TextWrapping.Wrap };
@@ -176,23 +176,42 @@ internal static class DllUpdatePrompt
             progressDialog.Hide();
         }
 
-        await ShowSummaryAsync(xamlRoot, title, summaryTemplateResourceKey, result);
+        await ShowSummaryAsync(xamlRoot, title, summaryResourceKeyPrefix, result);
     }
 
-    internal static async Task ShowSummaryAsync(XamlRoot xamlRoot, string title, string summaryTemplateResourceKey, DllUpdateResult result)
+    /// <summary>
+    /// The summary's first sentence, phrased for how much actually moved.
+    /// </summary>
+    /// <remarks>
+    /// Three shapes off one key prefix: One for exactly one dll, OneGameTemplate for several dlls
+    /// in one game, Template for the general case — because "Restored 1 dlls across 1 games"
+    /// reads like nobody proofread the sentence a user sees right after trusting the app with
+    /// their game folder. Static and key-driven so a test can hold the concatenations to keys
+    /// that exist: the one-dll case used to build "…TemplateOne", a key nothing defined, and
+    /// showed a resource error precisely in the case singled out for better wording.
+    /// </remarks>
+    internal static string SummaryTextFor(string summaryResourceKeyPrefix, int swapped, int gamesUpdated)
+    {
+        if (swapped == 1 && gamesUpdated == 1)
+        {
+            return ResourceHelper.GetString(summaryResourceKeyPrefix + "One");
+        }
+
+        if (gamesUpdated == 1)
+        {
+            return ResourceHelper.GetFormattedResourceTemplate(summaryResourceKeyPrefix + "OneGameTemplate", swapped);
+        }
+
+        return ResourceHelper.GetFormattedResourceTemplate(summaryResourceKeyPrefix + "Template", swapped, gamesUpdated);
+    }
+
+    internal static async Task ShowSummaryAsync(XamlRoot xamlRoot, string title, string summaryResourceKeyPrefix, DllUpdateResult result)
     {
         var summary = new StackPanel() { Spacing = 8 };
 
-        // The one-variant when exactly one dll in one game moved, because "Restored 1 dlls across
-        // 1 games" reads like nobody proofread the sentence a user sees after trusting the app with
-        // their game folder. The convention matches the cover scan's AppliedOne pair.
-        var summaryText = result.Swapped == 1 && result.GamesUpdated == 1
-            ? ResourceHelper.GetString(summaryTemplateResourceKey + "One")
-            : ResourceHelper.GetFormattedResourceTemplate(summaryTemplateResourceKey, result.Swapped, result.GamesUpdated);
-
         summary.Children.Add(new TextBlock()
         {
-            Text = summaryText,
+            Text = SummaryTextFor(summaryResourceKeyPrefix, result.Swapped, result.GamesUpdated),
             TextWrapping = TextWrapping.Wrap,
         });
 

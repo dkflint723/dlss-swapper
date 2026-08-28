@@ -899,7 +899,7 @@ public partial class GameControlModel : ObservableObject
             ResourceHelper.GetString("Update_Undoing"),
             ResourceHelper.GetString("DllRevert_NothingToRevert"),
             (games, progress, cancellationToken) => DllUpdateRunner.RevertGamesAsync(games, progress, cancellationToken),
-            "DllRevert_RevertedTemplate",
+            "DllRevert_Reverted",
 
             // The rows this will actually touch, named the way the update preview names its files:
             // what each dll is now, and what it goes back to. A count alone made the reset the one
