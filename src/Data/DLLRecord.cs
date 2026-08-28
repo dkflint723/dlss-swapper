@@ -79,6 +79,16 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// The fork's curated sentence about this exact build, or null for the many versions with
+    /// nothing to say. Stamped by DLLManager from recommended.json whenever a manifest loads.
+    /// </summary>
+    [JsonIgnore]
+    public string? RecommendationNote { get; set; }
+
+    [JsonIgnore]
+    public bool IsRecommended => RecommendationNote is not null;
+
     string _displayVersion = string.Empty;
     [JsonIgnore]
     public string DisplayVersion

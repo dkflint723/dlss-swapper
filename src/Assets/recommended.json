@@ -1,0 +1,12 @@
+[
+  {
+    "asset_type": "DLSS",
+    "version": "310.7.129.0",
+    "why": "Transformer model — the current quality line, and the pick for most games"
+  },
+  {
+    "asset_type": "DLSS",
+    "version": "3.8.10.0",
+    "why": "Last CNN model — lighter than the transformer, and the fallback when it ghosts or flickers"
+  }
+]

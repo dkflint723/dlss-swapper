@@ -21,6 +21,7 @@
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <ct_converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
         <ct_converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <ct_converters:StringVisibilityConverter x:Key="StringVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
 
         <!-- Grouped by release line, like the upscalers page: one wall of numbers, same cure. -->
         <CollectionViewSource
@@ -128,7 +129,17 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="{x:Bind DisplayName}" />
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="{x:Bind DisplayName}" />
+
+                            <!-- The curated why, on the row it is about. Null for most rows. -->
+                            <TextBlock
+                                Text="{x:Bind RecommendationNote}"
+                                FontSize="11"
+                                TextWrapping="Wrap"
+                                Visibility="{x:Bind RecommendationNote, Converter={StaticResource StringVisibilityConverter}}"
+                                Foreground="{ThemeResource DsTextSecondaryBrush}" />
+                        </StackPanel>
 
                         <ProgressRing Grid.Column="1" Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadingConverter}, Mode=OneWay}" AutomationProperties.Name="{x:Bind TranslationProperties.DownloadingText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind TranslationProperties.DownloadingText, Mode=OneWay}" Minimum="0" Maximum="100" IsIndeterminate="{x:Bind LocalRecord.FileDownloader.IsIndeterminate, Mode=OneWay}" Value="{x:Bind LocalRecord.FileDownloader.Percent, Mode=OneWay}" HorizontalAlignment="Right" Width="20" Height="20"  />
 

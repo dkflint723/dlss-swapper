@@ -348,6 +348,9 @@ internal class DLLManager
             await SaveImportedManifestJsonAsync().ConfigureAwait(false);
         }
 
+        // Before the merge, so the master lists and every surface built from them carry the notes.
+        ApplyRecommendations();
+
         App.CurrentApp.RunOnUIThread(() =>
         {
             // Merge each of the manifests into the master DLL record list
@@ -359,6 +362,72 @@ internal class DLLManager
             // Now that we know what versions exist, work out which games are behind.
             GameManager.Instance.RefreshUpdateAvailable();
         });
+    }
+
+    /// <summary>The curated notes, read once. Null after a failed read, which costs only the notes.</summary>
+    static readonly Lazy<List<DllRecommendation>?> _recommendations = new Lazy<List<DllRecommendation>?>(() =>
+    {
+        try
+        {
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("DLSS_Swapper.Assets.recommended.json"))
+            {
+                if (stream is null)
+                {
+                    return null;
+                }
+
+                return JsonSerializer.Deserialize(stream, SourceGenerationContext.Default.ListDllRecommendation);
+            }
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err);
+            return null;
+        }
+    });
+
+    /// <summary>
+    /// Stamps the curated notes onto the records they describe.
+    /// </summary>
+    /// <remarks>
+    /// Exact version match within the named type, per <see cref="DllRecommendation"/>: a claim is
+    /// about one build, and a build that has left the manifest simply stops matching. Run on every
+    /// manifest load because each load deserialises fresh record objects.
+    /// </remarks>
+    void ApplyRecommendations()
+    {
+        var recommendations = _recommendations.Value;
+        if (recommendations is null || recommendations.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var recommendation in recommendations)
+        {
+            if (Enum.TryParse<GameAssetType>(recommendation.AssetType, out var assetType) == false)
+            {
+                continue;
+            }
+
+            StampRecommendation(Manifest?.GetRecords(assetType), recommendation);
+            StampRecommendation(ImportedManifest?.GetRecords(assetType), recommendation);
+        }
+    }
+
+    static void StampRecommendation(List<DLLRecord>? dllRecords, DllRecommendation recommendation)
+    {
+        if (dllRecords is null)
+        {
+            return;
+        }
+
+        foreach (var dllRecord in dllRecords)
+        {
+            if (dllRecord.Version == recommendation.Version)
+            {
+                dllRecord.RecommendationNote = recommendation.Why;
+            }
+        }
     }
 
     static void CancelDownloads(ObservableCollection<DLLRecord> dllRecords)

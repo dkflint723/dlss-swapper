@@ -218,6 +218,7 @@ public class NewResourceStringTests
     [InlineData("GamePage_PinDialog_PinButton")]
     [InlineData("GamesPage_Status_PinnedOne")]
     [InlineData("GamesPage_Status_PinnedMany")]
+    [InlineData("DllGroup_Recommended")]
     public void TheStringResolves(string resourceKey)
     {
         var value = ResourceHelper.GetString(resourceKey);

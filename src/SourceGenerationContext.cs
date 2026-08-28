@@ -30,6 +30,7 @@ namespace DLSS_Swapper;
 [JsonSerializable(typeof(Aggregate))]
 [JsonSerializable(typeof(List<GameSearchResult>))]
 [JsonSerializable(typeof(List<PresetOption>))]
+[JsonSerializable(typeof(List<Data.DllRecommendation>))]
 [JsonSerializable(typeof(GetItemsInput))]
 internal partial class SourceGenerationContext : JsonSerializerContext
 {

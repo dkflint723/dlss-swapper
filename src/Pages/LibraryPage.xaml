@@ -21,6 +21,7 @@
         <converters:DLSSStateVisibilityConverter x:Key="IsNotFoundConverter" DesierdState="NotFound" />
         <converters:DLSSStateVisibilityConverter x:Key="IsLocalConverter" DesierdState="Imported" />
         <ct_converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
+        <ct_converters:StringVisibilityConverter x:Key="StringVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
         <converters:BytesToMegaBytesConverter x:Key="BytesToMegaBytesConverter" />
         <converters:TotalBytesVisbilityConverter x:Key="TotalBytesVisbilityConverter" />
 
@@ -294,6 +295,19 @@
                             HorizontalAlignment="Right"
                             TextWrapping="NoWrap"
                             Foreground="{ThemeResource DsTextTertiaryBrush}" />
+
+                        <!-- The curated why, on the row it is about. Empty for most rows. -->
+                        <TextBlock
+                            Grid.Column="4"
+                            Text="{x:Bind RecommendationNote}"
+                            FontSize="12"
+                            Margin="12,0,0,0"
+                            VerticalAlignment="Center"
+                            TextWrapping="NoWrap"
+                            TextTrimming="CharacterEllipsis"
+                            ToolTipService.ToolTip="{x:Bind RecommendationNote}"
+                            Visibility="{x:Bind RecommendationNote, Converter={StaticResource StringVisibilityConverter}}"
+                            Foreground="{ThemeResource DsTextSecondaryBrush}" />
 
                         <!--
                             The count is the answer to "is this safe to delete", so it is also the

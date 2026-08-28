@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using DLSS_Swapper.Helpers;
 
 namespace DLSS_Swapper.Data;
 
@@ -21,9 +22,33 @@ public class DllVersionGroup
     /// The order given is kept. These records are already ranked by the manifest's own rules, and a
     /// second opinion here about which is newest is how a list ends up disagreeing with its
     /// headings.
+    ///
+    /// Recommended versions lead, in their own group, because they are the answer to the question
+    /// the whole list poses — which of these hundred numbers matter. Moved rather than duplicated:
+    /// one record shown twice is one selection highlighted in two places.
     /// </remarks>
     public static List<DllVersionGroup> Build(IReadOnlyList<DLLRecord> orderedRecords, string engineName)
     {
+        var groups = new List<DllVersionGroup>();
+
+        var recommended = orderedRecords.Where(x => x.IsRecommended).ToList();
+        if (recommended.Count > 0)
+        {
+            var recommendedGroup = new DllVersionGroup()
+            {
+                Label = ResourceHelper.GetString("DllGroup_Recommended"),
+            };
+
+            foreach (var record in recommended)
+            {
+                recommendedGroup.Versions.Add(record);
+            }
+
+            groups.Add(recommendedGroup);
+
+            orderedRecords = orderedRecords.Where(x => x.IsRecommended == false).ToList();
+        }
+
         var lines = DllVersionLine.AssignLines(orderedRecords.Select(x => x.DisplayVersion).ToList());
         var distinctLines = lines.Distinct().ToList();
 
@@ -33,7 +58,6 @@ public class DllVersionGroup
             ? distinctLines[^1]
             : null;
 
-        var groups = new List<DllVersionGroup>();
         DllVersionGroup? current = null;
         var currentKey = (string?)null;
 
