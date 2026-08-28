@@ -159,16 +159,24 @@ public class AutomaticBackupTests
     /// A scan that removes a stale backup must not write a new one from the dll on disk.
     /// </summary>
     /// <remarks>
-    /// The scan deletes the saved original when the installed dll no longer matches the version it
-    /// recorded, on the grounds that a game updated past the version you swapped to should not read
-    /// as a downgrade. It then ran the automatic backup, whose only guard is that no backup file
-    /// exists - which the delete had just made true. So the one copy of the dll the game shipped
-    /// with was replaced by a copy of whatever was installed now, including a dll this app had
-    /// swapped in and failed to record. Reset would have restored the swapped dll and called it a
-    /// success.
+    /// <para>
+    /// The scan used to delete the saved original when the installed dll no longer matched the
+    /// version it recorded, on the grounds that a game updated past the version you swapped to
+    /// should not read as a downgrade. That destroyed the only copy of the file the game shipped
+    /// with - the thing the whole app exists to be able to put back - to avoid a display detail,
+    /// and no rescan or reinstall brings it back. It cost 29 saved originals across 13 games in a
+    /// single scan of one real library.
+    /// </para>
+    /// <para>
+    /// The copy stays now, and the confusion is answered with words instead: every surface that
+    /// offers a restore names both versions first. What this test kept from that era is the other
+    /// half, which matters more than ever now the file survives - the automatic backup must not
+    /// write a new "original" over it from whatever is installed at the time, or a swap this app
+    /// made and failed to record would be promoted to "what the game shipped with".
+    /// </para>
     /// </remarks>
     [Fact]
-    public async Task AScanThatRemovesAStaleCopyDoesNotWriteANewOneFromTheInstalledDll()
+    public async Task AScanKeepsTheSavedOriginalAndNeverOverwritesItWithTheInstalledDll()
     {
         await using var database = await TemporaryDatabase.CreateAsync();
         using var manifest = new ManifestScope();
@@ -207,23 +215,26 @@ public class AutomaticBackupTests
         // Worth stating: the setup is only meaningful because these differ.
         Assert.NotEqual(shippedBytes, swappedBytes);
 
-        // The stale copy is gone, which is the behaviour being kept - and nothing wrote a new
-        // "original" from the dll installed now. If the delete branch had not run at all this would
-        // fail too, which is what keeps the test honest.
-        Assert.False(File.Exists(backupPath));
+        // The copy the user cannot recreate is still there...
+        Assert.True(File.Exists(backupPath));
+
+        // ...and it still holds what the game shipped with, not the file that replaced it. Byte
+        // for byte, because "a copy exists" would pass even if the scan had overwritten it.
+        Assert.Equal(shippedBytes, File.ReadAllBytes(backupPath));
     }
 
     /// <summary>
-    /// Deleting a user's saved original is recorded before the file goes, not after the scan.
+    /// A dll replaced outside the app is recorded as that, and nothing is destroyed over it.
     /// </summary>
     /// <remarks>
-    /// The history batch used to be inserted only at the very end of the scan, and only when the
-    /// game still had dlls. Anything that threw in between - a locked dll, an unreadable version -
-    /// dropped the batch, so the deletion had happened and nothing remembered it. That record is
-    /// what a later scan needs to tell "your swap was undone" from "this dll is new to me".
+    /// The record is what a later scan needs to tell "your swap was undone" from "this dll is new
+    /// to me", and what <c>UndoneSwapFinder</c> reads to say so on the games page. It used to be
+    /// written alongside a note that the saved original had been deleted; there is no deletion to
+    /// report now, so this asserts both halves at once - the change is remembered, and the copy
+    /// survives it.
     /// </remarks>
     [Fact]
-    public async Task RemovingAStaleCopyIsRecordedEvenIfTheRestOfTheScanFails()
+    public async Task ADllReplacedOutsideTheAppIsRecordedAndTheOriginalSurvives()
     {
         await using var database = await TemporaryDatabase.CreateAsync();
         using var manifest = new ManifestScope();
@@ -232,8 +243,8 @@ public class AutomaticBackupTests
         var backupPath = dllPath + ".dlsss";
         File.Copy(dllPath, backupPath);
 
-        // The installed dll no longer matches what was recorded, which is what makes the scan
-        // remove the stale copy.
+        // The installed dll no longer matches what was recorded: a game update, or a tool that
+        // writes dlls into game folders, has been through since the last scan.
         File.WriteAllBytes(dllPath, new byte[4096]);
 
         var game = new TestGame("backup_history")
@@ -247,13 +258,16 @@ public class AutomaticBackupTests
         game.ProcessGame(autoSave: false);
         await WaitForScanAsync(game);
 
-        Assert.False(File.Exists(backupPath));
+        Assert.True(File.Exists(backupPath));
 
         var history = await Database.Instance.Connection.Table<GameHistory>()
             .Where(x => x.GameId == game.ID)
             .ToListAsync();
 
-        Assert.Contains(history, x => x.EventType == GameHistoryEventType.DLLBackupRemoved);
+        Assert.Contains(history, x => x.EventType == GameHistoryEventType.DLLChangedExternally);
+
+        // Nothing was destroyed, so nothing should claim it was.
+        Assert.DoesNotContain(history, x => x.EventType == GameHistoryEventType.DLLBackupRemoved);
     }
 
     /// <summary>

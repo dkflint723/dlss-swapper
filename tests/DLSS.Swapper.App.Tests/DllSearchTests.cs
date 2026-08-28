@@ -99,7 +99,7 @@ public class DllSearchTests
     public void ASearchThatMatchesNothingSaysWhereTheMatchesAre()
     {
         var state = UpscalersEmptyState.For(
-            visibleCount: 0, engineTotal: 108, engineName: "DLSS", searchText: "2.1", matchesElsewhere: 4);
+            visibleCount: 0, engineTotal: 108, engineName: "DLSS", searchText: "2.1", matchesElsewhere: 4, versionsArriveOnlyByImport: false);
 
         Assert.Equal(UpscalersEmptyStateKind.NoSearchResults, state.Kind);
         Assert.Contains("DLSS", state.Title);
@@ -114,7 +114,7 @@ public class DllSearchTests
     public void ASearchMatchingNowhereSaysSoInsteadOfPointingElsewhere()
     {
         var state = UpscalersEmptyState.For(
-            visibleCount: 0, engineTotal: 108, engineName: "DLSS", searchText: "zzzz", matchesElsewhere: 0);
+            visibleCount: 0, engineTotal: 108, engineName: "DLSS", searchText: "zzzz", matchesElsewhere: 0, versionsArriveOnlyByImport: false);
 
         Assert.Equal(UpscalersEmptyStateKind.NoSearchResults, state.Kind);
         Assert.DoesNotContain("LangResourceError", state.Body);
@@ -127,17 +127,55 @@ public class DllSearchTests
         // Checked after the search, for the same reason the games page checks it after: a search
         // that matched nothing says nothing about whether the engine has versions at all.
         var state = UpscalersEmptyState.For(
-            visibleCount: 0, engineTotal: 0, engineName: "XeLL", searchText: string.Empty, matchesElsewhere: 0);
+            visibleCount: 0, engineTotal: 0, engineName: "XeLL", searchText: string.Empty, matchesElsewhere: 0, versionsArriveOnlyByImport: false);
 
         Assert.Equal(UpscalersEmptyStateKind.NoVersions, state.Kind);
         Assert.Contains("XeLL", state.Title);
+    }
+
+    /// <summary>
+    /// An engine no manifest publishes is told where versions actually come from.
+    /// </summary>
+    /// <remarks>
+    /// The ordinary empty state says the list "has not been downloaded yet" and offers Refresh.
+    /// For an engine upstream carries no key for, both are false: no refresh will ever produce a
+    /// list, so the page would be inviting a press that cannot work, forever.
+    /// </remarks>
+    [Fact]
+    public void AnEngineWithNoDownloadListSaysToImportInstead()
+    {
+        var state = UpscalersEmptyState.For(
+            visibleCount: 0, engineTotal: 0, engineName: "DLSS NR", searchText: string.Empty,
+            matchesElsewhere: 0, versionsArriveOnlyByImport: true);
+
+        Assert.Equal(UpscalersEmptyStateKind.ImportOnly, state.Kind);
+        Assert.Contains("DLSS NR", state.Title);
+        Assert.Contains("DLSS NR", state.Body);
+        Assert.DoesNotContain("LangResourceError", state.Body);
+
+        // The offer has to be the one that can actually work.
+        var refreshLabel = UpscalersEmptyState.For(
+            visibleCount: 0, engineTotal: 0, engineName: "XeLL", searchText: string.Empty,
+            matchesElsewhere: 0, versionsArriveOnlyByImport: false).PrimaryLabel;
+        Assert.NotEqual(refreshLabel, state.PrimaryLabel);
+    }
+
+    /// <summary>A search is still a search, even on an import-only engine.</summary>
+    [Fact]
+    public void AnImportOnlyEngineStillReportsASearchAsASearch()
+    {
+        var state = UpscalersEmptyState.For(
+            visibleCount: 0, engineTotal: 0, engineName: "DLSS NR", searchText: "310",
+            matchesElsewhere: 2, versionsArriveOnlyByImport: true);
+
+        Assert.Equal(UpscalersEmptyStateKind.NoSearchResults, state.Kind);
     }
 
     [Fact]
     public void AListWithRowsInItIsNotEmpty()
     {
         var state = UpscalersEmptyState.For(
-            visibleCount: 3, engineTotal: 108, engineName: "DLSS", searchText: "310", matchesElsewhere: 0);
+            visibleCount: 3, engineTotal: 108, engineName: "DLSS", searchText: "310", matchesElsewhere: 0, versionsArriveOnlyByImport: false);
 
         Assert.Equal(UpscalersEmptyStateKind.None, state.Kind);
     }

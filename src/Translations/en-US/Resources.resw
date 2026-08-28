@@ -163,6 +163,10 @@
     <value>{0} installed, {1} is available</value>
     <comment>{0} is the installed version, {1} the newest available</comment>
   </data>
+  <data name="GamePage_Row_SavedOriginalTemplate" xml:space="preserve">
+    <value>the saved original is {0}</value>
+    <comment>{0} is the version of the saved original, eg. v310.1. Shown when it differs from what is installed, because it is what restoring would put back</comment>
+  </data>
   <data name="GamePage_Row_PinnedTemplate" xml:space="preserve">
     <value>{0} installed and pinned there</value>
     <comment>{0} is the installed version, eg. v310.5</comment>
@@ -465,6 +469,13 @@
   </data>
   <data name="Upscalers_RefreshList" xml:space="preserve">
     <value>Refresh the list</value>
+  </data>
+  <data name="Upscalers_ImportOnlyBodyTemplate" xml:space="preserve">
+    <value>There is no download list for {0}. Versions appear here once you import the dll file yourself.</value>
+    <comment>{0} is the engine name (eg. DLSS NR)</comment>
+  </data>
+  <data name="Upscalers_ImportFromLocalFiles" xml:space="preserve">
+    <value>Import from local files</value>
   </data>
   <data name="Upscalers_ShowGamesUsing" xml:space="preserve">
     <value>Show the games using this</value>

@@ -7,6 +7,9 @@ public enum UpscalersEmptyStateKind
     None,
     NoSearchResults,
     NoVersions,
+
+    /// <summary>Nothing to list and nothing that would ever download one. Importing is the way in.</summary>
+    ImportOnly,
 }
 
 /// <summary>
@@ -44,12 +47,17 @@ public class UpscalersEmptyState
     /// Matches under the other engines, from the same predicate that produced the counts down the
     /// left — so the dead end can point at where the answer actually is.
     /// </param>
+    /// <param name="versionsArriveOnlyByImport">
+    /// True for an engine no upstream manifest publishes, where refreshing can never produce a
+    /// list however many times it is pressed.
+    /// </param>
     public static UpscalersEmptyState For(
         int visibleCount,
         int engineTotal,
         string engineName,
         string searchText,
-        int matchesElsewhere)
+        int matchesElsewhere,
+        bool versionsArriveOnlyByImport)
     {
         if (visibleCount > 0)
         {
@@ -79,6 +87,20 @@ public class UpscalersEmptyState
         // that used to render as a silently blank column.
         if (engineTotal == 0)
         {
+            // "Not downloaded yet" and a Refresh button are a promise for engines the manifest
+            // carries. For one it does not, they are a button that cannot work and a sentence that
+            // will never come true however long you wait, so this says where versions do come from.
+            if (versionsArriveOnlyByImport)
+            {
+                return new UpscalersEmptyState()
+                {
+                    Kind = UpscalersEmptyStateKind.ImportOnly,
+                    Title = ResourceHelper.GetFormattedResourceTemplate("Upscalers_NoVersionsTemplate", engineName),
+                    Body = ResourceHelper.GetFormattedResourceTemplate("Upscalers_ImportOnlyBodyTemplate", engineName),
+                    PrimaryLabel = ResourceHelper.GetString("Upscalers_ImportFromLocalFiles"),
+                };
+            }
+
             return new UpscalersEmptyState()
             {
                 Kind = UpscalersEmptyStateKind.NoVersions,

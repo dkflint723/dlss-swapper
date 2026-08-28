@@ -582,8 +582,6 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
 
                 async Task ProcessGame_ProcessGameAsset(GameAsset gameAsset)
                 {
-                    var backupWasJustRemoved = false;
-
                     // Version and size first, both metadata. The hash is only worth paying for when
                     // the file actually looks different to what we already had.
                     gameAsset.LoadVersionAndSize();
@@ -617,59 +615,23 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                                 AssetVersion = gameAsset.DisplayName,
                             });
 
-                            // If the DLL was changed externally (eg. game update) we delete the backup.
-                            // This fixes the issue where looking at your game it may appear to be downgraded but
-                            // in reality it is because the game updated to a newer version than you had swapped to.
-                            var expectedBackupPath = DllSwapExecutor.GetBackupPath(gameAsset.Path);
-                            if (File.Exists(expectedBackupPath))
-                            {
-                                var tempBackupGameAsset = new GameAsset()
-                                {
-                                    Id = ID,
-                                    AssetType = DLLManager.Instance.GetAssetBackupType(gameAsset.AssetType),
-                                    Path = expectedBackupPath,
-                                };
-                                tempBackupGameAsset.LoadVersionAndHash();
-
-                                // Written now, on its own, rather than added to the batch the end
-                                // of the scan inserts. This is the record that a copy of the dll the
-                                // game shipped with was destroyed, and it has to reach the disk
-                                // before the file does not: anything that went wrong later in the
-                                // scan dropped the whole batch, so the deletion happened and nothing
-                                // remembered it. Without the note the next scan sees no previous
-                                // asset at all and records the dll as newly detected, so nothing
-                                // ever tells the user their swap was undone.
-                                var backupRemoved = new GameHistory()
-                                {
-                                    GameId = ID,
-                                    EventType = GameHistoryEventType.DLLBackupRemoved,
-                                    EventTime = DateTime.Now,
-                                    AssetType = tempBackupGameAsset.AssetType,
-                                    AssetPath = tempBackupGameAsset.Path,
-                                    AssetVersion = tempBackupGameAsset.DisplayName,
-                                };
-
-                                using (await Database.Instance.Mutex.LockAsync())
-                                {
-                                    await Database.Instance.Connection.InsertAsync(backupRemoved).ConfigureAwait(false);
-                                }
-
-                                File.Delete(expectedBackupPath);
-
-                                // Nothing may put one back in this same pass. The copy below guards only
-                                // on the backup file not existing, which the line above has just made
-                                // true - so the scan deleted the one copy of the dll the game shipped
-                                // with and immediately wrote a new "original" from whatever is on disk
-                                // now, including a dll this app swapped in and then failed to record.
-                                // Reset would then have restored the swapped dll and called it a success.
-                                // The row now honestly reads that there is no saved original, and "Save a
-                                // copy" is there to take a fresh one deliberately.
-                                //
-                                // Deleting at all is upstream's rule, so a game updated past the version
-                                // you swapped to does not read as a downgrade. Whether that is worth
-                                // destroying the original for is a separate question, left alone here.
-                                backupWasJustRemoved = true;
-                            }
+                            // The saved original stays exactly where it is.
+                            //
+                            // Upstream deletes it here, so that a game which updated its own dll past
+                            // the version you swapped to does not read as a downgrade. That trades the
+                            // only copy of the file the game shipped with for a display detail, and
+                            // the copy is the whole point of the app: it is what "restore" restores,
+                            // and once deleted no rescan, reinstall or verify brings it back. It cost
+                            // 29 saved originals across 13 games in one scan of this library, on dlls
+                            // that had been replaced outside the app.
+                            //
+                            // What upstream was avoiding is a real confusion, but the answer to it is
+                            // words, not deletion: every surface that offers a restore in this fork
+                            // already names both ends of it - the picker shows Original DLL beside
+                            // Current DLL, the revert preview reads "DLSS: v310.8 -> v310.1", and the
+                            // row now says which version the saved original is whenever it differs
+                            // from what is installed. Nobody restores without being told what they
+                            // get, so nothing has to be destroyed to keep them from being surprised.
                         }
                     }
                     else // DLL is new
@@ -690,7 +652,10 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                         unknownGameAssets.Add(gameAsset);
                     }
 
-                    if (shouldBackUpNewDlls && backupWasJustRemoved == false)
+                    // Safe to call unconditionally: it refuses to overwrite an existing copy, so a
+                    // dll that changed externally keeps the original saved beside it rather than
+                    // having the replacement promoted over the top of it.
+                    if (shouldBackUpNewDlls)
                     {
                         CreateOriginalBackupForGameAsset(gameAsset);
                     }

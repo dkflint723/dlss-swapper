@@ -221,6 +221,51 @@ public class UpscalerRowStatusTests
         Assert.Contains(ResourceHelper.GetString("GamePage_Row_NoSavedOriginal"), row.Sentence);
     }
 
+    /// <summary>
+    /// When the saved original is not the file installed, the row says which version it is.
+    /// </summary>
+    /// <remarks>
+    /// It is the answer to the only question a saved original raises - what restoring would put
+    /// back - and it is what makes keeping the original through an external change safe to do. The
+    /// scan used to delete the copy so that the difference could never be seen; naming it is the
+    /// honest version of the same goal.
+    /// </remarks>
+    [Fact]
+    public void ARowNamesTheSavedOriginalWhenItDiffersFromWhatIsInstalled()
+    {
+        using var manifest = new ManifestScope();
+        manifest.Add(GameAssetType.DLSS, "310.7.0.0");
+
+        var game = GameWith(
+            "row_saved_original",
+            Asset("row_saved_original", GameAssetType.DLSS, "310.7.0.0"),
+            Asset("row_saved_original", DllTypes.ForAssetType(GameAssetType.DLSS)!.BackupAssetType, "310.1.0.0"));
+
+        var row = UpscalerRowStatus.For(game, GameAssetType.DLSS);
+
+        Assert.Contains("310.1", row.Sentence);
+        Assert.DoesNotContain("LangResourceError", row.Sentence);
+    }
+
+    /// <summary>
+    /// And says nothing when it is the same file, because then it adds nothing.
+    /// </summary>
+    [Fact]
+    public void ARowSaysNothingAboutASavedOriginalThatMatchesWhatIsInstalled()
+    {
+        using var manifest = new ManifestScope();
+        manifest.Add(GameAssetType.DLSS, "310.7.0.0");
+
+        var game = GameWith(
+            "row_saved_original_same",
+            Asset("row_saved_original_same", GameAssetType.DLSS, "310.7.0.0"),
+            Asset("row_saved_original_same", DllTypes.ForAssetType(GameAssetType.DLSS)!.BackupAssetType, "310.7.0.0"));
+
+        var row = UpscalerRowStatus.For(game, GameAssetType.DLSS);
+
+        Assert.DoesNotContain(ResourceHelper.GetFormattedResourceTemplate("GamePage_Row_SavedOriginalTemplate", "v310.7"), row.Sentence);
+    }
+
     static string BackupAwarePath(GameAssetType assetType)
     {
         var shadowed = DllTypes.All.FirstOrDefault(x => x.BackupAssetType == assetType);

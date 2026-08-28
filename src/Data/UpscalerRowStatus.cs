@@ -76,11 +76,24 @@ public class UpscalerRowStatus
 
         var pin = game.DllPinFor(assetType);
 
+        // What restoring this row would actually give back, read per path like hasBackup is: the
+        // copy that belongs to the first installed location, not any copy of the same type.
+        var savedOriginal = string.Empty;
+        if (installedAssets.FirstOrDefault() is GameAsset firstInstalled
+            && DllTypes.ForAssetType(assetType) is DllTypeDefinition typeDefinition)
+        {
+            var backupPath = Swapping.DllSwapExecutor.GetBackupPath(firstInstalled.Path);
+            savedOriginal = game.GameAssets
+                .FirstOrDefault(x => x.AssetType == typeDefinition.BackupAssetType
+                    && string.Equals(x.Path, backupPath, System.StringComparison.OrdinalIgnoreCase))
+                ?.DisplayName ?? string.Empty;
+        }
+
         return new UpscalerRowStatus()
         {
             AssetType = assetType,
             Title = DLLManager.Instance.GetAssetTypeName(assetType),
-            Sentence = Describe(installed, newest, isBehind, hasBackup, multipleFound, game.SkipUpdates, pin),
+            Sentence = Describe(installed, newest, isBehind, hasBackup, multipleFound, game.SkipUpdates, pin, savedOriginal),
             Glyph = GlyphFor(isBehind, hasBackup, game.SkipUpdates, pin is not null),
             ActionLabel = string.IsNullOrEmpty(installed)
                 ? ResourceHelper.GetString("GamePage_Row_Choose")
@@ -104,7 +117,7 @@ public class UpscalerRowStatus
     /// the same reason — the holding is the point — but unlike left alone it still names the newer
     /// version, because the pin is a choice the user may want to revisit when something new lands.
     /// </remarks>
-    static string Describe(string installed, string newest, bool isBehind, bool hasSavedOriginal, bool multipleFound, bool skipUpdates, GameDllPin? pin)
+    static string Describe(string installed, string newest, bool isBehind, bool hasSavedOriginal, bool multipleFound, bool skipUpdates, GameDllPin? pin, string savedOriginal)
     {
         var parts = new List<string>();
 
@@ -151,6 +164,15 @@ public class UpscalerRowStatus
         if (string.IsNullOrEmpty(installed) == false && hasSavedOriginal == false)
         {
             parts.Add(ResourceHelper.GetString("GamePage_Row_NoSavedOriginal"));
+        }
+
+        // Named only when it is not the file already sitting there, because that is the only time
+        // it tells you something: it is what restore would put back. The two differ after a swap,
+        // and after a game update replaced a dll whose original this app still holds - the case
+        // that used to be handled by deleting the original so the difference could not be seen.
+        if (string.IsNullOrEmpty(savedOriginal) == false && savedOriginal != installed)
+        {
+            parts.Add(ResourceHelper.GetFormattedResourceTemplate("GamePage_Row_SavedOriginalTemplate", savedOriginal));
         }
 
         return string.Join(ResourceHelper.GetString("GamePage_Row_ClauseSeparator"), parts);

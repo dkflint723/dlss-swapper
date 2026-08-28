@@ -1844,7 +1844,11 @@ public partial class LibraryPageModel : ObservableObject
             }
         }
 
-        var state = UpscalersEmptyState.For(visibleCount, engineTotal, engineName, SearchText, matchesElsewhere);
+        // Straight off the registry rather than a list kept here, so an engine the manifest does
+        // not publish is offered the import it actually needs instead of a refresh that cannot help.
+        var importOnly = Dlls.DllTypes.ForAssetType(SelectedAssetType)?.ExpectedInUpstreamManifest == false;
+
+        var state = UpscalersEmptyState.For(visibleCount, engineTotal, engineName, SearchText, matchesElsewhere, importOnly);
         EmptyState = state.Kind == UpscalersEmptyStateKind.None ? null : state;
     }
 
@@ -1855,6 +1859,14 @@ public partial class LibraryPageModel : ObservableObject
         if (EmptyState?.Kind == UpscalersEmptyStateKind.NoSearchResults)
         {
             SearchText = string.Empty;
+            return;
+        }
+
+        // The button says it opens the file picker, so it opens the file picker. Refreshing is
+        // what the other empty state offers, and for this engine it would do nothing at all.
+        if (EmptyState?.Kind == UpscalersEmptyStateKind.ImportOnly)
+        {
+            await ImportAsync();
             return;
         }
 
