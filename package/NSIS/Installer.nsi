@@ -205,22 +205,33 @@ Section
   ; live under %LOCALAPPDATA%, which the old uninstaller leaves alone and which Storage moves to the
   ; new name on first run.
   ClearErrors
-  ReadRegStr $R1 SHCTX "${PREVIOUS_UNINST_KEY}" "UninstallString"
+  ReadRegStr $R2 SHCTX "${PREVIOUS_UNINST_KEY}" "InstallLocation"
   ${IfNot} ${Errors}
-    ${If} $R1 != ""
+  ${AndIf} $R2 != ""
+    ; That the old executable is in there is what makes the rest of this safe. It proves the path
+    ; out of the registry really is the previous install and not some folder that key was pointed at
+    ; by hand - which matters, because the last step deletes the folder outright.
+    ${If} ${FileExists} "$R2\DLSS Swapper.exe"
       DetailPrint "Removing the previous DLSS Swapper (dkflint723) install..."
-      ; _?= makes the uninstaller run in place and wait, rather than copying itself to temp and
-      ; returning immediately - without it this would carry on while the old files were still there.
-      ReadRegStr $R2 SHCTX "${PREVIOUS_UNINST_KEY}" "InstallLocation"
-      ${If} $R2 != ""
-        ExecWait '"$R1" /S _?=$R2'
-        ; The uninstaller cannot delete itself while running in place.
-        Delete "$R2\uninstall.exe"
-        RMDir "$R2"
-      ${EndIf}
-      DeleteRegKey SHCTX "${PREVIOUS_UNINST_KEY}"
-      Delete "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk"
+
+      ; Built from InstallLocation rather than run from UninstallString, which is stored with its
+      ; own quotes around it - wrapping that in another pair produces "" ... "" and the command
+      ; silently does nothing. That is exactly what happened the first time this was written: the
+      ; uninstaller never ran, and only the registry entry and the shortcut went, leaving 299 MB of
+      ; files behind with nothing left pointing at them.
+      ;
+      ; _?= runs it in place and waits, instead of copying itself to temp and returning at once.
+      ExecWait '"$R2\uninstall.exe" /S _?=$R2'
+
+      ; It cannot delete itself while running in place, and it only removes what its own log lists -
+      ; so anything added to that folder afterwards stays. The folder is ours, it has just been
+      ; uninstalled, and the check above established which folder it is.
+      Delete "$R2\uninstall.exe"
+      RMDir /r "$R2"
     ${EndIf}
+
+    DeleteRegKey SHCTX "${PREVIOUS_UNINST_KEY}"
+    Delete "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk"
   ${EndIf}
 
   ; set the installation directory as the destination for the following actions
