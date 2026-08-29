@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DLSS_Swapper.Data;
@@ -44,8 +45,31 @@ static class Program
     /// </remarks>
     const int ContractVersion = 1;
 
+    /// <summary>
+    /// Borrows the calling terminal's console, when there is one to borrow.
+    /// </summary>
+    /// <remarks>
+    /// This is built as a windows subsystem executable so that a caller with no
+    /// console of its own - the Steam plugin's Lua host, a scheduled task - does not have one
+    /// allocated on its behalf, which is a terminal flashing on screen for every call.
+    ///
+    /// The cost of that is no console when a person runs it themselves, so it attaches to the one
+    /// its caller already has. Only when the output is not redirected: with a pipe in place the
+    /// handles are the pipe's and must be left exactly as they are, or what the caller is reading
+    /// gets rerouted to a window instead.
+    /// </remarks>
+    [DllImport("kernel32.dll")]
+    static extern bool AttachConsole(int processId);
+
+    const int AttachParentProcess = -1;
+
     static async Task<int> Main(string[] args)
     {
+        if (Console.IsOutputRedirected == false)
+        {
+            AttachConsole(AttachParentProcess);
+        }
+
         try
         {
             var command = args.Length > 0 ? args[0].ToLowerInvariant() : "help";

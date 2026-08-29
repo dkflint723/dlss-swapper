@@ -1,7 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <!--
+      A windows subsystem executable, not a console one, and this is the whole
+      reason: Windows allocates a console for a console subsystem process when
+      whatever started it has none of its own. The Steam plugin's Lua host has
+      none, so every call flashed a terminal on screen. A windows subsystem
+      process is allocated nothing, and still writes to a pipe when its caller
+      makes one - which is how the plugin reads it.
+
+      Run by hand it would then print into the void, so Main attaches to the
+      calling terminal's console when its output is not already redirected. See
+      the note there.
+    -->
+    <OutputType>WinExe</OutputType>
     <AssemblyName>dlss-swapper-cli</AssemblyName>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
