@@ -618,7 +618,7 @@ internal partial class GameManager : ObservableObject
                 // We could do away with this, but in theory this if is never hit
                 var oldGame = _synchronisedAllGames.First(x => x.Equals(game));
 
-                App.CurrentApp.RunOnUIThread(() =>
+                UiThread.Run(() =>
                 {
                     oldGame.UpdateFromGame(game);
                 });
@@ -632,13 +632,13 @@ internal partial class GameManager : ObservableObject
 
                 _synchronisedAllGames.Add(game);
 
-                App.CurrentApp.RunOnUIThread(() =>
+                UiThread.Run(() =>
                 {
                     _allGames.Add(game);
 
                     if (scrollIntoView)
                     {
-                        App.CurrentApp.MainWindow.GameGridPage?.ScrollToGame(game);
+                        App.CurrentApp?.MainWindow?.GameGridPage?.ScrollToGame(game);
                     }
                 });
 
@@ -653,7 +653,7 @@ internal partial class GameManager : ObservableObject
         {
             _synchronisedAllGames.Remove(game);
 
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 _allGames.Remove(game);
             });
@@ -667,7 +667,7 @@ internal partial class GameManager : ObservableObject
             // TODO: Cancel loading of games here
             _synchronisedAllGames.Clear();
 
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 _allGames.Clear();
             });
@@ -732,7 +732,7 @@ internal partial class GameManager : ObservableObject
         {
             if (UnknownAssetsFound == false)
             {
-                App.CurrentApp.RunOnUIThread(() =>
+                UiThread.Run(() =>
                 {
                     UnknownAssetsFound = true;
                 });

@@ -271,6 +271,31 @@ internal class DLLManager
     /// <summary>
     /// Processes manifest and imported manifest objects to the current DLL records lists.
     /// </summary>
+    /// <summary>
+    /// The window's loading caption, or null when there is no window wearing one.
+    /// </summary>
+    /// <remarks>
+    /// The migration below reports progress through the loading screen, which exists only when the
+    /// app does. Read and written through here so the manifest load runs unchanged with no window
+    /// at all - under test, and from the command line - rather than dereferencing a null MainWindow
+    /// on its first statement.
+    /// </remarks>
+    static string? GetLoadingMessage()
+    {
+        return App.CurrentApp?.MainWindow?.ViewModel?.LoadingMessage;
+    }
+
+    static void SetLoadingMessage(string? message)
+    {
+        var viewModel = App.CurrentApp?.MainWindow?.ViewModel;
+        if (viewModel is null || message is null)
+        {
+            return;
+        }
+
+        UiThread.Run(() => viewModel.LoadingMessage = message);
+    }
+
     async Task ProcessManifestsAsync()
     {
         // If manifest is not loaded we can't do anything.
@@ -307,11 +332,8 @@ internal class DLLManager
         var zipDirectories = Directory.GetDirectories(Storage.GetStorageFolder(), "*_zip", SearchOption.TopDirectoryOnly);
         if (zipDirectories.Length > 0)
         {
-            var oldLoadingMessage = App.CurrentApp.MainWindow.ViewModel.LoadingMessage;
-            App.CurrentApp.RunOnUIThread(() =>
-            {
-                App.CurrentApp.MainWindow.ViewModel.LoadingMessage = ResourceHelper.GetString("DllManager_MigratingDlls");
-            });
+            var oldLoadingMessage = GetLoadingMessage();
+            SetLoadingMessage(ResourceHelper.GetString("DllManager_MigratingDlls"));
 
             foreach (var dllTypeDefinition in DllTypes.All)
             {
@@ -320,10 +342,7 @@ internal class DLLManager
                     ImportedManifest?.GetRecords(dllTypeDefinition.AssetType));
             }
 
-            App.CurrentApp.RunOnUIThread(() =>
-            {
-                App.CurrentApp.MainWindow.ViewModel.LoadingMessage = oldLoadingMessage;
-            });
+            SetLoadingMessage(oldLoadingMessage);
         }
 
         // Load local records
@@ -351,7 +370,7 @@ internal class DLLManager
         // Before the merge, so the master lists and every surface built from them carry the notes.
         ApplyRecommendations();
 
-        App.CurrentApp.RunOnUIThread(() =>
+        UiThread.Run(() =>
         {
             // Merge each of the manifests into the master DLL record list
             foreach (var (assetType, records) in _records)
@@ -662,7 +681,7 @@ internal class DLLManager
 
                         File.Move(importedDllRecord.LocalRecord.ExpectedPath, manifestDllRecord.LocalRecord.ExpectedPath);
 
-                        App.CurrentApp.RunOnUIThread(() =>
+                        UiThread.Run(() =>
                         {
                             manifestDllRecord.LocalRecord.IsDownloaded = true;
                         });
@@ -734,7 +753,7 @@ internal class DLLManager
         dllRecord.CancelDownload();
 
         // Null out the existing record so we can tell if loading failed.
-        App.CurrentApp.RunOnUIThread(() =>
+        UiThread.Run(() =>
         {
             dllRecord.LocalRecord = null;
         });
@@ -746,7 +765,7 @@ internal class DLLManager
         }
 
         var localRecord = LocalRecord.FromExpectedPath(expectedPath, isImported);
-        App.CurrentApp.RunOnUIThread(() =>
+        UiThread.Run(() =>
         {
             dllRecord.LocalRecord = localRecord;
         });
@@ -1107,7 +1126,7 @@ internal class DLLManager
             File.Copy(filePath, expectedPath, true);
             var newLocalRecord = LocalRecord.FromExpectedPath(expectedPath, !importingAsDownloadedDll);
 
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 dllRecord.LocalRecord = null;
                 dllRecord.LocalRecord = newLocalRecord;
@@ -1127,7 +1146,7 @@ internal class DLLManager
                 {
                     insertIndex = ~insertIndex;
                 }
-                App.CurrentApp.RunOnUIThread(() =>
+                UiThread.Run(() =>
                 {
                     recordList.Insert(insertIndex, dllRecord);
                 });

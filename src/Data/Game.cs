@@ -1345,7 +1345,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
                 return (false, ResourceHelper.GetString("Game_Swap_NoDllRecordsToUpdate"), false);
 
             case SwapFailure.AccessDenied:
-                if (App.CurrentApp.IsAdminUser() is false)
+                if (Environment.IsPrivilegedProcess is false)
                 {
                     return (false, ResourceHelper.GetString("Game_Swap_AccessDeniedAdmin"), true);
                 }
@@ -1364,7 +1364,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         switch (result.Failure)
         {
             case SwapFailure.AccessDenied:
-                if (App.CurrentApp.IsAdminUser() is false)
+                if (Environment.IsPrivilegedProcess is false)
                 {
                     return (false, ResourceHelper.GetString("Game_Reset_AccessDeniedAdmin"), true);
                 }
