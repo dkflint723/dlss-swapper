@@ -90,6 +90,27 @@ public class VersionConsistencyTests
     }
 
     /// <summary>
+    /// The command line, which is installed beside the app and carries its own version.
+    /// </summary>
+    /// <remarks>
+    /// It has no version of its own to report - it is the same release as the app it sits next to,
+    /// and it exists to be driven by things that will be asked which build they are talking to. The
+    /// sdk defaults to 1.0.0.0 when nothing is set, and that is precisely what the first packaged
+    /// build of it shipped: a 1.0.0.0 executable in the install folder of a 2.2.2.0 app. It went
+    /// unnoticed because until that release it was not packaged at all.
+    /// </remarks>
+    [Fact]
+    public void TheCommandLineMatches()
+    {
+        var cli = Match(
+            Read("cli", "DLSS.Swapper.Cli", "DLSS.Swapper.Cli.csproj"),
+            @"<Version>([^<]+)</Version>",
+            "cli/DLSS.Swapper.Cli/DLSS.Swapper.Cli.csproj");
+
+        Assert.Equal(ProjectVersion, cli);
+    }
+
+    /// <summary>
     /// Every version the installer stamps, including the one a user reads in Add or remove programs.
     /// </summary>
     [Fact]
