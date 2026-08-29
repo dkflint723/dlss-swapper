@@ -1,6 +1,6 @@
 # Changelog
 
-Changes made in [dkflint723/dlss-swapper](https://github.com/dkflint723/dlss-swapper), a personal
+Changes made in [dkflint723/swapshelf](https://github.com/dkflint723/swapshelf), a personal
 fork of [beeradmoore/dlss-swapper](https://github.com/beeradmoore/dlss-swapper). Entries describe
 what changed for someone using the app, and why — the reasoning in full is in the commit messages.
 
@@ -15,6 +15,34 @@ released a 1.2.6.0 of its own: two different builds wearing one number, and this
 them apart without anyone having to remember a rule. It stays four plain numbers because the
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
+
+## v3.0.3.0 — a new icon
+
+The icon was still the one this was forked from: a purple disc with a magenta arrow and a green one
+curving past each other. Two things wrong with keeping it. It advertised a project this is no longer
+a version of, which was the whole point of the rename. And it told its two halves apart by colour
+alone — magenta against green, the pair red/green colour blindness collapses — so to some people it
+was two grey arrows, and at 16px, which is the size it appears at in the taskbar, it was unreadable
+to everybody.
+
+The new one is two identical hooks in 180 degree point symmetry, reaching past each other on a deep
+navy tile. The gap they leave between them is a single constant-width channel: two pieces milled to
+swap places, a shelf board each, and no arrows anywhere.
+
+Its two pieces are told apart by lightness as well as colour, so the mark still works if you cannot
+separate the hues — white against amber measures 3.37:1 in greyscale, 3.07:1 under simulated
+deuteranopia, where the palette it replaced sat at 1.78:1 and relied on you already knowing which
+piece was orange. The tile keeps an edge against a near-black taskbar with a one-pixel rim rather
+than by going lighter, because every step lighter the tile takes is a step of contrast off the two
+marks on top of it.
+
+Everywhere the icon appears is regenerated from one source: the taskbar and Explorer icon, the
+installer, the title bar, and the favicons on the docs site. That source is a script rather than a
+drawing, kept in `design/icon`, so the next change to it is an edit rather than an archaeology
+project.
+
+The docs site's web app manifest also had an empty name, so installing it from a browser gave you a
+blank label under the icon, and its two colours were white behind a navy mark. Both fixed.
 
 ## v3.0.2.0 — bug reports come here
 
