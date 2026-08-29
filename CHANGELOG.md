@@ -16,6 +16,27 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v3.0.4.0 — the covers come back
+
+Renaming the data folder in 3.0.0.0 moved the cover art with it, and left every note of where that
+art lives pointing at the folder that had just stopped existing. Cover paths are stored as full
+paths, and nothing rewrote them.
+
+Nothing failed loudly, which is the reason this took two releases to notice. A cover that cannot be
+found reads as a game that has no cover, so the app went and fetched the store's own art instead —
+240x280 for two of the games it turned up on, stretched into a card three times that size, with the
+600x900 image it should have used sitting unread in the same folder. The library did not look
+broken. It looked like the art had gone soft.
+
+A game now checks, as it loads, whether its stored cover path is inside the image cache actually in
+use, and works the path out again if it is not. A cover you chose yourself wins over a downloaded
+one, which is the order the app already used everywhere else, so nothing quietly swaps your art for
+the store's. Only a row whose path really moved gets written.
+
+This corrects itself on the first launch after installing. If you already fixed your own library by
+re-fetching covers, nothing visible will change — the difference is that it now stays fixed rather
+than depending on having asked at the right moment.
+
 ## v3.0.3.0 — a new icon
 
 The icon was still the one this was forked from: a purple disc with a magenta arrow and a green one
