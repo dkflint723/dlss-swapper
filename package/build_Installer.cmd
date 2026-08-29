@@ -11,6 +11,26 @@ mkdir Output > NUL 2>&1
 
 echo.
 echo ################################
+echo Compiling cli
+echo ################################
+echo.
+
+REM Published first, and into the same folder, so that the app publish that
+REM follows overwrites anything the two both produce. The cli references the app
+REM project, so its output is very nearly the app's; publishing it second would
+REM mean a file built for the cli - resources.pri most of all - sitting where the
+REM app expects its own. What survives from this step is dlss-swapper-cli.exe and
+REM its two json files, which is all that is wanted.
+REM
+REM PublishDir is relative to the project, hence the walk back up to src.
+dotnet publish "%cli_csproj_file%" ^
+	--runtime win-x64 ^
+    --self-contained ^
+    --configuration Release ^
+    -p:PublishDir=..\..\src\bin\publish\installer\ || goto :error
+
+echo.
+echo ################################
 echo Compiling app
 echo ################################
 echo.

@@ -19,6 +19,14 @@
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <RootNamespace>DLSS_Swapper.Cli</RootNamespace>
     <Platforms>x64</Platforms>
+
+    <!--
+      The same four the app declares. Release_Portable is the one that matters:
+      it is what defines PORTABLE in the app project this references, which is
+      what decides where the database is looked for. Without it declared here
+      the portable packaging build has no configuration of that name to ask for.
+    -->
+    <Configurations>Debug;Release;Debug_Portable;Release_Portable</Configurations>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
@@ -36,6 +44,24 @@
 
     <!-- Same duplication as the test project; see the note in its csproj. -->
     <NoWarn>$(NoWarn);CS0436</NoWarn>
+
+    <!--
+      NETSDK1152. Publishing this stages the Windows App SDK's self contained
+      native files twice - once from this project and once from the app project
+      it references, both of them WindowsAppSDKSelfContained - and the sdk
+      refuses to choose between two files claiming the same relative path.
+      The two sets come from the same package version and were compared before
+      this was added: 110 files, all byte identical, none differing. So there is
+      nothing to choose between, and either copy is the same publish.
+
+      The app test project references the app the same way and never hits this,
+      because it only ever builds - this check runs at publish.
+
+      Scoped to this project deliberately, not set in Directory.Build.props: the
+      app's own publish should still fail if it ever stages two genuinely
+      different files under one name.
+    -->
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <ItemGroup>

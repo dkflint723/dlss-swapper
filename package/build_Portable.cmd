@@ -11,6 +11,24 @@ mkdir Output > NUL 2>&1
 
 echo.
 echo ################################
+echo Compiling cli
+echo ################################
+echo.
+
+REM First and into the same folder, for the reason spelled out in
+REM build_Installer.cmd. Built Release_Portable like the app beside it, because
+REM that configuration is what defines PORTABLE in the app project this
+REM references - and that is what decides where the database is looked for. A
+REM Release cli in a portable build would read a different library than the app
+REM it shipped with.
+dotnet publish "%cli_csproj_file%" ^
+	--runtime win-x64 ^
+    --self-contained ^
+    --configuration Release_Portable ^
+    -p:PublishDir=..\..\src\bin\publish\portable\ || goto :error
+
+echo.
+echo ################################
 echo Compiling app
 echo ################################
 echo.
