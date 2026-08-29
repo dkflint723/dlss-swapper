@@ -23,3 +23,7 @@ src/DLSS Swapper.net8.csproj
 # CLI build output
 cli/**/bin/
 cli/**/obj/
+
+# Python bytecode from the icon generator
+__pycache__/
+*.pyc
