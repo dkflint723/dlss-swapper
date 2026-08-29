@@ -16,6 +16,39 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v2.2.3.0 — it can go and look for itself
+
+The library used to be something only the app could add to. Anything driving it could read what the
+app had last seen and act on it, but a game installed five minutes ago was invisible until somebody
+opened the app and let it scan. This closes that.
+
+**The command line can scan Steam**, and writes what it finds into the same library the app loads,
+so a game found that way is a game the app has. Steam and nothing else: every other library scan
+reaches a different launcher's files, and one of them installs copies whose dlls must never be
+swapped at all, so a command that quietly walked all of them would be doing considerably more than
+its name says.
+
+**Games added to Steam by hand are found now**, by the app as well as by the command line. Steam
+never writes an install manifest for one of those, so the scan that reads those manifests had no
+way of seeing them at all - they are read from Steam's own shortcuts file instead. They arrive
+carrying the app id Steam's library page uses, which is what lets anything looking at a game page
+match it to the right game. Their cover art comes from the art Steam is already showing, since a
+shortcut has no store page to fetch one from.
+
+There is a rule about which folders may be scanned, and it is doing real work. A shortcut's folder
+is whatever somebody typed, and the fallback when there is none is the folder of its executable -
+which for a shortcut that launches a script is the Windows system directory, because the executable
+is cmd. Detecting a game's dlls walks its folder and everything below it, so accepting one of those
+would set the app walking the whole of Windows, and finding upscaler dlls in there that belong to no
+game and must not be swapped. Drive roots, the Windows directory, and the folders that hold many
+programs rather than being one are refused outright; anything inside them is fine, because plenty of
+games live under Program Files.
+
+**And the command line reports its own version now.** It had none, so it was built as 1.0.0.0 and
+2.2.2.0 shipped it that way - a 1.0.0.0 executable sitting in the install folder of a 2.2.2.0 app,
+telling anybody who read its file properties something that was never true of any release. The
+consistency tests cover it now, along with the four other places the version is written by hand.
+
 ## v2.2.2.0 — a way in for other things
 
 Nothing moves in the app itself. It gains a second executable, installed beside it, so that things

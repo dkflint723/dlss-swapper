@@ -19,12 +19,12 @@
     <!--
       The app's version, because this is installed beside the app and a person
       reading its file properties is asking which release they have. Without it
-      the sdk defaults to 1.0.0.0, which is what shipped in the first build of
-      2.2.2.0 that packaged this: a 1.0.0.0 executable sitting next to a 2.2.2.0
+      the sdk defaults to 1.0.0.0, which is what the first build of 2.2.2.0 that
+      packaged this carried: a 1.0.0.0 executable sitting next to a 2.2.2.0
       one. VersionConsistencyTests checks this against the app now, the way it
       checks the other four places the version is written by hand.
     -->
-    <Version>2.2.2.0</Version>
+    <Version>2.2.3.0</Version>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <RootNamespace>DLSS_Swapper.Cli</RootNamespace>
