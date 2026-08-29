@@ -16,6 +16,36 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v2.2.2.0 — a way in for other things
+
+Nothing moves in the app itself. It gains a second executable, installed beside it, so that things
+which are not the app can perform a swap without reimplementing what a swap is allowed to do.
+
+**`dlss-swapper-cli.exe` now ships with the app**, in the install folder and in the portable zip.
+It lists what is installed and what each dll could move to, swaps, and restores, answering in JSON
+so a script can read it. It performs no swap of its own: it loads what the app loads and calls the
+same methods the buttons call, so the rules hold without being restated — the files a type owns, the
+transactional write and its rollback, the saved original that is never overwritten, pins, and the
+version ranking FSR breaks if you rank it by file version. A second implementation of those in
+another language would drift, and the way drift shows up is wrong files written into a game folder.
+
+**It is built to be driven rather than watched.** stdout is always one JSON object, failures
+included, so a caller reads one thing and checks `ok` instead of parsing prose out of an exit code;
+diagnostics and stack traces go to stderr and never mix into it. Every reply carries a
+`contractVersion`, and a caller is meant to refuse a version it does not know rather than guess at a
+field that may have moved — the two ship separately and will disagree eventually, and misreading a
+reply ends in a swap nobody asked for.
+
+**And it asks Windows for no console.** A console program started by something that has no console
+of its own has one made for it, which is a terminal appearing on screen for as long as the command
+runs — nothing about the command being run changes that. This is a windows subsystem program
+instead, and attaches to the calling terminal only when run by hand with its output not already
+redirected. That is what makes it usable from inside another application, a Steam client plugin
+being the reason it exists.
+
+The portable zip carries its own copy, built the way the portable app is, so it reads the library
+sitting beside it rather than the one an installed app keeps in AppData.
+
 ## v2.2.1.0 — it keeps what it cannot replace
 
 A new dll type, and two places the app was choosing something other than the truth. The middle one
