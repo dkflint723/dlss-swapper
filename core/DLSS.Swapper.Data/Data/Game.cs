@@ -1081,6 +1081,64 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     }
 
     /// <summary>
+    /// Points a stored cover path at the image cache the app is using now.
+    /// </summary>
+    /// <returns><see langword="true"/> if the stored path changed and the row needs saving.</returns>
+    /// <remarks>
+    /// <para>
+    /// <see cref="CoverImage"/> is stored absolute, so renaming the data folder - which 3.0.0.0 did,
+    /// moving it from "DLSS Swapper" to "Swapshelf" - left every stored path naming a folder that no
+    /// longer exists. The art itself moved with the folder and was never lost; only the note of where
+    /// it lives went stale, and a cover that cannot be found reads as a game with no cover at all.
+    /// </para>
+    /// <para>
+    /// The repair re-derives the path from <see cref="Storage.GetImageCachePath"/> rather than
+    /// rewriting the old folder's name out of the stored string. That costs nothing and covers the
+    /// cases a find-and-replace would not: a later rename, a library copied between machines, and a
+    /// portable build whose cache sits beside the executable.
+    /// </para>
+    /// <para>
+    /// A custom cover wins over a downloaded one, matching <see cref="LoadCoverImageAsync"/>, so a
+    /// repaired row lands on the same file the app would have picked. When neither file is there the
+    /// path is cleared, which is the honest answer and lets the normal fetch run.
+    /// </para>
+    /// </remarks>
+    internal bool RepairCoverImagePath()
+    {
+        var stored = CoverImage;
+
+        if (string.IsNullOrEmpty(stored))
+        {
+            return false;
+        }
+
+        // Already inside the folder in use, so there is nothing to point anywhere else.
+        var imageCache = Storage.GetImageCachePath();
+        if (stored.StartsWith(imageCache, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        string? repaired = null;
+        if (HasUsableCover(ExpectedCustomCoverImage))
+        {
+            repaired = ExpectedCustomCoverImage;
+        }
+        else if (HasUsableCover(ExpectedCoverImage))
+        {
+            repaired = ExpectedCoverImage;
+        }
+
+        if (string.Equals(repaired, stored, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        CoverImage = repaired;
+        return true;
+    }
+
+    /// <summary>
     /// Writes down whether the cover fetch that just ran produced anything.
     /// </summary>
     /// <remarks>
@@ -2251,6 +2309,15 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         // the database, so right now it is the row - and saying so is what lets the save below skip
         // the games this method leaves alone. See MarkAsMatchingDatabase.
         MarkAsMatchingDatabase();
+
+        // After the signature above, deliberately: the repair is a real change to a stored column,
+        // and taking the signature first is what lets the save below notice it. Only a row whose
+        // path actually moved is written, so this costs one comparison per game on every launch
+        // after the one that fixes it.
+        if (RepairCoverImagePath())
+        {
+            await SaveToDatabaseAsync().ConfigureAwait(false);
+        }
 
         // The cover is presentation, not the row. This await was the one shared gate for every
         // library's cache load, so the game list could not appear until every cover had been read -
