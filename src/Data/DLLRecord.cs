@@ -337,7 +337,7 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
                 }
             }
 
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 LocalRecord.IsDownloaded = true;
                 NotifyPropertyChanged(nameof(LocalRecord));
@@ -347,7 +347,7 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
         }
         catch (TaskCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 LocalRecord.IsDownloaded = false;
                 NotifyPropertyChanged(nameof(LocalRecord));
@@ -360,7 +360,7 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
             Logger.Error(err);
 
             Debugger.Break();
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 LocalRecord.IsDownloaded = false;
                 LocalRecord.HasDownloadError = true;
@@ -372,7 +372,7 @@ public class DLLRecord : IComparable<DLLRecord>, INotifyPropertyChanged
         }
         finally
         {
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 LocalRecord.FileDownloader = null;
                 NotifyPropertyChanged(nameof(LocalRecord));

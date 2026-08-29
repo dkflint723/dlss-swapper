@@ -102,63 +102,17 @@ public sealed partial class App : Application
     }
 
 
+    /// <summary>
+    /// The app's client, built the same way anything headless builds one.
+    /// </summary>
+    /// <remarks>
+    /// The body moved to <see cref="Helpers.AppHttpClient"/> so that code reached with no app
+    /// running - the command line, tests - can make the same requests with the same proxy and user
+    /// agent, rather than dereferencing a null App partway through a download.
+    /// </remarks>
     HttpClient GenerateNewHttpClient()
     {
-        // Setup HttpClient.
-        var version = GetVersion();
-        var versionString = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
-
-        var httpClientHandler = new HttpClientHandler()
-        {
-            AutomaticDecompression = DecompressionMethods.All,
-            UseCookies = true,
-            CookieContainer = new CookieContainer(),
-            AllowAutoRedirect = true,
-        };
-
-        Settings.ProxySettings.LoadIfNeeded();
-
-        if (string.IsNullOrWhiteSpace(Settings.ProxySettings.Server) == false)
-        {
-            try
-            {
-                var server = Settings.ProxySettings.Server;
-                if (server.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-                    server.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                {
-                    var proxy = new WebProxy
-                    {
-                        BypassProxyOnLocal = false,
-                        UseDefaultCredentials = false,
-                        Address = new Uri(server),
-                    };
-
-                    if (string.IsNullOrWhiteSpace(Settings.ProxySettings.Username) == false && string.IsNullOrWhiteSpace(Settings.ProxySettings.Password) == false)
-                    {
-                        proxy.Credentials = new NetworkCredential(Settings.ProxySettings.Username, Settings.ProxySettings.Password);
-                    }
-
-                    httpClientHandler.UseProxy = true;
-                    httpClientHandler.Proxy = proxy;
-                }
-                else
-                {
-                    Logger.Error($"Tried to set proxy with server address \"{server}\"");
-                }               
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Unable to set proxy for HttpClient");
-                Logger.Error(ex);
-            }
-        }
-
-        var newHttpClient = new HttpClient(httpClientHandler);
-        newHttpClient.DefaultRequestHeaders.Add("User-Agent", $"dlss-swapper/{versionString}");
-        newHttpClient.Timeout = TimeSpan.FromMinutes(30);
-        newHttpClient.DefaultRequestVersion = new Version(2, 0);
-        newHttpClient.DefaultRequestHeaders.ConnectionClose = true;
-        return newHttpClient;
+        return Helpers.AppHttpClient.Create();
     }
 
 

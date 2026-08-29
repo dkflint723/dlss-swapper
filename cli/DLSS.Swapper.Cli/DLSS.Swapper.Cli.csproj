@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>dlss-swapper-cli</AssemblyName>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <RootNamespace>DLSS_Swapper.Cli</RootNamespace>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+
+    <!--
+      The same WinUI properties the app and the test project carry. This exe never creates a
+      window, but the assembly it references is a WinUI one and its types have to be able to
+      activate - the resource manager most of all, which every translated string goes through.
+    -->
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+
+    <!-- Same duplication as the test project; see the note in its csproj. -->
+    <NoWarn>$(NoWarn);CS0436</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DLSS Swapper.csproj" />
+  </ItemGroup>
+
+  <!--
+    ResourceHelper builds its resource map from a resources.pri beside the running executable, in a
+    static initializer, so without it the first translated string throws rather than coming back
+    untranslated. Same rename the test project does, for the same reason.
+  -->
+  <Target Name="CopyAppPriFile" AfterTargets="AfterBuild">
+    <Copy SourceFiles="$(TargetDir)DLSS Swapper.pri"
+          DestinationFiles="$(TargetDir)resources.pri"
+          Condition="Exists('$(TargetDir)DLSS Swapper.pri')" />
+  </Target>
+
+</Project>

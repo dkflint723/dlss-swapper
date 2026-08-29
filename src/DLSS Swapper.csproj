@@ -403,6 +403,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="DLSS.Swapper.App.Tests" />
+    <InternalsVisibleTo Include="dlss-swapper-cli" />
   </ItemGroup>
 
   <ItemGroup>

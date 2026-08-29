@@ -1,0 +1,392 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+using DLSS_Swapper.Data;
+using DLSS_Swapper.Dlls;
+using DLSS_Swapper.Swapping;
+
+namespace DLSS_Swapper.Cli;
+
+/// <summary>
+/// A headless way in to the same swap the app performs.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Exists so other things - a Steam client plugin, a script, a scheduled job - can swap dlls
+/// without reimplementing any of the rules that decide what a swap is allowed to do. Every one of
+/// them lives behind this: which files a type owns, the transactional write and its rollback, the
+/// per-path saved original that is never overwritten, pins, the version ranking FSR breaks if you
+/// get it wrong. A second implementation of those in another language would drift, and the way it
+/// would show up is wrong files written into game folders.
+/// </para>
+/// <para>
+/// So this process does no swapping of its own. It loads what the app loads, finds what was asked
+/// for, and calls the same UpdateDllAsync and ResetDllAsync the buttons call.
+/// </para>
+/// <para>
+/// Output is always one JSON object on stdout, whatever happened - including failures, which carry
+/// ok:false and a message rather than only an exit code. Callers should read stdout and check "ok".
+/// The exit code agrees with it, for shell use.
+/// </para>
+/// </remarks>
+static class Program
+{
+    /// <summary>
+    /// The shape of the JSON below. Callers should refuse a version they do not know.
+    /// </summary>
+    /// <remarks>
+    /// The Steam plugin that reads this ships separately and updates on its own schedule, so the
+    /// two will be mismatched at some point. Better it says so plainly than misread a field and
+    /// swap something nobody asked for. Bump on any change that removes or repurposes a field.
+    /// </remarks>
+    const int ContractVersion = 1;
+
+    static async Task<int> Main(string[] args)
+    {
+        try
+        {
+            var command = args.Length > 0 ? args[0].ToLowerInvariant() : "help";
+
+            if (command is "help" or "-h" or "--help")
+            {
+                return Write(new { ok = true, contractVersion = ContractVersion, usage = Usage() });
+            }
+
+            if (command is "version" or "--version")
+            {
+                return Write(new { ok = true, contractVersion = ContractVersion });
+            }
+
+            await LoadEverythingAsync();
+
+            return command switch
+            {
+                "list" => ListGames(),
+                "swap" => await SwapAsync(args),
+                "restore" => await RestoreAsync(args),
+                _ => Fail("Unknown command. Run help to see what there is."),
+            };
+        }
+        catch (Exception err)
+        {
+            // Never a stack trace on stdout: the caller is parsing this. The inner messages are
+            // kept though - a type initializer failure says nothing at all without them, and this
+            // is the only channel a headless caller has.
+            var messages = new List<string>();
+            for (var current = err; current is not null; current = current.InnerException)
+            {
+                messages.Add(current.GetType().Name + ": " + current.Message);
+            }
+
+            // The stack goes to stderr, never stdout: stdout is the contract and a caller is
+            // parsing it. Anyone debugging by hand still gets the whole thing.
+            Console.Error.WriteLine(err.ToString());
+
+            return Fail(string.Join(" -> ", messages));
+        }
+    }
+
+    static string[] Usage()
+    {
+        return new[]
+        {
+            "list",
+            "swap --game <id> --type <dlss|dlss_g|dlss_d|dlss_nr|xess|xell|...> --version <version> [--force]",
+            "restore --game <id> [--type <type>]",
+            "version",
+        };
+    }
+
+    /// <summary>
+    /// Brings up exactly what the app brings up before it can swap, minus the window.
+    /// </summary>
+    /// <remarks>
+    /// The same three calls the app makes on startup, in the same order: the database, the
+    /// manifests that say which versions exist, then the games from cache. Cache rather than a
+    /// rescan on purpose - a rescan walks every install folder of every library, which is the app's
+    /// job and not something a caller asking one question should pay for. It also means this
+    /// reports the library as the app last saw it, which is the honest thing for it to report.
+    /// </remarks>
+    static async Task LoadEverythingAsync()
+    {
+        Database.Instance.Init();
+        await DLLManager.Instance.LoadManifestsAsync();
+        await GameManager.Instance.LoadGamesFromCacheAsync();
+    }
+
+    static int ListGames()
+    {
+        var games = GameManager.Instance.GetSynchronisedGamesListCopy()
+            .OrderBy(x => x.Title, StringComparer.CurrentCultureIgnoreCase)
+            .Select(DescribeGame)
+            .ToList();
+
+        return Write(new { ok = true, contractVersion = ContractVersion, games = games });
+    }
+
+    static object DescribeGame(Game game)
+    {
+        var dlls = new List<object>();
+
+        foreach (var definition in DllTypes.All)
+        {
+            var installedAssets = game.GameAssets.Where(x => x.AssetType == definition.AssetType).ToList();
+            if (installedAssets.Count == 0)
+            {
+                // A dll the game does not have is not a row. The app hides these too.
+                continue;
+            }
+
+            var pin = game.DllPinFor(definition.AssetType);
+            var first = installedAssets[0];
+
+            dlls.Add(new
+            {
+                type = definition.ManifestKey,
+                name = DLLManager.Instance.GetAssetTypeName(definition.AssetType),
+                installed = first.DisplayVersion,
+                newest = DLLManager.Instance.GetLatestRecord(definition.AssetType)?.DisplayVersion ?? string.Empty,
+
+                // BehindAssetTypes, not OutdatedAssetTypes: a pinned dll is left out of the second
+                // so batches skip it, but a caller still wants to be told a newer one exists.
+                behind = game.BehindAssetTypes.Contains(definition.AssetType),
+                pinned = pin is not null,
+                pinReason = pin?.Reason ?? string.Empty,
+                savedOriginal = SavedOriginalOf(game, definition, first),
+                locations = installedAssets.Count,
+            });
+        }
+
+        return new
+        {
+            id = game.ID,
+            title = game.Title,
+            library = game.GameLibrary.ToString(),
+            installPath = game.InstallPath,
+            skipUpdates = game.SkipUpdates,
+            dlls = dlls,
+        };
+    }
+
+    /// <summary>What restoring would put back, per path, the way the game page's row reads it.</summary>
+    static string SavedOriginalOf(Game game, DllTypeDefinition definition, GameAsset installed)
+    {
+        var backupPath = DllSwapExecutor.GetBackupPath(installed.Path);
+
+        return game.GameAssets
+            .FirstOrDefault(x => x.AssetType == definition.BackupAssetType
+                && string.Equals(x.Path, backupPath, StringComparison.OrdinalIgnoreCase))
+            ?.DisplayVersion ?? string.Empty;
+    }
+
+    static async Task<int> SwapAsync(string[] args)
+    {
+        var game = FindGame(Option(args, "--game"), out var gameError);
+        if (game is null)
+        {
+            return Fail(gameError);
+        }
+
+        var assetType = ParseAssetType(Option(args, "--type"), out var typeError);
+        if (assetType is null)
+        {
+            return Fail(typeError);
+        }
+
+        // A pin means no batch moves this dll. The picker in the app may, because pressing it is a
+        // deliberate act on one named file in front of you; a call arriving from a script or
+        // another process is not, so it is refused unless the caller says it meant it.
+        if (game.IsDllPinned(assetType.Value) && HasFlag(args, "--force") == false)
+        {
+            var pin = game.DllPinFor(assetType.Value);
+            var because = string.IsNullOrEmpty(pin?.Reason) ? string.Empty : " Reason given: " + pin!.Reason;
+
+            return Fail(DLLManager.Instance.GetAssetTypeName(assetType.Value) + " is pinned in " + game.Title + "."
+                + because + " Pass --force to swap it anyway.");
+        }
+
+        var version = Option(args, "--version");
+        if (string.IsNullOrWhiteSpace(version))
+        {
+            return Fail("--version is required. Run list to see what is installed.");
+        }
+
+        var records = DLLManager.Instance.GetRecords(assetType.Value);
+        var record = records?.FirstOrDefault(x => x.Version == version || x.DisplayVersion == version);
+        if (record is null)
+        {
+            return Fail("No " + DLLManager.Instance.GetAssetTypeName(assetType.Value) + " version " + version
+                + " is known. Versions come from the manifest, or from importing the file in the app.");
+        }
+
+        // Downloading rather than refusing: the caller asked for a version, and "not on this
+        // machine yet" is a step rather than an answer. The app's update run does the same.
+        if (record.LocalRecord?.IsDownloaded == false)
+        {
+            var download = await record.DownloadAsync();
+            if (download.Success == false)
+            {
+                return Fail(download.Cancelled ? "Download cancelled." : "Could not download it: " + download.Message);
+            }
+        }
+
+        var result = await game.UpdateDllAsync(record);
+
+        return Write(new
+        {
+            ok = result.Success,
+            contractVersion = ContractVersion,
+            game = game.Title,
+            dll = DLLManager.Instance.GetAssetTypeName(assetType.Value),
+            version = record.DisplayVersion,
+            message = result.Message,
+            needsAdmin = result.PromptToRelaunchAsAdmin,
+        }, result.Success ? 0 : 1);
+    }
+
+    static async Task<int> RestoreAsync(string[] args)
+    {
+        var game = FindGame(Option(args, "--game"), out var gameError);
+        if (game is null)
+        {
+            return Fail(gameError);
+        }
+
+        // No --type restores everything with a saved original, through the same list the app's
+        // restore reads - so pins are honoured without this having to know about them.
+        var assetTypes = new List<GameAssetType>();
+        var requested = Option(args, "--type");
+        if (string.IsNullOrWhiteSpace(requested))
+        {
+            assetTypes.AddRange(DllUpdateRunner.GetRevertableAssetTypes(game));
+        }
+        else
+        {
+            var assetType = ParseAssetType(requested, out var typeError);
+            if (assetType is null)
+            {
+                return Fail(typeError);
+            }
+
+            assetTypes.Add(assetType.Value);
+        }
+
+        if (assetTypes.Count == 0)
+        {
+            return Fail("There are no saved originals to restore in " + game.Title + ".");
+        }
+
+        var restored = new List<object>();
+        var allSucceeded = true;
+
+        foreach (var assetType in assetTypes)
+        {
+            var result = await game.ResetDllAsync(assetType);
+            allSucceeded = allSucceeded && result.Success;
+
+            restored.Add(new
+            {
+                dll = DLLManager.Instance.GetAssetTypeName(assetType),
+                ok = result.Success,
+                message = result.Message,
+                needsAdmin = result.PromptToRelaunchAsAdmin,
+            });
+        }
+
+        return Write(new
+        {
+            ok = allSucceeded,
+            contractVersion = ContractVersion,
+            game = game.Title,
+            restored = restored,
+        }, allSucceeded ? 0 : 1);
+    }
+
+    static Game? FindGame(string? id, out string error)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            error = "--game is required. Run list to see the ids.";
+            return null;
+        }
+
+        var games = GameManager.Instance.GetSynchronisedGamesListCopy();
+
+        var game = games.FirstOrDefault(x => string.Equals(x.ID, id, StringComparison.OrdinalIgnoreCase));
+        if (game is not null)
+        {
+            error = string.Empty;
+            return game;
+        }
+
+        // Titles are what a person has to hand; ids are what list prints. Both work, but an
+        // ambiguous title is refused rather than guessed at - the next thing this does is write
+        // into a game folder.
+        var byTitle = games.Where(x => string.Equals(x.Title, id, StringComparison.CurrentCultureIgnoreCase)).ToList();
+        if (byTitle.Count == 1)
+        {
+            error = string.Empty;
+            return byTitle[0];
+        }
+
+        error = byTitle.Count > 1
+            ? id + " matches " + byTitle.Count + " games. Use the id from list instead."
+            : "No game with id or title " + id + ".";
+
+        return null;
+    }
+
+    /// <summary>Accepts the manifest key (dlss_g) or the enum name (DLSS_G).</summary>
+    static GameAssetType? ParseAssetType(string? requested, out string error)
+    {
+        var known = string.Join(", ", DllTypes.All.Select(x => x.ManifestKey));
+
+        if (string.IsNullOrWhiteSpace(requested))
+        {
+            error = "--type is required. One of: " + known;
+            return null;
+        }
+
+        var definition = DllTypes.ForManifestKey(requested);
+        if (definition is not null)
+        {
+            error = string.Empty;
+            return definition.AssetType;
+        }
+
+        if (Enum.TryParse<GameAssetType>(requested, true, out var parsed) && DllTypes.ForAssetType(parsed) is not null)
+        {
+            error = string.Empty;
+            return parsed;
+        }
+
+        error = requested + " is not a swappable dll type. One of: " + known;
+        return null;
+    }
+
+    static string? Option(string[] args, string name)
+    {
+        var index = Array.FindIndex(args, x => string.Equals(x, name, StringComparison.OrdinalIgnoreCase));
+        return index >= 0 && index + 1 < args.Length ? args[index + 1] : null;
+    }
+
+    static bool HasFlag(string[] args, string name)
+    {
+        return args.Any(x => string.Equals(x, name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    static int Fail(string message)
+    {
+        return Write(new { ok = false, contractVersion = ContractVersion, error = message }, 1);
+    }
+
+    static int Write(object payload, int exitCode = 0)
+    {
+        var options = new JsonSerializerOptions() { WriteIndented = true };
+        Console.Out.Write(JsonSerializer.Serialize(payload, options));
+        Console.Out.Write(Environment.NewLine);
+        return exitCode;
+    }
+}

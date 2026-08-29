@@ -95,7 +95,7 @@ public partial class FileDownloader : ObservableObject
 
                 if (shouldUpdate)
                 {
-                    App.CurrentApp.RunOnUIThread(() =>
+                    UiThread.Run(() =>
                     {
                         DownloadedBytes = totalBytesRead;
                         Percent = newPercent;
@@ -112,7 +112,7 @@ public partial class FileDownloader : ObservableObject
         {
             Logger.Verbose($"{LogPrefix}Starting download of {_url}");
 
-            using (var response = await App.CurrentApp.HttpClient.GetAsync(_url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
+            using (var response = await Helpers.AppHttpClient.Shared.GetAsync(_url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
             {
                 Logger.Verbose($"{LogPrefix}Status Code: {response.StatusCode}");
                 statusCodeCallback?.Invoke(response.StatusCode);
@@ -149,7 +149,7 @@ public partial class FileDownloader : ObservableObject
 
                 contentLength = response.Content.Headers?.ContentLength ?? -1;
 
-                App.CurrentApp.RunOnUIThread(() =>
+                UiThread.Run(() =>
                 {
                     Percent = 0.0;
                     // Stay on IsIndeterminate if there is no content length
@@ -171,7 +171,7 @@ public partial class FileDownloader : ObservableObject
                 }
             }
 
-            App.CurrentApp.RunOnUIThread(() =>
+            UiThread.Run(() =>
             {
                 Percent = 100.0;
             });

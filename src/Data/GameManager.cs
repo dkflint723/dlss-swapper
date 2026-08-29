@@ -28,8 +28,30 @@ internal partial class GameManager : ObservableObject
     List<Game> _synchronisedAllGames = new List<Game>();
     ObservableCollection<Game> _allGames { get; } = new ObservableCollection<Game>();
 
-    public CollectionViewSource GroupedGameCollectionViewSource { get; init; }
-    public CollectionViewSource UngroupedGameCollectionViewSource { get; init; }
+    /// <summary>
+    /// The collection views the games page binds to, built on first use rather than in the
+    /// constructor.
+    /// </summary>
+    /// <remarks>
+    /// Every one of these is a WinUI type, and constructing one with no XAML framework running
+    /// throws a bare COMException with no message. Because they were built in the constructor, that
+    /// took the whole singleton with it: touching GameManager.Instance at all outside the app - to
+    /// list games from the command line, or to drive a load from a test - failed before a line of
+    /// its own code ran. Nothing about the app changes; it reaches these the moment it shows the
+    /// games page.
+    /// </remarks>
+    CollectionViewSource? _groupedGameCollectionViewSource;
+    CollectionViewSource? _ungroupedGameCollectionViewSource;
+
+    public CollectionViewSource GroupedGameCollectionViewSource
+    {
+        get { EnsureViewsBuilt(); return _groupedGameCollectionViewSource!; }
+    }
+
+    public CollectionViewSource UngroupedGameCollectionViewSource
+    {
+        get { EnsureViewsBuilt(); return _ungroupedGameCollectionViewSource!; }
+    }
 
     [ObservableProperty]
     public partial bool UnknownAssetsFound { get; set; } = false;
@@ -39,11 +61,21 @@ internal partial class GameManager : ObservableObject
     object gameLock = new object();
     object unknownGameAsseetLock = new object();
 
-    GameGroup allGamesGroup;
-    GameGroup favouriteGamesGroup;
+    GameGroup? allGamesGroup;
+    GameGroup? favouriteGamesGroup;
 
-    public AdvancedCollectionView AllGamesView { get; init; }
-    public AdvancedCollectionView FavouriteGamesView { get; init; }
+    AdvancedCollectionView? _allGamesView;
+    AdvancedCollectionView? _favouriteGamesView;
+
+    public AdvancedCollectionView AllGamesView
+    {
+        get { EnsureViewsBuilt(); return _allGamesView!; }
+    }
+
+    public AdvancedCollectionView FavouriteGamesView
+    {
+        get { EnsureViewsBuilt(); return _favouriteGamesView!; }
+    }
 
     Dictionary<GameLibrary, GameGroup> libraryGameGroups = new Dictionary<GameLibrary, GameGroup>();
     Dictionary<GameLibrary, AdvancedCollectionView> libraryGamesView = new Dictionary<GameLibrary, AdvancedCollectionView>();
@@ -165,19 +197,34 @@ internal partial class GameManager : ObservableObject
 
     private GameManager()
     {
+        // Everything else this used to do is in EnsureViewsBuilt. This is the only part that is
+        // safe with no XAML framework running, and it is the only part a headless caller needs.
         _allGames.CollectionChanged += (sender, args) =>
         {
             RaiseGamesChanged();
         };
+    }
 
-        FavouriteGamesView = new AdvancedCollectionView(_allGames, true);
+    bool _viewsBuilt;
+
+    /// <summary>Builds the collection views, once, the first time something asks for one.</summary>
+    void EnsureViewsBuilt()
+    {
+        if (_viewsBuilt)
+        {
+            return;
+        }
+
+        _viewsBuilt = true;
+
+        var FavouriteGamesView = _favouriteGamesView = new AdvancedCollectionView(_allGames, true);
         FavouriteGamesView.Filter = GetPredicateForFavouriteGames(Settings.Instance.HideNonDLSSGames);
         FavouriteGamesView.ObserveFilterProperty(nameof(Game.IsFavourite));
         FavouriteGamesView.ObserveFilterProperty(nameof(Game.HasSwappableItems));
         FavouriteGamesView.ObserveFilterProperty(nameof(Game.IsHidden));
         FavouriteGamesView.SortDescriptions.Add(new SortDescription(nameof(Game.Title), SortDirection.Ascending));
 
-        AllGamesView = new AdvancedCollectionView(_allGames, true);
+        var AllGamesView = _allGamesView = new AdvancedCollectionView(_allGames, true);
         AllGamesView.Filter = GetPredicateForAllGames(Settings.Instance.HideNonDLSSGames);
         AllGamesView.ObserveFilterProperty(nameof(Game.HasSwappableItems));
         AllGamesView.ObserveFilterProperty(nameof(Game.IsHidden));
@@ -217,7 +264,7 @@ internal partial class GameManager : ObservableObject
         }
 
 
-        GroupedGameCollectionViewSource = new CollectionViewSource()
+        _groupedGameCollectionViewSource = new CollectionViewSource()
         {
             IsSourceGrouped = true,
             Source = groupedList,
@@ -225,7 +272,7 @@ internal partial class GameManager : ObservableObject
         };
 
 
-        UngroupedGameCollectionViewSource = new CollectionViewSource()
+        _ungroupedGameCollectionViewSource = new CollectionViewSource()
         {
             IsSourceGrouped = true,
             Source = ungroupedList,

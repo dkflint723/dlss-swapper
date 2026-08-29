@@ -89,7 +89,7 @@ internal static class SteamGridDbClient
         {
             // The cdn is public and takes no key. Sending one would hand it to a host that has no
             // use for it.
-            using var response = await App.CurrentApp.HttpClient.GetAsync(url, timeout.Token).ConfigureAwait(false);
+            using var response = await Helpers.AppHttpClient.Shared.GetAsync(url, timeout.Token).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode == false)
             {
@@ -172,7 +172,7 @@ internal static class SteamGridDbClient
 
         try
         {
-            response = await App.CurrentApp.HttpClient.SendAsync(request, timeout.Token).ConfigureAwait(false);
+            response = await Helpers.AppHttpClient.Shared.SendAsync(request, timeout.Token).ConfigureAwait(false);
             body = await response.Content.ReadAsStringAsync(timeout.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested == false)
