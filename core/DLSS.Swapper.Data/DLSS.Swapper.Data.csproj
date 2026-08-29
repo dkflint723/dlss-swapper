@@ -54,8 +54,8 @@
       command line, and widening every one of them to public to cross an assembly boundary would be
       a worse change than this line. Core does the same for its tests.
     -->
-    <InternalsVisibleTo Include="DLSS Swapper" />
-    <InternalsVisibleTo Include="dlss-swapper-cli" />
+    <InternalsVisibleTo Include="Swapshelf" />
+    <InternalsVisibleTo Include="swapshelf-cli" />
     <InternalsVisibleTo Include="DLSS.Swapper.App.Tests" />
   </ItemGroup>
 

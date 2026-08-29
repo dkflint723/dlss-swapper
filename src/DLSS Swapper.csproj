@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <AssemblyName>DLSS Swapper</AssemblyName>
+    <AssemblyName>Swapshelf</AssemblyName>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <RootNamespace>DLSS_Swapper</RootNamespace>
@@ -32,7 +32,7 @@
       VersionConsistencyTests fails if they drift - they did, and 1.2.6.0 shipped an installer whose
       file properties and uninstall entry both still said 1.2.5.1.
     -->
-    <Version>2.2.3.0</Version>
+    <Version>3.0.0.0</Version>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <PublishSingleFile>false</PublishSingleFile>

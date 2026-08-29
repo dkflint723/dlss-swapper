@@ -13,6 +13,22 @@ namespace DLSS_Swapper;
  */
 static class Storage
 {
+    /// <summary>The folder this app kept its data in before it was called Swapshelf.</summary>
+    internal const string PreviousFolderName = "DLSS Swapper";
+
+    /// <summary>The folder it keeps its data in now.</summary>
+    internal const string CurrentFolderName = "Swapshelf";
+
+    /// <summary>
+    /// What the rename did to the data folder, for whoever can log by the time anyone asks.
+    /// </summary>
+    /// <remarks>
+    /// Not logged from here. This type's static constructor runs the first time anything touches a
+    /// path, which is comfortably before Logger.Init in some entry points - writing from here would
+    /// either lose the line or initialise logging as a side effect of asking where a folder is.
+    /// </remarks>
+    internal static string? MigrationNote { get; private set; }
+
     static string? _storagePath;
 #if   PORTABLE && DEBUG
     //public static string StoragePath => _storagePath ??= Path.Combine(AppContext.BaseDirectory, "StoredData", "DEBUG", Guid.NewGuid().ToString());
@@ -20,11 +36,60 @@ static class Storage
 #elif PORTABLE && !DEBUG
     public static string StoragePath => _storagePath ??= Path.Combine(AppContext.BaseDirectory, "StoredData");
 #elif !PORTABLE && DEBUG
-    //public static string StoragePath => _storagePath ??= Path.Combine(Environment.ExpandEnvironmentVariables("%LOCALAPPDATA%"), "DLSS Swapper", "DEBUG", Guid.NewGuid().ToString());
-    public static string StoragePath => _storagePath ??= Path.Combine(Environment.ExpandEnvironmentVariables("%LOCALAPPDATA%"), "DLSS Swapper", "DEBUG");
+    public static string StoragePath => _storagePath ??= Path.Combine(ResolveRootFolder(LocalAppData), "DEBUG");
 #elif !PORTABLE && !DEBUG
-    public static string StoragePath => _storagePath  ??= Path.Combine(Environment.ExpandEnvironmentVariables("%LOCALAPPDATA%"), "DLSS Swapper");
+    public static string StoragePath => _storagePath ??= ResolveRootFolder(LocalAppData);
 #endif
+
+    static string LocalAppData => Environment.ExpandEnvironmentVariables("%LOCALAPPDATA%");
+
+    /// <summary>
+    /// The data folder, moving it out of the old name the first time it is asked for.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The app was called DLSS Swapper and kept everything under a folder of that name: the
+    /// database with its pins, notes and history, the image cache, and - the part that cannot be
+    /// replaced - the copies of the dlls each game shipped with. Simply pointing at a new folder
+    /// would have left all of it on disk and invisible, which is a data loss in every way that
+    /// matters to somebody who then presses restore.
+    /// </para>
+    /// <para>
+    /// A move rather than a copy: both paths are under LOCALAPPDATA and therefore on one volume, so
+    /// this is a rename of a directory entry rather than 861 MB of copying, and it either happens
+    /// or it does not. There is no half-migrated state to reason about.
+    /// </para>
+    /// <para>
+    /// And if it cannot be done - a file held open, a permission - the old folder is returned and
+    /// used as it was. That is the important half: a failed migration must leave somebody working
+    /// with their own library, not looking at an empty one, and the next launch tries again.
+    /// </para>
+    /// </remarks>
+    internal static string ResolveRootFolder(string localAppData)
+    {
+        var current = Path.Combine(localAppData, CurrentFolderName);
+        var previous = Path.Combine(localAppData, PreviousFolderName);
+
+        // Already moved, or nothing to move. Checking current first matters: once it exists, an old
+        // folder left beside it is somebody else's business, not something to merge.
+        if (Directory.Exists(current) || Directory.Exists(previous) == false)
+        {
+            return current;
+        }
+
+        try
+        {
+            Directory.Move(previous, current);
+            MigrationNote = $"Moved the data folder from '{PreviousFolderName}' to '{CurrentFolderName}'.";
+            return current;
+        }
+        catch (Exception err)
+        {
+            // Kept working from where the data actually is.
+            MigrationNote = $"Could not move the data folder from '{PreviousFolderName}' to '{CurrentFolderName}', so it is still being read from the old one: {err.Message}";
+            return previous;
+        }
+    }
 
     /// <summary>
     /// Points storage at a different folder.
@@ -63,7 +128,9 @@ static class Storage
         var path = Path.Combine(StoragePath, "temp");
         CreateDirectoryIfNotExists(path);
 #else
-        var path = Path.Combine(Path.GetTempPath(), "DLSS Swapper");
+        // No migration for this one: it is scratch space, and anything left in the old folder is
+        // work nobody is waiting on.
+        var path = Path.Combine(Path.GetTempPath(), CurrentFolderName);
         CreateDirectoryIfNotExists(path);
 #endif
         return path;
