@@ -789,13 +789,16 @@ public partial class SettingsPageModel : ObservableObject
     [RelayCommand]
     async Task OpenVersionAsync()
     {
+        // This repository, not the one this was forked from. The tag is stamped from this build, and
+        // upstream has no release under it - so clicking the version in Settings went to somebody
+        // else's releases page and, once a tag was stamped, to a 404.
         if (string.IsNullOrWhiteSpace(BuildInfo.GitTag))
         {
-            await Launcher.LaunchUriAsync(new Uri("https://github.com/beeradmoore/dlss-swapper/releases"));
+            await Launcher.LaunchUriAsync(new Uri("https://github.com/dkflint723/swapshelf/releases"));
         }
         else
         {
-            await Launcher.LaunchUriAsync(new Uri($"https://github.com/beeradmoore/dlss-swapper/releases/tag/{BuildInfo.GitTag}"));
+            await Launcher.LaunchUriAsync(new Uri($"https://github.com/dkflint723/swapshelf/releases/tag/{BuildInfo.GitTag}"));
         }
     }
 

@@ -800,7 +800,7 @@ public partial class GameGridPageModel : ObservableObject
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                await Launcher.LaunchUriAsync(new Uri("https://github.com/beeradmoore/dlss-swapper/issues"));
+                await Launcher.LaunchUriAsync(new Uri("https://github.com/dkflint723/swapshelf/issues"));
             }
         }
     }

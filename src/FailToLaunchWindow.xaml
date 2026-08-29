@@ -20,7 +20,7 @@
         <TextBlock Grid.Row="0" Style="{ThemeResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.TranslationProperties.DlssSwapperFailedToLaunchText, Mode=OneWay}" />
         <TextBlock Grid.Row="1" TextWrapping="Wrap">
             <Run Text="{x:Bind ViewModel.TranslationProperties.PleaseOpenIssuePartial1Text, Mode=OneWay}" />
-            <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper/issues"><Run Text="{x:Bind ViewModel.TranslationProperties.PleaseOpenIssuePartial2Text, Mode=OneWay}" /></Hyperlink>
+            <Hyperlink NavigateUri="https://github.com/dkflint723/swapshelf/issues"><Run Text="{x:Bind ViewModel.TranslationProperties.PleaseOpenIssuePartial2Text, Mode=OneWay}" /></Hyperlink>
             <Run Text="{x:Bind ViewModel.TranslationProperties.PleaseOpenIssuePartial3Text, Mode=OneWay}" />
         </TextBlock>
         <Button Grid.Row="2" Content="{x:Bind ViewModel.TranslationProperties.ClickToCopyDetailsText, Mode=OneWay}" Command="{x:Bind ViewModel.CopyTextCommand}" />

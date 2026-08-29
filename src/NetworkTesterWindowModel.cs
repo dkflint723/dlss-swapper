@@ -862,7 +862,7 @@ public partial class NetworkTesterWindowModel : ObservableObject
     [RelayCommand]
     async Task CreateBugReportAsync()
     {
-        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/beeradmoore/dlss-swapper/issues/new?template=bug_report.yml"));
+        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dkflint723/swapshelf/issues/new?template=bug_report.yml"));
     }
 
     [RelayCommand]
