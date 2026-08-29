@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DLSS_Swapper.Helpers;
+using DLSS_Swapper.Data;
 using DLSS_Swapper.Data.ManuallyAdded;
 using CommunityToolkit.Mvvm.ComponentModel;
 

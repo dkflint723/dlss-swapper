@@ -1,4 +1,5 @@
 using DLSS_Swapper.Data;
+using DLSS_Swapper.Helpers;
 using Microsoft.UI.Xaml;
 
 namespace DLSS_Swapper.Data;
@@ -32,7 +33,7 @@ public static class DllUsageVisibility
     /// </remarks>
     public static string DescribeUsage(GameAssetType assetType, string md5Hash, string version)
     {
-        return DescribeCount(CountGamesUsing(assetType, md5Hash, version, GameManager.Instance.GetSynchronisedGamesListCopy()));
+        return DescribeCount(DllUsage.CountGamesUsing(assetType, md5Hash, version, GameManager.Instance.GetSynchronisedGamesListCopy()));
     }
 
     /// <summary>

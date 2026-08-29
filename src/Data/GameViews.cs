@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Collections;
 using DLSS_Swapper.Interfaces;
 using DLSS_Swapper.Messages;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 
 namespace DLSS_Swapper.Data;
@@ -234,7 +235,7 @@ internal partial class GameViews
             || Games.DllFilter is not null;
         foreach (var gameGroup in libraryGameGroups.Values)
         {
-            gameGroup.Games.IsListNarrowed = IsListNarrowed;
+            gameGroup.IsListNarrowed = Games.IsListNarrowed;
         }
 
         // Refresh all filters.
