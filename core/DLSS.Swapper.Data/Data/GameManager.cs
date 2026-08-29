@@ -15,7 +15,7 @@ using Windows.System;
 
 namespace DLSS_Swapper.Data;
 
-internal partial class GameManager : ObservableObject
+public partial class GameManager : ObservableObject
 {
     public static GameManager Instance { get; private set; } = new GameManager();
 

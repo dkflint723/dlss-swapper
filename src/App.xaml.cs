@@ -10,6 +10,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI;
+using DLSS_Swapper.Data;
 using DLSS_Swapper.Helpers;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -188,7 +189,11 @@ public sealed partial class App : Application, IUiDispatcher
                 if (File.Exists(manifestPath))
                 {
                     var fileInfo = new FileInfo(manifestPath);
-                    using (var staticManifestStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("DLSS_Swapper.Assets.static_manifest.json"))
+                    // Asked of DLSS.Swapper.Data, not of this assembly. The manifest is embedded
+                    // there now, beside the DLLManager that is its main reader - and asking the
+                    // wrong assembly does not fail, it returns null, which would have quietly
+                    // meant "no bundled manifest" on every first run.
+                    using (var staticManifestStream = typeof(DLLManager).Assembly.GetManifestResourceStream("DLSS_Swapper.Assets.static_manifest.json"))
                     {
                         if (staticManifestStream is not null)
                         {

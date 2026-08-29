@@ -22,6 +22,14 @@
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <RootNamespace>DLSS_Swapper</RootNamespace>
     <Platforms>x64</Platforms>
+
+    <!--
+      Stated outright, not just offered. CsWin32 generates code that depends on the pointer size, so
+      it needs to know the architecture - and a build that reaches this through a project reference
+      without naming one (dotnet test does exactly that) would otherwise fail to generate the Win32
+      signatures at all, with errors that read as if the package were missing.
+    -->
+    <PlatformTarget>x64</PlatformTarget>
     <Configurations>Debug;Release;Debug_Portable;Release_Portable</Configurations>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
@@ -30,7 +38,6 @@
 
     <!-- The icon a game is read out of is extracted through a Win32 call, which needs pointers. -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug_Portable'">
@@ -50,6 +57,19 @@
     <InternalsVisibleTo Include="DLSS Swapper" />
     <InternalsVisibleTo Include="dlss-swapper-cli" />
     <InternalsVisibleTo Include="DLSS.Swapper.App.Tests" />
+  </ItemGroup>
+
+  <!--
+    The bundled manifest and the recommendation notes, embedded here because DLLManager reads them
+    with GetExecutingAssembly and DLLManager is compiled into this project now. Left where they are
+    on disk - the release workflow checks src\Assets\static_manifest.json by path - and linked in
+    with an explicit LogicalName so the resource is called what the code already asks for.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\src\Assets\static_manifest.json"
+                      LogicalName="DLSS_Swapper.Assets.static_manifest.json" />
+    <EmbeddedResource Include="..\..\src\Assets\recommended.json"
+                      LogicalName="DLSS_Swapper.Assets.recommended.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -86,61 +106,6 @@
     <PackageReference Include="System.Management" Version="10.0.9" />
     <PackageReference Include="ValveKeyValue" Version="0.70.0.499" />
     <PackageReference Include="YamlDotNet" Version="18.1.0" />
-  </ItemGroup>
-
-  <!--
-    Linked rather than moved, for now. This is how the set of files that actually has to move is
-    being found: the compiler decides, rather than a guess. Once it builds, they move here for real
-    and this turns into an ordinary glob.
-  -->
-  <ItemGroup>
-    <!--
-      The exclusions are the files that genuinely draw: a Visibility, a collection view, a dialog.
-      Six of the ninety five in src/Data, which is the whole reason this split is worth doing.
-    -->
-    <Compile Include="..\..\src\Data\**\*.cs"
-             Exclude="..\..\src\Data\obj\**\*.cs;
-                      ..\..\src\Data\Game.Ui.cs;
-                      ..\..\src\Data\GameViews.cs;
-                      ..\..\src\Data\WindowPositionRect.Ui.cs;
-                      ..\..\src\Data\DllUsage.cs;
-                      ..\..\src\Data\GameFilterTab.cs;
-                      ..\..\src\Data\GameGroup.cs;
-                      ..\..\src\Data\AccentPalette.cs;
-                      ..\..\src\Data\AccentResolver.cs;
-                      ..\..\src\Data\GitHub\GitHubUpdater.cs">
-      <Link>Data\%(RecursiveDir)%(Filename)%(Extension)</Link>
-    </Compile>
-    <Compile Include="..\..\src\Messages\*.cs" Link="Messages\%(Filename)%(Extension)" />
-    <Compile Include="..\..\src\Interfaces\IGameLibrary.cs" Link="Interfaces\IGameLibrary.cs" />
-    <Compile Include="..\..\src\Interfaces\LocalizedViewModelBase.cs" Link="Interfaces\LocalizedViewModelBase.cs" />
-    <Compile Include="..\..\src\Attributes\*.cs" Link="Attributes\%(Filename)%(Extension)" />
-    <Compile Include="..\..\src\Helpers\FSR31\*.cs" Link="Helpers\FSR31\%(Filename)%(Extension)" />
-    <Compile Include="..\..\src\Extensions\*.cs" Link="Extensions\%(Filename)%(Extension)" />
-    <Compile Include="..\..\src\JsonConverters\*.cs" Link="JsonConverters\%(Filename)%(Extension)" />
-    <Compile Include="..\..\src\Database.cs" Link="Database.cs" />
-    <Compile Include="..\..\src\Logger.cs" Link="Logger.cs" />
-    <Compile Include="..\..\src\Storage.cs" Link="Storage.cs" />
-    <Compile Include="..\..\src\UiThread.cs" Link="UiThread.cs" />
-    <Compile Include="..\..\src\Win32.cs" Link="Win32.cs" />
-    <Compile Include="..\..\src\WinTrust.cs" Link="WinTrust.cs" />
-    <Compile Include="..\..\src\Crypt32.cs" Link="Crypt32.cs" />
-    <Compile Include="..\..\src\ProxySettings.cs" Link="ProxySettings.cs" />
-    <Compile Include="..\..\src\BuildInfo.cs" Link="BuildInfo.cs" />
-    <Compile Include="..\..\src\SourceGenerationContext.cs" Link="SourceGenerationContext.cs" />
-    <Compile Include="..\..\src\LoadingMessage.cs" Link="LoadingMessage.cs" />
-    <Compile Include="..\..\src\Settings.cs" Link="Settings.cs" />
-    <Compile Include="..\..\src\Helpers\AppHttpClient.cs" Link="Helpers\AppHttpClient.cs" />
-    <Compile Include="..\..\src\Helpers\CommonHelpers.cs" Link="Helpers\CommonHelpers.cs" />
-    <Compile Include="..\..\src\Helpers\DLSSSettingsManager.cs" Link="Helpers\DLSSSettingsManager.cs" />
-    <Compile Include="..\..\src\Helpers\FileDownloader.cs" Link="Helpers\FileDownloader.cs" />
-    <Compile Include="..\..\src\Helpers\PathHelpers.cs" Link="Helpers\PathHelpers.cs" />
-    <Compile Include="..\..\src\Helpers\LanguageManager.cs" Link="Helpers\LanguageManager.cs" />
-    <Compile Include="..\..\src\Helpers\ResourceHelper.cs" Link="Helpers\ResourceHelper.cs" />
-    <Compile Include="..\..\src\Language\TranslationRow.cs" Link="Language\TranslationRow.cs" />
-    <Compile Include="..\..\src\Helpers\StaticContext.cs" Link="Helpers\StaticContext.cs" />
-    <Compile Include="..\..\src\Helpers\SystemDetails.cs" Link="Helpers\SystemDetails.cs" />
-    <Compile Include="..\..\src\Collections\RefreshableObservableCollection.cs" Link="Collections\RefreshableObservableCollection.cs" />
   </ItemGroup>
 
 </Project>
