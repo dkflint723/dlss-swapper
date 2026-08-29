@@ -20,12 +20,6 @@ using Windows.System;
 
 namespace DLSS_Swapper.Pages;
 
-public enum GameGridViewType
-{
-    GridView,
-    ListView,
-}
-
 public partial class GameGridPageModel : ObservableObject
 {
     GameGridPage gameGridPage;
@@ -338,7 +332,7 @@ public partial class GameGridPageModel : ObservableObject
         //
         // Clearing still works: it goes through the box, which passes an empty string rather than
         // null. GameGridPage.ClearSearchBox is the one route for that, for this reason.
-        CurrentCollectionView = GameManager.Instance.GetGameCollection(searchText ?? GameManager.Instance.SearchText);
+        CurrentCollectionView = GameViews.Instance.GetGameCollection(searchText ?? GameManager.Instance.SearchText);
 
         // After the collection, which is what records the search text. Both the tab counts and the
         // empty state read it from there rather than from a copy kept here - and both are done here

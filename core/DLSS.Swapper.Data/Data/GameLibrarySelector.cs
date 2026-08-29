@@ -5,7 +5,7 @@ using DLSS_Swapper.Interfaces;
 
 namespace DLSS_Swapper.Data;
 
-internal class GameLibrarySelector : INotifyPropertyChanged
+public class GameLibrarySelector : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 

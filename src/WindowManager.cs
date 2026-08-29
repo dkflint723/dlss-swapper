@@ -39,7 +39,7 @@ public class WindowManager
         window.Activate();
         _windows.Add(window);
         // TOOD: This will update colours on all windows which is not ideal.
-        UpdateColors(Settings.Instance.AppTheme);
+        UpdateColors((ElementTheme)Settings.Instance.AppTheme);
     }
 
     void Window_Closed(object sender, WindowEventArgs args)

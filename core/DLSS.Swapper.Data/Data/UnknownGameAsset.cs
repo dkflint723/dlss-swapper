@@ -2,7 +2,7 @@ using DLSS_Swapper.Interfaces;
 
 namespace DLSS_Swapper.Data;
 
-internal class UnknownGameAsset
+public class UnknownGameAsset
 {
     public GameLibrary GameLibrary { get; init; }
     public string GameTitle { get; init; }

@@ -1,0 +1,111 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The app's data layer, without the app.
+
+    Everything here used to live in src/ and be compiled into the WinUI executable, which meant the
+    command line had to reference that executable to reach a Game or a swap - and so dragged in the
+    entire Windows App SDK behind it. That is 154 MB of WinUI, the WinRT projection, onnxruntime and
+    DirectML for a program that opens no window and uses none of them.
+
+    So the headless half lives here instead. DLSS.Swapper.Core stays as it was: platform neutral,
+    net10.0, with its own tests. This sits between the two - it needs Windows because it reads the
+    registry and talks to NvAPI, but it needs nothing that draws.
+
+    The namespaces are unchanged (DLSS_Swapper.*), because they were never UI namespaces. Nothing
+    that moved here needed its usings rewritten.
+  -->
+
+  <PropertyGroup>
+    <!-- Windows, not neutral: the registry, NvAPI and the Win32 signature checks all need it. -->
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <RootNamespace>DLSS_Swapper</RootNamespace>
+    <Platforms>x64</Platforms>
+
+    <!--
+      Stated outright, not just offered. CsWin32 generates code that depends on the pointer size, so
+      it needs to know the architecture - and a build that reaches this through a project reference
+      without naming one (dotnet test does exactly that) would otherwise fail to generate the Win32
+      signatures at all, with errors that read as if the package were missing.
+    -->
+    <PlatformTarget>x64</PlatformTarget>
+    <Configurations>Debug;Release;Debug_Portable;Release_Portable</Configurations>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+
+    <!-- The icon a game is read out of is extracted through a Win32 call, which needs pointers. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_Portable'">
+    <DefineConstants>$(DefineConstants);DEBUG;PORTABLE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release_Portable'">
+    <DefineConstants>$(DefineConstants);RELEASE;PORTABLE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      internal stays internal. Hundreds of types here are internal and used by the app and the
+      command line, and widening every one of them to public to cross an assembly boundary would be
+      a worse change than this line. Core does the same for its tests.
+    -->
+    <InternalsVisibleTo Include="DLSS Swapper" />
+    <InternalsVisibleTo Include="dlss-swapper-cli" />
+    <InternalsVisibleTo Include="DLSS.Swapper.App.Tests" />
+  </ItemGroup>
+
+  <!--
+    The bundled manifest and the recommendation notes, embedded here because DLLManager reads them
+    with GetExecutingAssembly and DLLManager is compiled into this project now. Left where they are
+    on disk - the release workflow checks src\Assets\static_manifest.json by path - and linked in
+    with an explicit LogicalName so the resource is called what the code already asks for.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\src\Assets\static_manifest.json"
+                      LogicalName="DLSS_Swapper.Assets.static_manifest.json" />
+    <EmbeddedResource Include="..\..\src\Assets\recommended.json"
+                      LogicalName="DLSS_Swapper.Assets.recommended.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DLSS.Swapper.Core\DLSS.Swapper.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AsyncAwaitBestPractices" Version="10.0.0" />
+    <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="10.0.0" />
+    <PackageReference Include="ByteSize" Version="2.1.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <PackageReference Include="FuzzySharp" Version="2.0.2" />
+    <PackageReference Include="Google.Protobuf" Version="3.35.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
+
+    <!--
+      A source generator, so it adds nothing to what ships - it writes the three Win32 signatures
+      named in NativeMethods.txt, which is how an EA game's icon is read off its executable.
+    -->
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.298">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="NvAPIWrapper.Net" Version="0.8.1.101" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+    <PackageReference Include="SourceGear.sqlite3" Version="3.50.4.5" />
+    <PackageReference Include="sqlite-net-e" Version="1.11.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.9" />
+    <PackageReference Include="System.Management" Version="10.0.9" />
+    <PackageReference Include="ValveKeyValue" Version="0.70.0.499" />
+    <PackageReference Include="YamlDotNet" Version="18.1.0" />
+  </ItemGroup>
+
+</Project>

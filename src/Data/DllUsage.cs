@@ -24,32 +24,7 @@ public static class DllUsage
     /// in the manifest at all and only its file version can be compared.
     /// </remarks>
     public static bool IsUsedBy(GameAssetType assetType, string md5Hash, string version, Game game)
-    {
-        foreach (var gameAsset in game.GameAssets)
-        {
-            if (gameAsset.AssetType != assetType)
-            {
-                continue;
-            }
-
-            if (string.IsNullOrEmpty(md5Hash) == false && string.IsNullOrEmpty(gameAsset.Hash) == false)
-            {
-                if (string.Equals(gameAsset.Hash, md5Hash, System.StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-
-                continue;
-            }
-
-            if (string.IsNullOrEmpty(version) == false && gameAsset.Version == version)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+        => InstalledDllMatch.IsUsedBy(assetType, md5Hash, version, game);
 
     public static int CountGamesUsing(GameAssetType assetType, string md5Hash, string version, IEnumerable<Game> games)
     {

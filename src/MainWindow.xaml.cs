@@ -43,7 +43,7 @@ public sealed partial class MainWindow : Window
             {
                 AppWindow.MoveAndResize(lastWindowSizeAndPosition.GetRectInt32());
             }
-            if (lastWindowSizeAndPosition.State == OverlappedPresenterState.Maximized)
+            if (lastWindowSizeAndPosition.State == WindowState.Maximized)
             {
                 overlappedPresenter.Maximize();
             }
@@ -74,14 +74,14 @@ public sealed partial class MainWindow : Window
                 var currentState = overlappedPresenter.State;
                 var isTransitioningToMaximized =
                     currentState == OverlappedPresenterState.Maximized &&
-                    _trackedWindow.State != OverlappedPresenterState.Maximized;
+                    _trackedWindow.State != WindowState.Maximized;
 
                 if (isTransitioningToMaximized == false && currentState != OverlappedPresenterState.Maximized)
                 {
                     _trackedWindow.UpdateFromAppWindow(AppWindow);
                 }
 
-                _trackedWindow.State = overlappedPresenter.State;
+                _trackedWindow.State = (WindowState)overlappedPresenter.State;
             }
         };
 

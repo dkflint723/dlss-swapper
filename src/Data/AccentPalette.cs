@@ -88,7 +88,7 @@ public static class AccentPalette
         },
     ];
 
-    public const int DefaultIndex = 0;
+    public const int DefaultIndex = Settings.DefaultAccentPreset;
 
     /// <summary>
     /// The preset at an index, falling back to the default.

@@ -143,13 +143,13 @@
   <ItemGroup>
     <EmbeddedResource Include="Acknowledgements\**\notes.md" />
     <EmbeddedResource Include="Acknowledgements\**\license.txt" />
-    <EmbeddedResource Include="Assets\static_manifest.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\recommended.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
+
+  <!--
+    The manifest and the recommendations are embedded in DLSS.Swapper.Data instead, because
+    DLLManager reads them with GetExecutingAssembly and that is the assembly it is compiled into
+    now. Embedding them here as well would be two copies of half a megabyte that must not disagree.
+  -->
 
 
 
@@ -399,6 +399,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\core\DLSS.Swapper.Core\DLSS.Swapper.Core.csproj" />
+    <ProjectReference Include="..\core\DLSS.Swapper.Data\DLSS.Swapper.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
