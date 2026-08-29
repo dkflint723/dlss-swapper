@@ -16,6 +16,22 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v3.0.2.0 — bug reports come here
+
+Four links sent people to the original project's issue tracker to report things that only happen in
+this build: the window shown when the app fails to launch, the network tester's report button, the
+dialog after a manual add fails, and the version in Settings.
+
+That last one is the one worth naming. Clicking the version opens the release notes for the tag this
+build was stamped with — against a repository that has no release under it, so it was a 404 by
+construction from the moment a tag existed, and somebody else's releases page for anyone building
+without one. Its sibling a few lines away had already been pointed here, so it was an oversight
+rather than a decision.
+
+Links that belong to the original still go there: the wiki pages this app sends you to for help, the
+manifest builder where newly discovered dlls are reported — that manifest is theirs and this app
+reads it — and the attribution in About.
+
 ## v3.0.1.0 — the name in the places you actually read it
 
 3.0.0.0 renamed the app, the installer, the folders and the executables, and left the name it shows
