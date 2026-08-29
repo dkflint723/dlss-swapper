@@ -12,6 +12,22 @@ namespace DLSS_Swapper.Helpers;
 
 internal class SystemDetails
 {
+    /// <summary>
+    /// This build's version, without asking the application for it.
+    /// </summary>
+    /// <remarks>
+    /// The app used to be asked, which made a diagnostics dump impossible to produce from anything
+    /// that is not the app - the command line included. The number is stamped on the assembly
+    /// either way, and both are built from the same version in the csproj.
+    /// </remarks>
+    static string VersionString()
+    {
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        return version is null
+            ? "unknown"
+            : $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+    }
+
     public string GetSystemData()
     {
         var stringBuilder = new StringBuilder();
@@ -21,7 +37,7 @@ internal class SystemDetails
             var currentAssembly = Assembly.GetExecutingAssembly();
 
 
-            stringBuilder.AppendLine(CultureInfo.InvariantCulture, $"DLSS Swapper: {App.CurrentApp.GetVersionString()}");
+            stringBuilder.AppendLine(CultureInfo.InvariantCulture, $"DLSS Swapper: {VersionString()}");
 #if PORTABLE
             stringBuilder.AppendLine("Portable: true");
 #else

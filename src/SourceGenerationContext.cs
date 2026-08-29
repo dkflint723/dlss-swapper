@@ -4,7 +4,6 @@ using DLSS_Swapper.Data.BattleNet;
 using DLSS_Swapper.Data.DLSS;
 using DLSS_Swapper.Data.EAApp;
 using DLSS_Swapper.Data.Steam.SteamAPI;
-using Microsoft.UI.Windowing;
 
 namespace DLSS_Swapper;
 
@@ -22,7 +21,7 @@ namespace DLSS_Swapper;
 [JsonSerializable(typeof(Data.DLLRecord))]
 [JsonSerializable(typeof(Settings))]
 [JsonSerializable(typeof(Data.WindowPositionRect))]
-[JsonSerializable(typeof(OverlappedPresenterState))]
+[JsonSerializable(typeof(Data.WindowState))]
 [JsonSerializable(typeof(Data.HashedKnownDLL))]
 [JsonSerializable(typeof(Data.GameLibrarySettings))]
 [JsonSerializable(typeof(Dictionary<string, string>))]

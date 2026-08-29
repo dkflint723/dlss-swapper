@@ -50,6 +50,11 @@ public sealed partial class GameGridPage : Page
         ViewModel = new GameGridPageModel(this);
         DataContext = ViewModel;
 
+        // The library asks for a game to be brought into view after adding one; this is the page
+        // that can do it. Registered here rather than reached through the window, because the
+        // library is compiled without a window now.
+        GameManager.ScrollToGameRequested = ScrollToGame;
+
         // The preview sheet is a modal drawn inside the page rather than a dialog, so nothing gives
         // it a focus scope for free. See UpdatePreviewOpened.
         ViewModel.PropertyChanged += ViewModel_PropertyChanged;

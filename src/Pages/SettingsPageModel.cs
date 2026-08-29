@@ -311,9 +311,9 @@ public partial class SettingsPageModel : ObservableObject
         SelectedLanguage = Languages.FirstOrDefault(x => x.Key == Settings.Instance.Language);
 
         _dlssSettingsManager = new DLSSSettingsManager();
-        LightThemeSelected = Settings.Instance.AppTheme == ElementTheme.Light;
-        DarkThemeSelected = Settings.Instance.AppTheme == ElementTheme.Dark;
-        DefaultThemeSelected = Settings.Instance.AppTheme == ElementTheme.Default;
+        LightThemeSelected = Settings.Instance.AppTheme == AppThemePreference.Light;
+        DarkThemeSelected = Settings.Instance.AppTheme == AppThemePreference.Dark;
+        DefaultThemeSelected = Settings.Instance.AppTheme == AppThemePreference.Default;
 
         var dlssShowOnScreenIndicatorIndicator = _dlssSettingsManager.GetShowDlssIndicator();
         SelectedDlssOnScreenIndicator = DLSSOnScreenIndicatorOptions.FirstOrDefault(x => x.Value == dlssShowOnScreenIndicatorIndicator) ?? DLSSOnScreenIndicatorOptions[0];
@@ -421,7 +421,7 @@ public partial class SettingsPageModel : ObservableObject
         {
             if (LightThemeSelected == true)
             {
-                Settings.Instance.AppTheme = ElementTheme.Light;
+                Settings.Instance.AppTheme = AppThemePreference.Light;
                 ((App)Application.Current).WindowManager.UpdateColors(ElementTheme.Light);
 
                 // Each preset is a different colour per theme, so the swatches are wrong
@@ -433,7 +433,7 @@ public partial class SettingsPageModel : ObservableObject
         {
             if (DarkThemeSelected == true)
             {
-                Settings.Instance.AppTheme = ElementTheme.Dark;
+                Settings.Instance.AppTheme = AppThemePreference.Dark;
                 ((App)Application.Current).WindowManager.UpdateColors(ElementTheme.Dark);
 
                 // Each preset is a different colour per theme, so the swatches are wrong
@@ -445,7 +445,7 @@ public partial class SettingsPageModel : ObservableObject
         {
             if (DefaultThemeSelected == true)
             {
-                Settings.Instance.AppTheme = ElementTheme.Default;
+                Settings.Instance.AppTheme = AppThemePreference.Default;
                 ((App)Application.Current).WindowManager.UpdateColors(ElementTheme.Default);
 
                 // Each preset is a different colour per theme, so the swatches are wrong

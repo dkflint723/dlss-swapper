@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Interfaces;
-using DLSS_Swapper.Pages;
-using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,8 +107,8 @@ public class Settings
         }
     }
 
-    ElementTheme _appTheme = ElementTheme.Default;
-    public ElementTheme AppTheme
+    AppThemePreference _appTheme = AppThemePreference.Default;
+    public AppThemePreference AppTheme
     {
         get { return _appTheme; }
         set
@@ -126,7 +124,26 @@ public class Settings
         }
     }
 
-    int _accentPreset = AccentPalette.DefaultIndex;
+    /// <summary>
+    /// The accent this settings file starts on, which is an index into AccentPalette.All.
+    /// </summary>
+    /// <remarks>
+    /// Declared here rather than taken from AccentPalette, because the palette is colours and lives
+    /// in the app while this file is read with no UI in front of it. AccentPalette.DefaultIndex
+    /// forwards to this, so there is still one number.
+    /// </remarks>
+    /// <summary>
+    /// Raised when an accent setting changes, so the app can repaint. Null when there is no app.
+    /// </summary>
+    /// <remarks>
+    /// The settings file is read by things that draw nothing, so it cannot call the accent manager
+    /// directly - that lives in the app, with the colours.
+    /// </remarks>
+    internal static Action? AccentChanged { get; set; }
+
+    internal const int DefaultAccentPreset = 0;
+
+    int _accentPreset = DefaultAccentPreset;
     /// <summary>Index into AccentPalette.All. Out of range values fall back to the default.</summary>
     public int AccentPreset
     {
@@ -140,7 +157,7 @@ public class Settings
                 {
                     SaveJson();
                 }
-                AccentManager.Apply();
+                AccentChanged?.Invoke();
             }
         }
     }
@@ -159,7 +176,7 @@ public class Settings
                 {
                     SaveJson();
                 }
-                AccentManager.Apply();
+                AccentChanged?.Invoke();
             }
         }
     }

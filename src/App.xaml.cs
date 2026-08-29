@@ -19,7 +19,7 @@ namespace DLSS_Swapper;
 /// <summary>
 /// Provides application-specific behavior to supplement the default Application class.
 /// </summary>
-public sealed partial class App : Application
+public sealed partial class App : Application, IUiDispatcher
 {
     ElementTheme _globalElementTheme;
 
@@ -56,6 +56,27 @@ public sealed partial class App : Application
     /// </summary>
     public App()
     {
+        // Before anything else that might marshal: the data layer routes its UI work through
+        // UiThread, which runs inline until something is here to hand it to.
+        UiThread.Dispatcher = this;
+
+        // The loading screen, for the manifest migration that reports into it. Unset outside the
+        // app, where writing to it should do nothing rather than throw.
+        Settings.AccentChanged = AccentManager.Apply;
+
+        // Read each time: the client is replaced whenever the proxy settings change.
+        Helpers.AppHttpClient.AppClient = () => CurrentApp?.HttpClient;
+
+        LoadingMessage.Read = () => CurrentApp?.MainWindow?.ViewModel?.LoadingMessage;
+        LoadingMessage.Write = (message) =>
+        {
+            var viewModel = CurrentApp?.MainWindow?.ViewModel;
+            if (viewModel is not null)
+            {
+                UiThread.Run(() => viewModel.LoadingMessage = message);
+            }
+        };
+
         Logger.Init();
 
         HttpClient = GenerateNewHttpClient();
@@ -91,7 +112,7 @@ public sealed partial class App : Application
 
         UnhandledException += App_UnhandledException;
 
-        GlobalElementTheme = Settings.Instance.AppTheme;
+        GlobalElementTheme = (ElementTheme)Settings.Instance.AppTheme;
 
         this.InitializeComponent();
     }
@@ -408,6 +429,19 @@ public sealed partial class App : Application
         }
         return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
     }
+
+    bool IUiDispatcher.Run(Action action) => RunOnUIThread(action);
+
+    bool IUiDispatcher.TryEnqueue(Action action)
+    {
+        var dispatcher = MainWindow?.DispatcherQueue;
+
+        // Null before the window exists, which the caller treats the same as a queue that refused
+        // the work: it does the work itself instead.
+        return dispatcher is not null && dispatcher.TryEnqueue(() => action());
+    }
+
+    Task IUiDispatcher.RunAsync(Func<Task> function) => RunOnUIThreadAsync(function);
 
     public bool RunOnUIThread(Action action)
     {

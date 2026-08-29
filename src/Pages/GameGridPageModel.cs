@@ -20,12 +20,6 @@ using Windows.System;
 
 namespace DLSS_Swapper.Pages;
 
-public enum GameGridViewType
-{
-    GridView,
-    ListView,
-}
-
 public partial class GameGridPageModel : ObservableObject
 {
     GameGridPage gameGridPage;

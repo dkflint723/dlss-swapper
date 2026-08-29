@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using DLSS_Swapper.Dlls;
 using DLSS_Swapper.Helpers;
-using Microsoft.UI.Xaml;
 
 namespace DLSS_Swapper.Data;
 
@@ -13,7 +12,7 @@ namespace DLSS_Swapper.Data;
 /// file; this describes what would break if it went, which is the only thing anyone needs before
 /// deleting one.
 /// </remarks>
-public static class DllUsage
+public static partial class DllUsage
 {
     /// <summary>
     /// Whether a game currently has this exact dll installed.
@@ -84,44 +83,4 @@ public static class DllUsage
     /// ignores <c>Converter</c> entirely and fails the build rather than at runtime. Both sit here
     /// beside the rule they ask, so neither can drift from the count the row is showing.
     /// </remarks>
-    public static Visibility UsedVisibility(GameAssetType assetType, string md5Hash, string version)
-    {
-        return IsUsedByAny(assetType, md5Hash, version) ? Visibility.Visible : Visibility.Collapsed;
-    }
-
-    public static Visibility NotUsedVisibility(GameAssetType assetType, string md5Hash, string version)
-    {
-        return IsUsedByAny(assetType, md5Hash, version) ? Visibility.Collapsed : Visibility.Visible;
-    }
-
-    /// <summary>
-    /// Reads as "14 games", "1 game", or "Not used".
-    /// </summary>
-    /// <remarks>
-    /// "Not used" rather than "0 games", because zero is the answer that matters and a bare zero
-    /// reads like a value that failed to load.
-    /// </remarks>
-    public static string DescribeUsage(GameAssetType assetType, string md5Hash, string version)
-    {
-        return DescribeCount(CountGamesUsing(assetType, md5Hash, version, GameManager.Instance.GetSynchronisedGamesListCopy()));
-    }
-
-    /// <summary>
-    /// The words for a count.
-    /// </summary>
-    /// <remarks>
-    /// Separate from the count itself because the library lives on a singleton that cannot be built
-    /// outside the app, and the wording is the part worth pinning down.
-    /// </remarks>
-    public static string DescribeCount(int count)
-    {
-        if (count == 0)
-        {
-            return ResourceHelper.GetString("Upscalers_NotUsed");
-        }
-
-        return count == 1
-            ? ResourceHelper.GetString("Upscalers_UsedByOneGame")
-            : ResourceHelper.GetFormattedResourceTemplate("Upscalers_UsedByGamesTemplate", count);
-    }
 }

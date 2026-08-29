@@ -5,9 +5,7 @@ using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
 using DLSS_Swapper.Swapping;
-using DLSS_Swapper.UserControls;
 using DLSS_Swapper.Versioning;
-using Microsoft.UI.Xaml.Controls;
 using NvAPIWrapper.DRS;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -1880,7 +1878,7 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         // Runs inline when this is already the UI thread, so nothing is deferred that need not be.
-        if (App.CurrentApp?.RunOnUIThread(() => base.OnPropertyChanged(e)) != true)
+        if (UiThread.Run(() => base.OnPropertyChanged(e)) != true)
         {
             // No window to marshal through - during startup, or on the way out. Raising it here is
             // no worse than the throw, and the bindings that would object do not exist yet.
@@ -2016,83 +2014,6 @@ public abstract partial class Game : ObservableObject, IComparable<Game>, IEquat
         catch (Exception err)
         {
             Logger.Error(err);
-        }
-    }
-
-    public async Task PromptToRemoveCustomCover()
-    {
-        var dialog = new EasyContentDialog(App.CurrentApp.MainWindow.Content.XamlRoot)
-        {
-            Title = ResourceHelper.GetString("Game_CustomCoverRemove"),
-            PrimaryButtonText = ResourceHelper.GetString("General_Remove"),
-            CloseButtonText = ResourceHelper.GetString("General_Cancel"),
-            DefaultButton = ContentDialogButton.Primary,
-            Content = ResourceHelper.GetString("Game_AreYouSureRemoveCustomCover"),
-        };
-        var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            CoverImage = null;
-
-            if (File.Exists(ExpectedCustomCoverImage))
-            {
-                File.Delete(ExpectedCustomCoverImage);
-            }
-
-            if (this.GameLibrary == GameLibrary.ManuallyAdded)
-            {
-                await SaveToDatabaseAsync();
-            }
-
-            // Will load default or attempt to fetch fresh.
-            await LoadCoverImageAsync();
-        }
-    }
-
-    /// <summary>
-    /// Asks for an image file and makes it this game's cover.
-    /// </summary>
-    /// <returns>
-    /// Whether a cover was actually written. False covers both a cancelled file picker and a file
-    /// that could not be read, and in either case the cover already in place is untouched.
-    /// </returns>
-    /// <remarks>
-    /// The result exists for the cover art picker, which offers this as the way out when a game
-    /// cannot be found online: it has to leave its search on screen when the file picker was
-    /// cancelled, and close when it was not. Comparing CoverImage either side cannot answer that,
-    /// because a game that already had a custom cover has the same path before and after.
-    /// </remarks>
-    public bool PromptToBrowseCustomCover()
-    {
-        try
-        {
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentApp.MainWindow);
-
-            var fileFilters = new List<FileSystemHelper.FileFilter>()
-            {
-                new FileSystemHelper.FileFilter("Image files", "*.jpg; *.jpeg; *.png; *.webp"),
-            };
-
-            var coverImageFile = FileSystemHelper.OpenFile(hWnd, fileFilters, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
-
-            //                    ViewMode = PickerViewMode.Thumbnail,
-
-
-            if (string.IsNullOrWhiteSpace(coverImageFile))
-            {
-                return false;
-            }
-
-            // The real answer, not an assumption that opening the picker worked. The doc above
-            // already promised false for a file that could not be read; this is what makes that
-            // true.
-            return AddCustomCover(coverImageFile);
-        }
-        catch (Exception err)
-        {
-            Logger.Error(err);
-
-            return false;
         }
     }
 

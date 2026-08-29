@@ -108,7 +108,7 @@ internal static class AccentManager
 
     static bool IsDarkTheme()
     {
-        var appTheme = Settings.Instance.AppTheme;
+        var appTheme = (ElementTheme)Settings.Instance.AppTheme;
         if (appTheme == ElementTheme.Light)
         {
             return false;

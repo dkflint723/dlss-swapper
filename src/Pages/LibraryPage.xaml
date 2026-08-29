@@ -321,7 +321,7 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Style="{StaticResource TextBlockButtonStyle}"
-                            Visibility="{x:Bind data:DllUsage.UsedVisibility(AssetType, MD5Hash, Version)}"
+                            Visibility="{x:Bind data:DllUsageVisibility.UsedVisibility(AssetType, MD5Hash, Version)}"
                             Command="{Binding ElementName=thisPage, Path=ViewModel.ShowGamesUsingCommand}"
                             CommandParameter="{x:Bind}"
                             ToolTipService.ToolTip="{x:Bind TranslationProperties.ShowGamesUsingText, Mode=OneWay}">
@@ -345,7 +345,7 @@
                             FontSize="12"
                             VerticalAlignment="Center"
                             TextWrapping="NoWrap"
-                            Visibility="{x:Bind data:DllUsage.NotUsedVisibility(AssetType, MD5Hash, Version)}"
+                            Visibility="{x:Bind data:DllUsageVisibility.NotUsedVisibility(AssetType, MD5Hash, Version)}"
                             Foreground="{ThemeResource DsTextTertiaryBrush}" />
 
                         <!--
@@ -440,7 +440,7 @@
                                     -->
                                     <MenuFlyoutItem
                                         Text="{x:Bind TranslationProperties.ShowGamesUsingText, Mode=OneWay}"
-                                        Visibility="{x:Bind data:DllUsage.UsedVisibility(AssetType, MD5Hash, Version)}"
+                                        Visibility="{x:Bind data:DllUsageVisibility.UsedVisibility(AssetType, MD5Hash, Version)}"
                                         Command="{Binding ElementName=thisPage, Path=ViewModel.ShowGamesUsingCommand}"
                                         CommandParameter="{x:Bind}">
                                         <MenuFlyoutItem.Icon>

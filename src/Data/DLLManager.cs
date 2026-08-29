@@ -282,18 +282,17 @@ internal class DLLManager
     /// </remarks>
     static string? GetLoadingMessage()
     {
-        return App.CurrentApp?.MainWindow?.ViewModel?.LoadingMessage;
+        return LoadingMessage.Read?.Invoke();
     }
 
     static void SetLoadingMessage(string? message)
     {
-        var viewModel = App.CurrentApp?.MainWindow?.ViewModel;
-        if (viewModel is null || message is null)
+        if (message is null)
         {
             return;
         }
 
-        UiThread.Run(() => viewModel.LoadingMessage = message);
+        LoadingMessage.Write?.Invoke(message);
     }
 
     async Task ProcessManifestsAsync()

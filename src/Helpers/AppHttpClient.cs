@@ -28,6 +28,16 @@ internal static class AppHttpClient
     static HttpClient? _headlessClient;
 
     /// <summary>
+    /// The app's own client, when there is an app. Null everywhere else.
+    /// </summary>
+    /// <remarks>
+    /// A delegate rather than a reference to the app, because this is compiled without it now. Read
+    /// each time rather than cached, since the app replaces its client whenever the proxy settings
+    /// change and everything is meant to follow.
+    /// </remarks>
+    internal static Func<HttpClient?>? AppClient { get; set; }
+
+    /// <summary>
     /// The app's client when there is an app, otherwise one built the same way.
     /// </summary>
     /// <remarks>
@@ -38,10 +48,10 @@ internal static class AppHttpClient
     {
         get
         {
-            var app = App.CurrentApp;
-            if (app is not null)
+            var fromApp = AppClient?.Invoke();
+            if (fromApp is not null)
             {
-                return app.HttpClient;
+                return fromApp;
             }
 
             return _headlessClient ??= Create();
