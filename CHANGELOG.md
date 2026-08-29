@@ -16,6 +16,48 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v3.0.0.0 — Swapshelf
+
+The app has a name of its own. It was DLSS Swapper (dkflint723 fork), which was accurate when this
+was a fork with a few repairs in it and stopped being accurate a long time ago: it has its own
+release line, a command line, a Steam plugin, and behaviour that deliberately differs from upstream
+in places. Carrying the original's name meant trading on a project this is no longer a version of.
+
+**Swapshelf** is what it does — a shelf of dll versions, downloaded, verified, with the copy of what
+each game shipped with kept beside them, and any of it swappable into a game. It also drops "DLSS",
+which was the wrong word anyway: of the ten dll types this handles only some are upscalers, and the
+rest are frame generation, ray reconstruction, neural rendering and latency.
+
+None of this changes what the app does. Nothing was added and nothing was taken away.
+
+**Your library moves itself, and the move is the careful part.** Everything lived under
+`%LOCALAPPDATA%\DLSS Swapper`: the database with its pins, notes and history, the image cache, every
+dll ever downloaded or imported, and the copies of what each game shipped with. Pointing at a new
+folder and leaving that behind would have read as an empty library and, to anybody who then pressed
+restore, as losing the one file nothing can recreate. So the first time Swapshelf runs it moves the
+folder — a rename on the same volume rather than 861 MB of copying, so it either happens or it does
+not, with no half-migrated state in between. If it cannot be done, because something holds a file
+open or a permission refuses, the old folder goes on being used exactly as it was and the next
+launch tries again. There is no case where the app starts up looking at nothing while your library
+sits on disk.
+
+**The installer removes the old copy.** A new name means a new uninstall entry and a new install
+folder, so without this an upgrade would leave two of everything: two entries in Apps & features,
+two Start Menu shortcuts, two folders, one of which nothing would ever update again. It runs the
+previous version's own uninstaller, which removes exactly what that version installed, and leaves
+`%LOCALAPPDATA%` alone for the migration above to deal with.
+
+The executables are renamed with it: `Swapshelf.exe` and `swapshelf-cli.exe`. Anything driving the
+command line by path needs updating — the Steam plugin, [Hotswap](https://github.com/dkflint723/hotswap),
+does this from 1.3.0.
+
+And one thing that was quietly broken is fixed on the way past. The installer refuses to install
+into a folder that is not one of ours, because uninstalling deletes what it installed out of
+wherever it was pointed, and somebody choosing a folder that already holds their own files would get
+those caught up in it. The check looked for "dlss" in the path, case sensitively, against a folder
+called "DLSS Swapper" — so it never matched, and it went unnoticed because a silent install never
+runs it.
+
 ## v2.2.3.0 — it can go and look for itself
 
 The library used to be something only the app could add to. Anything driving it could read what the

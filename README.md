@@ -1,33 +1,46 @@
 <p align="center">
- <img width="150px" src="docs/logo_250.png" align="center" alt="DLSS Swapper" />
- <h2 align="center">DLSS Swapper
+ <img width="150px" src="docs/logo_250.png" align="center" alt="Swapshelf" />
+ <h2 align="center">Swapshelf
 </h2>
- <p align="center">DLSS Swapper is a tool that allows you to conveniently download, manage, and swap <strong>DLSS</strong>, <strong>FSR</strong> and <strong>XeSS</strong> dlls allowing you to upgrade or downgrade DLSS, FSR and XeSS version in a game without the game needing an update.</p>
+ <p align="center">Swapshelf downloads, verifies and keeps a library of upscaler dlls — <strong>DLSS</strong>, <strong>FSR</strong>, <strong>XeSS</strong> and <strong>XeLL</strong> — and swaps them into your games, so a game can move to a newer version, or back to the one it shipped with, without the game needing an update.</p>
 </p>
 
 > [!IMPORTANT]
-> **This is a personal fork of [beeradmoore/dlss-swapper](https://github.com/beeradmoore/dlss-swapper), not the original.**
-> It carries a substantial interface redesign that has not been offered upstream — see
-> [What is different in this fork](#what-is-different-in-this-fork) and [CHANGELOG.md](CHANGELOG.md).
-> Builds here are **unsigned**, so Windows will warn before running one — this fork has no code
-> signing certificate and does not claim to be the official DLSS Swapper. The signed, official
-> build is [the original project's](https://github.com/beeradmoore/dlss-swapper/releases).
-> Report anything wrong with the interface [on this fork](https://github.com/dkflint723/dlss-swapper/issues);
-> anything else belongs upstream.
+> **Swapshelf was called DLSS Swapper (dkflint723 fork) until 3.0.0.0.** It began as a personal fork
+> of [beeradmoore/dlss-swapper](https://github.com/beeradmoore/dlss-swapper) and has diverged a long
+> way since — a command line, a Steam plugin, its own release line, and behaviour that deliberately
+> differs from upstream in places. Carrying that project's name no longer described what this is, so
+> it does not.
+>
+> **Swapshelf is not affiliated with NVIDIA, or with the original DLSS Swapper.** If you want the
+> original, it is [here](https://github.com/beeradmoore/dlss-swapper/releases) — that one is
+> official and signed. Builds here are **unsigned**, so Windows will warn before running one. Issues
+> with Swapshelf belong [on this repository](https://github.com/dkflint723/swapshelf/issues);
+> anything about the original belongs upstream.
 
 > [!WARNING]
-> Please be aware of malicious sites claiming to be DLSS Swapper. See the original project's [official links](#official-links) for accounts and sites affiliated with DLSS Swapper. **This fork is not one of them.** It publishes unsigned builds from this repository only — nowhere else, and never as the official DLSS Swapper.
+> Be aware of malicious sites claiming to be DLSS Swapper. See the original project's
+> [official links](#official-links) for what is affiliated with it. **Swapshelf is not one of them**
+> and does not claim to be — it publishes unsigned builds from this repository only.
+
+> [!NOTE]
+> **Upgrading from DLSS Swapper (dkflint723 fork)?** The installer removes the old copy for you, and
+> your library moves itself: everything under `%LOCALAPPDATA%\DLSS Swapper` — the database with its
+> pins and history, the downloaded dlls, and the copies of what each game shipped with — is moved to
+> `%LOCALAPPDATA%\Swapshelf` the first time Swapshelf runs. Nothing is copied and nothing is
+> deleted; if the move cannot be done the old folder keeps being used, and it tries again next
+> launch.
 
 <p align="center">
-    <a href="https://github.com/dkflint723/dlss-swapper/issues"><img alt="Issues on this fork" src="https://img.shields.io/github/issues/dkflint723/dlss-swapper?color=0088ff&label=fork%20issues" /></a>
-    <a href="https://github.com/dkflint723/dlss-swapper/commits/main"><img alt="Last commit to this fork" src="https://img.shields.io/github/last-commit/dkflint723/dlss-swapper?label=fork%20updated" /></a>
+    <a href="https://github.com/dkflint723/swapshelf/issues"><img alt="Issues on this fork" src="https://img.shields.io/github/issues/dkflint723/swapshelf?color=0088ff&label=fork%20issues" /></a>
+    <a href="https://github.com/dkflint723/swapshelf/commits/main"><img alt="Last commit to this fork" src="https://img.shields.io/github/last-commit/dkflint723/swapshelf?label=fork%20updated" /></a>
     <a href="https://github.com/beeradmoore/dlss-swapper/releases"><img alt="Latest release of the original" src="https://img.shields.io/github/v/release/beeradmoore/dlss-swapper?label=original%20release" /></a>
 </p>
 
 <p align="center">
     <a href="https://github.com/beeradmoore/dlss-swapper/releases">Download the original</a>
     ·
-    <a href="https://github.com/dkflint723/dlss-swapper/issues/new">Report something about this interface</a>
+    <a href="https://github.com/dkflint723/swapshelf/issues/new">Report something about this interface</a>
     ·
     <a href="https://github.com/beeradmoore/dlss-swapper/issues/new/choose">Everything else, upstream</a>
 </p>
@@ -110,7 +123,7 @@ Please, come and share your DLSS experience over in [r/DLSS_Swapper](https://www
 
 ## How do I get it?
 
-**This fork publishes unsigned builds** on its [releases page](https://github.com/dkflint723/dlss-swapper/releases)
+**This fork publishes unsigned builds** on its [releases page](https://github.com/dkflint723/swapshelf/releases)
 — an installer and a portable zip. They carry no certificate, so SmartScreen will warn on first run
 and you will have to click through it. That is the cost of a fork without code signing, and it is a
 good reason to prefer the original unless you specifically want this interface.

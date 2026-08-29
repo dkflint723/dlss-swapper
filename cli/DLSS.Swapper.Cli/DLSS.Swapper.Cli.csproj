@@ -14,7 +14,7 @@
       the note there.
     -->
     <OutputType>WinExe</OutputType>
-    <AssemblyName>dlss-swapper-cli</AssemblyName>
+    <AssemblyName>swapshelf-cli</AssemblyName>
 
     <!--
       The app's version, because this is installed beside the app and a person
@@ -24,7 +24,7 @@
       one. VersionConsistencyTests checks this against the app now, the way it
       checks the other four places the version is written by hand.
     -->
-    <Version>2.2.3.0</Version>
+    <Version>3.0.0.0</Version>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <RootNamespace>DLSS_Swapper.Cli</RootNamespace>
@@ -84,9 +84,9 @@
     untranslated. Same rename the test project does, for the same reason.
   -->
   <Target Name="CopyAppPriFile" AfterTargets="AfterBuild">
-    <Copy SourceFiles="$(TargetDir)DLSS Swapper.pri"
+    <Copy SourceFiles="$(TargetDir)Swapshelf.pri"
           DestinationFiles="$(TargetDir)resources.pri"
-          Condition="Exists('$(TargetDir)DLSS Swapper.pri')" />
+          Condition="Exists('$(TargetDir)Swapshelf.pri')" />
   </Target>
 
 </Project>

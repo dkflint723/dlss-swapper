@@ -12,7 +12,11 @@ OutFile "installer.exe"
 
 ; Its own key, so this fork appears in Apps & features as its own entry and cannot take over the
 ; original's. Installing this must never uninstall a copy of the app somebody else built.
-!define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\DLSS Swapper (dkflint723)"
+!define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\Swapshelf"
+
+; What this app was called before, so an upgrade can remove the copy it left behind. Kept as its own
+; define rather than written inline, because it is the sort of string that gets half-updated.
+!define PREVIOUS_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\DLSS Swapper (dkflint723)"
 
 !define UninstLog "uninstall.log"
 Var UninstLog
@@ -21,9 +25,9 @@ Var DEFAULT_INSTALL_PATH
 
 Function .onInit
   ; Set default install location
-  StrCpy $INSTDIR "$PROGRAMFILES64\DLSS Swapper (dkflint723)\"
+  StrCpy $INSTDIR "$PROGRAMFILES64\Swapshelf\"
   ; The missing \ is intentional
-  StrCpy $DEFAULT_INSTALL_PATH "$PROGRAMFILES64\DLSS Swapper (dkflint723)"
+  StrCpy $DEFAULT_INSTALL_PATH "$PROGRAMFILES64\Swapshelf"
   ClearErrors
   ReadRegStr $0 SHCTX "${UNINST_KEY}" "InstallLocation"
   ${If} ${Errors}
@@ -32,61 +36,73 @@ Function .onInit
     StrCpy $INSTDIR "$0\"
   ${EndIf}
 
-  FindProcDLL::FindProc "DLSS Swapper.exe"
+  FindProcDLL::FindProc "Swapshelf.exe"
 
   StrCmp $R0 0 NotRunning
-    MessageBox MB_OK|MB_ICONEXCLAMATION "DLSS Swapper is currently running. Please close it before continuing with installation." /SD IDOK
+    MessageBox MB_OK|MB_ICONEXCLAMATION "Swapshelf is currently running. Please close it before continuing with installation." /SD IDOK
   NotRunning:
 FunctionEnd
 
 ; On uninstall, confirm you want to remove downloaded/imported DLSS files.
 Function un.onInit
   
-  FindProcDLL::FindProc "DLSS Swapper.exe"
+  FindProcDLL::FindProc "Swapshelf.exe"
   StrCmp $R0 0 NotRunning
-    MessageBox MB_OK|MB_ICONSTOP "DLSS Swapper is currently running. Please close it before attempting to uninstall." /SD IDOK
+    MessageBox MB_OK|MB_ICONSTOP "Swapshelf is currently running. Please close it before attempting to uninstall." /SD IDOK
     SetErrorLevel 2
     Quit
   NotRunning:
 
-  ; The wording follows what the uninstaller actually does now: it no longer deletes the dll
-  ; library, because that folder is shared with the original app if both are installed.
-  MessageBox MB_YESNO "Are you sure you want to uninstall $(^Name)?$\r$\n$\r$\nDownloaded and imported dlls are kept, since the original DLSS Swapper uses the same folder. Changes to your games will remain as they are." /SD IDYES IDYES NoAbort
+  ; The wording follows what the uninstaller actually does: it does not delete the dll library.
+  ;
+  ; The reason changed with the rename and the message had to change with it. That folder used to
+  ; be shared with the original DLSS Swapper, so deleting it would have taken another app's files;
+  ; now it is Swapshelf's own, under %LOCALAPPDATA%\Swapshelf. It is still kept, but for a different
+  ; reason: it holds every dll that was downloaded or imported, and the copies of what each game
+  ; shipped with. Those originals are the one thing nothing can recreate, and somebody uninstalling
+  ; an app is not necessarily telling it to throw away the only way back for their games.
+  MessageBox MB_YESNO "Are you sure you want to uninstall $(^Name)?$\r$\n$\r$\nYour downloaded and imported dlls are kept, along with the copies of what each game originally shipped with, so reinstalling finds them again. Changes already made to your games stay as they are." /SD IDYES IDYES NoAbort
     Abort
   NoAbort:
 FunctionEnd
 
-; Install directory should have "dlss" in it, if not we should add it. 
-; See issue #169 for what the consequences are if a user selects a directory
-; to install to which already contains other files.
+; The install directory should be one of ours, and if it is not we add a folder so that it is.
+;
+; See issue #169 for why: uninstalling deletes what it installed out of the directory it was given,
+; so somebody who points this at a folder that already holds their own files gets those caught up in
+; it. Appending a folder means the uninstall can only ever reach into one we made.
+;
+; The needle is "Swapshelf" rather than "dlss", and the case matters. StrContains is case sensitive,
+; and the old needle was lowercase while the folder it was meant to match was "DLSS Swapper" - so it
+; never matched, and this appended a folder to every path it was asked about. It goes unnoticed
+; because a silent install shows no directory page and so never calls this.
 Function .onVerifyInstDir
-  ${StrContains} $0 "dlss" $INSTDIR
+  ${StrContains} $0 "Swapshelf" $INSTDIR
   StrCmp $0 "" badPath
     Goto done
   badPath:
-    StrCpy $INSTDIR "$INSTDIR\DLSS Swapper (dkflint723)\"
+    StrCpy $INSTDIR "$INSTDIR\Swapshelf\"
   done:
 FunctionEnd
 
 
 Function OnInstFilesPre
-  ; If the install directory does not contain "dlss" in it we should
-  ; probably add it to keep the user safe. See issue #169 as to why
-  ; this is useful.
-  ${StrContains} $0 "dlss" $INSTDIR
+  ; The same rule as .onVerifyInstDir, applied again on the way into the install page in case the
+  ; path arrived some other way. See the note there about the needle and its case.
+  ${StrContains} $0 "Swapshelf" $INSTDIR
   StrCmp $0 "" badPath
     Goto done
   badPath:
-    StrCpy $INSTDIR "$INSTDIR\DLSS Swapper (dkflint723)\"
+    StrCpy $INSTDIR "$INSTDIR\Swapshelf\"
     MessageBox MB_OK "Install path updated to $INSTDIR"
   done:
 FunctionEnd
 
 
 ; This is disabled until I can figure out how to make it launch as admin
-; Used to launch DLSS Swapper after install is complete.
+; Used to launch Swapshelf after install is complete.
 ;Function LaunchLink
-;  ExecShell "" "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk"
+;  ExecShell "" "$SMPROGRAMS\Swapshelf.lnk"
 ;FunctionEnd
 
 
@@ -107,15 +123,15 @@ RequestExecutionLevel highest
 ; Every version below must match package/config.cmd, src/DLSS Swapper.csproj and src/app.manifest.
 ; VersionConsistencyTests fails if they drift: they did, and the 1.2.6.0 release shipped an
 ; installer whose file properties and uninstall entry both said 1.2.5.1.
-Name "DLSS Swapper (dkflint723)"
+Name "Swapshelf"
 !define MUI_ICON "..\..\src\Assets\icon.ico"
-!define MUI_VERSION "2.2.3.0"
-!define MUI_PRODUCT "DLSS Swapper (dkflint723)"
-VIProductVersion "2.2.3.0"
-VIAddVersionKey "ProductName" "DLSS Swapper (dkflint723 fork)"
-VIAddVersionKey "ProductVersion" "2.2.3.0"
-VIAddVersionKey "FileDescription" "DLSS Swapper (dkflint723 fork) installer"
-VIAddVersionKey "FileVersion" "2.2.3.0"
+!define MUI_VERSION "3.0.0.0"
+!define MUI_PRODUCT "Swapshelf"
+VIProductVersion "3.0.0.0"
+VIAddVersionKey "ProductName" "Swapshelf"
+VIAddVersionKey "ProductVersion" "3.0.0.0"
+VIAddVersionKey "FileDescription" "Swapshelf installer"
+VIAddVersionKey "FileVersion" "3.0.0.0"
 VIAddVersionKey "CompanyName" "dkflint723"
 VIAddVersionKey "LegalCopyright" "Fork of beeradmoore/dlss-swapper"
 
@@ -170,19 +186,49 @@ SectionEnd
 ; start default section
 Section
 
-  FindProcDLL::FindProc "DLSS Swapper.exe"
+  FindProcDLL::FindProc "Swapshelf.exe"
   StrCmp $R0 0 NotRunning
-    MessageBox MB_OK|MB_ICONSTOP "DLSS Swapper is currently running. Please close it and run the installer again." /SD IDOK
+    MessageBox MB_OK|MB_ICONSTOP "Swapshelf is currently running. Please close it and run the installer again." /SD IDOK
     SetErrorLevel 2
     Quit
   NotRunning:
+
+  ; The copy installed before this app was renamed.
+  ;
+  ; It has its own uninstall key and its own folder, so nothing above finds it, and without this
+  ; somebody upgrading ends up with two entries in Apps & features, two Start Menu shortcuts and two
+  ; install folders - one of which nothing will ever update again. Its own uninstaller is run rather
+  ; than deleting the folder, so it removes exactly what it put there and takes its registry entry
+  ; with it.
+  ;
+  ; Nothing of the user's is at stake here: the library, the downloaded dlls and the saved originals
+  ; live under %LOCALAPPDATA%, which the old uninstaller leaves alone and which Storage moves to the
+  ; new name on first run.
+  ClearErrors
+  ReadRegStr $R1 SHCTX "${PREVIOUS_UNINST_KEY}" "UninstallString"
+  ${IfNot} ${Errors}
+    ${If} $R1 != ""
+      DetailPrint "Removing the previous DLSS Swapper (dkflint723) install..."
+      ; _?= makes the uninstaller run in place and wait, rather than copying itself to temp and
+      ; returning immediately - without it this would carry on while the old files were still there.
+      ReadRegStr $R2 SHCTX "${PREVIOUS_UNINST_KEY}" "InstallLocation"
+      ${If} $R2 != ""
+        ExecWait '"$R1" /S _?=$R2'
+        ; The uninstaller cannot delete itself while running in place.
+        Delete "$R2\uninstall.exe"
+        RMDir "$R2"
+      ${EndIf}
+      DeleteRegKey SHCTX "${PREVIOUS_UNINST_KEY}"
+      Delete "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk"
+    ${EndIf}
+  ${EndIf}
 
   ; set the installation directory as the destination for the following actions
   SetOutPath $INSTDIR
   
   ; Check if the install already directory exists
   ; We can't just check the directory exists as the directory is created by creating the uninstall.log file
-  IfFileExists "$INSTDIR\DLSS Swapper.exe" InstallProbablyExists Install
+  IfFileExists "$INSTDIR\Swapshelf.exe" InstallProbablyExists Install
 
   InstallProbablyExists:
 
@@ -209,21 +255,21 @@ Section
   WriteUninstaller "$INSTDIR\uninstall.exe"
   FileWrite $UninstLog "uninstall.exe$\r$\n"
 
-  ; Calculate install size. This will be updated in app to include data from LOCALAPPDATA\DLSS Swapper
+  ; Calculate install size. This will be updated in app to include data from LOCALAPPDATA\Swapshelf
   ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
   IntFmt $0 "0x%08X" $0
   
   # create a shortcut named "new shortcut" in the start menu programs directory
   # point the new shortcut at the program uninstaller
-  CreateShortcut "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk" "$INSTDIR\DLSS Swapper.exe"
+  CreateShortcut "$SMPROGRAMS\Swapshelf.lnk" "$INSTDIR\Swapshelf.exe"
 
-  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayName" "DLSS Swapper (dkflint723 fork)"
-  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayVersion" "2.2.3.0"
+  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayName" "Swapshelf"
+  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayVersion" "3.0.0.0"
 
   ; Named for whoever built it, with what it was forked from, because this build is not the
   ; original author's work and Apps & features is where someone checks who to hold responsible.
   WriteRegStr SHCTX "${UNINST_KEY}" "Publisher" "dkflint723 (fork of beeradmoore/dlss-swapper)"
-  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayIcon" "$\"$INSTDIR\DLSS Swapper.exe$\""
+  WriteRegStr SHCTX "${UNINST_KEY}" "DisplayIcon" "$\"$INSTDIR\Swapshelf.exe$\""
   WriteRegStr SHCTX "${UNINST_KEY}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
   WriteRegStr SHCTX "${UNINST_KEY}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
   WriteRegStr SHCTX "${UNINST_KEY}" "InstallLocation" $INSTDIR
@@ -285,7 +331,7 @@ Section "Uninstall"
 
   ; Downloaded and imported dlls are deliberately LEFT ALONE by this fork's uninstaller.
   ;
-  ; The original writes them to LOCALAPPDATA\DLSS Swapper and so does this build, which means the
+  ; The original writes them to LOCALAPPDATA\Swapshelf and so does this build, which means the
   ; two installs share one library, one database and one set of settings. Deleting that folder
   ; here would take the original's dlls with it — uninstalling the fork would quietly gut an app
   ; the user never asked to touch.
@@ -298,6 +344,6 @@ Section "Uninstall"
   DeleteRegKey SHCTX "${UNINST_KEY}"
 
   ; Remove start menu shortcut.
-  Delete "$SMPROGRAMS\DLSS Swapper (dkflint723).lnk"
+  Delete "$SMPROGRAMS\Swapshelf.lnk"
 
 SectionEnd

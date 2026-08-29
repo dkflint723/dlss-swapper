@@ -139,10 +139,10 @@ jobs:
         name: pre-signed-packages
         retention-days: 1
         path: |
-          ${{ github.workspace }}\src\bin\publish\installer\DLSS Swapper.dll
-          ${{ github.workspace }}\src\bin\publish\installer\DLSS Swapper.exe
-          ${{ github.workspace }}\src\bin\publish\portable\DLSS Swapper.dll
-          ${{ github.workspace }}\src\bin\publish\portable\DLSS Swapper.exe
+          ${{ github.workspace }}\src\bin\publish\installer\Swapshelf.dll
+          ${{ github.workspace }}\src\bin\publish\installer\Swapshelf.exe
+          ${{ github.workspace }}\src\bin\publish\portable\Swapshelf.dll
+          ${{ github.workspace }}\src\bin\publish\portable\Swapshelf.exe
         if-no-files-found: error
 
     - name: Sign with SignPath 
@@ -163,10 +163,10 @@ jobs:
       if: ${{ env.SHOULD_SIGN == 'true' }}
       shell: pwsh
       run: |
-        Move-Item -Path "${{ github.workspace }}\src\bin\signed\installer\DLSS Swapper.dll" -Destination "${{ github.workspace }}\src\bin\publish\installer\" -Force
-        Move-Item -Path "${{ github.workspace }}\src\bin\signed\installer\DLSS Swapper.exe" -Destination "${{ github.workspace }}\src\bin\publish\installer\" -Force
-        Move-Item -Path "${{ github.workspace }}\src\bin\signed\portable\DLSS Swapper.dll" -Destination "${{ github.workspace }}\src\bin\publish\portable\" -Force
-        Move-Item -Path "${{ github.workspace }}\src\bin\signed\portable\DLSS Swapper.exe" -Destination "${{ github.workspace }}\src\bin\publish\portable\" -Force
+        Move-Item -Path "${{ github.workspace }}\src\bin\signed\installer\Swapshelf.dll" -Destination "${{ github.workspace }}\src\bin\publish\installer\" -Force
+        Move-Item -Path "${{ github.workspace }}\src\bin\signed\installer\Swapshelf.exe" -Destination "${{ github.workspace }}\src\bin\publish\installer\" -Force
+        Move-Item -Path "${{ github.workspace }}\src\bin\signed\portable\Swapshelf.dll" -Destination "${{ github.workspace }}\src\bin\publish\portable\" -Force
+        Move-Item -Path "${{ github.workspace }}\src\bin\signed\portable\Swapshelf.exe" -Destination "${{ github.workspace }}\src\bin\publish\portable\" -Force
 
     - name: Package DLSS Swapper portable
       run: ${{ github.workspace }}\package\package_Portable.cmd
