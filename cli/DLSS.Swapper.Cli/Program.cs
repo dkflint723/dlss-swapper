@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -64,6 +65,7 @@ static class Program
             return command switch
             {
                 "list" => ListGames(),
+                "versions" => ListVersions(args),
                 "swap" => await SwapAsync(args),
                 "restore" => await RestoreAsync(args),
                 _ => Fail("Unknown command. Run help to see what there is."),
@@ -93,6 +95,7 @@ static class Program
         return new[]
         {
             "list",
+            "versions --type <type>",
             "swap --game <id> --type <dlss|dlss_g|dlss_d|dlss_nr|xess|xell|...> --version <version> [--force]",
             "restore --game <id> [--type <type>]",
             "version",
@@ -124,6 +127,51 @@ static class Program
             .ToList();
 
         return Write(new { ok = true, contractVersion = ContractVersion, games = games });
+    }
+
+    /// <summary>
+    /// Every version of one dll type that could be swapped to.
+    /// </summary>
+    /// <remarks>
+    /// For callers offering a choice rather than just "take the newest" - the picker in the app
+    /// does, and anything embedding this should be able to. The curated note rides along, because
+    /// a list of ninety version numbers with nothing to separate them is the problem that note was
+    /// written to solve, and a caller cannot reconstruct it.
+    ///
+    /// Debug builds are included only when the app's own setting says to show them, so this cannot
+    /// offer a file the app would hide.
+    /// </remarks>
+    static int ListVersions(string[] args)
+    {
+        var assetType = ParseAssetType(Option(args, "--type"), out var typeError);
+        if (assetType is null)
+        {
+            return Fail(typeError);
+        }
+
+        var allowDebugDlls = Settings.Instance.AllowDebugDlls;
+
+        var versions = (DLLManager.Instance.GetRecords(assetType.Value) ?? new ObservableCollection<DLLRecord>())
+            .Where(x => allowDebugDlls || x.IsDevFile == false)
+            .Select(x => new
+            {
+                version = x.DisplayVersion,
+                name = x.DisplayName,
+                downloaded = x.LocalRecord?.IsDownloaded == true,
+                imported = x.LocalRecord?.IsImported == true,
+                recommended = x.IsRecommended,
+                note = x.RecommendationNote ?? string.Empty,
+            })
+            .ToList();
+
+        return Write(new
+        {
+            ok = true,
+            contractVersion = ContractVersion,
+            type = DllTypes.ForAssetType(assetType.Value)?.ManifestKey ?? string.Empty,
+            name = DLLManager.Instance.GetAssetTypeName(assetType.Value),
+            versions = versions,
+        });
     }
 
     static object DescribeGame(Game game)
