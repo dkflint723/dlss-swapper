@@ -1,4 +1,4 @@
-namespace DLSS_Swapper.Data;
+namespace DLSS_Swapper.Pages;
 
 /// <summary>
 /// Whether the games page shows a grid of covers or a list of rows.

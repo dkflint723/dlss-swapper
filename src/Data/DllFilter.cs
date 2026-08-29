@@ -47,5 +47,5 @@ public sealed class DllFilter
     }
 
     /// <summary>Whether a game currently has this dll in place.</summary>
-    public bool Matches(Game game) => DllUsage.IsUsedBy(AssetType, MD5Hash, Version, game);
+    public bool Matches(Game game) => InstalledDllMatch.IsUsedBy(AssetType, MD5Hash, Version, game);
 }

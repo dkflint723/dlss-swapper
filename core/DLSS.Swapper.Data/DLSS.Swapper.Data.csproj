@@ -103,7 +103,7 @@
                       ..\..\src\Data\Game.Ui.cs;
                       ..\..\src\Data\GameViews.cs;
                       ..\..\src\Data\WindowPositionRect.Ui.cs;
-                      ..\..\src\Data\DllUsage.Ui.cs;
+                      ..\..\src\Data\DllUsage.cs;
                       ..\..\src\Data\GameFilterTab.cs;
                       ..\..\src\Data\GameGroup.cs;
                       ..\..\src\Data\AccentPalette.cs;

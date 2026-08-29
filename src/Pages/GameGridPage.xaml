@@ -534,13 +534,13 @@
                                 Text="{x:Bind ViewModel.TranslationProperties.GridViewText, Mode=OneWay}"
                                 IsChecked="{x:Bind ViewModel.IsGridView, Mode=OneWay}"
                                 Command="{x:Bind ViewModel.ChangeGameGridViewCommand}"
-                                CommandParameter="{x:Bind data:GameGridViewType.GridView}" />
+                                CommandParameter="{x:Bind pages:GameGridViewType.GridView}" />
                             <RadioMenuFlyoutItem
                                 GroupName="GameView"
                                 Text="{x:Bind ViewModel.TranslationProperties.ListViewText, Mode=OneWay}"
                                 IsChecked="{x:Bind ViewModel.IsListView, Mode=OneWay}"
                                 Command="{x:Bind ViewModel.ChangeGameGridViewCommand}"
-                                CommandParameter="{x:Bind data:GameGridViewType.ListView}" />
+                                CommandParameter="{x:Bind pages:GameGridViewType.ListView}" />
 
                             <MenuFlyoutSeparator />
 
