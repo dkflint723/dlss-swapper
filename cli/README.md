@@ -25,6 +25,7 @@ Current contract version: **1**.
 
 ```
 dlss-swapper-cli list
+dlss-swapper-cli scan [--force]
 dlss-swapper-cli swap --game <id> --type <type> --version <version> [--force]
 dlss-swapper-cli restore --game <id> [--type <type>]
 dlss-swapper-cli version
@@ -49,11 +50,50 @@ is not, so **`swap` refuses a pinned dll** and says why, including the reason th
 `list` still reports a pinned dll as `behind` when a newer version exists — pinned is not the same
 as current, and a caller deserves to know both.
 
+## scan
+
+`list` reports the library as the app last saw it. `scan` is what changes that: it looks at Steam
+again and writes what it finds into the same database the app loads at startup, so a game found
+here is a game the app has.
+
+**Steam only, and that is deliberate.** Every other library scan reaches a different launcher's
+files, and one of them — Rockstar — installs copies whose dlls must never be swapped at all,
+because the launcher's integrity check stops the game launching if they change. A command that
+quietly walked every library would be doing considerably more than its name says.
+
+Games somebody added to Steam themselves are included, since Steam plays those like anything else
+and they hold the same dlls. Steam never writes an `appmanifest_*.acf` for one, so they are read
+from `shortcuts.vdf` instead, and they carry the same app id Steam's own library page uses — which
+is what lets a caller looking at a game page match it to a game here.
+
+`--force` re-reads every game's folder rather than only the ones that look changed. It is the answer
+to "it should have found something and did not".
+
+The reply names what changed, so a caller does not have to diff two lists:
+
+```json
+{
+  "ok": true, "contractVersion": 1, "scanned": "steam", "forced": false, "incomplete": false,
+  "games": 22,
+  "added": [
+    { "id": "steam_1245620", "title": "ELDEN RING", "installPath": "...",
+      "nonSteamShortcut": false, "hasSwappableItems": true }
+  ],
+  "removed": []
+}
+```
+
+`incomplete` is true when dll detection was still running when it gave up waiting. The games are
+saved either way; some may not have had their dlls recorded yet. Detection runs on the thread pool
+and the scan does not return until it finishes, because returning earlier would report a game with
+none of its dlls found and exit mid-write.
+
 ## What it reads
 
 `list` reports the library as the app last saw it. It loads games from the cache rather than
 rescanning every install folder of every library — that walk is the app's job, not something a
-caller asking one question should pay for. Run a scan in the app if you need the freshest state.
+caller asking one question should pay for. Run `scan` above, or a scan in the app, when you need
+the freshest state.
 
 ## Building
 

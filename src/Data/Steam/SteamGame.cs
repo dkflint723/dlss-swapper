@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -54,11 +55,34 @@ internal partial class SteamGame : Game
             return;
         }
 
-        // Special case for Steamworks redistributable. 
+        // Art somebody set on the game themselves, which for a non-Steam shortcut is the only art
+        // there is - Steam has no store page to fetch one from, and never writes one into
+        // librarycache. It is also the right answer for an ordinary game whose art has been
+        // replaced, since this is the picture Steam itself is showing.
+        var gridImagePath = FindGridImagePath();
+        if (gridImagePath is not null)
+        {
+            using (var fileStream = File.Open(gridImagePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                await ResizeCoverAsync(fileStream).ConfigureAwait(false);
+            }
+            return;
+        }
+
+        // A shortcut has nothing on the store to look up. Its id is generated with the top bit set,
+        // so it is not an app id at all, and both routes below would spend a request each finding
+        // that out - the first of them by overflowing an Int32 parse on the way.
+        if (IsNonSteamShortcut())
+        {
+            Logger.Verbose($"No local art for non-Steam shortcut {PlatformId}, and nothing to ask Steam for.");
+            return;
+        }
+
+        // Special case for Steamworks redistributable.
         if (PlatformId == "228980")
         {
             await DownloadCoverAsync($"https://steamcdn-a.akamaihd.net/steam/apps/{PlatformId}/header.jpg").ConfigureAwait(false);
-            return;            
+            return;
         }
 
         // Try download via IStoreBrowseService first.
@@ -72,6 +96,66 @@ internal partial class SteamGame : Game
             {
                 Logger.Error($"Tried to get Steam cover for {PlatformId} but was unable to get it from both old and new Steam CDNs.");
             }
+        }
+    }
+
+    /// <summary>
+    /// Whether this is a game somebody added to Steam rather than one Steam installed.
+    /// </summary>
+    /// <remarks>
+    /// Steam builds a shortcut's id with the top bit set, so every one of them is above what a real
+    /// app id can reach. That makes the id itself the test, with nothing else to consult.
+    /// </remarks>
+    internal bool IsNonSteamShortcut()
+    {
+        return uint.TryParse(PlatformId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var appId)
+            && appId > int.MaxValue;
+    }
+
+    /// <summary>
+    /// The portrait Steam is showing for this game, if somebody has set one.
+    /// </summary>
+    /// <remarks>
+    /// Kept in each account's own grid folder and named by app id: <c>&lt;id&gt;p.png</c> is the
+    /// portrait, which is the shape this app wants. The plain <c>&lt;id&gt;</c> forms are the wide
+    /// capsule and are only taken when there is no portrait, because a wide picture in a tall frame
+    /// is still better than none.
+    /// </remarks>
+    string? FindGridImagePath()
+    {
+        try
+        {
+            var installPath = SteamLibrary.GetInstallPath();
+            if (string.IsNullOrEmpty(installPath))
+            {
+                return null;
+            }
+
+            var userDataPath = Path.Combine(installPath, "userdata");
+            if (Directory.Exists(userDataPath) == false)
+            {
+                return null;
+            }
+
+            // Portrait first, across every account, before settling for a wide one anywhere.
+            foreach (var suffix in new[] { "p.png", "p.jpg", ".png", ".jpg" })
+            {
+                foreach (var accountPath in Directory.GetDirectories(userDataPath))
+                {
+                    var candidate = Path.Combine(accountPath, "config", "grid", $"{PlatformId}{suffix}");
+                    if (File.Exists(candidate))
+                    {
+                        return candidate;
+                    }
+                }
+            }
+
+            return null;
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err, $"Could not look for Steam grid art for {PlatformId}");
+            return null;
         }
     }
 

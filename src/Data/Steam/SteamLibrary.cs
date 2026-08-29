@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -251,6 +252,55 @@ internal partial class SteamLibrary : IGameLibrary
             games.Add(activeGame);
         }
 
+        // Games somebody added to Steam themselves.
+        //
+        // Steam never writes an appmanifest for one of these, so everything above is blind to them
+        // - and they are ordinary installed games with the same dlls in them as any other, played
+        // through the same client. Read here rather than as a library of their own because that is
+        // what they are to Steam: entries in its library, keyed by an id its own pages use.
+        //
+        // After the loop above, so that in the impossible case of an id belonging to both, the real
+        // installed game is the one already added and this leaves it alone.
+        var knownIds = new HashSet<string>(games.Select(x => x.PlatformId), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var shortcut in SteamShortcuts.Load())
+        {
+            var platformId = shortcut.AppId.ToString(CultureInfo.InvariantCulture);
+            if (knownIds.Add(platformId) == false)
+            {
+                continue;
+            }
+
+            var cachedShortcutGame = GameManager.Instance.GetGame<SteamGame>(platformId);
+            var activeShortcutGame = cachedShortcutGame ?? new SteamGame(platformId);
+
+            activeShortcutGame.Title = shortcut.Name;
+            activeShortcutGame.InstallPath = shortcut.InstallPath;
+
+            // There is no manifest to read a state out of, and the folder was checked before this
+            // was built, so it is installed - which is the only part of the state this app reads.
+            // Left at zero it would report as not ready to play, which is the one thing it is.
+            activeShortcutGame.StateFlags = SteamStateFlag.StateFullyInstalled;
+
+            if (activeShortcutGame.IsInIgnoredPath())
+            {
+                continue;
+            }
+
+            await activeShortcutGame.SaveToDatabaseAsync().ConfigureAwait(false);
+
+            if (cachedShortcutGame is null)
+            {
+                activeShortcutGame.NeedsProcessing = true;
+            }
+
+            if (activeShortcutGame.NeedsProcessing == true || forceNeedsProcessing == true || activeShortcutGame.HasUnrecordedDlls())
+            {
+                activeShortcutGame.ProcessGame();
+            }
+
+            games.Add(activeShortcutGame);
+        }
 
         games.Sort();
 

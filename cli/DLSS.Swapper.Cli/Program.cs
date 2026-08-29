@@ -6,7 +6,9 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DLSS_Swapper.Data;
+using DLSS_Swapper.Data.Steam;
 using DLSS_Swapper.Dlls;
+using DLSS_Swapper.Interfaces;
 using DLSS_Swapper.Swapping;
 
 namespace DLSS_Swapper.Cli;
@@ -90,6 +92,7 @@ static class Program
             {
                 "list" => ListGames(args),
                 "versions" => ListVersions(args),
+                "scan" => await ScanAsync(args),
                 "swap" => await SwapAsync(args),
                 "restore" => await RestoreAsync(args),
                 _ => Fail("Unknown command. Run help to see what there is."),
@@ -120,6 +123,7 @@ static class Program
         {
             "list [--with-versions]",
             "versions [--type <type>]",
+            "scan [--force]",
             "swap --game <id> --type <dlss|dlss_g|dlss_d|dlss_nr|xess|xell|...> --version <version> [--force]",
             "restore --game <id> [--type <type>]",
             "version",
@@ -141,6 +145,124 @@ static class Program
         Database.Instance.Init();
         await DLLManager.Instance.LoadManifestsAsync();
         await GameManager.Instance.LoadGamesFromCacheAsync();
+    }
+
+    /// <summary>
+    /// Looks at Steam again, and writes what it finds into the library the app reads.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Steam and nothing else, on purpose. Every other library scan reaches a different launcher's
+    /// files - and one of them, Rockstar, installs copies that must never be swapped at all - so a
+    /// command that quietly walked all of them would be doing more than its name says. This is the
+    /// one a Steam client plugin needs, and it is the one it gets.
+    /// </para>
+    /// <para>
+    /// It writes through the app's own library rather than into a copy: the games are saved to the
+    /// same database the app loads at startup, so a game found here is a game the app has - which
+    /// is what makes this worth having rather than a second, private list.
+    /// </para>
+    /// <para>
+    /// Games somebody added to Steam themselves are included, because Steam plays them like any
+    /// other and they hold the same dlls. See SteamShortcuts for how they are found and what is
+    /// refused.
+    /// </para>
+    /// </remarks>
+    static async Task<int> ScanAsync(string[] args)
+    {
+        var library = SteamLibrary.Instance;
+
+        if (library.IsInstalled() == false)
+        {
+            return Fail("Steam does not appear to be installed, so there is nothing to scan.");
+        }
+
+        // Through the interface because that is where IsEnabled lives, as a default member.
+        if (((IGameLibrary)library).IsEnabled == false)
+        {
+            return Fail("The Steam library is turned off in DLSS Swapper. Turn it back on in the app's settings, because scanning it anyway would ignore a choice already made.");
+        }
+
+        // Taken before the scan, because the scan is what changes it. Only Steam's, since only
+        // Steam's are up for being added or removed here.
+        var before = GameManager.Instance.GetGames<SteamGame>()
+            .Select(x => x.ID)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // --force re-reads every game's folder rather than only the ones that look changed. Slow,
+        // and the answer to "it should have found something and did not".
+        var force = HasFlag(args, "--force");
+
+        var found = await library.ListGamesAsync(force);
+
+        foreach (var game in found)
+        {
+            GameManager.Instance.AddGame(game);
+        }
+
+        // Detection runs on the thread pool and the call above does not wait for it. Returning here
+        // would report a game with none of its dlls found yet, and the process would exit mid write.
+        var timedOut = await WaitForProcessingAsync(TimeSpan.FromMinutes(10)) == false;
+
+        var foundIds = found.Select(x => x.ID).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var added = found
+            .Where(x => before.Contains(x.ID) == false)
+            .OrderBy(x => x.Title, StringComparer.CurrentCultureIgnoreCase)
+            .Select(x => new
+            {
+                id = x.ID,
+                title = x.Title,
+                installPath = x.InstallPath,
+                // Named so a caller can tell which of the two kinds it got, since only one of them
+                // has anything on the Steam store behind it.
+                nonSteamShortcut = x is SteamGame steamGame && steamGame.IsNonSteamShortcut(),
+                // Whether the walk found anything worth swapping. A game with nothing is still
+                // reported, because "found it, there is nothing in it" is an answer.
+                hasSwappableItems = x.HasSwappableItems,
+            })
+            .ToList();
+
+        var removed = before.Where(x => foundIds.Contains(x) == false).OrderBy(x => x).ToList();
+
+        return Write(new
+        {
+            ok = true,
+            contractVersion = ContractVersion,
+            scanned = "steam",
+            forced = force,
+            // True when detection was still running when this gave up waiting. The games are saved
+            // either way; some may not have had their dlls recorded yet.
+            incomplete = timedOut,
+            games = found.Count,
+            added = added,
+            removed = removed,
+        });
+    }
+
+    /// <summary>
+    /// Waits for every game's dll detection to finish, returning false if it did not.
+    /// </summary>
+    /// <remarks>
+    /// ProcessGame queues its walk onto the thread pool and returns immediately, setting Processing
+    /// as it goes and clearing it in a finally. That flag is the only completion signal there is,
+    /// so this watches it rather than guessing at a duration.
+    /// </remarks>
+    static async Task<bool> WaitForProcessingAsync(TimeSpan timeout)
+    {
+        var deadline = DateTime.UtcNow + timeout;
+
+        while (DateTime.UtcNow < deadline)
+        {
+            if (GameManager.Instance.GetSynchronisedGamesListCopy().Any(x => x.Processing) == false)
+            {
+                return true;
+            }
+
+            await Task.Delay(100);
+        }
+
+        return false;
     }
 
     /// <summary>
