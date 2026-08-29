@@ -64,7 +64,7 @@ static class Program
 
             return command switch
             {
-                "list" => ListGames(),
+                "list" => ListGames(args),
                 "versions" => ListVersions(args),
                 "swap" => await SwapAsync(args),
                 "restore" => await RestoreAsync(args),
@@ -94,8 +94,8 @@ static class Program
     {
         return new[]
         {
-            "list",
-            "versions --type <type>",
+            "list [--with-versions]",
+            "versions [--type <type>]",
             "swap --game <id> --type <dlss|dlss_g|dlss_d|dlss_nr|xess|xell|...> --version <version> [--force]",
             "restore --game <id> [--type <type>]",
             "version",
@@ -119,14 +119,34 @@ static class Program
         await GameManager.Instance.LoadGamesFromCacheAsync();
     }
 
-    static int ListGames()
+    /// <summary>
+    /// Every game, and with --with-versions everything needed to offer a choice for each.
+    /// </summary>
+    /// <remarks>
+    /// The combined form exists because starting this process is the expensive part - a database
+    /// and two manifests before it can answer anything - so a caller that needs both lists pays
+    /// that twice for no reason. It also matters somewhere less obvious: on Windows every
+    /// invocation from a windowless host flashes a console, and one flash is half of two.
+    /// </remarks>
+    static int ListGames(string[] args)
     {
         var games = GameManager.Instance.GetSynchronisedGamesListCopy()
             .OrderBy(x => x.Title, StringComparer.CurrentCultureIgnoreCase)
             .Select(DescribeGame)
             .ToList();
 
-        return Write(new { ok = true, contractVersion = ContractVersion, games = games });
+        if (HasFlag(args, "--with-versions") == false)
+        {
+            return Write(new { ok = true, contractVersion = ContractVersion, games = games });
+        }
+
+        return Write(new
+        {
+            ok = true,
+            contractVersion = ContractVersion,
+            games = games,
+            types = DescribeVersionsFor(DllTypes.All.Select(x => x.AssetType)),
+        });
     }
 
     /// <summary>
@@ -143,35 +163,66 @@ static class Program
     /// </remarks>
     static int ListVersions(string[] args)
     {
-        var assetType = ParseAssetType(Option(args, "--type"), out var typeError);
-        if (assetType is null)
+        var requested = Option(args, "--type");
+
+        // No --type means every type, in one answer. Starting this process costs
+        // a database and two manifests, so a caller that wants a choice for each
+        // of ten dll types should not have to pay that ten times - and one that
+        // needs the answer before a click, rather than after it, cannot.
+        var assetTypes = new List<GameAssetType>();
+        if (string.IsNullOrWhiteSpace(requested))
         {
-            return Fail(typeError);
+            assetTypes.AddRange(DllTypes.All.Select(x => x.AssetType));
         }
-
-        var allowDebugDlls = Settings.Instance.AllowDebugDlls;
-
-        var versions = (DLLManager.Instance.GetRecords(assetType.Value) ?? new ObservableCollection<DLLRecord>())
-            .Where(x => allowDebugDlls || x.IsDevFile == false)
-            .Select(x => new
+        else
+        {
+            var assetType = ParseAssetType(requested, out var typeError);
+            if (assetType is null)
             {
-                version = x.DisplayVersion,
-                name = x.DisplayName,
-                downloaded = x.LocalRecord?.IsDownloaded == true,
-                imported = x.LocalRecord?.IsImported == true,
-                recommended = x.IsRecommended,
-                note = x.RecommendationNote ?? string.Empty,
-            })
-            .ToList();
+                return Fail(typeError);
+            }
+
+            assetTypes.Add(assetType.Value);
+        }
 
         return Write(new
         {
             ok = true,
             contractVersion = ContractVersion,
-            type = DllTypes.ForAssetType(assetType.Value)?.ManifestKey ?? string.Empty,
-            name = DLLManager.Instance.GetAssetTypeName(assetType.Value),
-            versions = versions,
+            types = DescribeVersionsFor(assetTypes),
         });
+    }
+
+    /// <summary>The versions of each given type, in the shape both commands report.</summary>
+    static List<object> DescribeVersionsFor(IEnumerable<GameAssetType> assetTypes)
+    {
+        var allowDebugDlls = Settings.Instance.AllowDebugDlls;
+        var types = new List<object>();
+
+        foreach (var assetType in assetTypes)
+        {
+            var versions = (DLLManager.Instance.GetRecords(assetType) ?? new ObservableCollection<DLLRecord>())
+                .Where(x => allowDebugDlls || x.IsDevFile == false)
+                .Select(x => new
+                {
+                    version = x.DisplayVersion,
+                    name = x.DisplayName,
+                    downloaded = x.LocalRecord?.IsDownloaded == true,
+                    imported = x.LocalRecord?.IsImported == true,
+                    recommended = x.IsRecommended,
+                    note = x.RecommendationNote ?? string.Empty,
+                })
+                .ToList();
+
+            types.Add(new
+            {
+                type = DllTypes.ForAssetType(assetType)?.ManifestKey ?? string.Empty,
+                name = DLLManager.Instance.GetAssetTypeName(assetType),
+                versions = versions,
+            });
+        }
+
+        return types;
     }
 
     static object DescribeGame(Game game)
