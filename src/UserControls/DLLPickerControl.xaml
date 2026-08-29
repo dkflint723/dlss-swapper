@@ -45,8 +45,8 @@
               IsOpen="True"
               Severity="Informational"
               IsClosable="False"
-              Title="Game asset not found in DLSS Swapper"
-              Message="Would you like to import the current game asset into DLSS Swapper?">
+              Title="Game asset not found in Swapshelf"
+              Message="Would you like to import the current game asset into Swapshelf?">
                 <InfoBar.ActionButton>
                     <Button Content="{x:Bind ViewModel.TranslationProperties.ImportText, Mode=OneWay}" />
                 </InfoBar.ActionButton>

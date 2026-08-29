@@ -121,7 +121,7 @@
     <value>Llicències i reconeixements</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>Clica per copiar els detalls de sota</value>
@@ -166,7 +166,7 @@
     <value>Perfil {0}</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>No s'ha pogut iniciar DLSS Swapper</value>
+    <value>No s'ha pogut iniciar Swapshelf</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>Si us plau, obriu un </value>
@@ -175,7 +175,7 @@
     <value>nou error</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value> al repositori de GitHub de DLSS Swapper i proporciona la següent informació a la secció de context addicional.</value>
+    <value> al repositori de GitHub de Swapshelf i proporciona la següent informació a la secció de context addicional.</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>No s'ha pogut iniciar</value>
@@ -281,7 +281,7 @@ Per verificar quin perfil s'està utilitzant, activeu l'indicador de DLSS en pan
     <value>Aquest títol no ha sigut afegit manualment i no es pot eliminar.</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>Esteu segur que voleu eliminar "{0}" del DLSS Swapper? Això no farà cap canvi als fitxers DLSS que ja s'han intercanviat.</value>
+    <value>Esteu segur que voleu eliminar "{0}" del Swapshelf? Això no farà cap canvi als fitxers DLSS que ja s'han intercanviat.</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>A continuació es mostren les diverses DLL trobades. Encara podreu intercanviar i restaurar les DLL com de costum, ja que farem aquestes accions a totes les DLL alhora. Tanmateix, com que no sabem quina d'aquestes DLL utilitza el joc, la versió de DLL que es mostra és de la primera DLL detectada.</value>
@@ -350,7 +350,7 @@ Per verificar quin perfil s'està utilitzant, activeu l'indicador de DLSS en pan
     <value>Heu de seleccionar el directori &lt;i&gt;game&lt;/i&gt;, no el directori &lt;i&gt;games&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;Per exemple, si teniu un joc a:&lt;br/&gt;&lt;b&gt;C:\Program Files\MyGamesFolder\MyFavJoc\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Hauríeu de seleccionar el directori &lt;b&gt;MyFavJoc&lt;/b&gt; i no el directori &lt;b&gt;MyGamesFolder&lt;/b&gt;.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapper hauria de trobar jocs de les biblioteques de jocs instal·lades automàticament. Si el vostre joc no apareix a la llista, pot haver-hi algunes opcions de configuració que ho impedeixin. Si us plau, comproveu:
+    <value>Swapshelf hauria de trobar jocs de les biblioteques de jocs instal·lades automàticament. Si el vostre joc no apareix a la llista, pot haver-hi algunes opcions de configuració que ho impedeixin. Si us plau, comproveu:
 
 - El filtre de la llista de jocs no està configurat com a "Amaga els jocs sense elements intercanviables"
 - Una biblioteca de jocs específica està habilitada a la configuració
@@ -577,7 +577,7 @@ Si heu marcat aquestes opcions i el vostre joc encara no apareix, pot haver-hi u
     <value>Actualment teniu {0} instal·lat.</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper s'acaba d'actualitzar</value>
+    <value>Swapshelf s'acaba d'actualitzar</value>
   </data>
   <data name="GitHubUpdater_UpdateAvailable" xml:space="preserve">
     <value>Actualització disponible</value>
@@ -689,10 +689,10 @@ Només importa fitxers DLL de fonts de confiança.</value>
     <value>Intentant actualitzar</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>El DLSS Swapper no ha pogut carregar el seu fitxer de manifest. Ara es tancarà.</value>
+    <value>El Swapshelf no ha pogut carregar el seu fitxer de manifest. Ara es tancarà.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>El DLSS Swapper s'ha de tancar</value>
+    <value>El Swapshelf s'ha de tancar</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>Incidències de GitHub</value>
@@ -735,22 +735,22 @@ Per això, recomanem anar amb compte amb les partides multijugador.</value>
     <value>Prova d'agent d'usuari personalitzada</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>Descarregant la DLL del DLSS Swapper dins de DLSS Swapper amb un agent d'usuari personalitzat</value>
+    <value>Descarregant la DLL del Swapshelf dins de Swapshelf amb un agent d'usuari personalitzat</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>Descarregant la DLL del DLSS des del mirall d'UploadThing</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>Accedint a google.com des de DLSS Swapper (prova de la connectivitat general a Internet)</value>
+    <value>Accedint a google.com des de Swapshelf (prova de la connectivitat general a Internet)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>Accedint a bing.com des de DLSS Swapper (prova de la connectivitat general a Internet)</value>
+    <value>Accedint a bing.com des de Swapshelf (prova de la connectivitat general a Internet)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>Descarregant la DLL del DLSS Swapper dins de DLSS Swapper</value>
+    <value>Descarregant la DLL del Swapshelf dins de Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>Descarregant la DLL del DLSS Swapper des del navegador</value>
+    <value>Descarregant la DLL del Swapshelf des del navegador</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>Descarregant la portada del joc des de Steam</value>
@@ -759,13 +759,13 @@ Per això, recomanem anar amb compte amb les partides multijugador.</value>
     <value>Descarregant la portada del joc de l'Epic Game Store</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>Descarregant la portada del joc des del servidor de fitxers DLSS Swapper</value>
+    <value>Descarregant la portada del joc des del servidor de fitxers Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>Descarregant la portada del joc des d'un servidor de fitxers DLSS Swapper alternatiu</value>
+    <value>Descarregant la portada del joc des d'un servidor de fitxers Swapshelf alternatiu</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>Cerca DNS del servidor de fitxers DLSS Swapper</value>
+    <value>Cerca DNS del servidor de fitxers Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>Obre al navegador</value>
@@ -801,7 +801,7 @@ Per això, recomanem anar amb compte amb les partides multijugador.</value>
     <value>Data de compilació</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>No s'ha pogut obrir elz fitxer de registre directament des de DLSS Swapper. Si us plau, proveu d'obrir-lo manualment.</value>
+    <value>No s'ha pogut obrir elz fitxer de registre directament des de Swapshelf. Si us plau, proveu d'obrir-lo manualment.</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>Esteu segur que voleu suprimir el camí ignorat {0}?</value>
@@ -846,7 +846,7 @@ Per això, recomanem anar amb compte amb les partides multijugador.</value>
     <value>Donar comentaris</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>Podeu suggerir una funció o informar d'un problema al DLSS Swapper</value>
+    <value>Podeu suggerir una funció o informar d'un problema al Swapshelf</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>Rutes ignorades</value>
@@ -963,7 +963,7 @@ Per això, recomanem anar amb compte amb les partides multijugador.</value>
     <value>Guia de traducció</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>La vostra traducció s'ha creat. Consulteu la guia de traducció de DLSS Swapper per saber què cal fer a continuació amb {0}.</value>
+    <value>La vostra traducció s'ha creat. Consulteu la guia de traducció de Swapshelf per saber què cal fer a continuació amb {0}.</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>Progrés de la traducció</value>

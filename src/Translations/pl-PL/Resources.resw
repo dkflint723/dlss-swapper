@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>Kliknij aby skopiować poniższe dane</value>
@@ -151,7 +151,7 @@
     <value>Wymaga pobrania</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>Nie udało się uruchomić DLSS Swapper</value>
+    <value>Nie udało się uruchomić Swapshelf</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>Proszę otwórz </value>
@@ -160,7 +160,7 @@
     <value>nowe zgłoszenie</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value> w repozytorium DLSS Swapper GitHub i podaj następujące informacje w sekcji dodatkowego kontekstu.</value>
+    <value> w repozytorium Swapshelf GitHub i podaj następujące informacje w sekcji dodatkowego kontekstu.</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>Problem z uruchomieniem</value>
@@ -208,7 +208,7 @@
     <value>Ten tytuł nie został dodany ręcznie i nie można go usunąć.</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>Czy na pewno chcesz usunąć "{0}" z DLSS Swapper? Nie spowoduje to żadnych zmian w plikach DLSS, które zostały już zamienione.</value>
+    <value>Czy na pewno chcesz usunąć "{0}" z Swapshelf? Nie spowoduje to żadnych zmian w plikach DLSS, które zostały już zamienione.</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>Poniżej przedstawiono wiele znalezionych bibliotek DLL. Nadal będziesz mógł zamieniać i przywracać biblioteki DLL w zwykły sposób, ponieważ wykonamy te czynności dla wszystkich bibliotek DLL jednocześnie. Ponieważ jednak nie wiemy, która z tych bibliotek DLL jest używana przez grę, pokazana wersja DLL dotyczy pierwszej wykrytej biblioteki DLL.</value>
@@ -271,7 +271,7 @@
     <value>Pamiętaj, że musisz wybrać ścieżkę swojej &lt;i&gt;gry&lt;/i&gt;, nie ścieżkę swoich &lt;i&gt;gier&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;Dla przykładu, jeśli masz grę w katalogu:&lt;br/&gt;&lt;b&gt;C:\Program Files\MojeGry\MojaUlubionaGra\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Musisz wybrać katalog &lt;b&gt;MojaUlubionaGra&lt;/b&gt; a nie katalog &lt;b&gt;MojeGry&lt;/b&gt;.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapper powinien automatycznie wyszukać zainstalowane gry z popularnych bibliotek gier. Jeśli gra nie znajduje się na liście, może to być spowodowane kilkoma ustawieniami. Sprawdź czy:
+    <value>Swapshelf powinien automatycznie wyszukać zainstalowane gry z popularnych bibliotek gier. Jeśli gra nie znajduje się na liście, może to być spowodowane kilkoma ustawieniami. Sprawdź czy:
 
 - Filtr listy gier nie jest ustawiony na „Ukryj gry bez wymienialnego DLSSa”.
 - Określona biblioteka gier jest włączona w ustawieniach
@@ -297,7 +297,7 @@ Jeśli sprawdziłeś te ustawienia, a Twoja gra nadal nie jest wyświetlana, mo�
     <value>Utwórz nowe zgłoszenie na GitHubie</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>Podczas ładowania gier wykryto nowe biblioteki DLL, których nie ma w manifeście DLSS Swapper.</value>
+    <value>Podczas ładowania gier wykryto nowe biblioteki DLL, których nie ma w manifeście Swapshelf.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(Wymagane konto GitHub)</value>
@@ -444,7 +444,7 @@ Jeśli sprawdziłeś te ustawienia, a Twoja gra nadal nie jest wyświetlana, mo�
     <value>Już masz {0} zainstalowane.</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper został zaktualizowany</value>
+    <value>Swapshelf został zaktualizowany</value>
   </data>
   <data name="GitHubUpdater_UpdateAvailable" xml:space="preserve">
     <value>Aktualizacja dostępna</value>
@@ -526,10 +526,10 @@ Importuj biblioteki DLL tylko z zaufanych źródeł.</value>
     <value>Próba aktualizacji</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper nie był w stanie wczytać pliku manifestu. teraz zostanie zamknięty.</value>
+    <value>Swapshelf nie był w stanie wczytać pliku manifestu. teraz zostanie zamknięty.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper musi zostać zamknięty</value>
+    <value>Swapshelf musi zostać zamknięty</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>Problemy z GitHubem</value>
@@ -570,22 +570,22 @@ Jeśli tak się dzieje, prosimy o zgłoszenie tego w naszym module śledzenia b�
     <value>Test niestandardowego UserAgenta</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>Pobieranie DLSS Swapper DLL w DLSS Swapper z niestandardowym agentem użytkownika</value>
+    <value>Pobieranie Swapshelf DLL w Swapshelf z niestandardowym agentem użytkownika</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>Pobieranie DLSS DLL z lustrzanego serwera UploadThing</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>Dostęp do google.com z poziomu DLSS Swapper (test ogólnej łączności z Internetem)</value>
+    <value>Dostęp do google.com z poziomu Swapshelf (test ogólnej łączności z Internetem)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>Dostęp do bing.com z poziomu DLSS Swapper (testogólnej łączności z Internetem)</value>
+    <value>Dostęp do bing.com z poziomu Swapshelf (testogólnej łączności z Internetem)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>Pobieranie DLSS Swapper DLL z poziomu DLSS Swapper</value>
+    <value>Pobieranie Swapshelf DLL z poziomu Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>Pobieranie DLSS Swapper DLL przez przeglądarkę</value>
+    <value>Pobieranie Swapshelf DLL przez przeglądarkę</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>Pobieranie okładki gry ze Steam</value>
@@ -594,13 +594,13 @@ Jeśli tak się dzieje, prosimy o zgłoszenie tego w naszym module śledzenia b�
     <value>Pobieranie okładki gry z Epic Game Store</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>Pobieranie okładki gry z serwera plików DLSS Swapper</value>
+    <value>Pobieranie okładki gry z serwera plików Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>Pobieranie okładki gry z alternatywnego serwera plików DLSS Swapper</value>
+    <value>Pobieranie okładki gry z alternatywnego serwera plików Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>Wyszukiwanie DNS serwera plików DLSS Swapper</value>
+    <value>Wyszukiwanie DNS serwera plików Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>Otwórz w przeglądarce</value>
@@ -624,7 +624,7 @@ Jeśli tak się dzieje, prosimy o zgłoszenie tego w naszym module śledzenia b�
     <value>Zezwalaj na debugowanie bibliotek DLL</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>Nie udało się otworzyć pliku z logami bezpośrednio z DLSS Swapper. Spróbuj otworzyć go ręcznie.</value>
+    <value>Nie udało się otworzyć pliku z logami bezpośrednio z Swapshelf. Spróbuj otworzyć go ręcznie.</value>
   </data>
   <data name="SettingsPage_DLSSDeveloperOptions" xml:space="preserve">
     <value>Opcje deweloperskie DLSS</value>
@@ -657,7 +657,7 @@ Jeśli tak się dzieje, prosimy o zgłoszenie tego w naszym module śledzenia b�
     <value>Zostaw informację zwrotną</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>Możesz zasugerować funkcję lub zgłosić problem na DLSS Swapper</value>
+    <value>Możesz zasugerować funkcję lub zgłosić problem na Swapshelf</value>
   </data>
   <data name="SettingsPage_Language" xml:space="preserve">
     <value>Język</value>

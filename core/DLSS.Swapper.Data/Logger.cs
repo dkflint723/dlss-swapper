@@ -21,7 +21,7 @@ public enum LoggingLevel : int
 internal static class Logger
 {
     public static string LogDirectory => Path.Combine(Storage.GetTemp(), "logs");
-    static string loggingFile => Path.Combine(LogDirectory, "dlss_swapper_.log");
+    static string loggingFile => Path.Combine(LogDirectory, "swapshelf_.log");
 #if DEBUG
     static LoggingLevelSwitch levelSwitch = new LoggingLevelSwitch(LogEventLevel.Verbose);
 #else

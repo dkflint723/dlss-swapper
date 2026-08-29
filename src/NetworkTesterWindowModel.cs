@@ -135,7 +135,7 @@ public partial class NetworkTesterWindowModel : ObservableObject
         // Subscribe to language changes
         LanguageManager.Instance.OnLanguageChanged += UpdateFlowDirection;
 
-        AppendTestResults("Init", $"DLSS Swapper version: v{App.CurrentApp.GetVersionString()}");
+        AppendTestResults("Init", $"Swapshelf version: v{App.CurrentApp.GetVersionString()}");
     }
     
     private void UpdateFlowDirection()

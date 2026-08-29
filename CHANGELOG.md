@@ -16,6 +16,26 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v3.0.1.0 — the name in the places you actually read it
+
+3.0.0.0 renamed the app, the installer, the folders and the executables, and left the name it shows
+you alone. The title bar still said DLSS Swapper. So did the About panel's link to this build, the
+feedback link, the log file's name, and a few hundred strings across every translation.
+
+All of it now says Swapshelf: the window title, every message that names the app, the export and
+translation files it saves, and the log — `swapshelf_<date>.log` rather than `dlss_swapper_<date>.log`.
+
+**References to the original are untouched, on purpose.** "A fork of the original DLSS Swapper by
+beeradmoore", the links to that project and its community, the troubleshooting wiki, and the names of
+its download servers in the network tester all still say DLSS Swapper, because that is what they are
+about. Renaming those would have been the opposite of the point.
+
+Two things that had quietly stopped working since the rename are fixed with them. The app updates the
+install size shown in Apps & features by writing to its own uninstall key, and it was still opening
+the key under the old name, which no longer exists — so it silently did nothing. It also measured the
+data folder by its old path rather than asking where the data actually is, which after the migration
+was the wrong folder and, in a portable build, always had been.
+
 ## v3.0.0.0 — Swapshelf
 
 The app has a name of its own. It was DLSS Swapper (dkflint723 fork), which was accurate when this

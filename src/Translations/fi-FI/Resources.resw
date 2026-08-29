@@ -121,7 +121,7 @@
     <value>Lisenssit ja tunnustukset</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>Klikkaa kopioidaksesi alla olevat tiedot</value>
@@ -172,7 +172,7 @@
     <comment>Here {0} will be the letter of the preset, eg. Preset K</comment>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>DLSS Swapper ei käynnistynyt</value>
+    <value>Swapshelf ei käynnistynyt</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>Avaa </value>
@@ -181,7 +181,7 @@
     <value>uusi ilmoitus</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value> DLSS Swapperin GitHub-varastossa ja anna seuraavat tiedot lisäkontekstissa.</value>
+    <value> Swapshelfin GitHub-varastossa ja anna seuraavat tiedot lisäkontekstissa.</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>Käynnistäminen epäonnistui</value>
@@ -291,7 +291,7 @@ Varmista käytetty esiasetus ottamalla käyttöön DLSS-näyttöilmaisin.</value
     <value>Tämä nimike ei ole manuaalisesti lisätty eikä sitä voi poistaa.</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>Haluatko varmasti poistaa "{0}" DLSS Swapperista? Tämä ei muuta mitään DLSS-tiedostoja, jotka on jo vaihdettu.</value>
+    <value>Haluatko varmasti poistaa "{0}" Swapshelfista? Tämä ei muuta mitään DLSS-tiedostoja, jotka on jo vaihdettu.</value>
     <comment>{0} is the game name</comment>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
@@ -377,7 +377,7 @@ Varmista käytetty esiasetus ottamalla käyttöön DLSS-näyttöilmaisin.</value
     <value>Sinun on valittava &lt;i&gt;peli&lt;/i&gt;hakemisto, ei &lt;i&gt;pelien&lt;/i&gt; hakemistoa.&lt;br/&gt;&lt;br/&gt;Esimerkiksi, jos sinulla on peli hakemistossa:&lt;br/&gt;&lt;b&gt;C:\Program Files\MyGamesFolder\MyFavGame\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Valitsisit &lt;b&gt;MyFavGame&lt;/b&gt;-hakemiston, etkä &lt;b&gt;MyGamesFolder&lt;/b&gt;-hakemistoa.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapperin tulisi löytää pelit asennetusta pelikirjastosta automaattisesti. Jos peliäsi ei ole listalla, saattaa olla muutamia asetuksia, jotka estävät sen. Tarkista:
+    <value>Swapshelfin tulisi löytää pelit asennetusta pelikirjastosta automaattisesti. Jos peliäsi ei ole listalla, saattaa olla muutamia asetuksia, jotka estävät sen. Tarkista:
 
 - Pelilistan suodatin ei ole asetettu kohtaan "Piilota pelit, joissa ei ole vaihdettavia kohteita"
 - Kyseinen pelikirjasto on käytössä asetuksissa
@@ -404,7 +404,7 @@ Jos olet tarkistanut nämä ja peliäsi ei silti näy, saattaa se olla ohjelmist
     <value>Luo uusi GitHub-ilmoitus</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>Pelejäsi ladattaessa löytyi joitain uusia DLL-tiedostoja, jotka eivät ole DLSS Swapperin luettelossa.</value>
+    <value>Pelejäsi ladattaessa löytyi joitain uusia DLL-tiedostoja, jotka eivät ole Swapshelfin luettelossa.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(vaatii GitHub-tilin)</value>
@@ -628,7 +628,7 @@ Jos olet tarkistanut nämä ja peliäsi ei silti näy, saattaa se olla ohjelmist
     <comment>{0} is the currently installed version.</comment>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper päivitettiin juuri</value>
+    <value>Swapshelf päivitettiin juuri</value>
   </data>
   <data name="GitHubUpdater_UpdateAvailable" xml:space="preserve">
     <value>Päivitys saatavilla</value>
@@ -744,10 +744,10 @@ Tuo DLL-tiedostoja vain luotetuista lähteistä.</value>
     <value>Yritetään päivittää</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper ei voinut ladata manifesti-tiedostoaan. Se sulkeutuu nyt.</value>
+    <value>Swapshelf ei voinut ladata manifesti-tiedostoaan. Se sulkeutuu nyt.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper täytyy sulkea</value>
+    <value>Swapshelf täytyy sulkea</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>GitHub-ilmoitukset</value>
@@ -792,22 +792,22 @@ Tästä syystä suosittelemme varovaisuutta moninpeleille.</value>
     <value>Mukautettu käyttäjäagentin testi</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>Ladataan DLSS Swapperin DLL:ää sisäisesti mukautetulla käyttäjäagentilla</value>
+    <value>Ladataan Swapshelfin DLL:ää sisäisesti mukautetulla käyttäjäagentilla</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>Ladataan DLSS DLL:ää UploadThing-peilistä</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>Yhdistetään google.com‑sivustoon DLSS Swapperista (testaa yleisen internet‑yhteyden toimivuuden)</value>
+    <value>Yhdistetään google.com‑sivustoon Swapshelfista (testaa yleisen internet‑yhteyden toimivuuden)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>Yhdistetään bing.com‑sivustoon DLSS Swapperista (testaa yleisen internet‑yhteyden toimivuuden)</value>
+    <value>Yhdistetään bing.com‑sivustoon Swapshelfista (testaa yleisen internet‑yhteyden toimivuuden)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>Ladataan DLSS Swapperin DLL:ää sisäisesti</value>
+    <value>Ladataan Swapshelfin DLL:ää sisäisesti</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>Ladataan DLSS Swapperin DLL:ää selaimesta</value>
+    <value>Ladataan Swapshelfin DLL:ää selaimesta</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>Ladataan pelikansi Steamistä</value>
@@ -816,13 +816,13 @@ Tästä syystä suosittelemme varovaisuutta moninpeleille.</value>
     <value>Ladataan pelikansi Epic Game Storesta</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>Ladataan pelikansi DLSS Swapperin tiedostopalvelimelta</value>
+    <value>Ladataan pelikansi Swapshelfin tiedostopalvelimelta</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>Ladataan pelikansi vaihtoehtoisesta DLSS Swapperin tiedostopalvelimelta</value>
+    <value>Ladataan pelikansi vaihtoehtoisesta Swapshelfin tiedostopalvelimelta</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>DLSS Swapperin tiedostopalvelimen DNS-haku</value>
+    <value>Swapshelfin tiedostopalvelimen DNS-haku</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>Avaa selaimessa</value>
@@ -858,7 +858,7 @@ Tästä syystä suosittelemme varovaisuutta moninpeleille.</value>
     <value>Koontiversiopäivämäärä</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>Lokitiedostoa ei voitu avata suoraan DLSS Swapperista. Yritä avata se manuaalisesti.</value>
+    <value>Lokitiedostoa ei voitu avata suoraan Swapshelfista. Yritä avata se manuaalisesti.</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>Haluatko varmasti poistaa ohitetun polun {0}?</value>
@@ -904,7 +904,7 @@ Tästä syystä suosittelemme varovaisuutta moninpeleille.</value>
     <value>Anna palautetta</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>Voit ehdottaa ominaisuutta tai ilmoittaa ongelmasta DLSS Swapperin</value>
+    <value>Voit ehdottaa ominaisuutta tai ilmoittaa ongelmasta Swapshelfin</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>Ohitetut polut</value>
@@ -1007,7 +1007,7 @@ Tästä syystä suosittelemme varovaisuutta moninpeleille.</value>
     <value>Tallennettavaksi ei löytynyt käännöstietoja.</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>Ei kelvollinen DLSS Swapperin käännöstiedosto.</value>
+    <value>Ei kelvollinen Swapshelfin käännöstiedosto.</value>
     <comment>Error that the json translation file the user opened is not valid.</comment>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
@@ -1041,7 +1041,7 @@ Tästä syystä suosittelemme varovaisuutta moninpeleille.</value>
     <value>Käännösopas</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>Käännöksesi on luotu. Tarkista DLSS Swapperin käännösoppaasta, mitä tehdä seuraavaksi tiedoston {0} kanssa.</value>
+    <value>Käännöksesi on luotu. Tarkista Swapshelfin käännösoppaasta, mitä tehdä seuraavaksi tiedoston {0} kanssa.</value>
     <comment>Here {0} will be the filename of the translation file the user published.</comment>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">

@@ -169,7 +169,7 @@
     <value>تنظیمات از پیش تعیین شده {0} (منسوخ شده)</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>راه‌اندازی DLSS Swapper با خطا مواجه شد</value>
+    <value>راه‌اندازی Swapshelf با خطا مواجه شد</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>Please open a </value>
@@ -178,7 +178,7 @@
     <value>موضوع جدید</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value>در مخزن گیت‌هاب DLSS Swapper باز کنید و اطلاعات زیر را در بخش زمینه اضافی ارائه دهید.</value>
+    <value>در مخزن گیت‌هاب Swapshelf باز کنید و اطلاعات زیر را در بخش زمینه اضافی ارائه دهید.</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>عدم موفقیت در راه‌اندازی</value>
@@ -287,7 +287,7 @@
     <value>این عنوان به صورت دستی اضافه نشده است و قابل حذف نیست.</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>آیا مطمئن هستید که می‌خواهید «{0}» را از DLSS Swapper حذف کنید؟ این کار هیچ تغییری در فایل‌های DLSS که قبلاً تعویض شده‌اند ایجاد نمی‌کند.</value>
+    <value>آیا مطمئن هستید که می‌خواهید «{0}» را از Swapshelf حذف کنید؟ این کار هیچ تغییری در فایل‌های DLSS که قبلاً تعویض شده‌اند ایجاد نمی‌کند.</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>چندین فایل DLL یافت‌شده در زیر نمایش داده شده‌اند. شما همچنان می‌توانید مانند روال عادی فایل‌های DLL را تعویض و بازیابی کنید، زیرا ما این اقدامات را روی همه DLLها به صورت همزمان انجام خواهیم داد. با این حال، چون نمی‌دانیم بازی دقیقاً از کدام یک از این DLLها استفاده می‌کند، نسخه DLL نمایش داده شده مربوط به اولین DLL شناسایی‌شده است.</value>
@@ -368,7 +368,7 @@
     <value>شما باید پوشه &lt;i&gt;game&lt;/i&gt; خود را اد کنید نه پوشه &lt;i&gt;games&lt;/i&gt; خود.&lt;br/&gt;&lt;br/&gt;به عنوان مثال اگر یک بازی در مسیر:&lt;br/&gt;&lt;b&gt;C:\Program Files\MyGamesFolder\MyFavGame\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;دارید، شما باید پوشه &lt;b&gt;MyFavGame&lt;/b&gt; رو انتخاب کنید. نه اینکه کل پوشه &lt;b&gt;MyGamesFolder&lt;/b&gt; رو انتخاب کنید.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>برنامه DLSS Swapper باید بازی‌ها را به صورت خودکار از میان کتابخانه‌های بازی نصب‌شده شما پیدا کند. اگر بازی شما در لیست نیست، ممکن است چند تنظیم مختلف مانع از این کار شده باشد. لطفاً موارد زیر را بررسی کنید:
+    <value>برنامه Swapshelf باید بازی‌ها را به صورت خودکار از میان کتابخانه‌های بازی نصب‌شده شما پیدا کند. اگر بازی شما در لیست نیست، ممکن است چند تنظیم مختلف مانع از این کار شده باشد. لطفاً موارد زیر را بررسی کنید:
 
 فیلتر لیست بازی‌ها روی گزینه پنهان کردن بازی‌های بدون آیتم قابل تعویض تنظیم نشده باشد.
 
@@ -395,7 +395,7 @@
     <value>ایجاد مشکل جدید در گیت‌هاب</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>هنگام بارگیری بازی‌های شما، برخی DLLهای جدید کشف شده‌اند که در مانیفست DLSS Swapper وجود ندارند.</value>
+    <value>هنگام بارگیری بازی‌های شما، برخی DLLهای جدید کشف شده‌اند که در مانیفست Swapshelf وجود ندارند.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(حساب گیت‌هاب مورد نیاز است)</value>
@@ -704,10 +704,10 @@
     <value>دانلودها شروع شدند</value>
   </data>
   <data name="LibraryPage_Error_NVIDIA_Downloading" xml:space="preserve">
-    <value>امکان دریافت لیست فایل‌ها از سرورهای انویدیا وجود ندارد. لطفاً بعداً دوباره تلاش کنید یا آپدیت برنامه DLSS Swapper را بررسی کنید.</value>
+    <value>امکان دریافت لیست فایل‌ها از سرورهای انویدیا وجود ندارد. لطفاً بعداً دوباره تلاش کنید یا آپدیت برنامه Swapshelf را بررسی کنید.</value>
   </data>
   <data name="LibraryPage_Error_NVIDIA_Importing" xml:space="preserve">
-    <value>امکان وارد کردن از سرورهای انویدیا وجود ندارد. لطفاً بعداً دوباره تلاش کنید یا آپدیت برنامه DLSS Swapper را بررسی کنید.</value>
+    <value>امکان وارد کردن از سرورهای انویدیا وجود ندارد. لطفاً بعداً دوباره تلاش کنید یا آپدیت برنامه Swapshelf را بررسی کنید.</value>
   </data>
   <data name="LibraryPage_ExportedDLLs" xml:space="preserve">
     <value>فایل DLL های خروجی گرفته شده :</value>
@@ -792,10 +792,10 @@
     <value>تلاش برای به‌روزرسانی</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>برنامه DLSS Swapper نتوانست فایل manifest خود را بارگیری کند. اکنون بسته خواهد شد.</value>
+    <value>برنامه Swapshelf نتوانست فایل manifest خود را بارگیری کند. اکنون بسته خواهد شد.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>برنامه DLSS Swapper باید بسته شود</value>
+    <value>برنامه Swapshelf باید بسته شود</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>مشکلات گیت‌هاب</value>
@@ -838,22 +838,22 @@
     <value>تست سفارشی یوزر ایجنت</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>دانلود DLL برنامه DLSS Swapper در داخل DLSS Swapper با یوزر ایجنت سفارشی</value>
+    <value>دانلود DLL برنامه Swapshelf در داخل Swapshelf با یوزر ایجنت سفارشی</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>دانلود DLL مربوط به DLSS از UploadThing mirror</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>دسترسی به google.com از داخل DLSS Swapper (تست اتصال عمومی اینترنت)</value>
+    <value>دسترسی به google.com از داخل Swapshelf (تست اتصال عمومی اینترنت)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>دسترسی به bing.com از داخل DLSS Swapper (تست اتصال عمومی اینترنت)</value>
+    <value>دسترسی به bing.com از داخل Swapshelf (تست اتصال عمومی اینترنت)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>دانلود DLL برنامه DLSS Swapper در داخل DLSS Swapper</value>
+    <value>دانلود DLL برنامه Swapshelf در داخل Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>دانلود DLL برنامه DLSS Swapper از مرورگر</value>
+    <value>دانلود DLL برنامه Swapshelf از مرورگر</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>دانلود کاور بازی از استیم</value>
@@ -862,13 +862,13 @@
     <value>دانلود کاور بازی از Epic Game Store</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>دانلود کاور بازی از سرور فایل DLSS Swapper</value>
+    <value>دانلود کاور بازی از سرور فایل Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>دانلود کاور بازی از سرور فایل جایگزین DLSS Swapper</value>
+    <value>دانلود کاور بازی از سرور فایل جایگزین Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>جستجوی DNS سرور فایل DLSS Swapper</value>
+    <value>جستجوی DNS سرور فایل Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>باز کردن در مرورگر</value>
@@ -925,7 +925,7 @@
     <value>تاریخ بیلد</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>امکان باز کردن فایل گزارش شما به طور مستقیم از DLSS Swapper وجود ندارد. لطفا سعی کنید آن را به صورت دستی باز کنید.</value>
+    <value>امکان باز کردن فایل گزارش شما به طور مستقیم از Swapshelf وجود ندارد. لطفا سعی کنید آن را به صورت دستی باز کنید.</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>آیا مطمئن هستید که می‌خواهید مسیر نادیده گرفته شده {0} را حذف کنید؟</value>
@@ -976,7 +976,7 @@
     <value>ارسال بازخورد</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>شما می‌توانید یک ویژگی را پیشنهاد دهید یا یک مشکل را در DLSS Swapper گزارش دهید</value>
+    <value>شما می‌توانید یک ویژگی را پیشنهاد دهید یا یک مشکل را در Swapshelf گزارش دهید</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>مسیرهای نادیده گرفته شده</value>
@@ -1084,7 +1084,7 @@
     <value>هیچ داده ترجمه ای برای ذخیره یافت نشد.</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>این یک فایل ترجمه معتبر DLSS Swapper نیست.</value>
+    <value>این یک فایل ترجمه معتبر Swapshelf نیست.</value>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
     <value>امکان انتشار ترجمه وجود ندارد. لطفا برای اطلاعات بیشتر به گزارش خطا مراجعه کنید.</value>
@@ -1117,7 +1117,7 @@
     <value>راهنمای ترجمه</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>ترجمه شما ساخته شد. لطفا برای مراحل بعدی در مورد فایلهای {0}، راهنمای ترجمه DLSS Swapper را مطالعه کنید.</value>
+    <value>ترجمه شما ساخته شد. لطفا برای مراحل بعدی در مورد فایلهای {0}، راهنمای ترجمه Swapshelf را مطالعه کنید.</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>پیشرفت ترجمه</value>

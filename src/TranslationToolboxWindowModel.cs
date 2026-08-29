@@ -346,7 +346,7 @@ public partial class TranslationToolboxWindowModel : ObservableObject
                     new FileSystemHelper.FileFilter("CSV files", ".csv"),
                 };
                 var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-                var outputPath = FileSystemHelper.SaveFile(hWnd, fileFilters, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "dlss_swapper_translation.json", "json");
+                var outputPath = FileSystemHelper.SaveFile(hWnd, fileFilters, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "swapshelf_translation.json", "json");
 
                 // User cancelled.
                 if (string.IsNullOrWhiteSpace(outputPath))

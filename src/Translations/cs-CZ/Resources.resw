@@ -121,7 +121,7 @@
     <value>Licence &amp; Poděkování</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>Klikněte ke zkopírování detailů níže</value>
@@ -178,7 +178,7 @@
     <value>nový problém (new issue)</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value>v repozitáři DLSS Swapper na GitHub a v sekci s dalším kontextem (additional context) a poskytněte následující informace.</value>
+    <value>v repozitáři Swapshelf na GitHub a v sekci s dalším kontextem (additional context) a poskytněte následující informace.</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>Spuštění se nezdařilo</value>
@@ -287,7 +287,7 @@ Chcete-li ověřit, který preset se používá, povolte prosím indikátor DLSS
     <value>Tato hra není přidána manuálně a nemůže být odstraněna</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>Opravdu chcete odstranit soubor "{0}" z nástroje DLSS Swapper? Tato akce neprovede žádné změny v souborech DLSS, které již byly vyměněny.</value>
+    <value>Opravdu chcete odstranit soubor "{0}" z nástroje Swapshelf? Tato akce neprovede žádné změny v souborech DLSS, které již byly vyměněny.</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>Níže je zobrazeno několik nalezených DLL souborů. Stále bude možné DLL soubory vyměňovat a obnovovat jako obvykle, protože tyto akce budou provedeny se všemi DLL soubory najednou. Protože však není jasné, který z těchto DLL souborů hra používá, zobrazená verze DLL je první detekované DLL.</value>
@@ -368,7 +368,7 @@ Chcete-li ověřit, který preset se používá, povolte prosím indikátor DLSS
     <value>Musíte vybrat adresář &lt;i&gt;s Vaší hrou&lt;/i&gt;, nikoli obecný adresář &lt;i&gt;všechny hry&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;Například, pokud máte hru v adresáři:&lt;br/&gt;&lt;b&gt;C:\Program Files\MyGamesFolder\MyFavGame\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Vybrali byste adresář &lt;b&gt;MyFavGame&lt;/b&gt;, nikoli adresář &lt;b&gt;MyGamesFolder&lt;/b&gt;.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapper by měl automaticky najít všechny nainstalované hry. Pokud hra není v seznamu uvedena, může tomu bránit několik nastavení. Zkontrolujte prosím:
+    <value>Swapshelf by měl automaticky najít všechny nainstalované hry. Pokud hra není v seznamu uvedena, může tomu bránit několik nastavení. Zkontrolujte prosím:
 
 - Filtr seznamu her není nastaven na „Skrýt hry bez změnitelných souborů“
 - Je v nastavení povolena konkrétní herní knihovna
@@ -394,7 +394,7 @@ Pokud jste tyto možnosti zkontrolovali a hra se stále nezobrazuje, může se j
     <value>Vytvořit nové hlášení problému na GitHub</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>Během načítání her byly objeveny nové soubory DLL, které nejsou v manifestu DLSS Swapperu.</value>
+    <value>Během načítání her byly objeveny nové soubory DLL, které nejsou v manifestu Swapshelfu.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(Je nutný GitHub účet)</value>
@@ -604,7 +604,7 @@ Pokud jste tyto možnosti zkontrolovali a hra se stále nezobrazuje, může se j
     <value>V tuto chvíli máte nainstalovanou verzi {0}</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper byl právě aktualizován</value>
+    <value>Swapshelf byl právě aktualizován</value>
   </data>
   <data name="GitHubUpdater_UpdateAvailable" xml:space="preserve">
     <value>Je dostupná aktualizace</value>
@@ -716,10 +716,10 @@ Importujte DLL soubory pouze ze zdrojů, kterým důvěřujete!</value>
     <value>Pokus o aktualizaci</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper nebyl schopen načíst soubor manifestu. Program bude nyní ukončen.</value>
+    <value>Swapshelf nebyl schopen načíst soubor manifestu. Program bude nyní ukončen.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper se musí ukončit</value>
+    <value>Swapshelf se musí ukončit</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>GitHub problémy (Issues)</value>
@@ -762,22 +762,22 @@ Z tohoto důvodu doporučujeme být u multiplayerových her opatrní.</value>
     <value>Vlastní test uživatelského agenta</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>Stahování souboru DLL DLSS Swapperu v rámci DLSS Swapperu s vlastním uživatelským agentem</value>
+    <value>Stahování souboru DLL Swapshelfu v rámci Swapshelfu s vlastním uživatelským agentem</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>Stahování DLSS DLL souboru z mirroru UploadThing</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>Přístup na google.com z DLSS Swapperu (testuje obecné připojení k internetu)</value>
+    <value>Přístup na google.com z Swapshelfu (testuje obecné připojení k internetu)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>Přístup na bing.com z DLSS Swapperu (testuje obecné připojení k internetu)</value>
+    <value>Přístup na bing.com z Swapshelfu (testuje obecné připojení k internetu)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>Stahování souboru DLL DLSS Swapperu v rámci DLSS Swapperu</value>
+    <value>Stahování souboru DLL Swapshelfu v rámci Swapshelfu</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>Stahování souboru DLL DLSS Swapperu z prohlížeče</value>
+    <value>Stahování souboru DLL Swapshelfu z prohlížeče</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>Stahování obálky ze Steam</value>
@@ -786,13 +786,13 @@ Z tohoto důvodu doporučujeme být u multiplayerových her opatrní.</value>
     <value>Stahování obálky z Epic Game Store</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>Stahování obálky ze serveru DLSS Swapper</value>
+    <value>Stahování obálky ze serveru Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>Stahování obálky z alternativního serveru DLSS Swapper</value>
+    <value>Stahování obálky z alternativního serveru Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>Vyhledávání DNS na serveru DLSS Swapper</value>
+    <value>Vyhledávání DNS na serveru Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>Otevřít v prohlížeči</value>
@@ -828,7 +828,7 @@ Z tohoto důvodu doporučujeme být u multiplayerových her opatrní.</value>
     <value>Datum sestavení</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>Soubor protokolu se nepodařilo otevřít přímo z DLSS Swapperu. Zkuste jej prosím otevřít ručně.</value>
+    <value>Soubor protokolu se nepodařilo otevřít přímo z Swapshelfu. Zkuste jej prosím otevřít ručně.</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>Opravdu chcete smazat ignorovanou cestu {0}?</value>
@@ -873,7 +873,7 @@ Z tohoto důvodu doporučujeme být u multiplayerových her opatrní.</value>
     <value>Poskytnout zpětnou vazbu</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>Navrhnout funkci nebo nahlásit problém DLSS Swapperu.</value>
+    <value>Navrhnout funkci nebo nahlásit problém Swapshelfu.</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>Ignorované cesty</value>
@@ -975,7 +975,7 @@ Z tohoto důvodu doporučujeme být u multiplayerových her opatrní.</value>
     <value>Nebyla nalezena žádná data překladu k uložení.</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>Neplatný soubor překladu DLSS Swapper.</value>
+    <value>Neplatný soubor překladu Swapshelf.</value>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
     <value>Překlad nebylo možné publikovat. Další informace naleznete v protokolu chyb.</value>
@@ -1008,7 +1008,7 @@ Z tohoto důvodu doporučujeme být u multiplayerových her opatrní.</value>
     <value>Průvodce překladem</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>Váš překlad byl vytvořen. Prostudujte si prosím průvodce překladem DLSS Swapper, kde najdete informace o dalším postupu s {0}.</value>
+    <value>Váš překlad byl vytvořen. Prostudujte si prosím průvodce překladem Swapshelf, kde najdete informace o dalším postupu s {0}.</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>Přeloženo</value>

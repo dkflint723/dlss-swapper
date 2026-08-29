@@ -362,7 +362,7 @@ public sealed partial class MainWindow : Window
                 // This fork's tracker, not upstream's. This fork publishes its own manifest, so a
                 // manifest failure here is plausibly this fork's pipeline - reporting it upstream
                 // would send the reader to people who cannot see the file that failed.
-                await Launcher.LaunchUriAsync(new Uri("https://github.com/dkflint723/dlss-swapper/issues"));
+                await Launcher.LaunchUriAsync(new Uri("https://github.com/dkflint723/swapshelf/issues"));
             }
             else if (response is ContentDialogResult.Secondary)
             {

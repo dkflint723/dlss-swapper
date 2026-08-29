@@ -121,7 +121,7 @@
     <value>ใบอนุญาต &amp; กิตติกรรมประกาศ</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>คลิกเพื่อคัดลอกรายละเอียดด้านล่าง</value>
@@ -169,7 +169,7 @@
     <value>ค่าพรีเซ็ต {0} (เลิกใช้แล้ว)</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>โปรแกรม DLSS Swapper เริ่มต้นทำงานล้มเหลว</value>
+    <value>โปรแกรม Swapshelf เริ่มต้นทำงานล้มเหลว</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>กรุณาเปิด</value>
@@ -178,7 +178,7 @@
     <value>ปัญหาใหม่</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value>บน GitHub ของ DLSS Swapper และระบุข้อมูลต่อไปนี้ในส่วนบริบทเพิ่มเติม</value>
+    <value>บน GitHub ของ Swapshelf และระบุข้อมูลต่อไปนี้ในส่วนบริบทเพิ่มเติม</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>การเปิดโปรแกรมล้มเหลว</value>
@@ -287,7 +287,7 @@
     <value>เกมนี้ไม่ได้ถูกเพิ่มเข้ามาแบบ Manual จึงไม่สามารถลบออกจากรายการได้</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>คุณแน่ใจหรือไม่ที่จะลบ "{0}" ออกจาก DLSS Swapper? การทำเช่นนี้จะไม่เปลี่ยนแปลงไฟล์ DLSS ในเกมที่ถูกสลับไปแล้ว</value>
+    <value>คุณแน่ใจหรือไม่ที่จะลบ "{0}" ออกจาก Swapshelf? การทำเช่นนี้จะไม่เปลี่ยนแปลงไฟล์ DLSS ในเกมที่ถูกสลับไปแล้ว</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>ด้านล่างนี้คือไฟล์ DLL หลายไฟล์ที่ตรวจพบ คุณยังสามารถสลับและกู้คืนไฟล์ได้ตามปกติ แต่เนื่องจากเราไม่รู้ว่าเกมใช้ไฟล์ไหน เวอร์ชันที่แสดงจึงเป็นของไฟล์แรกที่โปรแกรมเจอ</value>
@@ -368,7 +368,7 @@
     <value>คุณต้องเลือกโฟลเดอร์ของ &lt;i&gt;เกม&lt;/i&gt; ไม่ใช่โฟลเดอร์ &lt;i&gt;รวมเกม&lt;/i&gt; ไดเรกทอรี.&lt;br/&gt;&lt;br/&gt;ตัวอย่าง: ถ้าเกมอยู่ที่:&lt;br/&gt;&lt;b&gt;C:\Program Files\MyGamesFolder\MyFavGame\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;คุณต้องเลือกโฟลเดอร์ &lt;b&gt;MyFavGame&lt;/b&gt; ไม่ใช่โฟลเดอร์ &lt;b&gt;MyGamesFolder&lt;/b&gt; ไดเรกทอรี.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapper ควรจะเจอเกมในเครื่องคุณโดยอัตโนมัติ หากเกมไม่ขึ้นโชว์ อาจเกิดจาก:
+    <value>Swapshelf ควรจะเจอเกมในเครื่องคุณโดยอัตโนมัติ หากเกมไม่ขึ้นโชว์ อาจเกิดจาก:
 
 - ตัวกรองถูกตั้งค่าให้ "ซ่อนเกมที่ไม่มีรายการให้สลับ"
 - คลังเกมนั้นๆ ไม่ได้ถูกเปิดใช้งานในการตั้งค่า
@@ -394,7 +394,7 @@
     <value>แจ้งปัญหาใหม่บน GitHub</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>ระหว่างโหลดรายชื่อเกม ระบบตรวจพบ DLLs รุ่นใหม่ที่ยังไม่มีในฐานข้อมูลของ DLSS Swapper</value>
+    <value>ระหว่างโหลดรายชื่อเกม ระบบตรวจพบ DLLs รุ่นใหม่ที่ยังไม่มีในฐานข้อมูลของ Swapshelf</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(จำเป็นต้องมีบัญชี GitHub)</value>
@@ -616,7 +616,7 @@
     <value>คุณได้ติดตั้ง {0} ไว้อยู่แล้ว</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper เพิ่งได้รับการอัปเดต</value>
+    <value>Swapshelf เพิ่งได้รับการอัปเดต</value>
   </data>
   <data name="GitHubUpdater_DownloadComplete_Title" xml:space="preserve">
     <value>ดาวน์โหลดเสร็จสมบูรณ์</value>
@@ -703,10 +703,10 @@
     <value>การดาวน์โหลดเริ่มต้นแล้ว</value>
   </data>
   <data name="LibraryPage_Error_NVIDIA_Downloading" xml:space="preserve">
-    <value>ไม่สามารถดึงรายการไฟล์จากเซิร์ฟเวอร์ NVIDIA ได้ โปรดลองอีกครั้งในภายหลัง หรือตรวจสอบการอัปเดต DLSS Swapper</value>
+    <value>ไม่สามารถดึงรายการไฟล์จากเซิร์ฟเวอร์ NVIDIA ได้ โปรดลองอีกครั้งในภายหลัง หรือตรวจสอบการอัปเดต Swapshelf</value>
   </data>
   <data name="LibraryPage_Error_NVIDIA_Importing" xml:space="preserve">
-    <value>ไม่สามารถนำเข้าจากเซิร์ฟเวอร์ NVIDIA ได้ โปรดลองอีกครั้งในภายหลัง หรือตรวจสอบการอัปเดต DLSS Swapper</value>
+    <value>ไม่สามารถนำเข้าจากเซิร์ฟเวอร์ NVIDIA ได้ โปรดลองอีกครั้งในภายหลัง หรือตรวจสอบการอัปเดต Swapshelf</value>
   </data>
   <data name="LibraryPage_ExportedDLLs" xml:space="preserve">
     <value>ไฟล์ DLLs ที่ส่งออก:</value>
@@ -791,10 +791,10 @@
     <value>กำลังพยายามอัปเดต</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper ไม่สามารถโหลดไฟล์รายการได้ โปรแกรมจะปิดตัวลงเดี๋ยวนี้</value>
+    <value>Swapshelf ไม่สามารถโหลดไฟล์รายการได้ โปรแกรมจะปิดตัวลงเดี๋ยวนี้</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper จำเป็นต้องปิดตัวลง</value>
+    <value>Swapshelf จำเป็นต้องปิดตัวลง</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>แจ้งปัญหาบน GitHub</value>
@@ -838,22 +838,22 @@
     <value>ทดสอบ User Agent แบบกำหนดเอง</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>กำลังดาวน์โหลด DLL ผ่านโปรแกรม DLSS Swapper โดยใช้ User Agent แบบกำหนดเอง</value>
+    <value>กำลังดาวน์โหลด DLL ผ่านโปรแกรม Swapshelf โดยใช้ User Agent แบบกำหนดเอง</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>กำลังดาวน์โหลด DLSS DLL จากมิร์เรอร์ UploadThing</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>การเข้าถึง google.com จากภายใน DLSS Swapper (เพื่อทดสอบการเชื่อมต่ออินเทอร์เน็ตทั่วไป)</value>
+    <value>การเข้าถึง google.com จากภายใน Swapshelf (เพื่อทดสอบการเชื่อมต่ออินเทอร์เน็ตทั่วไป)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>การเข้าถึง bing.com จากภายใน DLSS Swapper (เพื่อทดสอบการเชื่อมต่ออินเทอร์เน็ตทั่วไป)</value>
+    <value>การเข้าถึง bing.com จากภายใน Swapshelf (เพื่อทดสอบการเชื่อมต่ออินเทอร์เน็ตทั่วไป)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>กำลังดาวน์โหลด DLSS Swapper DLL ภายในตัว DLSS Swapper</value>
+    <value>กำลังดาวน์โหลด Swapshelf DLL ภายในตัว Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>กำลังดาวน์โหลด DLSS Swapper DLL ผ่านเว็บเบราว์เซอร์</value>
+    <value>กำลังดาวน์โหลด Swapshelf DLL ผ่านเว็บเบราว์เซอร์</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>กำลังดาวน์โหลดปกเกมจาก Steam</value>
@@ -862,13 +862,13 @@
     <value>กำลังดาวน์โหลดปกเกมจาก Epic Game Store</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>กำลังดาวน์โหลดปกเกมจากเซิร์ฟเวอร์ของ DLSS Swapper</value>
+    <value>กำลังดาวน์โหลดปกเกมจากเซิร์ฟเวอร์ของ Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>กำลังดาวน์โหลดปกเกมจากเซิร์ฟเวอร์สำรองของ DLSS Swapper</value>
+    <value>กำลังดาวน์โหลดปกเกมจากเซิร์ฟเวอร์สำรองของ Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>การค้นหา DNS ของเซิร์ฟเวอร์ไฟล์ DLSS Swapper</value>
+    <value>การค้นหา DNS ของเซิร์ฟเวอร์ไฟล์ Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>เปิดในเบราว์เซอร์</value>
@@ -925,7 +925,7 @@
     <value>วันที่ Build</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>ไม่สามารถเปิดไฟล์ Log จากโปรแกรม DLSS Swapper โดยตรงได้ กรุณาลองเปิดไฟล์ด้วยตนเอง</value>
+    <value>ไม่สามารถเปิดไฟล์ Log จากโปรแกรม Swapshelf โดยตรงได้ กรุณาลองเปิดไฟล์ด้วยตนเอง</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>คุณแน่ใจหรือไม่ที่จะลบเส้นทางที่เพิกเฉย {0} ออก?</value>
@@ -976,7 +976,7 @@
     <value>แจ้งปัญหา</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>คุณสามารถเสนอแนะฟีเจอร์หรือแจ้งปัญหาเกี่ยวกับ DLSS Swapper ได้</value>
+    <value>คุณสามารถเสนอแนะฟีเจอร์หรือแจ้งปัญหาเกี่ยวกับ Swapshelf ได้</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>เส้นทางที่เพิกเฉย</value>
@@ -1084,7 +1084,7 @@
     <value>ไม่พบข้อมูลการแปลที่จะบันทึก</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>ไม่ใช่ไฟล์แปลภาษาของ DLSS Swapper ที่ถูกต้อง</value>
+    <value>ไม่ใช่ไฟล์แปลภาษาของ Swapshelf ที่ถูกต้อง</value>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
     <value>ไม่สามารถเผยแพร่คำแปลได้ โปรดดู error log เพื่อดูข้อมูลเพิ่มเติม</value>
@@ -1117,7 +1117,7 @@
     <value>คู่มือการแปล</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>การแปลของคุณถูกสร้างขึ้นแล้ว โปรดดูคู่มือการแปล DLSS Swapper เพื่อดูว่าต้องทำอย่างไรต่อกับ {0}</value>
+    <value>การแปลของคุณถูกสร้างขึ้นแล้ว โปรดดูคู่มือการแปล Swapshelf เพื่อดูว่าต้องทำอย่างไรต่อกับ {0}</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>ความคืบหน้าการแปล</value>

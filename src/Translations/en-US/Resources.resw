@@ -121,7 +121,7 @@
     <value>Licences &amp; Acknowledgements</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="GamesPage_Status_UpToDate" xml:space="preserve">
     <value>Up to date</value>
@@ -136,7 +136,7 @@
     <value>No copy of the original is saved</value>
   </data>
   <data name="GamesPage_SaveACopyFailedTemplate" xml:space="preserve">
-    <value>Could not save a copy of the original DLLs for {0}. Close the game if it is running, and check DLSS Swapper can write to the game's folder.</value>
+    <value>Could not save a copy of the original DLLs for {0}. Close the game if it is running, and check Swapshelf can write to the game's folder.</value>
   </data>
   <data name="SettingsPage_HideNonDLSSGames" xml:space="preserve">
     <value>Only show games with an upscaler</value>
@@ -201,7 +201,7 @@
     <value>Launch</value>
   </data>
   <data name="PlayClean_ConfirmBodyTemplate" xml:space="preserve">
-    <value>Play {0} with the dlls as they are. The moment it closes, the ones below go back to the versions the game shipped with. Keep DLSS Swapper open while you play — the watch ends if the app does, and then nothing is changed.</value>
+    <value>Play {0} with the dlls as they are. The moment it closes, the ones below go back to the versions the game shipped with. Keep Swapshelf open while you play — the watch ends if the app does, and then nothing is changed.</value>
     <comment>{0} is the game's title</comment>
   </data>
   <data name="PlayClean_AlreadyWatchingTemplate" xml:space="preserve">
@@ -354,7 +354,7 @@
     <value>Let's find your games.</value>
   </data>
   <data name="FirstRun_Body" xml:space="preserve">
-    <value>DLSS Swapper reads the install lists Steam, GOG, Epic and the others already keep. It only looks — nothing on your computer changes until you ask for a swap, and when you do, a copy of the original file is saved first.</value>
+    <value>Swapshelf reads the install lists Steam, GOG, Epic and the others already keep. It only looks — nothing on your computer changes until you ask for a swap, and when you do, a copy of the original file is saved first.</value>
   </data>
   <data name="FirstRun_Scan" xml:space="preserve">
     <value>Scan my libraries</value>
@@ -893,7 +893,7 @@
     <comment>Here {0} will be the letter of the preset, eg. Preset K</comment>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>DLSS Swapper has failed to launch</value>
+    <value>Swapshelf has failed to launch</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>Please open a </value>
@@ -902,7 +902,7 @@
     <value>new issue</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value> on the DLSS Swapper GitHub repository and provide the following information in the additional context section.</value>
+    <value> on the Swapshelf GitHub repository and provide the following information in the additional context section.</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>Failed to Launch</value>
@@ -970,7 +970,7 @@
     <value>Updated {0} dlls across {1} games.</value>
   </data>
   <data name="Game_Reset_AccessDeniedAdmin" xml:space="preserve">
-    <value>Unable to reset to default. Running DLSS Swapper as administrator may fix this.</value>
+    <value>Unable to reset to default. Running Swapshelf as administrator may fix this.</value>
   </data>
   <data name="Game_Reset_FileInUse" xml:space="preserve">
     <value>Unable to reset to default. It appears to be in use by another program. Is your game currently running?</value>
@@ -985,10 +985,10 @@
     <value>Unable to swap dll as we are unable to write to the target directory.</value>
   </data>
   <data name="Game_Swap_AccessDeniedAdmin" xml:space="preserve">
-    <value>Unable to swap dll as we are unable to write to the target directory. Running DLSS Swapper as administrator may fix this.</value>
+    <value>Unable to swap dll as we are unable to write to the target directory. Running Swapshelf as administrator may fix this.</value>
   </data>
   <data name="Game_Swap_DllRecordNotFound" xml:space="preserve">
-    <value>This version could not be found in DLSS Swapper's list of known DLLs. Refresh and try again.</value>
+    <value>This version could not be found in Swapshelf's list of known DLLs. Refresh and try again.</value>
   </data>
   <data name="Game_Swap_DownloadedDllNotFound" xml:space="preserve">
     <value>Downloaded dll not found.</value>
@@ -1000,7 +1000,7 @@
     <value>The downloaded copy of this version failed its integrity check. Delete it on the Upscalers page and download it again.</value>
   </data>
   <data name="Game_Swap_LocalDllRecordNotFound" xml:space="preserve">
-    <value>DLSS Swapper has no local copy of this version. Download it on the Upscalers page and try again.</value>
+    <value>Swapshelf has no local copy of this version. Download it on the Upscalers page and try again.</value>
   </data>
   <data name="Game_Swap_NoDllRecordsToUpdate" xml:space="preserve">
     <value>This game does not contain this kind of dll, so there is nothing to swap.</value>
@@ -1121,7 +1121,7 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
     <value>This title is not manually added and can't be removed.</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>Are you sure you want to remove "{0}" from DLSS Swapper? This will not make any changes to DLSS files that have already been swapped.</value>
+    <value>Are you sure you want to remove "{0}" from Swapshelf? This will not make any changes to DLSS files that have already been swapped.</value>
     <comment>{0} is the game name</comment>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
@@ -1207,7 +1207,7 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
     <value>You must select your &lt;i&gt;game&lt;/i&gt; directory, not your &lt;i&gt;games&lt;/i&gt; directory.&lt;br/&gt;&lt;br/&gt;For example, if you have a game at:&lt;br/&gt;&lt;b&gt;C:\Program Files\MyGamesFolder\MyFavGame\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;You would select the &lt;b&gt;MyFavGame&lt;/b&gt; directory and not the &lt;b&gt;MyGamesFolder&lt;/b&gt; directory.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapper should find games from your installed game libraries automatically. If your game is not listed there may be a few settings preventing it. Please check:
+    <value>Swapshelf should find games from your installed game libraries automatically. If your game is not listed there may be a few settings preventing it. Please check:
 
 - 'Only show games with an upscaler' is turned off in Settings
 - The game's library is enabled under Game Libraries in Settings
@@ -1234,7 +1234,7 @@ If you have checked these and your game is still not showing up there may be a b
     <value>Create new GitHub issue</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>While loading your games, some DLLs were found that are not in DLSS Swapper's list of known DLLs.</value>
+    <value>While loading your games, some DLLs were found that are not in Swapshelf's list of known DLLs.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(GitHub account required)</value>
@@ -1478,7 +1478,7 @@ If you have checked these and your game is still not showing up there may be a b
     <comment>{0} is the currently installed version.</comment>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper just updated</value>
+    <value>Swapshelf just updated</value>
   </data>
   <data name="GitHubUpdater_DownloadComplete_Title" xml:space="preserve">
     <value>Download Complete</value>
@@ -1566,10 +1566,10 @@ If you have checked these and your game is still not showing up there may be a b
     <value>Downloads started</value>
   </data>
   <data name="LibraryPage_Error_NVIDIA_Downloading" xml:space="preserve">
-    <value>Unable to fetch file list from NVIDIA servers. Please try again later or check for DLSS Swapper updates.</value>
+    <value>Unable to fetch file list from NVIDIA servers. Please try again later or check for Swapshelf updates.</value>
   </data>
   <data name="LibraryPage_Error_NVIDIA_Importing" xml:space="preserve">
-    <value>Unable to import from NVIDIA servers. Please try again later or check for DLSS Swapper updates.</value>
+    <value>Unable to import from NVIDIA servers. Please try again later or check for Swapshelf updates.</value>
   </data>
   <data name="LibraryPage_ExportedDLLs" xml:space="preserve">
     <value>Exported DLLs: </value>
@@ -1657,16 +1657,16 @@ Only import dlls from sources you trust.</value>
     <value>Attempting to update</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper could not load its list of known DLLs, so it cannot swap anything. It will now close.</value>
+    <value>Swapshelf could not load its list of known DLLs, so it cannot swap anything. It will now close.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper must close</value>
+    <value>Swapshelf must close</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>GitHub Issues</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_Message" xml:space="preserve">
-    <value>DLSS Swapper could not read its list of known DLLs — not from the copy saved on this PC, and not from the internet.
+    <value>Swapshelf could not read its list of known DLLs — not from the copy saved on this PC, and not from the internet.
 
 If this keeps happening, please file a report on the issue tracker.</value>
   </data>
@@ -1705,22 +1705,22 @@ Because of this we recommend using caution for multiplayer games.</value>
     <value>Custom user agent test</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>Downloading DLSS Swapper DLL within DLSS Swapper with custom user agent</value>
+    <value>Downloading Swapshelf DLL within Swapshelf with custom user agent</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>Downloading DLSS DLL from UploadThing mirror</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>Accessing google.com from within DLSS Swapper (tests general internet connectivity)</value>
+    <value>Accessing google.com from within Swapshelf (tests general internet connectivity)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>Accessing bing.com from within DLSS Swapper (tests general internet connectivity)</value>
+    <value>Accessing bing.com from within Swapshelf (tests general internet connectivity)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>Downloading DLSS Swapper DLL within DLSS Swapper</value>
+    <value>Downloading Swapshelf DLL within Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>Downloading DLSS Swapper DLL from browser</value>
+    <value>Downloading Swapshelf DLL from browser</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>Downloading game cover from Steam</value>
@@ -1729,13 +1729,13 @@ Because of this we recommend using caution for multiplayer games.</value>
     <value>Downloading game cover from Epic Game Store</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>Downloading game cover from DLSS Swapper file server</value>
+    <value>Downloading game cover from Swapshelf file server</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>Downloading game cover from alternative DLSS Swapper file server</value>
+    <value>Downloading game cover from alternative Swapshelf file server</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>DNS lookup of DLSS Swapper file server</value>
+    <value>DNS lookup of Swapshelf file server</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>Open in browser</value>
@@ -1804,7 +1804,7 @@ Because of this we recommend using caution for multiplayer games.</value>
     <value>Build date</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>Could not open your log file directly from DLSS Swapper. Please try open it manually.</value>
+    <value>Could not open your log file directly from Swapshelf. Please try open it manually.</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>Are you sure you want to delete the ignored path {0}?</value>
@@ -1865,7 +1865,7 @@ Because of this we recommend using caution for multiplayer games.</value>
     <value>Give Feedback</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>You can suggest a feature or report a problem or on the DLSS Swapper</value>
+    <value>You can suggest a feature or report a problem or on the Swapshelf</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>Ignored Paths</value>
@@ -1998,7 +1998,7 @@ Because of this we recommend using caution for multiplayer games.</value>
     <value>No translation data was found to save.</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>Not a valid DLSS Swapper translation file.</value>
+    <value>Not a valid Swapshelf translation file.</value>
     <comment>Error that the json translation file the user opened is not valid.</comment>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
@@ -2032,7 +2032,7 @@ Because of this we recommend using caution for multiplayer games.</value>
     <value>Translation guide</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>Your translation has been created. Please look at the DLSS Swapper translation guide as to what to do next with {0}.</value>
+    <value>Your translation has been created. Please look at the Swapshelf translation guide as to what to do next with {0}.</value>
     <comment>Here {0} will be the filename of the translation file the user published.</comment>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">

@@ -681,7 +681,7 @@ public partial class GameGridPageModel : ObservableObject
             {
                 // This fork's tracker - a game this fork fails to list is this fork's bug to hear
                 // about, and upstream cannot see this code.
-                await Launcher.LaunchUriAsync(new Uri("https://github.com/dkflint723/dlss-swapper/issues"));
+                await Launcher.LaunchUriAsync(new Uri("https://github.com/dkflint723/swapshelf/issues"));
             }
         }
         else

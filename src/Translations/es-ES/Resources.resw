@@ -121,7 +121,7 @@
     <value>Licencias y Agradecimientos</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>Haz clic para copiar los detalles a continuación</value>
@@ -166,7 +166,7 @@
     <value>Perfil {0}</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>DLSS Swapper no se ha podido iniciar</value>
+    <value>Swapshelf no se ha podido iniciar</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>Por favor, abre un </value>
@@ -175,7 +175,7 @@
     <value>nuevo issue</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value> en el repositorio de GitHub de DLSS Swapper y proporciona la siguiente información en la sección de contexto adicional.</value>
+    <value> en el repositorio de GitHub de Swapshelf y proporciona la siguiente información en la sección de contexto adicional.</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>Fallo al Iniciar</value>
@@ -281,7 +281,7 @@ Para verificar qué perfil se está utilizando, por favor, activa el indicador e
     <value>Este título no se ha añadido manualmente y no se puede eliminar.</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>¿Estás seguro de que quieres eliminar "{0}" de DLSS Swapper? Esto no realizará ningún cambio en los archivos DLSS que ya se hayan intercambiado.</value>
+    <value>¿Estás seguro de que quieres eliminar "{0}" de Swapshelf? Esto no realizará ningún cambio en los archivos DLSS que ya se hayan intercambiado.</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>A continuación se muestran las múltiples DLLs encontradas. Usted todavía será capaz de intercambiar y restaurar DLLs como de costumbre, ya que vamos a hacer estas acciones a todos los DLLs a la vez. Sin embargo, debido a que no sabemos cuál de estas DLLs es utilizada por el juego, la versión DLL mostrada es la de la primera DLL detectada.</value>
@@ -350,7 +350,7 @@ Para verificar qué perfil se está utilizando, por favor, activa el indicador e
     <value>Debes seleccionar el directorio de tu &lt;i&gt;juego&lt;/i&gt;, no el directorio de tus &lt;i&gt;juegos&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;Por ejemplo, si tienes un juego en:&lt;br/&gt;&lt;b&gt;C:\Archivos de Programa\MiCarpetaDeJuegos\MiJuegoFavorito\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Deberías seleccionar el directorio &lt;b&gt;MiJuegoFavorito&lt;/b&gt; y no el directorio &lt;b&gt;MiCarpetaDeJuegos&lt;/b&gt;.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapper debería encontrar los juegos de tus bibliotecas de juegos instaladas automáticamente. Si tu juego no aparece en la lista, puede que algunos ajustes lo estén impidiendo. Por favor, comprueba:
+    <value>Swapshelf debería encontrar los juegos de tus bibliotecas de juegos instaladas automáticamente. Si tu juego no aparece en la lista, puede que algunos ajustes lo estén impidiendo. Por favor, comprueba:
 
 - El filtro de la lista de juegos no está configurado para "Ocultar juegos sin elementos intercambiables"
 - La biblioteca de juegos específica está habilitada en los ajustes
@@ -376,7 +376,7 @@ Si has comprobado esto y tu juego sigue sin aparecer, puede que haya un error. A
     <value>Crear nuevo issue en GitHub</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>Al cargar tus juegos se han descubierto algunas DLL nuevas que no están en el manifiesto de DLSS Swapper.</value>
+    <value>Al cargar tus juegos se han descubierto algunas DLL nuevas que no están en el manifiesto de Swapshelf.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(se requiere cuenta de GitHub)</value>
@@ -577,7 +577,7 @@ Si has comprobado esto y tu juego sigue sin aparecer, puede que haya un error. A
     <value>Actualmente tienes la versión {0} instalada.</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper se acaba de actualizar</value>
+    <value>Swapshelf se acaba de actualizar</value>
   </data>
   <data name="GitHubUpdater_UpdateAvailable" xml:space="preserve">
     <value>Actualización Disponible</value>
@@ -689,10 +689,10 @@ Solo importa dlls de fuentes en las que confíes.</value>
     <value>Intentando actualizar</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper no pudo cargar su archivo de manifiesto. Ahora se cerrará.</value>
+    <value>Swapshelf no pudo cargar su archivo de manifiesto. Ahora se cerrará.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper debe cerrarse</value>
+    <value>Swapshelf debe cerrarse</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>Issues de GitHub</value>
@@ -735,22 +735,22 @@ Debido a esto, recomendamos tener precaución con los juegos multijugador.</valu
     <value>Prueba de agente de usuario personalizada</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>Descargando el DLL de DLSS Swapper desde DLSS Swapper con un agente de usuario personalizado</value>
+    <value>Descargando el DLL de Swapshelf desde Swapshelf con un agente de usuario personalizado</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>Descargando el DLL de DLSS desde el mirror de UploadThing</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>Accediendo a google.com desde DLSS Swapper (prueba la conectividad general a internet)</value>
+    <value>Accediendo a google.com desde Swapshelf (prueba la conectividad general a internet)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>Accediendo a bing.com desde DLSS Swapper (prueba la conectividad general a internet)</value>
+    <value>Accediendo a bing.com desde Swapshelf (prueba la conectividad general a internet)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>Descargando el DLL de DLSS Swapper desde DLSS Swapper</value>
+    <value>Descargando el DLL de Swapshelf desde Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>Descargando el DLL de DLSS Swapper desde el navegador</value>
+    <value>Descargando el DLL de Swapshelf desde el navegador</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>Descargando la carátula del juego desde Steam</value>
@@ -759,13 +759,13 @@ Debido a esto, recomendamos tener precaución con los juegos multijugador.</valu
     <value>Descargando la carátula del juego desde la Epic Game Store</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>Descargando la carátula del juego desde el servidor de archivos de DLSS Swapper</value>
+    <value>Descargando la carátula del juego desde el servidor de archivos de Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>Descargando la carátula del juego desde el servidor de archivos alternativo de DLSS Swapper</value>
+    <value>Descargando la carátula del juego desde el servidor de archivos alternativo de Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>Búsqueda de DNS del servidor de archivos de DLSS Swapper</value>
+    <value>Búsqueda de DNS del servidor de archivos de Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>Abrir en el navegador</value>
@@ -801,7 +801,7 @@ Debido a esto, recomendamos tener precaución con los juegos multijugador.</valu
     <value>Fecha de compilación</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>No se ha podido abrir el archivo de registro directamente desde DLSS Swapper. Intente abrirlo manualmente.</value>
+    <value>No se ha podido abrir el archivo de registro directamente desde Swapshelf. Intente abrirlo manualmente.</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>¿Estás seguro de que quieres eliminar la ruta ignorada {0}?</value>
@@ -846,7 +846,7 @@ Debido a esto, recomendamos tener precaución con los juegos multijugador.</valu
     <value>Enviar comentarios</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>Puedes sugerir una función o informar de un problema en el DLSS Swapper</value>
+    <value>Puedes sugerir una función o informar de un problema en el Swapshelf</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>Rutas Ignoradas</value>
@@ -930,7 +930,7 @@ Debido a esto, recomendamos tener precaución con los juegos multijugador.</valu
     <value>No se encontraron datos de traducción para guardar.</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>No es un archivo de traducción válido de DLSS Swapper.</value>
+    <value>No es un archivo de traducción válido de Swapshelf.</value>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
     <value>No se ha podido publicar la traducción. Consulte el registro de errores para obtener más información.</value>
@@ -963,7 +963,7 @@ Debido a esto, recomendamos tener precaución con los juegos multijugador.</valu
     <value>Guía de traducción</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value> consulta la guía de traducción de DLSS Swapper para saber qué hacer a continuación con {0}.</value>
+    <value> consulta la guía de traducción de Swapshelf para saber qué hacer a continuación con {0}.</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>Progreso de la traducción</value>

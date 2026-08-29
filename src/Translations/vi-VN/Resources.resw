@@ -121,7 +121,7 @@
     <value>Giấy phép &amp; Lời cảm ơn</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>Nhấp để sao chép chi tiết bên dưới</value>
@@ -169,7 +169,7 @@
     <value>Preset {0} (Đã lỗi thời)</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>DLSS Swapper không thể khởi chạy</value>
+    <value>Swapshelf không thể khởi chạy</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>Vui lòng mở một </value>
@@ -178,7 +178,7 @@
     <value>vấn đề mới</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value> trên kho GitHub của DLSS Swapper và cung cấp thông tin sau trong phần ngữ cảnh bổ sung.</value>
+    <value> trên kho GitHub của Swapshelf và cung cấp thông tin sau trong phần ngữ cảnh bổ sung.</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>Không thể khởi chạy</value>
@@ -287,7 +287,7 @@ Tương tự áp dụng cho preset toàn cục. Nếu bạn chọn preset K như
     <value>Tiêu đề này không được thêm thủ công và không thể xóa.</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>Bạn có chắc chắn muốn xóa "{0}" khỏi DLSS Swapper? Điều này sẽ không thay đổi bất kỳ tệp DLSS nào đã được hoán đổi.</value>
+    <value>Bạn có chắc chắn muốn xóa "{0}" khỏi Swapshelf? Điều này sẽ không thay đổi bất kỳ tệp DLSS nào đã được hoán đổi.</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>Dưới đây là nhiều DLL được tìm thấy. Bạn vẫn có thể hoán đổi và khôi phục DLL như bình thường vì chúng tôi sẽ thực hiện các hành động này cho tất cả DLL cùng lúc. Tuy nhiên, vì chúng tôi không biết DLL nào trong số này được trò chơi sử dụng, phiên bản DLL hiển thị là của DLL đầu tiên được phát hiện.</value>
@@ -368,7 +368,7 @@ Tương tự áp dụng cho preset toàn cục. Nếu bạn chọn preset K như
     <value>Bạn phải chọn thư mục &lt;i&gt;trò chơi&lt;/i&gt; của bạn, không phải thư mục &lt;i&gt;trò chơi&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;Ví dụ, nếu bạn có trò chơi tại:&lt;br/&gt;&lt;b&gt;C:\Program Files\MyGamesFolder\MyFavGame\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Bạn sẽ chọn thư mục &lt;b&gt;MyFavGame&lt;/b&gt; và không phải thư mục &lt;b&gt;MyGamesFolder&lt;/b&gt;.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapper nên tìm trò chơi từ thư viện trò chơi đã cài đặt của bạn tự động. Nếu trò chơi của bạn không được liệt kê, có thể có một số cài đặt ngăn chặn. Vui lòng kiểm tra:
+    <value>Swapshelf nên tìm trò chơi từ thư viện trò chơi đã cài đặt của bạn tự động. Nếu trò chơi của bạn không được liệt kê, có thể có một số cài đặt ngăn chặn. Vui lòng kiểm tra:
 
 - Bộ lọc danh sách trò chơi không được đặt thành "Ẩn trò chơi không có mục có thể hoán đổi"
 - Thư viện trò chơi cụ thể được bật trong cài đặt
@@ -394,7 +394,7 @@ Nếu bạn đã kiểm tra những điều này và trò chơi của bạn vẫ
     <value>Tạo vấn đề GitHub mới</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>Trong khi tải trò chơi của bạn, một số DLL mới đã được phát hiện không có trong manifest DLSS Swapper.</value>
+    <value>Trong khi tải trò chơi của bạn, một số DLL mới đã được phát hiện không có trong manifest Swapshelf.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(Yêu cầu tài khoản GitHub)</value>
@@ -601,7 +601,7 @@ Nếu bạn đã kiểm tra những điều này và trò chơi của bạn vẫ
     <value>Bạn hiện đang có {0} được cài đặt.</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper vừa được cập nhật</value>
+    <value>Swapshelf vừa được cập nhật</value>
   </data>
   <data name="GitHubUpdater_UpdateAvailable" xml:space="preserve">
     <value>Có Cập Nhật</value>
@@ -713,10 +713,10 @@ Chỉ nhập dll từ nguồn bạn tin cậy.</value>
     <value>Đang cố cập nhật</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper không thể tải tệp manifest. Nó sẽ đóng bây giờ.</value>
+    <value>Swapshelf không thể tải tệp manifest. Nó sẽ đóng bây giờ.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper phải đóng</value>
+    <value>Swapshelf phải đóng</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>Vấn Đề GitHub</value>
@@ -759,22 +759,22 @@ Vì lý do này, chúng tôi khuyên nghịch cẩn thận với trò chơi nhi�
     <value>Kiểm tra user agent tùy chỉnh</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>Tải xuống DLL DLSS Swapper trong DLSS Swapper với user agent tùy chỉnh</value>
+    <value>Tải xuống DLL Swapshelf trong Swapshelf với user agent tùy chỉnh</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>Tải xuống DLL DLSS từ mirror UploadThing</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>Truy cập google.com từ trong DLSS Swapper (kiểm tra kết nối internet chung)</value>
+    <value>Truy cập google.com từ trong Swapshelf (kiểm tra kết nối internet chung)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>Truy cập bing.com từ trong DLSS Swapper (kiểm tra kết nối internet chung)</value>
+    <value>Truy cập bing.com từ trong Swapshelf (kiểm tra kết nối internet chung)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>Tải xuống DLL DLSS Swapper trong DLSS Swapper</value>
+    <value>Tải xuống DLL Swapshelf trong Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>Tải xuống DLL DLSS Swapper từ trình duyệt</value>
+    <value>Tải xuống DLL Swapshelf từ trình duyệt</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>Tải xuống bìa trò chơi từ Steam</value>
@@ -783,13 +783,13 @@ Vì lý do này, chúng tôi khuyên nghịch cẩn thận với trò chơi nhi�
     <value>Tải xuống bìa trò chơi từ Epic Game Store</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>Tải xuống bìa trò chơi từ máy chủ tệp DLSS Swapper</value>
+    <value>Tải xuống bìa trò chơi từ máy chủ tệp Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>Tải xuống bìa trò chơi từ máy chủ tệp DLSS Swapper thay thế</value>
+    <value>Tải xuống bìa trò chơi từ máy chủ tệp Swapshelf thay thế</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>Tra cứu DNS của máy chủ tệp DLSS Swapper</value>
+    <value>Tra cứu DNS của máy chủ tệp Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>Mở trong trình duyệt</value>
@@ -825,7 +825,7 @@ Vì lý do này, chúng tôi khuyên nghịch cẩn thận với trò chơi nhi�
     <value>Ngày xây dựng</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>Không thể mở tệp nhật ký trực tiếp từ DLSS Swapper. Vui lòng thử mở thủ công.</value>
+    <value>Không thể mở tệp nhật ký trực tiếp từ Swapshelf. Vui lòng thử mở thủ công.</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>Bạn có chắc chắn muốn xóa đường dẫn bỏ qua {0} không?</value>
@@ -870,7 +870,7 @@ Vì lý do này, chúng tôi khuyên nghịch cẩn thận với trò chơi nhi�
     <value>Đưa Phản Hồi</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>Bạn có thể gợi ý tính năng hoặc báo cáo vấn đề trên DLSS Swapper</value>
+    <value>Bạn có thể gợi ý tính năng hoặc báo cáo vấn đề trên Swapshelf</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>Đường Dẫn Bỏ Qua</value>
@@ -972,7 +972,7 @@ Vì lý do này, chúng tôi khuyên nghịch cẩn thận với trò chơi nhi�
     <value>Không tìm thấy dữ liệu bản dịch để lưu.</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>Không phải tệp dịch DLSS Swapper hợp lệ.</value>
+    <value>Không phải tệp dịch Swapshelf hợp lệ.</value>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
     <value>Không thể xuất bản bản dịch. Vui lòng xem nhật ký lỗi để biết thêm thông tin.</value>
@@ -1005,7 +1005,7 @@ Vì lý do này, chúng tôi khuyên nghịch cẩn thận với trò chơi nhi�
     <value>Hướng dẫn dịch</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>Bản dịch của bạn đã được tạo. Vui lòng xem hướng dẫn dịch DLSS Swapper để biết phải làm gì tiếp theo với {0}.</value>
+    <value>Bản dịch của bạn đã được tạo. Vui lòng xem hướng dẫn dịch Swapshelf để biết phải làm gì tiếp theo với {0}.</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>Tiến độ dịch</value>

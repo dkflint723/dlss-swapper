@@ -291,7 +291,7 @@ public partial class LibraryPageModel : ObservableObject
                 new FileSystemHelper.FileFilter("Zip files", "*.zip"),
             };
 
-            finalExportZip = FileSystemHelper.SaveFile(hWnd, fileFilters, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "dlss_swapper_export.zip", defaultExtension: "zip");
+            finalExportZip = FileSystemHelper.SaveFile(hWnd, fileFilters, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "swapshelf_export.zip", defaultExtension: "zip");
 
             // User cancelled.
             if (string.IsNullOrWhiteSpace(finalExportZip))
@@ -1542,7 +1542,7 @@ public partial class LibraryPageModel : ObservableObject
 
         try
         {
-            var exportName = $"dlss_swapper_export_{dllRecord.DisplayName.Replace(" ", "_")}.zip";
+            var exportName = $"swapshelf_export_{dllRecord.DisplayName.Replace(" ", "_")}.zip";
 
             var expectedPathDirectory = Path.GetDirectoryName(dllRecord.LocalRecord.ExpectedPath);
             if (string.IsNullOrWhiteSpace(expectedPathDirectory) == false)

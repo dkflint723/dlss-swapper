@@ -121,7 +121,7 @@
     <value>Lisanslar ve Teşekkürler</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>Aşağıdaki ayrıntıları kopyalamak için tıklayın</value>
@@ -157,10 +157,10 @@
     <value>İndirme gerekli</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>DLSS Swapper başlatılamadı</value>
+    <value>Swapshelf başlatılamadı</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
-    <value>Lütfen DLSS Swapper GitHub deposunda </value>
+    <value>Lütfen Swapshelf GitHub deposunda </value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial2" xml:space="preserve">
     <value>yeni bir sorun oluşturun</value>
@@ -272,7 +272,7 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
     <value>Bu başlık manuel olarak eklenmemiştir ve kaldırılamaz.</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>"{0}" oyununu DLSS Swapper'dan kaldırmak istediğinizden emin misiniz? Bu işlem, daha önce değiştirilmiş olan DLSS dosyalarında herhangi bir değişiklik yapmayacaktır.</value>
+    <value>"{0}" oyununu Swapshelf'dan kaldırmak istediğinizden emin misiniz? Bu işlem, daha önce değiştirilmiş olan DLSS dosyalarında herhangi bir değişiklik yapmayacaktır.</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>Aşağıda bulunan birden fazla DLL gösterilmektedir. Tüm DLL'ler için bu işlemleri aynı anda yapacağımızdan, DLL'leri her zamanki gibi değiştirebilir ve geri yükleyebilirsiniz. Ancak, bu DLL'lerden hangisinin oyun tarafından kullanıldığını bilmediğimiz için gösterilen DLL sürümü, tespit edilen ilk DLL'e aittir.</value>
@@ -341,7 +341,7 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
     <value>Dizinini değil, oyun dizininizi seçmelisiniz. Örneğin, oyununuz şu konumdaysa: C:\Program Files\MyGamesFolder\MyFavGameMyGamesFolder dizinini değil, MyFavGame dizinini seçmelisiniz.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapper, yüklü oyun kütüphanelerinizdeki oyunları otomatik olarak bulmalıdır. Eğer oyununuz listede yoksa, bunu engelleyen birkaç ayar olabilir. Lütfen şunları kontrol edin: Oyun listesi filtresinin "Değiştirilebilir öğesi olmayan oyunları gizle" olarak ayarlanmadığından emin olun. İlgili oyun kütüphanesinin ayarlarda etkinleştirildiğinden emin olun. Bunları kontrol etmenize rağmen oyununuz hala görünmüyorsa, bir hata olabilir. Gelecekte oyunlarınızı daha iyi tespit edebilmemiz ve bir düzeltme yapabilmemiz için sorunu GitHub depomuzda bildirirseniz memnun oluruz.</value>
+    <value>Swapshelf, yüklü oyun kütüphanelerinizdeki oyunları otomatik olarak bulmalıdır. Eğer oyununuz listede yoksa, bunu engelleyen birkaç ayar olabilir. Lütfen şunları kontrol edin: Oyun listesi filtresinin "Değiştirilebilir öğesi olmayan oyunları gizle" olarak ayarlanmadığından emin olun. İlgili oyun kütüphanesinin ayarlarda etkinleştirildiğinden emin olun. Bunları kontrol etmenize rağmen oyununuz hala görünmüyorsa, bir hata olabilir. Gelecekte oyunlarınızı daha iyi tespit edebilmemiz ve bir düzeltme yapabilmemiz için sorunu GitHub depomuzda bildirirseniz memnun oluruz.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteTitle" xml:space="preserve">
     <value>Oyunları manuel ekleme notu</value>
@@ -362,7 +362,7 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
     <value>Yeni GitHub sorunu oluştur</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>Oyunlarınız yüklenirken, DLSS Swapper manifestosunda bulunmayan bazı yeni DLL'ler keşfedildi.</value>
+    <value>Oyunlarınız yüklenirken, Swapshelf manifestosunda bulunmayan bazı yeni DLL'ler keşfedildi.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(GitHub hesabı gereklidir)</value>
@@ -533,7 +533,7 @@ Hangi ön ayarın gerçekten kullanıldığını doğrulamak için, DLSS ekran �
     <value>Şu anda {0} sürümü yüklü.</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper az önce güncellendi</value>
+    <value>Swapshelf az önce güncellendi</value>
   </data>
   <data name="GitHubUpdater_UpdateAvailable" xml:space="preserve">
     <value>Güncelleme Mevcut</value>
@@ -645,10 +645,10 @@ Yalnızca güvendiğiniz kaynaklardan DLL'leri içe aktarın.</value>
     <value>Güncelleme deneniyor</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper, manifesto dosyasını yükleyemedi. Şimdi kapanacak.</value>
+    <value>Swapshelf, manifesto dosyasını yükleyemedi. Şimdi kapanacak.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper Kapanmalı</value>
+    <value>Swapshelf Kapanmalı</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>GitHub Sorunları</value>
@@ -691,22 +691,22 @@ Bu nedenle çok oyunculu oyunlarda dikkatli olmanızı öneririz.</value>
     <value>Özel kullanıcı aracısı testi</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>Özel kullanıcı aracısı ile DLSS Swapper içinden DLSS Swapper DLL'i indiriliyor</value>
+    <value>Özel kullanıcı aracısı ile Swapshelf içinden Swapshelf DLL'i indiriliyor</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>UploadThing kaynağından DLSS DLL'i indiriliyor</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>DLSS Swapper içinden google.com'a erişiliyor (genel internet bağlantısını test eder)</value>
+    <value>Swapshelf içinden google.com'a erişiliyor (genel internet bağlantısını test eder)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>DLSS Swapper içinden bing.com'a erişiliyor (genel internet bağlantısını test eder)</value>
+    <value>Swapshelf içinden bing.com'a erişiliyor (genel internet bağlantısını test eder)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>DLSS Swapper içinden DLSS Swapper DLL'i indiriliyor</value>
+    <value>Swapshelf içinden Swapshelf DLL'i indiriliyor</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>Tarayıcıdan DLSS Swapper DLL'i indiriliyor</value>
+    <value>Tarayıcıdan Swapshelf DLL'i indiriliyor</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>Steam'den oyun kapağı indiriliyor</value>
@@ -715,13 +715,13 @@ Bu nedenle çok oyunculu oyunlarda dikkatli olmanızı öneririz.</value>
     <value>Epic Game Store'dan oyun kapağı indiriliyor</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>DLSS Swapper dosya sunucusundan oyun kapağı indiriliyor</value>
+    <value>Swapshelf dosya sunucusundan oyun kapağı indiriliyor</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>Alternatif DLSS Swapper dosya sunucusundan oyun kapağı indiriliyor</value>
+    <value>Alternatif Swapshelf dosya sunucusundan oyun kapağı indiriliyor</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>DLSS Swapper dosya sunucusunun DNS sorgusu</value>
+    <value>Swapshelf dosya sunucusunun DNS sorgusu</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>Tarayıcıda aç</value>
@@ -757,7 +757,7 @@ Bu nedenle çok oyunculu oyunlarda dikkatli olmanızı öneririz.</value>
     <value>Derleme tarihi</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>Günlük (log) dosyanız doğrudan DLSS Swapper'dan açılamadı. Lütfen manuel olarak açmayı deneyin.</value>
+    <value>Günlük (log) dosyanız doğrudan Swapshelf'dan açılamadı. Lütfen manuel olarak açmayı deneyin.</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>Yoksayılan {0} yolunu silmek istediğinizden emin misiniz?</value>
@@ -802,7 +802,7 @@ Bu nedenle çok oyunculu oyunlarda dikkatli olmanızı öneririz.</value>
     <value>Geri Bildirimde Bulun</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>DLSS Swapper'da bir özellik önerebilir veya bir sorun bildirebilirsiniz</value>
+    <value>Swapshelf'da bir özellik önerebilir veya bir sorun bildirebilirsiniz</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>Yoksayılan Yollar</value>
@@ -886,7 +886,7 @@ Bu nedenle çok oyunculu oyunlarda dikkatli olmanızı öneririz.</value>
     <value>Kaydedilecek çeviri verisi bulunamadı.</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>Geçerli bir DLSS Swapper çeviri dosyası değil.</value>
+    <value>Geçerli bir Swapshelf çeviri dosyası değil.</value>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
     <value>Çeviri yayınlanamadı. Daha fazla bilgi için lütfen hata günlüğünüze (error log) bakın.</value>
@@ -919,7 +919,7 @@ Bu nedenle çok oyunculu oyunlarda dikkatli olmanızı öneririz.</value>
     <value>Çeviri kılavuzu</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>Çeviriniz oluşturuldu. {0} ile bundan sonra ne yapacağınızı öğrenmek için lütfen DLSS Swapper çeviri kılavuzuna bakın.</value>
+    <value>Çeviriniz oluşturuldu. {0} ile bundan sonra ne yapacağınızı öğrenmek için lütfen Swapshelf çeviri kılavuzuna bakın.</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>Çeviri ilerlemesi</value>

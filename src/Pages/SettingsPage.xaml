@@ -577,7 +577,7 @@
                     <RichTextBlock Margin="0,24,0,0">
                         <Paragraph Margin="0,12,0,0">
                             <Run Text="{x:Bind ViewModel.TranslationProperties.ThisBuildText, Mode=OneWay}" />
-                            <Hyperlink NavigateUri="https://github.com/dkflint723/dlss-swapper">dkflint723/dlss-swapper</Hyperlink>
+                            <Hyperlink NavigateUri="https://github.com/dkflint723/swapshelf">dkflint723/swapshelf</Hyperlink>
                         </Paragraph>
                         <Paragraph Margin="0,12,0,0">
                             <Run Text="{x:Bind ViewModel.TranslationProperties.BasedOnText, Mode=OneWay}" />
@@ -606,7 +606,7 @@
                     <RichTextBlock Margin="0,12,0,0">
                         <Paragraph>
                             <Run Text="{x:Bind ViewModel.TranslationProperties.FeedbackForkInfoText, Mode=OneWay}" />
-                            <Hyperlink NavigateUri="https://github.com/dkflint723/dlss-swapper/issues">dkflint723/dlss-swapper/issues</Hyperlink>
+                            <Hyperlink NavigateUri="https://github.com/dkflint723/swapshelf/issues">dkflint723/swapshelf/issues</Hyperlink>
                         </Paragraph>
                     </RichTextBlock>
 

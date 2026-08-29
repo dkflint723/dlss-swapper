@@ -121,7 +121,7 @@
     <value>許可證與使用須知</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>按下來複製下列的詳細資訊</value>
@@ -157,10 +157,10 @@
     <value>需要下載</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>DLSS Swapper 啟動失敗</value>
+    <value>Swapshelf 啟動失敗</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
-    <value>請在 DLSS Swapper 的 GitHub 儲存庫建立一個</value>
+    <value>請在 Swapshelf 的 GitHub 儲存庫建立一個</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial2" xml:space="preserve">
     <value>新的問題回報</value>
@@ -272,7 +272,7 @@
     <value>這個標題並非手動新增，無法移除。</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>確定要從 DLSS Swapper 中移除「{0}」嗎？這不會影響已替換的 DLSS 檔案。</value>
+    <value>確定要從 Swapshelf 中移除「{0}」嗎？這不會影響已替換的 DLSS 檔案。</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>下列為掃描到的多個 DLL 檔案。您仍然可以像往常一樣替換並恢復 DLL 檔案，因為我們會對所有 DLL 檔案同時執行這些操作。然而，由於我們不確定遊戲會用到這些 DLL 檔案中的哪一個，因此顯示的 DLL 檔案版本為掃描到的第一個 DLL 檔案版本。</value>
@@ -341,7 +341,7 @@
     <value>您必須選取您的 &lt;i&gt;遊戲&lt;/i&gt; 目錄，而不是 &lt;i&gt;遊戲平台&lt;/i&gt; 目錄。&lt;br/&gt;&lt;br/&gt;舉例來說，若您的遊戲安裝於：&lt;br/&gt;&lt;b&gt;C:\Program Files\MyGamesFolder\MyFavGame\&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;您應該選取 &lt;b&gt;MyFavGame&lt;/b&gt; 目錄，而不是 &lt;b&gt;MyGamesFolder&lt;/b&gt; 目錄。</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>DLSS Swapper 通常會自動從您已安裝的遊戲平台中掃描到遊戲。如果您的遊戲沒有顯示，可能有幾項設定阻礙了它。請檢查以下因素：
+    <value>Swapshelf 通常會自動從您已安裝的遊戲平台中掃描到遊戲。如果您的遊戲沒有顯示，可能有幾項設定阻礙了它。請檢查以下因素：
 
 - 遊戲列表篩選器未設定為「隱藏無法替換 DLL 檔案的遊戲」
 - 未在設定中已啟用特定的遊戲平台
@@ -367,7 +367,7 @@
     <value>建立一個新的 GitHub 問題回報</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>我們在載入您的遊戲時發現了一些新版本的 DLL，這些 DLL 尚未被加入到 DLSS Swapper 的檔案清單中。</value>
+    <value>我們在載入您的遊戲時發現了一些新版本的 DLL，這些 DLL 尚未被加入到 Swapshelf 的檔案清單中。</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(需要 GitHub 帳號)</value>
@@ -538,7 +538,7 @@
     <value>您目前有 {0} 已安裝。</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper 已更新。</value>
+    <value>Swapshelf 已更新。</value>
   </data>
   <data name="GitHubUpdater_UpdateAvailable" xml:space="preserve">
     <value>有更新可供安裝</value>
@@ -650,10 +650,10 @@
     <value>正在嘗試更新</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper 無法載入其清單檔案，即將關閉。</value>
+    <value>Swapshelf 無法載入其清單檔案，即將關閉。</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper 需要關閉。</value>
+    <value>Swapshelf 需要關閉。</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>GitHub 問題回報</value>
@@ -670,7 +670,7 @@
     <value>替換 DLSS 版本通常不會被視為修改檔案（也就是作弊），但如果您遊戲資料夾中的檔案與遊戲新版本的檔案不符，某些反作弊系統可能會試圖阻擋遊戲啟動。\n\n因此，如果您遊玩的遊戲是多人線上遊戲，而且有使用反作弊系統，請務必小心謹慎。</value>
   </data>
   <data name="MainWindow_NoteForMultiplayerGames_Title" xml:space="preserve">
-    <value>歡迎使用 DLSS Swapper，在使用前請先閱讀此內容</value>
+    <value>歡迎使用 Swapshelf，在使用前請先閱讀此內容</value>
   </data>
   <data name="NetworkTesterPage_BrowserTesterStillDoesNotWork" xml:space="preserve">
     <value>無法下載</value>
@@ -706,7 +706,7 @@
     <value>測試 bing.com 的回應來檢查網路連線</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>在 DLSS Swapper 清單中下載 DLSS DLL 檔案測試</value>
+    <value>在 Swapshelf 清單中下載 DLSS DLL 檔案測試</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
     <value>從瀏覽器下載 DLL 檔案測試</value>
@@ -718,13 +718,13 @@
     <value>從 Epic Games 商店下載遊戲封面圖片</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>從 DLSS Swapper 的伺服器下載遊戲封面圖片</value>
+    <value>從 Swapshelf 的伺服器下載遊戲封面圖片</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>從 DLSS Swapper 的其他伺服器下載遊戲封面圖片</value>
+    <value>從 Swapshelf 的其他伺服器下載遊戲封面圖片</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>查詢 DLSS Swapper 的 DNS 伺服器位址</value>
+    <value>查詢 Swapshelf 的 DNS 伺服器位址</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>在瀏覽器中開啟</value>
@@ -760,7 +760,7 @@
     <value>建置日期</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>無法直接從 DLSS Swapper 開啟您的日誌，請嘗試手動開啟。</value>
+    <value>無法直接從 Swapshelf 開啟您的日誌，請嘗試手動開啟。</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>您確定要刪除被忽略的路徑 {0} 嗎？</value>
@@ -805,7 +805,7 @@
     <value>回饋</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>您可以在 DLSS Swapper 上提出功能建議或回報問題。</value>
+    <value>您可以在 Swapshelf 上提出功能建議或回報問題。</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>忽略目錄</value>
@@ -889,7 +889,7 @@
     <value>找不到可供儲存的翻譯資料。</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>DLSS Swapper 翻譯檔案無效。</value>
+    <value>Swapshelf 翻譯檔案無效。</value>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
     <value>無法發佈翻譯，請參閱錯誤日誌來取得更多資訊。</value>
@@ -922,7 +922,7 @@
     <value>翻譯指南</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>您的翻譯已建立，請參閱 DLSS Swapper 翻譯指南，來了解接下來如何處理 {0}。</value>
+    <value>您的翻譯已建立，請參閱 Swapshelf 翻譯指南，來了解接下來如何處理 {0}。</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>翻譯進度</value>

@@ -34,7 +34,7 @@ internal class GitHubUpdater
     /// One constant, because there are two callers - the launch check and the settings button -
     /// and a repository named separately in each is a repository that ends up different in each.
     /// </remarks>
-    const string Repository = "dkflint723/dlss-swapper";
+    const string Repository = "dkflint723/swapshelf";
 
     /// <summary>
     /// Queries GitHub and returns the latest GitHubRelease object, or null if the request failed.

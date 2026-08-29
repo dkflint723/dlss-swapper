@@ -121,7 +121,7 @@
     <value>التراخيص والشكر والتقدير</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper</value>
+    <value>Swapshelf</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>انقر لنسخ التفاصيل أدناه</value>
@@ -157,7 +157,7 @@
     <value>يتطلب التنزيل</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>فشل تشغيل DLSS Swapper</value>
+    <value>فشل تشغيل Swapshelf</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>يُرجى فتح </value>
@@ -166,7 +166,7 @@
     <value>بلاغ جديد</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value>في مستودع GitHub الخاص بـ DLSS Swapper وتقديم المعلومات التالية في قسم "جهات الاتصال الإضافية"</value>
+    <value>في مستودع GitHub الخاص بـ Swapshelf وتقديم المعلومات التالية في قسم "جهات الاتصال الإضافية"</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>فشل التشغيل</value>
@@ -274,7 +274,7 @@
     <value>لم تتم إضافة هذا العنوان يدويًا ولا يمكن حذفه.</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>هل أنت متأكد أنك تريد إزالة "{0}" من DLSS Swapper؟ هذا لن يُحدث أي تغييرات في ملفات DLSS التي تم تبديلها بالفعل.</value>
+    <value>هل أنت متأكد أنك تريد إزالة "{0}" من Swapshelf؟ هذا لن يُحدث أي تغييرات في ملفات DLSS التي تم تبديلها بالفعل.</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>الموضح ادناه هي بعض من ملفات الDLLs التي وجدت. لا يزال بإمكانك تبديل واستعادة ملفات DLL كالمعتاد، حيث سنقوم بتنفيذ هذه العمليات على جميع الملفات دفعة واحدة. ومع ذلك، نظرًا لأننا لا نعلم أي من ملفات DLL هذه يتم استخدامها من قِبل اللعبة، فإن الإصدار المعروض هو لأحد أول الملفات التي تم اكتشافها.</value>
@@ -340,7 +340,7 @@
     <value>يجب عليك اختيار مجلد &lt;i&gt;game&lt;/i&gt; الخاص بك، وليس مجلد &lt;i&gt;games&lt;/i&gt; بالكامل.&lt;br/&gt;&lt;br/&gt;على سبيل المثال، إذا كانت لعبتك موجودة في:&lt;br/&gt;&lt;b&gt;C:\Program Files\MyGamesFolder\MyFavGame&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;فستقوم باختيار مجلد &lt;b&gt;MyFavGame&lt;/b&gt; (أي الـ &lt;b&gt;directory&lt;/b&gt; الخاص باللعبة نفسها)، وليس مجلد &lt;b&gt;MyGamesFolder&lt;/b&gt;.</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>يجب أن يتمكن DLSS Swapper من العثور على الألعاب من مكتبات الألعاب المثبّتة لديك بشكل تلقائي.
+    <value>يجب أن يتمكن Swapshelf من العثور على الألعاب من مكتبات الألعاب المثبّتة لديك بشكل تلقائي.
 إذا لم تكن لعبتك مدرجة، فقد تكون هناك بعض الإعدادات التي تمنع ظهورها. يُرجى التحقق مما يلي:
 
 - أن فلتر قائمة الألعاب غير مضبوط على "إخفاء الألعاب التي لا تحتوي على عناصر قابلة للتبديل"
@@ -369,7 +369,7 @@
     <value>إنشاء بلاغ جديد في GitHub</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>أثناء تحميل الألعاب، تم اكتشاف بعض ملفات DLL الجديدة التي لا توجد في manifest الخاص بـ DLSS Swapper.</value>
+    <value>أثناء تحميل الألعاب، تم اكتشاف بعض ملفات DLL الجديدة التي لا توجد في manifest الخاص بـ Swapshelf.</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(يتطلب حساب GitHub)</value>
@@ -534,7 +534,7 @@
     <value>لديك حاليًا {0} مُثبّتًا</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>تم تحديث DLSS Swapper للتو</value>
+    <value>تم تحديث Swapshelf للتو</value>
   </data>
   <data name="GitHubUpdater_UpdateAvailable" xml:space="preserve">
     <value>هناك تحديث متوفر</value>
@@ -639,10 +639,10 @@
     <value>تجرى محاولة تحديث</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>لم يتمكن DLSS Swapper من تحميل ملف manifest الخاص به. سيتم إغلاقه الآن.</value>
+    <value>لم يتمكن Swapshelf من تحميل ملف manifest الخاص به. سيتم إغلاقه الآن.</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>يجب إغلاق DLSS Swapper</value>
+    <value>يجب إغلاق Swapshelf</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>بلاغات GitHub</value>
@@ -682,22 +682,22 @@
     <value>اختبار user agent مخصص</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>تنزيل ملف DLL الخاص بـ DLSS Swapper من داخل DLSS Swapper باستخدام user agent مخصص</value>
+    <value>تنزيل ملف DLL الخاص بـ Swapshelf من داخل Swapshelf باستخدام user agent مخصص</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>تنزيل ملف DLL الخاص بـ DLSS من mirror على UploadThing</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest1Title" xml:space="preserve">
-    <value>الوصول إلى google.com من داخل DLSS Swapper (لاختبار اتصال الإنترنت العام)</value>
+    <value>الوصول إلى google.com من داخل Swapshelf (لاختبار اتصال الإنترنت العام)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest2Title" xml:space="preserve">
-    <value>الوصول إلى bing.com من داخل DLSS Swapper (لاختبار اتصال الإنترنت العام)</value>
+    <value>الوصول إلى bing.com من داخل Swapshelf (لاختبار اتصال الإنترنت العام)</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>تنزيل ملف DLL الخاص بـ DLSS Swapper من داخل DLSS Swapper</value>
+    <value>تنزيل ملف DLL الخاص بـ Swapshelf من داخل Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
-    <value>تنزيل ملف DLL الخاص بـ DLSS Swapper من المتصفح</value>
+    <value>تنزيل ملف DLL الخاص بـ Swapshelf من المتصفح</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest5Title" xml:space="preserve">
     <value>تنزيل صورة غلاف اللعبة من Steam</value>
@@ -706,13 +706,13 @@
     <value>تنزيل صورة غلاف اللعبة من Epic Game Store</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>تنزيل صورة غلاف اللعبة من خادم ملفات DLSS Swapper</value>
+    <value>تنزيل صورة غلاف اللعبة من خادم ملفات Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>تنزيل صورة غلاف اللعبة من خادم ملفات بديل لـ DLSS Swapper</value>
+    <value>تنزيل صورة غلاف اللعبة من خادم ملفات بديل لـ Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>البحث عن DNS الخاص بخادم ملفات DLSS Swapper</value>
+    <value>البحث عن DNS الخاص بخادم ملفات Swapshelf</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>فتح في المتصفح</value>
@@ -744,7 +744,7 @@
     <value>السماح بملفات DLL الخاصة بالتنقيح (Debug DLLs)</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>تعذّر فتح ملف السجل مباشرة من DLSS Swapper. يُرجى فتحه يدويًا.</value>
+    <value>تعذّر فتح ملف السجل مباشرة من Swapshelf. يُرجى فتحه يدويًا.</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>هل أنت متأكد أنك تريد حذف المسار المُتجاهل {0}؟</value>
@@ -789,7 +789,7 @@
     <value>إرسال ملاحظات</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>يمكنك اقتراح ميزة أو الإبلاغ عن مشكلة على DLSS Swapper</value>
+    <value>يمكنك اقتراح ميزة أو الإبلاغ عن مشكلة على Swapshelf</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>المسارات المُتجاهلة</value>
@@ -873,7 +873,7 @@
     <value>لم يتم العثور على بيانات ترجمة لكي تحفظ</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>هذا ليس ملف ترجمة صالح لـ DLSS Swapper</value>
+    <value>هذا ليس ملف ترجمة صالح لـ Swapshelf</value>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
     <value>تعذّر نشر الترجمة. يُرجى مراجعة سجل الأخطاء لمزيد من المعلومات.</value>
@@ -906,7 +906,7 @@
     <value>دليل الترجمة</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>تم إنشاء الترجمة الخاصة بك. يُرجى مراجعة دليل ترجمة DLSS Swapper لمعرفة ما يجب فعله بعد ذلك باستخدام {0}.</value>
+    <value>تم إنشاء الترجمة الخاصة بك. يُرجى مراجعة دليل ترجمة Swapshelf لمعرفة ما يجب فعله بعد ذلك باستخدام {0}.</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>تقدم الترجمة</value>

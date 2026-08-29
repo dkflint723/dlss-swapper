@@ -268,7 +268,7 @@ public sealed partial class App : Application, IUiDispatcher
     {
         try
         {
-            using (var dlssSwapperRegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\DLSS Swapper", true))
+            using (var dlssSwapperRegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Swapshelf", true))
             {
                 if (dlssSwapperRegistryKey is null)
                 {
@@ -283,7 +283,7 @@ public sealed partial class App : Application, IUiDispatcher
                 }
 
                 long installSize = 0;
-                installSize += CalculateDirectorySize(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DLSS Swapper"));
+                installSize += CalculateDirectorySize(Storage.StoragePath);
 
                 var installLocation = dlssSwapperRegistryKey.GetValue("InstallLocation") as string;
                 if (string.IsNullOrEmpty(installLocation) == false && Directory.Exists(installLocation) == true)

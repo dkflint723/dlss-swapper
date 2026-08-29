@@ -121,7 +121,7 @@
     <value>许可证 &amp; 致谢</value>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>DLSS Swapper - DLSS 管理程序</value>
+    <value>Swapshelf - DLSS 管理程序</value>
   </data>
   <data name="DiagnosticsPage_ClickToCopyDetails" xml:space="preserve">
     <value>点击复制以下详细信息</value>
@@ -169,7 +169,7 @@
     <value>预设 {0} (已弃用)</value>
   </data>
   <data name="FailedToLaunchPage_DlssSwapperFailedToLaunch" xml:space="preserve">
-    <value>DLSS Swapper 启动失败</value>
+    <value>Swapshelf 启动失败</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial1" xml:space="preserve">
     <value>请打开</value>
@@ -178,7 +178,7 @@
     <value>新问题</value>
   </data>
   <data name="FailedToLaunchPage_PleaseOpenIssuePartial3" xml:space="preserve">
-    <value>请在 DLSS Swapper 的 GitHub 仓库，并在 “附加上下文” 部分提供以下信息。</value>
+    <value>请在 Swapshelf 的 GitHub 仓库，并在 “附加上下文” 部分提供以下信息。</value>
   </data>
   <data name="FailedToLaunchPage_WindowTitle" xml:space="preserve">
     <value>启动失败</value>
@@ -287,7 +287,7 @@
     <value>此标题不是手动添加的，无法移除。</value>
   </data>
   <data name="GamePage_ManuallyAdded_RemoveGameTemplate" xml:space="preserve">
-    <value>确定要从 DLSS Swapper 中删除 "{0}" ？这不会影响已经替换的 DLL 文件。</value>
+    <value>确定要从 Swapshelf 中删除 "{0}" ？这不会影响已经替换的 DLL 文件。</value>
   </data>
   <data name="GamePage_MultipleDllFound_Notice" xml:space="preserve">
     <value>下方显示的是检测到的多个 DLL 文件，仍然可以像往常一样进行 DLL 替换和重置操作，因为这些操作将会同时应用于所有 DLL 文件。但由于无法确定游戏具体使用的是 DLL 版本，因此显示的 DLL 版本是检测到的第一个 DLL 的版本。</value>
@@ -368,7 +368,7 @@
     <value>必须选择游戏目录，而不是游戏库目录。例如，如果游戏位于C:\Program Files\MyGamesFolder\MyFavGame ，应该选择 MyFavGame 目录，而不是 MyGamesFolder 目录。</value>
   </data>
   <data name="GamesPage_ManuallyAdding_NoteMessage" xml:space="preserve">
-    <value>通常情况下 DLSS Swapper 会自动从已安装的游戏库中查找游戏，如果游戏未列出，则可能被某些设置阻止了，请检查:
+    <value>通常情况下 Swapshelf 会自动从已安装的游戏库中查找游戏，如果游戏未列出，则可能被某些设置阻止了，请检查:
 
 - 游戏列表筛选器未设置为 “隐藏没有可管理 DLL 的游戏”
 - 在设置中启用了特定的游戏库
@@ -394,7 +394,7 @@
     <value>创建一个新的 GitHub 问题报告</value>
   </data>
   <data name="GamesPage_NewDlls_DiscoveredHelpUs" xml:space="preserve">
-    <value>在加载游戏时发现了一些不在 DLSS Swapper 清单中的新 DLL</value>
+    <value>在加载游戏时发现了一些不在 Swapshelf 清单中的新 DLL</value>
   </data>
   <data name="GamesPage_NewDlls_GitHubAccountRequired" xml:space="preserve">
     <value>(GitHub 授权)</value>
@@ -616,7 +616,7 @@
     <value>当前有 {0} 已经安装</value>
   </data>
   <data name="GitHubUpdater_DlssSwapperUpdated" xml:space="preserve">
-    <value>DLSS Swapper 已更新</value>
+    <value>Swapshelf 已更新</value>
   </data>
   <data name="GitHubUpdater_DownloadComplete_Title" xml:space="preserve">
     <value>下载完成</value>
@@ -703,10 +703,10 @@
     <value>下载已开始</value>
   </data>
   <data name="LibraryPage_Error_NVIDIA_Downloading" xml:space="preserve">
-    <value>无法从 NVIDIA 服务器获取文件列表，请稍后重试或检查 DLSS Swapper 更新。</value>
+    <value>无法从 NVIDIA 服务器获取文件列表，请稍后重试或检查 Swapshelf 更新。</value>
   </data>
   <data name="LibraryPage_Error_NVIDIA_Importing" xml:space="preserve">
-    <value>无法从 NVIDIA 服务器导入，请稍后重试或检查 DLSS Swapper 更新。</value>
+    <value>无法从 NVIDIA 服务器导入，请稍后重试或检查 Swapshelf 更新。</value>
   </data>
   <data name="LibraryPage_ExportedDLLs" xml:space="preserve">
     <value>导出的 DLL ：</value>
@@ -788,10 +788,10 @@
     <value>正在尝试更新</value>
   </data>
   <data name="MainWindow_DlssSwapperCloseDueToManifest" xml:space="preserve">
-    <value>DLSS Swapper 无法加载其清单文件，需要关闭。</value>
+    <value>Swapshelf 无法加载其清单文件，需要关闭。</value>
   </data>
   <data name="MainWindow_DlssSwapperMustClose" xml:space="preserve">
-    <value>DLSS Swapper 需要关闭</value>
+    <value>Swapshelf 需要关闭</value>
   </data>
   <data name="MainWindow_ManifestCouldNotBeLoaded_GitHubIssues" xml:space="preserve">
     <value>GitHub 问题报告</value>
@@ -834,7 +834,7 @@
     <value>自定义代理测试</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest10Title" xml:space="preserve">
-    <value>使用代理在 DLSS Swapper 中下载 DLSS Swap DLL 文件</value>
+    <value>使用代理在 Swapshelf 中下载 DLSS Swap DLL 文件</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest11Title" xml:space="preserve">
     <value>从 UploadThing 镜像下载 DLSS DLL文件</value>
@@ -846,7 +846,7 @@
     <value>测试微软必应响应以检查互联网连接</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest3Title" xml:space="preserve">
-    <value>在 DLSS Swapper 清单中下载 DLSS DLL 文件测试</value>
+    <value>在 Swapshelf 清单中下载 DLSS DLL 文件测试</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest4Title" xml:space="preserve">
     <value>从浏览器下载 DLL 文件测试</value>
@@ -858,13 +858,13 @@
     <value>从 Epic Games Store 下载游戏封面图</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest7Title" xml:space="preserve">
-    <value>从 DLSS Swapper 的服务器下载游戏封面</value>
+    <value>从 Swapshelf 的服务器下载游戏封面</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest8Title" xml:space="preserve">
-    <value>从 DLSS Swapper 的其它服务器下载游戏封面</value>
+    <value>从 Swapshelf 的其它服务器下载游戏封面</value>
   </data>
   <data name="NetworkTesterPage_DiagnosticsTest9Title" xml:space="preserve">
-    <value>查询 DLSS Swapper 的 DNS 服务器地址</value>
+    <value>查询 Swapshelf 的 DNS 服务器地址</value>
   </data>
   <data name="NetworkTesterPage_OpenInBrowser" xml:space="preserve">
     <value>在浏览器中打开</value>
@@ -921,7 +921,7 @@
     <value>构建日期</value>
   </data>
   <data name="SettingsPage_CouldNotOpenLogFileTryManual" xml:space="preserve">
-    <value>无法直接从 DLSS Swapper 打开日志文件，请尝试手动打开。</value>
+    <value>无法直接从 Swapshelf 打开日志文件，请尝试手动打开。</value>
   </data>
   <data name="SettingsPage_DeleteIgnoredPathMessage" xml:space="preserve">
     <value>确定要删除已忽略路径 {0} 吗？</value>
@@ -972,7 +972,7 @@
     <value>反馈</value>
   </data>
   <data name="SettingsPage_GiveFeedbackInfo" xml:space="preserve">
-    <value>可以在 DLSS Swapper 上提交建议功能或报告问题</value>
+    <value>可以在 Swapshelf 上提交建议功能或报告问题</value>
   </data>
   <data name="SettingsPage_IgnoredPaths" xml:space="preserve">
     <value>忽略路径</value>
@@ -1080,7 +1080,7 @@
     <value>未找到可保存的翻译数。</value>
   </data>
   <data name="TranslationToolboxPage_NotValidTranslationFile" xml:space="preserve">
-    <value>无效的 DLSS Swapper 翻译文件</value>
+    <value>无效的 Swapshelf 翻译文件</value>
   </data>
   <data name="TranslationToolboxPage_PublishFailedMessage" xml:space="preserve">
     <value>无法发布翻译，请查看错误日志以获取更多信息。</value>
@@ -1113,7 +1113,7 @@
     <value>翻译指南</value>
   </data>
   <data name="TranslationToolboxPage_TranslationGuideMessage" xml:space="preserve">
-    <value>翻译已创建完成，请查阅 DLSS Swapper 的翻译指南，了解接下来如何处理 {0}。</value>
+    <value>翻译已创建完成，请查阅 Swapshelf 的翻译指南，了解接下来如何处理 {0}。</value>
   </data>
   <data name="TranslationToolboxPage_TranslationProgress" xml:space="preserve">
     <value>翻译进度</value>
