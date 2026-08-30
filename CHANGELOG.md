@@ -16,6 +16,30 @@ them apart without anyone having to remember a rule. It stays four plain numbers
 updater packs them into 16 bits each, so a suffix like `-fork.3` would silently stop update checks
 working.
 
+## v3.0.5.0 — the installer stops instead of warning
+
+The installer has always checked whether Swapshelf was running, said "please close it before
+continuing", and then installed over it anyway. A warning nobody has to act on is not a warning; it
+is a note about what is being overwritten.
+
+It was not theoretical. Both 3.0.3.0 and 3.0.4.0 were installed over the running app, and both left
+Add or remove programs showing 3.0.2.0 while the files on disk were current. The same install wrote
+every other value in that entry correctly — the name, the publisher, the paths — so the failure was
+partial and silent, visible only in the one value that changes between releases. Installing again
+with the app closed wrote it correctly from an identical installer, which is what pinned it on the
+running process rather than on the installer.
+
+Now it stops: an error, and nothing written. The uninstaller has always refused for the same
+reason, so this is the installer catching up with it.
+
+The command line beside the app is checked too, because the same install overwrites it. That one
+gets looked at twice with a pause between, because it is a different kind of process — Steam starts
+it, it answers, and it exits, so a single look would refuse an install for something that had
+already finished.
+
+If you install this over a running copy, it will now tell you to close it and stop. That is the
+point, though it does mean this particular update has to be installed the way it is asking you to.
+
 ## v3.0.4.0 — the covers come back
 
 Renaming the data folder in 3.0.0.0 moved the cover art with it, and left every note of where that

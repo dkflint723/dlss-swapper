@@ -1,6 +1,6 @@
 ﻿@echo off
 
-set app_version=3.0.4.0
+set app_version=3.0.5.0
 set initial_directory=%cd%
 
 set csproj_file=..\src\DLSS Swapper.csproj
