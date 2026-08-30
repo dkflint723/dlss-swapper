@@ -1,6 +1,8 @@
 """Render one icon concept into every asset the repo ships.
 
-Usage:  python build_assets.py <concept_module> [--repo D:/git_projects/dlss-swapper] [--dry-run]
+Usage:  python build_assets.py <concept_module> [--repo <path>] [--dry-run]
+
+--repo defaults to the repository this script lives in, so it does not need naming.
 
 The geometry table below was measured off the assets already in the repo, so the new art
 lands at exactly the size and offset the old art had. That keeps this change to "the
