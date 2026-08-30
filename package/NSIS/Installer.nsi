@@ -36,10 +36,23 @@ Function .onInit
     StrCpy $INSTDIR "$0\"
   ${EndIf}
 
+  ; Stop, rather than say something and carry on regardless. This used to show the message and
+  ; then install over the running app anyway, which is not a warning, it is a note about what is
+  ; being ignored. Two releases were installed that way and both left the version in Add or remove
+  ; programs reading 3.0.2.0 while the files on disk were newer - the same install run silently
+  ; wrote every other value in that key correctly, so the failure was partial and invisible.
+  ; Whatever the exact mechanism, copying an executable over itself while it runs has no good
+  ; version, and the uninstaller has always refused for the same reason.
+  ;
+  ; MB_OK rather than a retry prompt because a silent install has nobody to ask. /SD IDOK dismisses
+  ; it and the Quit below still runs, so an unattended install fails with an error level instead of
+  ; half applying.
   FindProcDLL::FindProc "Swapshelf.exe"
 
   StrCmp $R0 0 NotRunning
-    MessageBox MB_OK|MB_ICONEXCLAMATION "Swapshelf is currently running. Please close it before continuing with installation." /SD IDOK
+    MessageBox MB_OK|MB_ICONSTOP "Swapshelf is currently running. Please close it before installing." /SD IDOK
+    SetErrorLevel 2
+    Quit
   NotRunning:
 FunctionEnd
 
