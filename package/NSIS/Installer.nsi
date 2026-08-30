@@ -54,6 +54,22 @@ Function .onInit
     SetErrorLevel 2
     Quit
   NotRunning:
+
+  ; The command line is installed beside the app and gets overwritten with it, so it is the same
+  ; problem. It is not the same shape of process though: the Steam plugin runs it, it answers, and
+  ; it exits, so a single look can catch one on its way out and refuse an install for a process
+  ; that has already gone. Looked at twice with a pause between - a transient one is finished by
+  ; the second look, and one still there is genuinely in use.
+  FindProcDLL::FindProc "swapshelf-cli.exe"
+  StrCmp $R0 0 CliNotRunning
+
+  Sleep 2500
+  FindProcDLL::FindProc "swapshelf-cli.exe"
+  StrCmp $R0 0 CliNotRunning
+    MessageBox MB_OK|MB_ICONSTOP "The Swapshelf command line is currently running, which usually means Steam is asking it something. Please close Steam, or wait a moment, and try again." /SD IDOK
+    SetErrorLevel 2
+    Quit
+  CliNotRunning:
 FunctionEnd
 
 ; On uninstall, confirm you want to remove downloaded/imported DLSS files.
@@ -65,6 +81,20 @@ Function un.onInit
     SetErrorLevel 2
     Quit
   NotRunning:
+
+  ; Deleted by the same uninstall, so it gets the same check the installer does, including the
+  ; second look - Steam can invoke it at any moment and a one second process should not be the
+  ; reason an uninstall fails.
+  FindProcDLL::FindProc "swapshelf-cli.exe"
+  StrCmp $R0 0 UnCliNotRunning
+
+  Sleep 2500
+  FindProcDLL::FindProc "swapshelf-cli.exe"
+  StrCmp $R0 0 UnCliNotRunning
+    MessageBox MB_OK|MB_ICONSTOP "The Swapshelf command line is currently running, which usually means Steam is asking it something. Please close Steam, or wait a moment, and try again." /SD IDOK
+    SetErrorLevel 2
+    Quit
+  UnCliNotRunning:
 
   ; The wording follows what the uninstaller actually does: it does not delete the dll library.
   ;
