@@ -1,0 +1,135 @@
+# ---------------------------------------------------------------------------
+# Delete GitHub Actions artifacts older than N days (default: 2).
+#
+# Drop-in: copy to .github/workflows/cleanup-artifacts.yml in any repository.
+# No third-party actions and no secrets -- it uses the built-in GITHUB_TOKEN
+# and the `gh` CLI that is preinstalled on GitHub-hosted runners.
+# ---------------------------------------------------------------------------
+name: Cleanup old artifacts
+
+on:
+  schedule:
+    # 03:17 UTC daily. Off-the-hour to dodge GitHub's cron congestion.
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      max_age_days:
+        description: 'Delete artifacts older than this many days'
+        required: false
+        default: '2'
+      dry_run:
+        description: 'Only report what would be deleted'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  actions: write        # required to delete artifacts
+  contents: read
+
+concurrency:
+  group: cleanup-artifacts-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Delete aged artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          MAX_AGE_DAYS: ${{ inputs.max_age_days || '2' }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+
+          if ! [[ "$MAX_AGE_DAYS" =~ ^[0-9]+$ ]]; then
+            echo "::error::max_age_days must be a whole number of days (got '$MAX_AGE_DAYS')"
+            exit 1
+          fi
+
+          cutoff=$(date -u -d "$MAX_AGE_DAYS days ago" +%s)
+          cutoff_iso=$(date -u -d "@$cutoff" +'%Y-%m-%dT%H:%M:%SZ')
+
+          echo "repository : $REPO"
+          echo "cutoff     : $cutoff_iso  (anything created before this goes)"
+          echo "dry run    : $DRY_RUN"
+          echo
+
+          # Page through everything BEFORE deleting anything: removing items
+          # mid-pagination shifts the remaining pages and silently skips rows.
+          candidates=$(mktemp)
+          gh api --paginate -H 'Accept: application/vnd.github+json' \
+            "/repos/$REPO/actions/artifacts?per_page=100" \
+            --jq "
+              .artifacts[]
+              | select(.expired | not)
+              | select((.created_at | fromdateiso8601) < $cutoff)
+              | [.id, .created_at, .size_in_bytes, .name] | @tsv
+            " > "$candidates"
+
+          total=$(wc -l < "$candidates")
+          echo "$total artifact(s) match."
+          echo
+
+          deleted=0; skipped=0; failed=0; bytes=0
+
+          while IFS=$'\t' read -r id created size name; do
+            [ -n "${id:-}" ] || continue
+            label="$name (id=$id, created=$created)"
+
+            if [ "$DRY_RUN" = 'true' ]; then
+              echo "would delete  $label"
+              deleted=$((deleted + 1)); bytes=$((bytes + size))
+              continue
+            fi
+
+            attempt=1
+            while :; do
+              if err=$(gh api -X DELETE "/repos/$REPO/actions/artifacts/$id" --silent 2>&1); then
+                echo "deleted       $label"
+                deleted=$((deleted + 1)); bytes=$((bytes + size))
+                break
+              fi
+              case "$err" in
+                *'HTTP 404'*|*'Not Found'*)
+                  echo "gone already  $label"
+                  skipped=$((skipped + 1)); break ;;
+              esac
+              if [ "$attempt" -ge 4 ]; then
+                echo "::warning::could not delete $label -- $err"
+                failed=$((failed + 1)); break
+              fi
+              case "$err" in
+                *'rate limit'*|*'secondary rate'*|*'abuse'*) sleep 60 ;;
+                *) sleep $((attempt * 5)) ;;
+              esac
+              attempt=$((attempt + 1))
+            done
+
+            sleep 0.3   # stay under the mutating-request secondary rate limit
+          done < "$candidates"
+
+          freed=$(numfmt --to=iec --suffix=B "$bytes" 2>/dev/null || echo "$bytes bytes")
+          if [ "$DRY_RUN" = 'true' ]; then verb='Would delete'; else verb='Deleted'; fi
+
+          {
+            echo "### Artifact cleanup"
+            echo
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| Repository | \`$REPO\` |"
+            echo "| Older than | $MAX_AGE_DAYS day(s) — before \`$cutoff_iso\` |"
+            echo "| $verb | $deleted |"
+            echo "| Storage reclaimed | $freed |"
+            if [ "$skipped" -gt 0 ]; then echo "| Already gone | $skipped |"; fi
+            if [ "$failed"  -gt 0 ]; then echo "| Failed | $failed |"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo
+          echo "$verb $deleted artifact(s), $freed reclaimed."
+
+          # Surface partial failures as a red run rather than a silent success.
+          [ "$failed" -eq 0 ]
